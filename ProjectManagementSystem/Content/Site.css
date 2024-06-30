@@ -22,3 +22,55 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.center-Item{
+    margin: auto;
+    text-align: center;
+}
+
+.content-Title{
+    font-size: 250%;
+    font-weight: bold;
+}
+
+
+/*DATA TABLE CSS*/
+table {
+    width: 100%;
+}
+
+#example_filter {
+    float: right;
+}
+
+#example_paginate {
+    float: right;
+}
+
+label {
+    display: inline-flex;
+    margin-bottom: .5rem;
+    margin-top: .5rem;
+}
+
+.daily-success{
+    background-color: green;
+}
+
+.daily-failed {
+    background-color: red;
+}
+
+.mainActivity {
+    border: 25px solid black;
+
+}
+
+.enlarge-Item{
+    font-size: 150%;
+}
+
+th{
+    margin: auto;
+    text-align: center;
+}

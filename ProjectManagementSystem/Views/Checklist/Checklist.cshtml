@@ -1,0 +1,166 @@
+﻿@using System.Globalization;
+@using System;
+
+@model List<ProjectManagementSystem.Models.ChecklistTable>
+@{
+    ViewBag.Title = "Checklist";
+}
+
+
+<html>
+<head>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+</head>
+<body>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+    <div class="container">
+        <div class="row">
+            @{
+                Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
+                DateTime startOfWeek = DateTime.Today.AddDays((int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - (int)DateTime.Today.DayOfWeek);
+
+                string sun2sat = string.Join("," + Environment.NewLine, Enumerable
+                  .Range(0, 7)
+                  .Select(i => startOfWeek
+                     .AddDays(i)
+                     .ToString("dd-MMMM-yyyy")));
+
+                string[] sun2satList = sun2sat.Split(',');
+
+                int weekNumber = Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+
+                <div class="center-Item">
+                    <label class="content-Title">Currently in Week: @weekNumber</label>
+                    <input type="hidden" id="workWeek" name="workWeek" value="@weekNumber"/>
+                </div>
+
+            }
+            <table id="example" class="table table-bordered" style="width:100%">
+
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" onclick="checkAll(this)"></th>
+                        <th>TITLE</th>
+                        <th>SUBCATEGORY TITLE</th>
+                        <th>SUB OF SUBCATEGORY TITLE</th>
+                        <th>DURATION</th>
+                        <th>START DATE</th>
+                        <th>TARGET DATE</th>
+                        <th>@sun2satList[0]<br /><br />Sunday </th>
+                        <th>@sun2satList[1]<br /><br />Monday</th>
+                        <th>@sun2satList[2]<br /><br />Tuesday</th>
+                        <th>@sun2satList[3]<br /><br />Wednesday</th>
+                        <th>@sun2satList[4]<br /><br />Thursday</th>
+                        <th>@sun2satList[5]<br /><br />Friday</th>
+                        <th>@sun2satList[6]<br /><br />Saturday</th>
+                    </tr>
+                </thead>
+
+                @{
+
+                    var mainParentHolder = 0; //Id holder of the main parent (used for checking if a child exists)
+                    var subParentHolder = 0; //Id holder of the sub parent (used for checking if a child of a child exists)
+                    var subSubHolder = 0;
+
+                    foreach (var item in Model)
+                    {
+                        if (item.parentWeeklyReference == null && item.parentSubReference == null)
+                        {
+                            mainParentHolder = item.checkListId;
+                            Model.Skip(1).FirstOrDefault();
+                        }
+
+                        else if (item.parentWeeklyReference != null && item.parentSubReference == null)
+                        {
+                            subParentHolder = item.parentWeeklyReference ?? 0;
+                        }
+
+                        else if (item.parentSubReference != null && item.parentWeeklyReference == null)
+                        {
+                            subSubHolder = item.parentSubReference ?? 0;
+                        }
+
+                        <tbody>
+                            @*MAIN ACTIVITY TR*@
+                            <tr style="background-color: #9201FC" @if (@item.parentWeeklyReference != null || item.parentSubReference != null) { <text>hidden</text>}>
+                                <td><input type="checkbox" name=""></td>
+                                <th>@item.title</th>
+                                <th></th>
+                                <th></th>
+                                <th>@item.duration</th>
+                                <th>@item.startDate</th>
+                                <th>@item.targetDate</th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
+                            </tr>
+                            @*SUB-CATEGORY FOR PARENT*@
+                            <tr @if (@item.parentWeeklyReference == null) { <text>hidden</text>}>
+                                <th></th>
+                                <th><span style="font-size: 150%;">&#8627;</span></th>
+                                <th>@item.title</th>
+                                <th></th>
+                                <th>@item.duration</th>
+                                <th>@item.startDate</th>
+                                <th>@item.targetDate</th>
+                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
+                            </tr>
+                            @*SUB OF SUB CATEGORY*@
+                            <tr @if (@item.parentSubReference == null) { <text> hidden</text>}>
+                                <th></th>
+                                <th></th>
+                                <th><span style="font-size: 150%;">&#8627;</span></th>
+                                <th>@item.title</th>
+                                <th>@item.duration</th>
+                                <th>@item.startDate</th>
+                                <th>@item.targetDate</th>
+                                <th style="@if (true) { <text>background-color: green</text>} else {<text>background-color: red</text> } "></th>
+                                <th style="@if (true) { <text>background-color: green</text>} else {<text>background-color: red</text> } "></th>
+                                <th style="@if (true) { <text>background-color: green</text>} else {<text>background-color: red</text> } "></th>
+                                <th style="@if (true) { <text>background-color: green</text>} else {<text>background-color: red</text> } "></th>
+                                <th style="@if (true) { <text>background-color: green</text>} else {<text>background-color: red</text> } "></th>
+                                <th style="@if (true) { <text>background-color: green</text>} else {<text>background-color: red</text> } "></th>
+                                <th style="@if (true) { <text>background-color: green</text>} else {<text>background-color: red</text> } "></th>
+                            </tr>
+                        </tbody>
+                    }
+
+                    <tfoot>
+                        <tr>
+                            <th></th>
+                            <th>TITLE</th>
+                            <th>SUBCATEGORY TITLE</th>
+                            <th>SUB OF SUBCATEGORY TITLE</th>
+                            <th>DURATION</th>
+                            <th>START DATE</th>
+                            <th>TARGET DATE</th>
+                            <th>Sunday<br /><br />@sun2satList[0] </th>
+                            <th>Monday<br /><br />@sun2satList[1]</th>
+                            <th>Tuesday<br /><br />@sun2satList[2]</th>
+                            <th>Wednesday<br /><br />@sun2satList[3]</th>
+                            <th>Thursday<br /><br />@sun2satList[4]</th>
+                            <th>Friday<br /><br />@sun2satList[5]</th>
+                            <th>Saturday<br /><br />@sun2satList[6]</th>
+
+                        </tr>
+                    </tfoot>
+                }
+            </table>
+        </div>
+    </div>
+</body>
+</html>
