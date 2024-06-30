@@ -61,27 +61,40 @@
                 </thead>
 
                 @{
-
-                    var mainParentHolder = 0; //Id holder of the main parent (used for checking if a child exists)
-                    var subParentHolder = 0; //Id holder of the sub parent (used for checking if a child of a child exists)
-                    var subSubHolder = 0;
+                    var iterator = 1;
 
                     foreach (var item in Model)
                     {
+                        var hasChildren = false;
+
                         if (item.parentWeeklyReference == null && item.parentSubReference == null)
                         {
-                            mainParentHolder = item.checkListId;
-                            Model.Skip(1).FirstOrDefault();
+                            var temp = Model.Skip(iterator).FirstOrDefault();
+
+                            if(temp != null)
+                            {
+                                if (item.checkListId == temp.parentWeeklyReference)
+                                {
+                                    hasChildren = true;
+                                }
+                            }
                         }
 
                         else if (item.parentWeeklyReference != null && item.parentSubReference == null)
                         {
-                            subParentHolder = item.parentWeeklyReference ?? 0;
+                            var temp = Model.Skip(iterator).FirstOrDefault();
+
+                            if (temp != null)
+                            {
+                                if (item.checkListId == temp.parentSubReference)
+                                {
+                                    hasChildren = true;
+                                }
+                            }
                         }
 
                         else if (item.parentSubReference != null && item.parentWeeklyReference == null)
                         {
-                            subSubHolder = item.parentSubReference ?? 0;
                         }
 
                         <tbody>
@@ -94,13 +107,13 @@
                                 <th>@item.duration</th>
                                 <th>@item.startDate</th>
                                 <th>@item.targetDate</th>
-                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null) { <text>background-color: green</text>} else {<text>background-color: white</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference == null && item.parentSubReference == null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
                             </tr>
                             @*SUB-CATEGORY FOR PARENT*@
                             <tr @if (@item.parentWeeklyReference == null) { <text>hidden</text>}>
@@ -111,13 +124,13 @@
                                 <th>@item.duration</th>
                                 <th>@item.startDate</th>
                                 <th>@item.targetDate</th>
-                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
-                                <th style="@if (@item.parentWeeklyReference == null) { <text>background-color: white</text>} else {<text>background-color: green</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference != null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference != null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference != null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference != null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference != null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference != null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
+                                <th style="@if (@item.parentWeeklyReference != null && hasChildren == false) { <text>background-color: green</text>} else {<text>background-color: black</text> } "></th>
                             </tr>
                             @*SUB OF SUB CATEGORY*@
                             <tr @if (@item.parentSubReference == null) { <text> hidden</text>}>
@@ -137,6 +150,8 @@
                                 <th style="@if (true) { <text>background-color: green</text>} else {<text>background-color: red</text> } "></th>
                             </tr>
                         </tbody>
+
+                        iterator++;
                     }
 
                     <tfoot>
