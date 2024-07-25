@@ -37,16 +37,16 @@
                 { name: "type", type: "typeselect", map_to: "type" },
                 { name: "time", height: 72, type: "duration", map_to: "auto" }
             ];
-            gantt.config.xml_date = "%Y/%m/%d"; // format of dates in XML
+            gantt.config.date_format = "%Y-%m-%d"; // format of dates in XML
             gantt.init("gantt_here"); // initialize gantt
-            gantt.load("/Checklist/getGanttData?week=" + @TempData["entry"].ToString() + "&title=" + @TempData["title"].ToString(), "json");
+            gantt.load("/Checklist/getGanttData?week=" + @TempData["entry"].ToString() + "&title=" + '@TempData["title"].ToString()', "json");
         });
     </script>
 </head>
 <body>
     <div>
-        <h2>@TempData["entry"]</h2>
-        <h2>@TempData["title"]</h2>
+        @*<h2>@TempData["entry"]</h2>
+        <h2>@TempData["title"]</h2>*@
     </div>
     <div id="gantt_here" style="width: 100%; height: 100vh;"></div>
 </body>
