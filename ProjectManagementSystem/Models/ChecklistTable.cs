@@ -42,6 +42,12 @@ public partial class ChecklistTable
 
     public string title { get; set; }
 
+    public string projectType { get; set; }
+
+    public string status { get; set; }
+
+    public string color { get; set; }
+
 }
 
 }
