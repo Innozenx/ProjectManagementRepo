@@ -1,0 +1,60 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css"
+          rel="stylesheet" type="text/css" />
+    <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            // specifying the date format
+            //gantt.config.date_format = "%Y-%m-%d %H:%i";
+            // initializing gantt
+
+            // initiating data loading
+            //gantt.load("Checklist/");
+
+            /*GANTT STYLE*/
+
+            // add month scale
+            gantt.config.scale_unit = "week";
+            gantt.config.step = 1;
+            gantt.templates.date_scale = function (date) {
+                var dateToStr = gantt.date.date_to_str("%d %M");
+                var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
+                return dateToStr(date) + " - " + dateToStr(endDate);
+            };
+            gantt.config.subscales = [
+                { unit: "month", step: 1, date: "%M" }
+            ];
+            gantt.config.scale_height = 75;
+            // configure milestone description
+            gantt.templates.rightside_text = function (start, end, task) {
+                if (task.type == gantt.config.types.milestone) {
+                    return task.text;
+                }
+                return "";
+            };
+            // add section to type selection: task, project or milestone
+            gantt.config.lightbox.sections = [
+                { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
+                { name: "type", type: "typeselect", map_to: "type" },
+                { name: "time", height: 72, type: "duration", map_to: "auto" }
+            ];
+            gantt.config.xml_date = "%Y/%m/%d"; // format of dates in XML
+            gantt.init("gantt_here"); // initialize gantt
+            gantt.load("/Checklist/getGanttData?week=" + @TempData["entry"].ToString(), "json");
+
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <h2>@TempData["entry"]</h2>
+        <h2>@TempData["title"]</h2>
+    </div>
+    <div id="gantt_here" style="width: 100%; height: 100vh;"></div>
+</body>
+</html>

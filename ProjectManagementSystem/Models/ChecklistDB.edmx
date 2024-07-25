@@ -7,18 +7,92 @@
     <Schema Namespace="ProjectManagementDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ChecklistTable">
           <Key>
-            <PropertyRef Name="checkListId" />
+            <PropertyRef Name="id" />
           </Key>
-          <Property Name="checkListId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="parentWeeklyReference" Type="int" />
-          <Property Name="parentSubReference" Type="int" />
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="text" Type="varchar" MaxLength="50" />
+          <Property Name="duration" Type="int" Nullable="false" />
+          <Property Name="start_date" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="parent" Type="int" />
+          <Property Name="weeklyReference" Type="int" />
+          <Property Name="source" Type="int" />
+          <Property Name="target" Type="int" />
+          <Property Name="type" Type="varchar" MaxLength="50" />
+          <Property Name="ofYear" Type="int" />
+          <Property Name="inWeek" Type="int" />
           <Property Name="title" Type="varchar" MaxLength="50" />
-          <Property Name="duration" Type="varchar" MaxLength="50" />
-          <Property Name="startDate" Type="date" />
-          <Property Name="targetDate" Type="date" />
+        </EntityType>
+        <EntityType Name="WeeklyChecklistTable">
+          <Key>
+            <PropertyRef Name="weeklyID" />
+          </Key>
+          <Property Name="weeklyID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="weeklyTitle" Type="nvarchar" MaxLength="50" />
+          <Property Name="weeklyDuration" Type="nvarchar" MaxLength="50" />
+          <Property Name="weeklyStart" Type="date" Nullable="false" />
+          <Property Name="weeklyTarget" Type="date" Nullable="false" />
+          <Property Name="weeklyInYear" Type="int" />
+          <Property Name="subMain" Type="int" />
+          <Property Name="subSub" Type="int" />
+          <Property Name="division" Type="nvarchar" MaxLength="50" />
+          <Property Name="category" Type="nvarchar" MaxLength="50" />
+          <Property Name="week52" Type="bit" Nullable="false" />
+          <Property Name="week51" Type="bit" Nullable="false" />
+          <Property Name="week50" Type="bit" Nullable="false" />
+          <Property Name="week49" Type="bit" Nullable="false" />
+          <Property Name="week48" Type="bit" Nullable="false" />
+          <Property Name="week47" Type="bit" Nullable="false" />
+          <Property Name="week46" Type="bit" Nullable="false" />
+          <Property Name="week45" Type="bit" Nullable="false" />
+          <Property Name="week44" Type="bit" Nullable="false" />
+          <Property Name="week43" Type="bit" Nullable="false" />
+          <Property Name="week42" Type="bit" Nullable="false" />
+          <Property Name="week41" Type="bit" Nullable="false" />
+          <Property Name="week40" Type="bit" Nullable="false" />
+          <Property Name="week39" Type="bit" Nullable="false" />
+          <Property Name="week38" Type="bit" Nullable="false" />
+          <Property Name="week37" Type="bit" Nullable="false" />
+          <Property Name="week36" Type="bit" Nullable="false" />
+          <Property Name="week35" Type="bit" Nullable="false" />
+          <Property Name="week34" Type="bit" Nullable="false" />
+          <Property Name="week33" Type="bit" Nullable="false" />
+          <Property Name="week32" Type="bit" Nullable="false" />
+          <Property Name="week31" Type="bit" Nullable="false" />
+          <Property Name="week30" Type="bit" Nullable="false" />
+          <Property Name="week29" Type="bit" Nullable="false" />
+          <Property Name="week28" Type="bit" Nullable="false" />
+          <Property Name="week27" Type="bit" Nullable="false" />
+          <Property Name="week26" Type="bit" Nullable="false" />
+          <Property Name="week25" Type="bit" Nullable="false" />
+          <Property Name="week24" Type="bit" Nullable="false" />
+          <Property Name="week23" Type="bit" Nullable="false" />
+          <Property Name="week22" Type="bit" Nullable="false" />
+          <Property Name="week21" Type="bit" Nullable="false" />
+          <Property Name="week20" Type="bit" Nullable="false" />
+          <Property Name="week19" Type="bit" Nullable="false" />
+          <Property Name="week18" Type="bit" Nullable="false" />
+          <Property Name="week17" Type="bit" Nullable="false" />
+          <Property Name="week16" Type="bit" Nullable="false" />
+          <Property Name="week15" Type="bit" Nullable="false" />
+          <Property Name="week14" Type="bit" Nullable="false" />
+          <Property Name="week13" Type="bit" Nullable="false" />
+          <Property Name="week12" Type="bit" Nullable="false" />
+          <Property Name="week11" Type="bit" Nullable="false" />
+          <Property Name="week10" Type="bit" Nullable="false" />
+          <Property Name="week9" Type="bit" Nullable="false" />
+          <Property Name="week8" Type="bit" Nullable="false" />
+          <Property Name="week7" Type="bit" Nullable="false" />
+          <Property Name="week6" Type="bit" Nullable="false" />
+          <Property Name="week5" Type="bit" Nullable="false" />
+          <Property Name="week4" Type="bit" Nullable="false" />
+          <Property Name="week3" Type="bit" Nullable="false" />
+          <Property Name="week2" Type="bit" Nullable="false" />
+          <Property Name="week1" Type="bit" Nullable="false" />
+          <Property Name="inWeek" Type="int" />
         </EntityType>
         <EntityContainer Name="ProjectManagementDBModelStoreContainer">
           <EntitySet Name="ChecklistTable" EntityType="Self.ChecklistTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -26,20 +100,94 @@
       <Schema Namespace="ProjectManagementDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="ProjectManagementDBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="ChecklistTables" EntityType="ProjectManagementDBModel.ChecklistTable" />
+          <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
         </EntityContainer>
         <EntityType Name="ChecklistTable">
           <Key>
-            <PropertyRef Name="checkListId" />
+            <PropertyRef Name="id" />
           </Key>
-          <Property Name="checkListId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="parentWeeklyReference" Type="Int32" />
-          <Property Name="parentSubReference" Type="Int32" />
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="duration" Type="Int32" Nullable="false" />
+          <Property Name="start_date" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="parent" Type="Int32" />
+          <Property Name="weeklyReference" Type="Int32" />
+          <Property Name="source" Type="Int32" />
+          <Property Name="target" Type="Int32" />
+          <Property Name="type" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ofYear" Type="Int32" />
+          <Property Name="inWeek" Type="Int32" />
           <Property Name="title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="duration" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="startDate" Type="DateTime" Precision="0" />
-          <Property Name="targetDate" Type="DateTime" Precision="0" />
         </EntityType>
-      </Schema>
+        <EntityType Name="WeeklyChecklistTable">
+          <Key>
+            <PropertyRef Name="weeklyID" />
+          </Key>
+          <Property Name="weeklyID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="weeklyTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="weeklyDuration" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="weeklyStart" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="weeklyTarget" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="weeklyInYear" Type="Int32" />
+          <Property Name="subMain" Type="Int32" />
+          <Property Name="subSub" Type="Int32" />
+          <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="category" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="week52" Type="Boolean" Nullable="false" />
+          <Property Name="week51" Type="Boolean" Nullable="false" />
+          <Property Name="week50" Type="Boolean" Nullable="false" />
+          <Property Name="week49" Type="Boolean" Nullable="false" />
+          <Property Name="week48" Type="Boolean" Nullable="false" />
+          <Property Name="week47" Type="Boolean" Nullable="false" />
+          <Property Name="week46" Type="Boolean" Nullable="false" />
+          <Property Name="week45" Type="Boolean" Nullable="false" />
+          <Property Name="week44" Type="Boolean" Nullable="false" />
+          <Property Name="week43" Type="Boolean" Nullable="false" />
+          <Property Name="week42" Type="Boolean" Nullable="false" />
+          <Property Name="week41" Type="Boolean" Nullable="false" />
+          <Property Name="week40" Type="Boolean" Nullable="false" />
+          <Property Name="week39" Type="Boolean" Nullable="false" />
+          <Property Name="week38" Type="Boolean" Nullable="false" />
+          <Property Name="week37" Type="Boolean" Nullable="false" />
+          <Property Name="week36" Type="Boolean" Nullable="false" />
+          <Property Name="week35" Type="Boolean" Nullable="false" />
+          <Property Name="week34" Type="Boolean" Nullable="false" />
+          <Property Name="week33" Type="Boolean" Nullable="false" />
+          <Property Name="week32" Type="Boolean" Nullable="false" />
+          <Property Name="week31" Type="Boolean" Nullable="false" />
+          <Property Name="week30" Type="Boolean" Nullable="false" />
+          <Property Name="week29" Type="Boolean" Nullable="false" />
+          <Property Name="week28" Type="Boolean" Nullable="false" />
+          <Property Name="week27" Type="Boolean" Nullable="false" />
+          <Property Name="week26" Type="Boolean" Nullable="false" />
+          <Property Name="week25" Type="Boolean" Nullable="false" />
+          <Property Name="week24" Type="Boolean" Nullable="false" />
+          <Property Name="week23" Type="Boolean" Nullable="false" />
+          <Property Name="week22" Type="Boolean" Nullable="false" />
+          <Property Name="week21" Type="Boolean" Nullable="false" />
+          <Property Name="week20" Type="Boolean" Nullable="false" />
+          <Property Name="week19" Type="Boolean" Nullable="false" />
+          <Property Name="week18" Type="Boolean" Nullable="false" />
+          <Property Name="week17" Type="Boolean" Nullable="false" />
+          <Property Name="week16" Type="Boolean" Nullable="false" />
+          <Property Name="week15" Type="Boolean" Nullable="false" />
+          <Property Name="week14" Type="Boolean" Nullable="false" />
+          <Property Name="week13" Type="Boolean" Nullable="false" />
+          <Property Name="week12" Type="Boolean" Nullable="false" />
+          <Property Name="week11" Type="Boolean" Nullable="false" />
+          <Property Name="week10" Type="Boolean" Nullable="false" />
+          <Property Name="week9" Type="Boolean" Nullable="false" />
+          <Property Name="week8" Type="Boolean" Nullable="false" />
+          <Property Name="week7" Type="Boolean" Nullable="false" />
+          <Property Name="week6" Type="Boolean" Nullable="false" />
+          <Property Name="week5" Type="Boolean" Nullable="false" />
+          <Property Name="week4" Type="Boolean" Nullable="false" />
+          <Property Name="week3" Type="Boolean" Nullable="false" />
+          <Property Name="week2" Type="Boolean" Nullable="false" />
+          <Property Name="week1" Type="Boolean" Nullable="false" />
+          <Property Name="inWeek" Type="Int32" />
+        </EntityType>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -48,13 +196,87 @@
           <EntitySetMapping Name="ChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistTable">
               <MappingFragment StoreEntitySet="ChecklistTable">
-                <ScalarProperty Name="targetDate" ColumnName="targetDate" />
-                <ScalarProperty Name="startDate" ColumnName="startDate" />
-                <ScalarProperty Name="duration" ColumnName="duration" />
                 <ScalarProperty Name="title" ColumnName="title" />
-                <ScalarProperty Name="parentSubReference" ColumnName="parentSubReference" />
-                <ScalarProperty Name="parentWeeklyReference" ColumnName="parentWeeklyReference" />
-                <ScalarProperty Name="checkListId" ColumnName="checkListId" />
+                <ScalarProperty Name="inWeek" ColumnName="inWeek" />
+                <ScalarProperty Name="ofYear" ColumnName="ofYear" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="target" ColumnName="target" />
+                <ScalarProperty Name="source" ColumnName="source" />
+                <ScalarProperty Name="weeklyReference" ColumnName="weeklyReference" />
+                <ScalarProperty Name="parent" ColumnName="parent" />
+                <ScalarProperty Name="start_date" ColumnName="start_date" />
+                <ScalarProperty Name="duration" ColumnName="duration" />
+                <ScalarProperty Name="text" ColumnName="text" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WeeklyChecklistTables">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.WeeklyChecklistTable">
+              <MappingFragment StoreEntitySet="WeeklyChecklistTable">
+                <ScalarProperty Name="inWeek" ColumnName="inWeek" />
+                <ScalarProperty Name="week1" ColumnName="week1" />
+                <ScalarProperty Name="week2" ColumnName="week2" />
+                <ScalarProperty Name="week3" ColumnName="week3" />
+                <ScalarProperty Name="week4" ColumnName="week4" />
+                <ScalarProperty Name="week5" ColumnName="week5" />
+                <ScalarProperty Name="week6" ColumnName="week6" />
+                <ScalarProperty Name="week7" ColumnName="week7" />
+                <ScalarProperty Name="week8" ColumnName="week8" />
+                <ScalarProperty Name="week9" ColumnName="week9" />
+                <ScalarProperty Name="week10" ColumnName="week10" />
+                <ScalarProperty Name="week11" ColumnName="week11" />
+                <ScalarProperty Name="week12" ColumnName="week12" />
+                <ScalarProperty Name="week13" ColumnName="week13" />
+                <ScalarProperty Name="week14" ColumnName="week14" />
+                <ScalarProperty Name="week15" ColumnName="week15" />
+                <ScalarProperty Name="week16" ColumnName="week16" />
+                <ScalarProperty Name="week17" ColumnName="week17" />
+                <ScalarProperty Name="week18" ColumnName="week18" />
+                <ScalarProperty Name="week19" ColumnName="week19" />
+                <ScalarProperty Name="week20" ColumnName="week20" />
+                <ScalarProperty Name="week21" ColumnName="week21" />
+                <ScalarProperty Name="week22" ColumnName="week22" />
+                <ScalarProperty Name="week23" ColumnName="week23" />
+                <ScalarProperty Name="week24" ColumnName="week24" />
+                <ScalarProperty Name="week25" ColumnName="week25" />
+                <ScalarProperty Name="week26" ColumnName="week26" />
+                <ScalarProperty Name="week27" ColumnName="week27" />
+                <ScalarProperty Name="week28" ColumnName="week28" />
+                <ScalarProperty Name="week29" ColumnName="week29" />
+                <ScalarProperty Name="week30" ColumnName="week30" />
+                <ScalarProperty Name="week31" ColumnName="week31" />
+                <ScalarProperty Name="week32" ColumnName="week32" />
+                <ScalarProperty Name="week33" ColumnName="week33" />
+                <ScalarProperty Name="week34" ColumnName="week34" />
+                <ScalarProperty Name="week35" ColumnName="week35" />
+                <ScalarProperty Name="week36" ColumnName="week36" />
+                <ScalarProperty Name="week37" ColumnName="week37" />
+                <ScalarProperty Name="week38" ColumnName="week38" />
+                <ScalarProperty Name="week39" ColumnName="week39" />
+                <ScalarProperty Name="week40" ColumnName="week40" />
+                <ScalarProperty Name="week41" ColumnName="week41" />
+                <ScalarProperty Name="week42" ColumnName="week42" />
+                <ScalarProperty Name="week43" ColumnName="week43" />
+                <ScalarProperty Name="week44" ColumnName="week44" />
+                <ScalarProperty Name="week45" ColumnName="week45" />
+                <ScalarProperty Name="week46" ColumnName="week46" />
+                <ScalarProperty Name="week47" ColumnName="week47" />
+                <ScalarProperty Name="week48" ColumnName="week48" />
+                <ScalarProperty Name="week49" ColumnName="week49" />
+                <ScalarProperty Name="week50" ColumnName="week50" />
+                <ScalarProperty Name="week51" ColumnName="week51" />
+                <ScalarProperty Name="week52" ColumnName="week52" />
+                <ScalarProperty Name="category" ColumnName="category" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="subSub" ColumnName="subSub" />
+                <ScalarProperty Name="subMain" ColumnName="subMain" />
+                <ScalarProperty Name="weeklyInYear" ColumnName="weeklyInYear" />
+                <ScalarProperty Name="weeklyTarget" ColumnName="weeklyTarget" />
+                <ScalarProperty Name="weeklyStart" ColumnName="weeklyStart" />
+                <ScalarProperty Name="weeklyDuration" ColumnName="weeklyDuration" />
+                <ScalarProperty Name="weeklyTitle" ColumnName="weeklyTitle" />
+                <ScalarProperty Name="weeklyID" ColumnName="weeklyID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

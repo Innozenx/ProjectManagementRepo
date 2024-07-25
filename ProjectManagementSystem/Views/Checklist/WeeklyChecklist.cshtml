@@ -1,0 +1,202 @@
+﻿@model List<ProjectManagementSystem.Models.WeeklyChecklistTable>
+@using ProjectManagementSystem.Models;
+
+@using System.Globalization;
+@using System;
+
+@{
+    ProjectManagementDBEntities db = new ProjectManagementDBEntities();
+    List<WeeklyChecklistTable> WeeklyDb = new List<WeeklyChecklistTable>();
+}
+
+<h2>WeeklyChecklist</h2>
+
+<html>
+<head>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+</head>
+<body>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
+    <div class="container weeklyCalendar">
+        <div class="row">
+            @{
+                Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
+                DateTime startOfWeek = DateTime.Today.AddDays((int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - (int)DateTime.Today.DayOfWeek);
+
+                string sun2sat = string.Join("," + Environment.NewLine, Enumerable
+                  .Range(0, 7)
+                  .Select(i => startOfWeek
+                     .AddDays(i)
+                     .ToString("dd-MMMM-yyyy")));
+
+                string[] sun2satList = sun2sat.Split(',');
+
+                int weekNumber = Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+
+                <div class="center-Item">
+                    <label class="content-Title">Currently in Week: @weekNumber</label>
+                    <input type="hidden" id="workWeek" name="workWeek" value="@weekNumber" />
+                    <input type="hidden" id="workDay" name="workDay" value="@DateTime.Now.Day" />
+                    <input type="hidden" id="workYear" name="workYear" value="@DateTime.Now.Year" />
+                </div>
+
+            }
+            <div style="overflow:auto">
+                <table id="example" class="table table-bordered" style="width:100%">
+
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" onclick="checkAll(this)"></th>
+                            <th>TITLE</th>
+                            <th>SUBCATEGORY TITLE</th>
+                            <th>SUB OF SUBCATEGORY TITLE</th>
+                            <th>DURATION</th>
+                            <th>START DATE</th>
+                            <th>TARGET DATE</th>
+                            @{
+                                var todayIs = weekNumber;
+                                for (var j = 0; j < 52; j++)
+                                {
+                                    <th>Week @(j + 1)</th>
+                                }
+                            }
+                        </tr>
+                    </thead>
+
+                    @{
+                        var iterator = 1;
+                        //var todayIs = (int)Math.Abs(DateTime.Now.Day - 7);
+                        todayIs = weekNumber;
+
+                        foreach (var item in Model)
+                        {
+                            var hasChildren = false;
+
+                            if (item.subMain == null && item.subSub == null)
+                            {
+                                var temp = Model.Skip(iterator).FirstOrDefault();
+
+                                if (temp != null)
+                                {
+                                    if (item.weeklyID == temp.subMain)
+                                    {
+                                        hasChildren = true;
+                                    }
+                                }
+                            }
+
+                            else if (item.subMain != null && item.subSub == null)
+                            {
+                                var temp = Model.Skip(iterator).FirstOrDefault();
+
+                                if (temp != null)
+                                {
+                                    if (item.weeklyID == temp.subSub)
+                                    {
+                                        hasChildren = true;
+                                    }
+                                }
+                            }
+
+                            else if (item.subSub != null && item.subMain == null)
+                            {
+                            }
+
+                            <tbody>
+                                @*MAIN ACTIVITY TR*@
+                                <tr style="background-color: #9201FC" @if (@item.subMain != null || item.subSub != null) { <text> hidden</text>}>
+                                    <td><input type="checkbox" name=""></td>
+                                    <th>@item.weeklyTitle</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>@item.weeklyDuration</th>
+                                    <th>@item.weeklyStart</th>
+                                    <th>@item.weeklyTarget</th>
+                                    @{
+
+                                        for (var k = 1; k <= 52; k++)
+                                        {
+                                            <th class="th-confirm" id="@item.weeklyTitle" style="
+                                            @if (k == Calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday))
+                                            {
+                                                <text>background-color: green</text>
+
+                                            }
+
+                                            else if (k > Calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday) && k < Calendar.GetWeekOfYear(item.weeklyTarget, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday))
+                                            {
+                                                <text>background-color: green</text>
+                                            }
+
+                                            else if (k == Calendar.GetWeekOfYear(item.weeklyTarget, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday))
+                                            {
+                                                <text>background-color: orange</text>
+                                            }
+
+                                            else
+                                            {
+                                                <text>background-color: white</text>
+                                            }" value="@k" onclick="weeklyMilestone(this)">
+                                                @if (k == todayIs && @item.subMain == null && item.subSub == null && hasChildren == false)
+                                                {
+
+                                                }
+                                            </th>
+                                        }
+                                    }
+                                </tr>
+                            </tbody>
+                                            iterator++;
+                                        }
+
+                                        <tfoot>
+                                            <tr>
+                                                <th></th>
+                                                <th>TITLE</th>
+                                                <th>SUBCATEGORY TITLE</th>
+                                                <th>SUB OF SUBCATEGORY TITLE</th>
+                                                <th>DURATION</th>
+                                                <th>START DATE</th>
+                                                <th>TARGET DATE</th>
+                                                @{
+                                                    for (var j = 0; j < 52; j++)
+                                                    {
+                                                        <th>Week @(j + 1)</th>
+                                                    }
+                                                }
+
+                                            </tr>
+                                        </tfoot>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+@section scripts
+{
+    @*Uncomment this block to force the scrollbar to the right.*@
+    @*
+    <script>
+        var left = $('.weeklyCalendar').width();
+        $('.weeklyCalendar').scrollLeft(left);
+    </script>
+    *@
+
+    <script>
+        function weeklyMilestone(thVal) {
+            weekCheck = $(thVal).attr("value");
+            weekTitle = $(thVal).attr("id");
+            {
+                window.location.href = '@Url.Action("weeklyMilestone", "Checklist")?id=' + weekCheck + '&title=' + weekTitle;
+            }
+
+        }
+    </script>
+}
