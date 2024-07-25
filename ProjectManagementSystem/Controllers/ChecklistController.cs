@@ -151,6 +151,33 @@ namespace ProjectManagementSystem.Controllers
 
             checklist = db.ChecklistTables.Where(x => x.inWeek == week).Where(x => x.ofYear == currentYear).Where(x => x.title.Equals("first")).ToList();
 
+            foreach(var item in db.ChecklistTables.Where(x => x.inWeek == week).Where(x => x.ofYear == currentYear).Where(x => x.title.Equals("first")).ToList())
+            {
+                var endDate = DateTime.Parse(item.start_date).AddDays(item.duration);
+                var startDate = DateTime.Parse(item.start_date);
+                if(DateTime.Now <= endDate && DateTime.Now < startDate)
+                {
+                    item.color = "black";
+                }
+
+                else if (item.status == "completed")
+                {
+                    item.color = "green";
+                }
+
+                else if(DateTime.Now <= endDate && DateTime.Now > startDate)
+                {
+                    item.color = "orange";
+                }
+
+                else
+                {
+                    item.color = "red";
+                }
+
+                db.SaveChanges();
+            }
+
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,

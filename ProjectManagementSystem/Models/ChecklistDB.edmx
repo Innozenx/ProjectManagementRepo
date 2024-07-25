@@ -12,7 +12,7 @@
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="text" Type="varchar" MaxLength="50" />
           <Property Name="duration" Type="int" Nullable="false" />
-          <Property Name="start_date" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="start_date" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="parent" Type="int" />
           <Property Name="weeklyReference" Type="int" />
           <Property Name="source" Type="int" />
@@ -112,7 +112,7 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="duration" Type="Int32" Nullable="false" />
-          <Property Name="start_date" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="start_date" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="parent" Type="Int32" />
           <Property Name="weeklyReference" Type="Int32" />
           <Property Name="source" Type="Int32" />
