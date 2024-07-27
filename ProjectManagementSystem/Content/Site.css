@@ -23,12 +23,12 @@ textarea {
     max-width: 280px;
 }
 
-.center-Item{
+.center-Item {
     margin: auto;
     text-align: center;
 }
 
-.content-Title{
+.content-Title {
     font-size: 250%;
     font-weight: bold;
 }
@@ -53,7 +53,7 @@ label {
     margin-top: .5rem;
 }
 
-.daily-success{
+.daily-success {
     background-color: green;
 }
 
@@ -63,14 +63,13 @@ label {
 
 .mainActivity {
     border: 25px solid black;
-
 }
 
-.enlarge-Item{
+.enlarge-Item {
     font-size: 150%;
 }
 
-th{
+th {
     margin: auto;
     text-align: center;
 }
@@ -85,3 +84,7 @@ th{
 }
 
 /* My style */
+
+/*CSS FOR HEALTH STATUS REPORT*/
+
+

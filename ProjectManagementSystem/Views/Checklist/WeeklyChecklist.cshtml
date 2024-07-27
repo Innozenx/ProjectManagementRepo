@@ -3,7 +3,7 @@
 
 @using System.Globalization;
 @using System;
-
+@Html.Partial("_Navbar")
 @{
     ProjectManagementDBEntities db = new ProjectManagementDBEntities();
     List<WeeklyChecklistTable> WeeklyDb = new List<WeeklyChecklistTable>();
@@ -13,14 +13,11 @@
 
 <html>
 <head>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="~/Content/Site.css" rel="stylesheet" />
 </head>
 <body>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js"></script>
     <div class="container weeklyCalendar">
         <div class="row">
             @{
@@ -52,8 +49,6 @@
                         <tr>
                             <th><input type="checkbox" onclick="checkAll(this)"></th>
                             <th>TITLE</th>
-                            <th>SUBCATEGORY TITLE</th>
-                            <th>SUB OF SUBCATEGORY TITLE</th>
                             <th>DURATION</th>
                             <th>START DATE</th>
                             <th>TARGET DATE</th>
@@ -111,8 +106,6 @@
                                 <tr style="background-color: #9201FC" @if (@item.subMain != null || item.subSub != null) { <text> hidden</text>}>
                                     <td><input type="checkbox" name=""></td>
                                     <th>@item.weeklyTitle</th>
-                                    <th></th>
-                                    <th></th>
                                     <th>@item.weeklyDuration</th>
                                     <th>@item.weeklyStart</th>
                                     <th>@item.weeklyTarget</th>
@@ -157,8 +150,6 @@
                                             <tr>
                                                 <th></th>
                                                 <th>TITLE</th>
-                                                <th>SUBCATEGORY TITLE</th>
-                                                <th>SUB OF SUBCATEGORY TITLE</th>
                                                 <th>DURATION</th>
                                                 <th>START DATE</th>
                                                 <th>TARGET DATE</th>
@@ -183,10 +174,10 @@
 {
     @*Uncomment this block to force the scrollbar to the right.*@
     @*
-    <script>
-        var left = $('.weeklyCalendar').width();
-        $('.weeklyCalendar').scrollLeft(left);
-    </script>
+        <script>
+            var left = $('.weeklyCalendar').width();
+            $('.weeklyCalendar').scrollLeft(left);
+        </script>
     *@
 
     <script>

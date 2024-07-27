@@ -1,0 +1,72 @@
+﻿@model List<ProjectManagementSystem.Models.Report>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div>
+
+    <h1>Report Parameters</h1>
+
+    <div>
+        
+            <h4>Year:</h4>
+            <select id="yearSelect" name="yearSelect">
+                @{
+                    foreach (var opt1 in Model)
+                    {
+                        <option>@opt1.year</option>
+                    }
+
+                }
+            </select>
+
+            <h4>Quarter:</h4>
+            <select id="quarterSelect" name="quarterSelect">
+                @{
+                    foreach (var opt2 in Model)
+                    {
+                        <option>@opt2.inQuarter</option>
+                    }
+
+                }
+            </select>
+
+            <h4>Division:</h4>
+            <select id="divSelect" name="divSelect">
+                @{
+                    foreach (var opt3 in Model)
+                    {
+                        <option>@opt3.division</option>
+                    }
+
+                }
+            </select>
+
+            <input type="submit" id="submit" name="submit"/>
+   
+
+    </div>
+</div>
+
+@section scripts{
+
+<script>
+        $(document).ready(function () {
+            $('#submit').click(function () {
+                var y = $("#yearSelect").find(":selected").text();
+                var q = $("#quarterSelect").find(":selected").text();
+                var d = $("#divSelect").find(":selected").text();
+
+                var url = '@Url.Action("DisplayReport", "PMReports")';
+                url = url + '?year=' + y + '&quarter=' + q + '&division=' + d;
+
+                window.location.href = url;
+            });
+        });
+</script>
+
+}
+
+
+

@@ -205,6 +205,7 @@
     <Compile Include="Controllers\ChecklistController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\PMReportsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -229,6 +230,9 @@
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Report.cs">
+      <DependentUpon>ChecklistDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Models\WeeklyChecklistTable.cs">
       <DependentUpon>ChecklistDB.tt</DependentUpon>
@@ -313,6 +317,13 @@
     <Content Include="Views\Checklist\Checklist.cshtml" />
     <Content Include="Views\Checklist\WeeklyChecklist.cshtml" />
     <Content Include="Views\Checklist\weeklyMilestone.cshtml" />
+    <Content Include="Views\PMReports\Create.cshtml" />
+    <Content Include="Views\PMReports\Delete.cshtml" />
+    <Content Include="Views\PMReports\Details.cshtml" />
+    <Content Include="Views\PMReports\Edit.cshtml" />
+    <Content Include="Views\PMReports\Index.cshtml" />
+    <Content Include="Views\PMReports\DisplayReport.cshtml" />
+    <Content Include="Views\Shared\_Navbar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

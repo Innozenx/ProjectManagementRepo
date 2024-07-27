@@ -108,4 +108,26 @@ namespace ProjectManagementSystem.Models
         public List<TaskGantt> tasks { get; set; }
         public List<LinkGantt> links { get; set; }
     }
+
+    public class PMReport
+    {
+        public int id { get; set; }
+        public string division { get; set; }
+        public int year { get; set; }
+        public int quarter { get; set; }
+        public string projectName { get; set; }
+        public float targetKPI { get; set; }
+        public float actualKPI { get; set; }
+        public float completionRate { get; set; }
+        public string status { get; set; }
+        public string currentTask { get; set; }
+        public string nextTask { get; set; }
+        public string comments { get; set; }
+        public string milestoneActual { get; set; }
+        public string milestoneTarget { get; set; }
+
+
+        /*Extension from checklist to be used for the report*/
+        public List<Checklist> listCheckList { get; set; }
+    }
 }

@@ -24,11 +24,11 @@ public partial class ChecklistTable
 
     public int duration { get; set; }
 
-    public string start_date { get; set; }
+    public System.DateTime start_date { get; set; }
 
     public Nullable<int> parent { get; set; }
 
-    public Nullable<int> weeklyReference { get; set; }
+    public Nullable<int> projectReference { get; set; }
 
     public Nullable<int> source { get; set; }
 
@@ -38,7 +38,9 @@ public partial class ChecklistTable
 
     public Nullable<int> ofYear { get; set; }
 
-    public Nullable<int> inWeek { get; set; }
+    public Nullable<int> startWeek { get; set; }
+
+    public Nullable<int> endWeek { get; set; }
 
     public string title { get; set; }
 
@@ -47,6 +49,12 @@ public partial class ChecklistTable
     public string status { get; set; }
 
     public string color { get; set; }
+
+    public string details { get; set; }
+
+    public Nullable<System.DateTime> dateInitial { get; set; }
+
+    public Nullable<System.DateTime> dateFinished { get; set; }
 
 }
 

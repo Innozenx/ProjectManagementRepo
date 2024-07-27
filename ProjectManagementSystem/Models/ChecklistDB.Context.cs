@@ -34,6 +34,8 @@ public partial class ProjectManagementDBEntities : DbContext
 
     public virtual DbSet<ChecklistTable> ChecklistTables { get; set; }
 
+    public virtual DbSet<Report> Reports { get; set; }
+
     public virtual DbSet<WeeklyChecklistTable> WeeklyChecklistTables { get; set; }
 
 }

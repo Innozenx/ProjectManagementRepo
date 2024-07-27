@@ -1,0 +1,117 @@
+﻿@model List<ProjectManagementSystem.Models.Report>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@{
+    foreach (var item in Model)
+    {
+
+        <h2>Project Report for @item.division for year @item.year in Quarter: @item.inQuarter</h2>
+    }
+}
+@{
+    foreach (var item in Model)
+    {
+
+        //Project Health & Status Portion
+        <div class="container">
+            <div class="row">
+                <div class="">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h3>Project Health & Status</h3>
+                            <div class="row">
+                                <div class="col-sm-12 col-xs-12">
+                                    <form class="form-horizontal pull-right">
+                                        <div class="form-group">
+                                            <label>Show : </label>
+                                            <select class="form-control">
+                                                <option>5</option>
+                                                <option>10</option>
+                                                <option>15</option>
+                                                <option>20</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Project Name</th>
+                                        <th>Completion %</th>
+                                        <th>Status</th>
+                                        <th>Current Task</th>
+                                        <th>Next Task</th>
+                                        <th>Issues/Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>@item.projectName</td>
+                                        <td>@item.completionRate</td>
+                                        <td>@item.status</td>
+                                        <td>@item.currentTask</td>
+                                        <td>@item.nextTask</td>
+                                        <td>@item.comments</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="row">
+                                <div class="col-sm-6 col-xs-6">showing <b>5</b> out of <b>25</b> entries</div>
+                                <div class="col-sm-6 col-xs-6">
+                                    <ul class="pagination hidden-xs pull-right">
+                                        <li><a href="#">«</a></li>
+                                        <li class="active"><a href="#">1</a></li>
+                                        <li><a href="#">2</a></li>
+                                        <li><a href="#">3</a></li>
+                                        <li><a href="#">4</a></li>
+                                        <li><a href="#">5</a></li>
+                                        <li><a href="#">»</a></li>
+                                    </ul>
+                                    <ul class="pagination visible-xs pull-right">
+                                        <li><a href="#">«</a></li>
+                                        <li><a href="#">»</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        //Time Tracking Portion
+        <div>
+            <h3>Time Tracking</h3>
+            <h1>@item.projectName</h1>
+            <h2>@item</h2>
+        </div>
+
+        //KPI Portion
+        <div>
+            <h3>KPI</h3>
+        </div>
+
+        //Risk Portion
+        <div>
+            <h3>Risk</h3>
+        </div>
+
+        //Variance Portion
+        <div>
+            <h3>Variance</h3>
+        </div>
+
+        //Availability Portion
+        <div>
+            <h3>Availability</h3>
+        </div>
+    }
+}

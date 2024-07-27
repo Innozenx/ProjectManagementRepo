@@ -6,7 +6,8 @@
     <edmx:Diagrams>
       <Diagram DiagramId="0c1c90b7fb0d4d5b8294d5bfb7cb887f" Name="Diagram1" ZoomLevel="93">
         <EntityTypeShape EntityType="ProjectManagementDBModel.ChecklistTable" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyChecklistTable" Width="1.5" PointX="2.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.Report" Width="1.5" PointX="2.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyChecklistTable" Width="1.5" PointX="4.75" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

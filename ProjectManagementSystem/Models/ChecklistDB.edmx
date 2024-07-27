@@ -12,18 +12,41 @@
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="text" Type="varchar" MaxLength="50" />
           <Property Name="duration" Type="int" Nullable="false" />
-          <Property Name="start_date" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="start_date" Type="date" Nullable="false" />
           <Property Name="parent" Type="int" />
-          <Property Name="weeklyReference" Type="int" />
+          <Property Name="projectReference" Type="int" />
           <Property Name="source" Type="int" />
           <Property Name="target" Type="int" />
           <Property Name="type" Type="varchar" MaxLength="50" />
           <Property Name="ofYear" Type="int" />
-          <Property Name="inWeek" Type="int" />
+          <Property Name="startWeek" Type="int" />
+          <Property Name="endWeek" Type="int" />
           <Property Name="title" Type="varchar" MaxLength="50" />
           <Property Name="projectType" Type="nvarchar" MaxLength="50" />
           <Property Name="status" Type="nvarchar" MaxLength="20" />
           <Property Name="color" Type="nvarchar" MaxLength="5" />
+          <Property Name="details" Type="nvarchar" MaxLength="250" />
+          <Property Name="dateInitial" Type="datetime" />
+          <Property Name="dateFinished" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Reports">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="division" Type="nvarchar" MaxLength="50" />
+          <Property Name="year" Type="int" />
+          <Property Name="inQuarter" Type="int" />
+          <Property Name="projectName" Type="nvarchar" MaxLength="50" />
+          <Property Name="targetKPI" Type="float" />
+          <Property Name="actualKPI" Type="float" />
+          <Property Name="completionRate" Type="float" />
+          <Property Name="status" Type="nvarchar" MaxLength="10" />
+          <Property Name="currentTask" Type="nvarchar" MaxLength="50" />
+          <Property Name="nextTask" Type="nvarchar" MaxLength="50" />
+          <Property Name="comments" Type="nvarchar" MaxLength="250" />
+          <Property Name="milestoneActual" Type="nvarchar" MaxLength="250" />
+          <Property Name="milestoneTarget" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="WeeklyChecklistTable">
           <Key>
@@ -92,9 +115,12 @@
           <Property Name="week2" Type="bit" Nullable="false" />
           <Property Name="week1" Type="bit" Nullable="false" />
           <Property Name="inWeek" Type="int" />
+          <Property Name="isCancelled" Type="bit" />
+          <Property Name="isDelayed" Type="bit" />
         </EntityType>
         <EntityContainer Name="ProjectManagementDBModelStoreContainer">
           <EntitySet Name="ChecklistTable" EntityType="Self.ChecklistTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Reports" EntityType="Self.Reports" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -103,6 +129,7 @@
       <Schema Namespace="ProjectManagementDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="ProjectManagementDBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="ChecklistTables" EntityType="ProjectManagementDBModel.ChecklistTable" />
+          <EntitySet Name="Reports" EntityType="ProjectManagementDBModel.Report" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
         </EntityContainer>
         <EntityType Name="ChecklistTable">
@@ -112,18 +139,41 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="duration" Type="Int32" Nullable="false" />
-          <Property Name="start_date" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="start_date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="parent" Type="Int32" />
-          <Property Name="weeklyReference" Type="Int32" />
+          <Property Name="projectReference" Type="Int32" />
           <Property Name="source" Type="Int32" />
           <Property Name="target" Type="Int32" />
           <Property Name="type" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="ofYear" Type="Int32" />
-          <Property Name="inWeek" Type="Int32" />
+          <Property Name="startWeek" Type="Int32" />
+          <Property Name="endWeek" Type="Int32" />
           <Property Name="title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="projectType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="color" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="details" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="dateInitial" Type="DateTime" Precision="3" />
+          <Property Name="dateFinished" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Report">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="year" Type="Int32" />
+          <Property Name="inQuarter" Type="Int32" />
+          <Property Name="projectName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="targetKPI" Type="Double" />
+          <Property Name="actualKPI" Type="Double" />
+          <Property Name="completionRate" Type="Double" />
+          <Property Name="status" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="currentTask" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="nextTask" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="comments" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="milestoneActual" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="milestoneTarget" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="WeeklyChecklistTable">
           <Key>
@@ -192,6 +242,8 @@
           <Property Name="week2" Type="Boolean" Nullable="false" />
           <Property Name="week1" Type="Boolean" Nullable="false" />
           <Property Name="inWeek" Type="Int32" />
+          <Property Name="isCancelled" Type="Boolean" />
+          <Property Name="isDelayed" Type="Boolean" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -202,16 +254,20 @@
           <EntitySetMapping Name="ChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistTable">
               <MappingFragment StoreEntitySet="ChecklistTable">
+                <ScalarProperty Name="dateFinished" ColumnName="dateFinished" />
+                <ScalarProperty Name="dateInitial" ColumnName="dateInitial" />
+                <ScalarProperty Name="details" ColumnName="details" />
                 <ScalarProperty Name="color" ColumnName="color" />
                 <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="projectType" ColumnName="projectType" />
                 <ScalarProperty Name="title" ColumnName="title" />
-                <ScalarProperty Name="inWeek" ColumnName="inWeek" />
+                <ScalarProperty Name="endWeek" ColumnName="endWeek" />
+                <ScalarProperty Name="startWeek" ColumnName="startWeek" />
                 <ScalarProperty Name="ofYear" ColumnName="ofYear" />
                 <ScalarProperty Name="type" ColumnName="type" />
                 <ScalarProperty Name="target" ColumnName="target" />
                 <ScalarProperty Name="source" ColumnName="source" />
-                <ScalarProperty Name="weeklyReference" ColumnName="weeklyReference" />
+                <ScalarProperty Name="projectReference" ColumnName="projectReference" />
                 <ScalarProperty Name="parent" ColumnName="parent" />
                 <ScalarProperty Name="start_date" ColumnName="start_date" />
                 <ScalarProperty Name="duration" ColumnName="duration" />
@@ -220,9 +276,31 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Reports">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.Report">
+              <MappingFragment StoreEntitySet="Reports">
+                <ScalarProperty Name="milestoneTarget" ColumnName="milestoneTarget" />
+                <ScalarProperty Name="milestoneActual" ColumnName="milestoneActual" />
+                <ScalarProperty Name="comments" ColumnName="comments" />
+                <ScalarProperty Name="nextTask" ColumnName="nextTask" />
+                <ScalarProperty Name="currentTask" ColumnName="currentTask" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="completionRate" ColumnName="completionRate" />
+                <ScalarProperty Name="actualKPI" ColumnName="actualKPI" />
+                <ScalarProperty Name="targetKPI" ColumnName="targetKPI" />
+                <ScalarProperty Name="projectName" ColumnName="projectName" />
+                <ScalarProperty Name="inQuarter" ColumnName="inQuarter" />
+                <ScalarProperty Name="year" ColumnName="year" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="WeeklyChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.WeeklyChecklistTable">
               <MappingFragment StoreEntitySet="WeeklyChecklistTable">
+                <ScalarProperty Name="isDelayed" ColumnName="isDelayed" />
+                <ScalarProperty Name="isCancelled" ColumnName="isCancelled" />
                 <ScalarProperty Name="inWeek" ColumnName="inWeek" />
                 <ScalarProperty Name="week1" ColumnName="week1" />
                 <ScalarProperty Name="week2" ColumnName="week2" />

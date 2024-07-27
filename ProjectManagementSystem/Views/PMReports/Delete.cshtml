@@ -1,0 +1,72 @@
+﻿@model ProjectManagementSystem.Models.PMReport
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>PMReport</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.division)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.division)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.year)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.year)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.projectName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.projectName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.targetKPI)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.targetKPI)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.actualKPI)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.actualKPI)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.completionRate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.completionRate)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

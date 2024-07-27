@@ -144,6 +144,10 @@ public partial class WeeklyChecklistTable
 
     public Nullable<int> inWeek { get; set; }
 
+    public Nullable<bool> isCancelled { get; set; }
+
+    public Nullable<bool> isDelayed { get; set; }
+
 }
 
 }

@@ -114,7 +114,7 @@ namespace ProjectManagementSystem.Controllers
         //    catch{
         //        res = "failed";
         //    }
-            
+
 
         //    return Json(new { res = res }, JsonRequestBehavior.AllowGet);
         //}
@@ -124,7 +124,7 @@ namespace ProjectManagementSystem.Controllers
             List<WeeklyChecklistTable> checklist = new List<WeeklyChecklistTable>();
             Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
 
-            
+
             var currentYear = DateTime.Now.Year;
             checklist = db.WeeklyChecklistTables.Where(x => x.weeklyInYear == currentYear).ToList();
 
@@ -141,7 +141,7 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
-        public JsonResult getGanttData(int week)
+        public JsonResult getGanttData(int week, string title)
         {
 
             List<ChecklistTable> checklist = new List<ChecklistTable>();
@@ -149,54 +149,35 @@ namespace ProjectManagementSystem.Controllers
 
             var currentYear = DateTime.Now.Year;
 
-            checklist = db.ChecklistTables.Where(x => x.inWeek == week).Where(x => x.ofYear == currentYear).Where(x => x.title.Equals("first")).ToList();
+            //if (db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).Any())
+            //{
+                checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).ToList();
 
-            foreach(var item in db.ChecklistTables.Where(x => x.inWeek == week).Where(x => x.ofYear == currentYear).Where(x => x.title.Equals("first")).ToList())
-            {
-                var endDate = DateTime.Parse(item.start_date).AddDays(item.duration);
-                var startDate = DateTime.Parse(item.start_date);
-                if(DateTime.Now <= endDate && DateTime.Now < startDate)
+                var data = checklist.Select(x => new
                 {
-                    item.color = "black";
-                }
+                    id = x.id,
+                    start_date = x.dateInitial.Value.ToString("yyyy-MM-dd"),
+                    color =  DateTime.Now < x.dateInitial ? "black" : x.status == "completed" ? "green" : DateTime.Now <= DateTime.Parse(x.dateInitial.ToString()).AddDays(x.duration) && DateTime.Now > x.dateInitial ? "orange" : "red",
+                    duration = x.duration,
+                    text = x.text,
+                    parent = x.parent,
+                    target = x.target,
+                    source = x.source,
+                    type = x.type
+                }).ToArray();
 
-                else if (item.status == "completed")
+                var jsonData = new
                 {
-                    item.color = "green";
-                }
+                    tasks = data,
 
-                else if(DateTime.Now <= endDate && DateTime.Now > startDate)
-                {
-                    item.color = "orange";
-                }
+                    links = data
+                };
 
-                else
-                {
-                    item.color = "red";
-                }
-
-                db.SaveChanges();
-            }
-
-            JsonSerializerSettings settings = new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            };
-
-            // var jsonTasks= JsonConvert.SerializeObject(checklist, settings);
-            var jsonTasks = checklist.ToArray();
-            var jsonData = new
-            {
-
-                tasks = jsonTasks,
-
-                links = jsonTasks
-            };
-
-
+               
+            //}
             return new JsonResult { Data = jsonData, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
     }
 
-    
+
 }

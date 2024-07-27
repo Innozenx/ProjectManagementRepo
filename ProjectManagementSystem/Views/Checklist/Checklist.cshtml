@@ -70,501 +70,37 @@
                     {
                         var hasChildren = false;
 
-                        if (item.parentWeeklyReference == null && item.parentSubReference == null)
+                        if (item.projectReference == null && item.parent == null)
                         {
                             var temp = Model.Skip(iterator).FirstOrDefault();
 
                             if (temp != null)
                             {
-                                if (item.checkListId == temp.parentWeeklyReference)
+                                if (item.id == temp.projectReference)
                                 {
                                     hasChildren = true;
                                 }
                             }
                         }
 
-                        else if (item.parentWeeklyReference != null && item.parentSubReference == null)
+                        else if (item.projectReference != null && item.parent == null)
                         {
                             var temp = Model.Skip(iterator).FirstOrDefault();
 
                             if (temp != null)
                             {
-                                if (item.checkListId == temp.parentSubReference)
+                                if (item.id == temp.parent)
                                 {
                                     hasChildren = true;
                                 }
                             }
                         }
 
-                        else if (item.parentSubReference != null && item.parentWeeklyReference == null)
+                        else if (item.parent != null && item.projectReference == null)
                         {
                         }
 
-                        <tbody>
-                            @*MAIN ACTIVITY TR*@
-                            <tr style="background-color: #9201FC" @if (@item.parentWeeklyReference != null || item.parentSubReference != null) { <text> hidden</text>}>
-                                <td><input type="checkbox" name=""></td>
-                                <th>@item.title</th>
-                                <th></th>
-                                <th></th>
-                                <th>@item.duration</th>
-                                <th>@item.startDate</th>
-                                <th>@item.targetDate</th>
-                                @{
-
-                                    for (var k = 0; k < 7; k++)
-                                    {
-                                        <th class="th-confirm" style="
-                                            @if (@item.parentWeeklyReference == null && item.parentSubReference == null && hasChildren == false)
-                                            {
-                                                switch (k)
-                                                {
-                                                    case 0: //Sunday
-                                                        if (item.isChecked0 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked0 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 1: //Monday
-                                                        if (item.isChecked1 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked1 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 2: //Tuesday
-                                                        if (item.isChecked2 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked2 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 3: //Wednesday
-                                                        if (item.isChecked3 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked3 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 4: //Thursday
-                                                        if (item.isChecked4 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked4 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 5: //Friday
-                                                        if (item.isChecked5 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked5 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 6: //Saturday
-                                                        if (item.isChecked6 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked6 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    default:
-                                                        <text>background-color: white</text>
-                                                        break;
-
-                                                }
-                                            }
-                                            else
-                                            {
-                                                <text>background-color: black</text>
-                                                }">
-                                            @if (k == todayIs && @item.parentWeeklyReference == null && item.parentSubReference == null && hasChildren == false)
-                                            {
-                                                <label>Confirm Daily Progress</label><input type="checkbox" class="confirm-Progress" id="@item.checkListId" checked="@Model.Where(x => x.checkListId == item.checkListId).Select(x => new { isChecked = k == 0 ? x.isChecked0 : k == 1 ? x.isChecked1 : k == 2 ? x.isChecked2 : k == 3 ? x.isChecked3 : k == 4 ? x.isChecked4 : k == 5 ? x.isChecked5 : k == 6 ? x.isChecked6 : false }).FirstOrDefault().isChecked" />
-                                            }
-                                        </th>
-                                    }
-                                }
-                            </tr>
-                            @*SUB-CATEGORY FOR PARENT*@
-                            <tr @if (@item.parentWeeklyReference == null) { <text> hidden</text>}>
-                                <th></th>
-                                <th><span style="font-size: 150%;">&#8627;</span></th>
-                                <th>@item.title</th>
-                                <th></th>
-                                <th>@item.duration</th>
-                                <th>@item.startDate</th>
-                                <th>@item.targetDate</th>
-                                @{
-                                    for (var k = 0; k < 7; k++)
-                                    {
-                                        <th class="th-confirm" data-j="1" style="
-                                            @if (@item.parentWeeklyReference != null && hasChildren == false)
-                                            {
-                                                switch (k)
-                                                {
-                                                    case 0: //Sunday
-                                                        if (item.isChecked0 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked0 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 1: //Monday
-                                                        if (item.isChecked1 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked1 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 2: //Tuesday
-                                                        if (item.isChecked2 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked2 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 3: //Wednesday
-                                                        if (item.isChecked3 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked3 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 4: //Thursday
-                                                        if (item.isChecked4 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked4 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 5: //Friday
-                                                        if (item.isChecked5 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked5 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 6: //Saturday
-                                                        if (item.isChecked6 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked6 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    default:
-                                                        <text>background-color: white</text>
-                                                        break;
-
-                                                }
-                                            }
-                                            else
-                                            {
-                                                <text>background-color: black</text>
-                                            }">
-                                            @if (k == todayIs && item.parentWeeklyReference != null && hasChildren == false)
-                                            {
-                                                <label>Confirm Daily Progress</label><input type="checkbox" class="confirm-Progress" id="@item.checkListId" checked="@Model.Where(x => x.checkListId == item.checkListId).Select(x => new { isChecked = k == 0 ? x.isChecked0 : k == 1 ? x.isChecked1 : k == 2 ? x.isChecked2 : k == 3 ? x.isChecked3 : k == 4 ? x.isChecked4 : k == 5 ? x.isChecked5 : k == 6 ? x.isChecked6 : false }).FirstOrDefault().isChecked" />
-                                            }
-                                        </th>
-                                    }
-                                }
-                            </tr>
-                            @*SUB OF SUB CATEGORY*@
-                            <tr @if (@item.parentSubReference == null) { <text> hidden</text>}>
-                                <th></th>
-                                <th></th>
-                                <th><span style="font-size: 150%;">&#8627;</span></th>
-                                <th>@item.title</th>
-                                <th>@item.duration</th>
-                                <th>@item.startDate</th>
-                                <th>@item.targetDate</th>
-                                @{
-                                    for (var k = 0; k < 7; k++)
-                                    {
-                                        <th class="th-confirm" style="
-                                            @if (@item.parentSubReference != null && hasChildren == false)
-                                            {
-                                                switch (k)
-                                                {
-                                                    case 0: //Sunday
-                                                        if (item.isChecked0 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked0 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 1: //Monday
-                                                        if (item.isChecked1 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked1 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 2: //Tuesday
-                                                        if (item.isChecked2 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked2 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 3: //Wednesday
-                                                        if (item.isChecked3 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked3 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 4: //Thursday
-                                                        if (item.isChecked4 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked4 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 5: //Friday
-                                                        if (item.isChecked5 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked5 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    case 6: //Saturday
-                                                        if (item.isChecked6 == true && k <= todayIs)
-                                                        {
-                                                            <text>background-color: green</text>
-                                                            break;
-                                                        }
-                                                        else if (item.isChecked6 == false && k < todayIs)
-                                                        {
-                                                            <text>background-color: red</text>
-                                                            break;
-                                                        }
-                                                        else
-                                                        {
-                                                            <text>background-color: white</text>
-                                                            break;
-                                                        }
-
-                                                    default:
-                                                        <text>background-color: white</text>
-                                                        break;
-
-                                                }
-                                            }
-                                            else
-                                            {
-                                                <text>background-color: black</text>
-                                            }">
-                                            @if (k == todayIs && item.parentSubReference != null && hasChildren == false)
-                                            {
-                                                <label>Confirm Daily Progress</label><input type="checkbox" class="confirm-Progress" id="@item.checkListId" checked="@Model.Where(x => x.checkListId == item.checkListId).Select(x => new { isChecked = k == 0 ? x.isChecked0 : k == 1 ? x.isChecked1 : k == 2 ? x.isChecked2 : k == 3 ? x.isChecked3 : k == 4 ? x.isChecked4 : k == 5 ? x.isChecked5 : k == 6 ? x.isChecked6 : false }).FirstOrDefault().isChecked" />
-                                            }
-                                        </th>
-                                    }
-                                }
-                            </tr>
-                        </tbody>
+                        
 
                                         iterator++;
                                     }
@@ -600,7 +136,7 @@
     <script>
         $(document).ready(function () {
             $(document).on("click", ".confirm-Progress", function (e) {
-                var checklistId = $(this).attr("id");
+                var id = $(this).attr("id");
                 var wDay = $("#workDay").val();
                 var wWeek = $('#workWeek').val();
                 var wYear = $('#workYear').val();
@@ -613,7 +149,7 @@
                     $.ajax({
                         url: "@Url.Action("checkUncheck", "Checklist")",
                         type: "POST",
-                        data: { workDay: wDay, workWeek: wWeek, check: isChecked, checklist: checklistId, workYear: wYear },
+                        data: { workDay: wDay, workWeek: wWeek, check: isChecked, checklist: id, workYear: wYear },
                         success: function (res) {
                             if (res.res == "success") {
                                 window.location.reload();
@@ -634,7 +170,7 @@
                     $.ajax({
                         url: "@Url.Action("checkUncheck", "Checklist")",
                         type: "POST",
-                        data: { workDay: wDay, workWeek: wWeek, check: isChecked, checklist: checklistId, workYear: wYear },
+                        data: { workDay: wDay, workWeek: wWeek, check: isChecked, checklist: id, workYear: wYear },
                         success: function (res) {
                             if (res.res == "success") {
                                window.location.reload();
