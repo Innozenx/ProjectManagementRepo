@@ -16,17 +16,17 @@ namespace ProjectManagementSystem.Controllers
     {
         ProjectManagementDBEntities db = new ProjectManagementDBEntities();
 
-        public ActionResult Checklist()
-        {
-            List<ChecklistTable> checklist = new List<ChecklistTable>();
-            Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
+        //public ActionResult Checklist()
+        //{
+        //    //List<ChecklistTable> checklist = new List<ChecklistTable>();
+        //    //Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
 
-            var currentWeek = Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-            var currentYear = DateTime.Now.Year;
-            checklist = db.ChecklistTables.ToList();
+        //    //var currentWeek = Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+        //    //var currentYear = DateTime.Now.Year;
+        //    //checklist = db.ChecklistTables.ToList();
 
-            return View(checklist);
-        }
+        //    //return View(checklist);
+        //}
 
         //[System.Web.Http.HttpPost]
         //public JsonResult checkUncheck(int workDay, int workWeek, bool check, int checklist, int workYear)
@@ -177,7 +177,13 @@ namespace ProjectManagementSystem.Controllers
             //}
             return new JsonResult { Data = jsonData, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
-    }
+
+        //public class UpdateChecklist(int id)
+        //{
+
+        //}
+
+}
 
 
 }

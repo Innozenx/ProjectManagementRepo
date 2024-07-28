@@ -40,13 +40,25 @@
             gantt.config.date_format = "%Y-%m-%d"; // format of dates in XML
             gantt.init("gantt_here"); // initialize gantt
             gantt.load("/Checklist/getGanttData?week=" + @TempData["entry"].ToString() + "&title=" + '@TempData["title"].ToString()', "json");
+
+            gantt.attachEvent("onTaskDblClick", function (name, e) {
+                alert(name);
+                return true;
+            });
+
+            gantt.attachEvent("onBeforeLightbox", function (id) {
+                const task = gantt.getTask(id);
+                task.my_template = `<span id='title1'>Holders: </span>${task.users}
+                <span id='title2'>Progress: </span>${task.progress * 100}%`;
+                return false;
+            });
         });
     </script>
 </head>
 <body>
     <div>
         @*<h2>@TempData["entry"]</h2>
-        <h2>@TempData["title"]</h2>*@
+            <h2>@TempData["title"]</h2>*@
     </div>
     <div id="gantt_here" style="width: 100%; height: 100vh;"></div>
 </body>
