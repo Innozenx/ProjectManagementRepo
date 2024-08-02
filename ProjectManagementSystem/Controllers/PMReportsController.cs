@@ -32,5 +32,6 @@ namespace ProjectManagementSystem.Controllers
             reportList = db.Reports.Where(x => x.year == year).Where(x => x.inQuarter == quarter).Where(x => x.division == division).ToList();
             return View(reportList);
         }
+
     }
 }
