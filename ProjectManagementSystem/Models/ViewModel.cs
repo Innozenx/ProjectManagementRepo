@@ -19,8 +19,12 @@ namespace ProjectManagementSystem.Models
         public DateTime startDate { get; set; }
         public int parent { get; set; }
         public int weeklyReference { get; set; }
+        public string project_owner { get; set; }
+        public string division { get; set; }
+        public string project_name { get; set; }
 
     }
+
 
     public class WeeklyChecklist
     {
@@ -30,6 +34,7 @@ namespace ProjectManagementSystem.Models
         public string weeklyStart { get; set; }
         public string weeklyTarget { get; set; }
         public string weeklyInYear { get; set; }
+        
         public bool week1 { get; set; }
         public bool week2 { get; set; }
         public bool week3 { get; set; }

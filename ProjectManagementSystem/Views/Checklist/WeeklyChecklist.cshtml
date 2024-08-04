@@ -1,6 +1,5 @@
 ﻿@model List<ProjectManagementSystem.Models.WeeklyChecklistTable>
 @using ProjectManagementSystem.Models;
-
 @using System.Globalization;
 @using System;
 @Html.Partial("_Navbar")
@@ -9,111 +8,176 @@
     List<WeeklyChecklistTable> WeeklyDb = new List<WeeklyChecklistTable>();
 }
 
-<h2>WeeklyChecklist</h2>
+
+@*<h2>Checklist</h2>*@
+<br />
+<br />
 
 <html>
 <head>
-
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="~/Content/Site.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .card {
+            margin: 20px;
+            padding: 20px;
+            border-radius: 25px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+            .table th, .table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+            }
+
+            .table th {
+                background-color: #f2f2f2;
+            }
+
+        .th-confirm {
+            cursor: pointer;
+        }
+
+            .th-confirm.green {
+                background-color: green;
+                color: white;
+            }
+
+            .th-confirm.orange {
+                background-color: orange;
+                color: white;
+            }
+
+            .th-confirm.white {
+                background-color: white;
+            }
+
+        .table .hidden {
+            display: none;
+        }
+
+        .center-item {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .content-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <div class="container weeklyCalendar">
-        <div class="row">
-            @{
-                Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
-                DateTime startOfWeek = DateTime.Today.AddDays((int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - (int)DateTime.Today.DayOfWeek);
 
-                string sun2sat = string.Join("," + Environment.NewLine, Enumerable
-                  .Range(0, 7)
-                  .Select(i => startOfWeek
-                     .AddDays(i)
-                     .ToString("dd-MMMM-yyyy")));
-
-                string[] sun2satList = sun2sat.Split(',');
-
-                int weekNumber = Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-
-                <div class="center-Item">
-                    <label class="content-Title">Currently in Week: @weekNumber</label>
-                    <input type="hidden" id="workWeek" name="workWeek" value="@weekNumber" />
-                    <input type="hidden" id="workDay" name="workDay" value="@DateTime.Now.Day" />
-                    <input type="hidden" id="workYear" name="workYear" value="@DateTime.Now.Year" />
-                </div>
-
-            }
-            <div style="overflow:auto">
-                <table id="example" class="table table-bordered" style="width:100%">
-
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" onclick="checkAll(this)"></th>
-                            <th>TITLE</th>
-                            <th>DURATION</th>
-                            <th>START DATE</th>
-                            <th>TARGET DATE</th>
-                            @{
-                                var todayIs = weekNumber;
-                                for (var j = 0; j < 52; j++)
-                                {
-                                    <th>Week @(j + 1)</th>
-                                }
-                            }
-                        </tr>
-                    </thead>
-
+    <div class="card" style="border-radius: 25px;">
+        <div class="card-body">
+            <div class="container weeklyCalendar">
+                <div class="row">
                     @{
-                        var iterator = 1;
-                        //var todayIs = (int)Math.Abs(DateTime.Now.Day - 7);
-                        todayIs = weekNumber;
+                        Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
+                        DateTime startOfWeek = DateTime.Today.AddDays((int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - (int)DateTime.Today.DayOfWeek);
 
-                        foreach (var item in Model)
-                        {
-                            var hasChildren = false;
+                        string sun2sat = string.Join("," + Environment.NewLine, Enumerable
+                          .Range(0, 7)
+                          .Select(i => startOfWeek
+                             .AddDays(i)
+                             .ToString("dd-MMMM-yyyy")));
 
-                            if (item.subMain == null && item.subSub == null)
-                            {
-                                var temp = Model.Skip(iterator).FirstOrDefault();
+                        string[] sun2satList = sun2sat.Split(',');
 
-                                if (temp != null)
-                                {
-                                    if (item.weeklyID == temp.subMain)
-                                    {
-                                        hasChildren = true;
-                                    }
-                                }
-                            }
+                        int weekNumber = Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
 
-                            else if (item.subMain != null && item.subSub == null)
-                            {
-                                var temp = Model.Skip(iterator).FirstOrDefault();
+                        <div class="center-Item">
+                            <label class="content-Title">Currently in Week @weekNumber</label>
+                            <input type="hidden" id="workWeek" name="workWeek" value="@weekNumber" />
+                            <input type="hidden" id="workDay" name="workDay" value="@DateTime.Now.Day" />
+                            <input type="hidden" id="workYear" name="workYear" value="@DateTime.Now.Year" />
+                        </div>
 
-                                if (temp != null)
-                                {
-                                    if (item.weeklyID == temp.subSub)
-                                    {
-                                        hasChildren = true;
-                                    }
-                                }
-                            }
+                    }
+                    <div style="overflow:auto">
+                        <table id="example" class="table table-bordered" style="width:100%">
 
-                            else if (item.subSub != null && item.subMain == null)
-                            {
-                            }
-
-                            <tbody>
-                                @*MAIN ACTIVITY TR*@
-                                <tr style="background-color: #9201FC" @if (@item.subMain != null || item.subSub != null) { <text> hidden</text>}>
-                                    <td><input type="checkbox" name=""></td>
-                                    <th>@item.weeklyTitle</th>
-                                    <th>@item.weeklyDuration</th>
-                                    <th>@item.weeklyStart</th>
-                                    <th>@item.weeklyTarget</th>
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" onclick="checkAll(this)"></th>
+                                    <th>TITLE</th>
+                                    <th>DURATION</th>
+                                    <th>START DATE</th>
+                                    <th>TARGET DATE</th>
                                     @{
-
-                                        for (var k = 1; k <= 52; k++)
+                                        var todayIs = weekNumber;
+                                        for (var j = 0; j < 52; j++)
                                         {
-                                            <th class="th-confirm" id="@item.weeklyTitle" style="
+                                            <th>Week @(j + 1)</th>
+                                        }
+                                    }
+                                </tr>
+                            </thead>
+
+                            @{
+                                var iterator = 1;
+                                //var todayIs = (int)Math.Abs(DateTime.Now.Day - 7);
+                                todayIs = weekNumber;
+
+                                foreach (var item in Model)
+                                {
+                                    var hasChildren = false;
+
+                                    if (item.subMain == null && item.subSub == null)
+                                    {
+                                        var temp = Model.Skip(iterator).FirstOrDefault();
+
+                                        if (temp != null)
+                                        {
+                                            if (item.weeklyID == temp.subMain)
+                                            {
+                                                hasChildren = true;
+                                            }
+                                        }
+                                    }
+
+                                    else if (item.subMain != null && item.subSub == null)
+                                    {
+                                        var temp = Model.Skip(iterator).FirstOrDefault();
+
+                                        if (temp != null)
+                                        {
+                                            if (item.weeklyID == temp.subSub)
+                                            {
+                                                hasChildren = true;
+                                            }
+                                        }
+                                    }
+
+                                    else if (item.subSub != null && item.subMain == null)
+                                    {
+                                    }
+
+                                    <tbody>
+                                        @*MAIN ACTIVITY TR*@
+                                        <tr style="background-color: #9201FC" @if (@item.subMain != null || item.subSub != null) { <text> hidden</text>}>
+                                            <td><input type="checkbox" name=""></td>
+                                            <th>@item.weeklyTitle</th>
+                                            <th>@item.weeklyDuration</th>
+                                            <th>@item.weeklyStart</th>
+                                            <th>@item.weeklyTarget</th>
+                                            @{
+
+                                                for (var k = 1; k <= 52; k++)
+                                                {
+                                                    <th class="th-confirm" id="@item.weeklyTitle" style="
                                             @if (k == Calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday))
                                             {
                                                 <text>background-color: green</text>
@@ -134,39 +198,40 @@
                                             {
                                                 <text>background-color: white</text>
                                             }" value="@k" onclick="weeklyMilestone(this)">
-                                                @if (k == todayIs && @item.subMain == null && item.subSub == null && hasChildren == false)
-                                                {
+                                                        @if (k == todayIs && @item.subMain == null && item.subSub == null && hasChildren == false)
+                                                        {
 
+                                                        }
+                                                    </th>
                                                 }
-                                            </th>
-                                        }
-                                    }
-                                </tr>
-                            </tbody>
-                                            iterator++;
-                                        }
-
-                                        <tfoot>
-                                            <tr>
-                                                <th></th>
-                                                <th>TITLE</th>
-                                                <th>DURATION</th>
-                                                <th>START DATE</th>
-                                                <th>TARGET DATE</th>
-                                                @{
-                                                    for (var j = 0; j < 52; j++)
-                                                    {
-                                                        <th>Week @(j + 1)</th>
-                                                    }
+                                            }
+                                        </tr>
+                                    </tbody>
+                                                    iterator++;
                                                 }
 
-                                            </tr>
-                                        </tfoot>
-                    }
-                </table>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>TITLE</th>
+                                                        <th>DURATION</th>
+                                                        <th>START DATE</th>
+                                                        <th>TARGET DATE</th>
+                                                        @{
+                                                            for (var j = 0; j < 52; j++)
+                                                            {
+                                                                <th>Week @(j + 1)</th>
+                                                            }
+                                                        }
+
+                                                    </tr>
+                                                </tfoot>
+                            }
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 </body>
 </html>
 
@@ -181,6 +246,8 @@
     *@
 
     <script>
+
+
         function weeklyMilestone(thVal) {
             weekCheck = $(thVal).attr("value");
             weekTitle = $(thVal).attr("id");

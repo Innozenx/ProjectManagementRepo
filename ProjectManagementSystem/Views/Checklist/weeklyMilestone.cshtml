@@ -1,44 +1,141 @@
-﻿
+﻿@using System;
+@Html.Partial("_Navbar")
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Index</title>
-    <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css"
-          rel="stylesheet" type="text/css" />
+    <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
+
+    <style>
+        /* Gantt chart container */
+        #gantt_here {
+            width: 100%;
+            height: 85vh;
+            margin-top: 20px;
+            border: 2px solid #5C2D91; /* Purple border for the container */
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* View controls */
+        .view-controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+            .view-controls button {
+                background-color: #5C2D91; /* Purple */
+                border: none;
+                color: white;
+                padding: 10px 20px;
+                font-size: 16px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s, box-shadow 0.3s;
+            }
+
+                .view-controls button:hover {
+                    background-color: #4a1a72; /* Darker purple */
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                }
+
+        /* Task bar styling */
+        .gantt_task_bar {
+            background-color: #FFD700; /* Gold */
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+            .gantt_task_bar:hover {
+                background-color: #FFBF00; /* Darker gold */
+            }
+
+        /* Gantt chart header styling */
+        .gantt_task_content {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .gantt_scale {
+            background-color: #f4f4f4; /* Light gray for contrast */
+            border-bottom: 2px solid #ddd;
+        }
+
+        /* Lightbox section styling */
+        .gantt_lightbox {
+            font-size: 14px;
+            background-color: #fff; /* White background for lightbox */
+            border: 1px solid #ddd; /* Light gray border */
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+            .gantt_lightbox textarea {
+                width: 100%;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 10px;
+            }
+
+            .gantt_lightbox select {
+                width: 100%;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 10px;
+                font-size: 14px;
+            }
+    </style>
+</head>
+<body>
+    <div class="view-controls">
+        <button onclick="setMonthView()">Month View</button>
+        <button onclick="setWeekView()">Week View</button>
+        <button onclick="setDayView()">Day View</button>
+    </div>
+    <div id="gantt_here"></div>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function (event) {
+        document.addEventListener("DOMContentLoaded", function () {
+            // Initialize Gantt chart
+            gantt.config.xml_date = "%Y-%m-%d %H:%i";
+            gantt.config.readonly = true;
 
-            /*GANTT STYLE*/
-
-            // add month scale
+            // Default view configuration
             gantt.config.scale_unit = "week";
             gantt.config.step = 1;
+            gantt.config.date_scale = "%d %M";
+            gantt.config.subscales = [
+                { unit: "month", step: 1, date: "%M" }
+            ];
+            gantt.config.scale_height = 75;
+
             gantt.templates.date_scale = function (date) {
                 var dateToStr = gantt.date.date_to_str("%d %M");
                 var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
                 return dateToStr(date) + " - " + dateToStr(endDate);
             };
-            gantt.config.subscales = [
-                { unit: "month", step: 1, date: "%M" }
-            ];
-            gantt.config.scale_height = 75;
-            // configure milestone description
+
+            // Configure milestone description
             gantt.templates.rightside_text = function (start, end, task) {
-                if (task.type == gantt.config.types.milestone) {
+                if (task.type === gantt.config.types.milestone) {
                     return task.text;
                 }
                 return "";
             };
-            // add section to type selection: task, project or milestone
+
+            // Add section to lightbox for task editing
             gantt.config.lightbox.sections = [
                 { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
                 { name: "type", type: "typeselect", map_to: "type" },
                 { name: "time", height: 72, type: "duration", map_to: "auto" }
             ];
-            gantt.config.date_format = "%Y-%m-%d"; // format of dates in XML
-            gantt.init("gantt_here"); // initialize gantt
+
+            gantt.init("gantt_here");
+
             gantt.load("/Checklist/getGanttData?week=" + @TempData["entry"].ToString() + "&title=" + '@TempData["title"].ToString()', "json");
 
             gantt.attachEvent("onTaskDblClick", function (name, e) {
@@ -52,14 +149,52 @@
                 <span id='title2'>Progress: </span>${task.progress * 100}%`;
                 return false;
             });
+
+            gantt.plugins({
+                tooltip: true
+            });
+
+            // Set month view
+            window.setMonthView = function () {
+                gantt.config.scale_unit = "month";
+                gantt.config.date_scale = "%F, %Y";
+                gantt.config.subscales = [
+                    { unit: "week", step: 1, date: "%W" }
+                ];
+                gantt.render();
+            };
+
+            // Set week view
+            window.setWeekView = function () {
+                gantt.config.scale_unit = "week";
+                gantt.config.date_scale = "%d %M";
+                gantt.config.subscales = [
+                    { unit: "day", step: 1, date: "%d" }
+                ];
+                gantt.render();
+            };
+
+            // Set day view
+            window.setDayView = function () {
+                gantt.config.scale_unit = "day";
+                gantt.config.date_scale = "%d %M";
+                gantt.config.subscales = [
+                    { unit: "hour", step: 1, date: "%H:%i" }
+                ];
+                gantt.render();
+            };
+
+            // Initial view setup
+            setWeekView(); // Default to week view
+
+            // Sample data for testing
+            gantt.parse({
+                data: [
+                    { id: 1, text: "Task #1", start_date: "2024-08-01 00:00", duration: 5 },
+                    { id: 2, text: "Task #2", start_date: "2024-08-06 00:00", duration: 3 }
+                ]
+            });
         });
     </script>
-</head>
-<body>
-    <div>
-        @*<h2>@TempData["entry"]</h2>
-            <h2>@TempData["title"]</h2>*@
-    </div>
-    <div id="gantt_here" style="width: 100%; height: 100vh;"></div>
 </body>
 </html>
