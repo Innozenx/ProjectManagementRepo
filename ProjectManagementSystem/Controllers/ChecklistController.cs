@@ -1,14 +1,9 @@
-﻿using System;
+﻿using ProjectManagementSystem.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 using System.Web.Mvc;
-using ProjectManagementSystem.Models;
 using System.Globalization;
-using Newtonsoft.Json;
-using System.IO;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -18,14 +13,14 @@ namespace ProjectManagementSystem.Controllers
 
         //public ActionResult Checklist()
         //{
-        //    //List<ChecklistTable> checklist = new List<ChecklistTable>();
-        //    //Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
+        //    List<ChecklistTable> checklist = new List<ChecklistTable>();
+        //    Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
 
-        //    //var currentWeek = Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-        //    //var currentYear = DateTime.Now.Year;
-        //    //checklist = db.ChecklistTables.ToList();
+        //    var currentWeek = Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+        //    var currentYear = DateTime.Now.Year;
+        //    checklist = db.ChecklistTables.ToList();
 
-        //    //return View(checklist);
+        //    return View(checklist);
         //}
 
         //[System.Web.Http.HttpPost]
@@ -151,43 +146,80 @@ namespace ProjectManagementSystem.Controllers
 
             //if (db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).Any())
             //{
-                checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).ToList();
+            checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).ToList();
 
-                var data = checklist.Select(x => new
-                {
-                    id = x.id,
-                    start_date = x.dateInitial.Value.ToString("yyyy-MM-dd"),
-                    color =  DateTime.Now < x.dateInitial ? "black" : x.status == "completed" ? "green" : DateTime.Now <= DateTime.Parse(x.dateInitial.ToString()).AddDays(x.duration) && DateTime.Now > x.dateInitial ? "orange" : "red",
-                    duration = x.duration,
-                    text = x.text,
-                    parent = x.parent,
-                    target = x.target,
-                    source = x.source,
-                    type = x.type
-                }).ToArray();
+            var data = checklist.Select(x => new
+            {
+                id = x.id,
+                start_date = x.dateInitial.Value.ToString("yyyy-MM-dd"),
+                color = DateTime.Now < x.dateInitial ? "black" : x.status == "completed" ? "green" : DateTime.Now <= DateTime.Parse(x.dateInitial.ToString()).AddDays(x.duration) && DateTime.Now > x.dateInitial ? "orange" : "red",
+                duration = x.duration,
+                text = x.text,
+                parent = x.parent,
+                target = x.target,
+                source = x.source,
+                type = x.type
+            }).ToArray();
 
-                var jsonData = new
-                {
-                    tasks = data,
+            var jsonData = new
+            {
+                tasks = data,
 
-                    links = data
-                };
+                links = data
+            };
 
-               
+
             //}
             return new JsonResult { Data = jsonData, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
-        //public class UpdateChecklist(int id)
-        //{
+        public ActionResult Index()
+        {
+            return View();
+        }
 
-        //}
 
-        //Test Push
-        //Test ulit
-        //Joycceeee@!!!!!!!!!!!!!
-        //TRY ULITTTT
+        public ActionResult AddProject()
+        {
+            return View();
+        }
+
+
+        [HttpPost] //not yet done hehe! :D
+        [ValidateAntiForgeryToken]
+        public JsonResult AddProject(Checklist data)
+        {
+            var message = "";
+            bool status = false;
+
+            try
+            {
+                var add = new Checklist
+                {
+                    //project_name = data.ChecklistTable.project_name,
+                    //project_owner = data.ChecklistTable.project_owner,
+                    //division = data.ChecklistTable.division,
+                    //duration = data.ChecklistTable.duration,
+                    //startDate = data.ChecklistTable.startDate
+                };
+                //db.ChecklistTables.Add();
+                db.SaveChanges();
+                message = "Added!";
+                status = true;
+
+
+
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+            }
+            return Json(new { message = message, status = status },
+                JsonRequestBehavior.AllowGet);
+        }
+
     }
-
-
 }
+
+
+

@@ -28,6 +28,8 @@
           <Property Name="details" Type="nvarchar" MaxLength="250" />
           <Property Name="dateInitial" Type="datetime" />
           <Property Name="dateFinished" Type="datetime" />
+          <Property Name="project_owner" Type="varchar" MaxLength="100" />
+          <Property Name="project_name" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Reports">
           <Key>
@@ -155,6 +157,8 @@
           <Property Name="details" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="dateInitial" Type="DateTime" Precision="3" />
           <Property Name="dateFinished" Type="DateTime" Precision="3" />
+          <Property Name="project_owner" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="project_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Report">
           <Key>
@@ -254,6 +258,8 @@
           <EntitySetMapping Name="ChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistTable">
               <MappingFragment StoreEntitySet="ChecklistTable">
+                <ScalarProperty Name="project_name" ColumnName="project_name" />
+                <ScalarProperty Name="project_owner" ColumnName="project_owner" />
                 <ScalarProperty Name="dateFinished" ColumnName="dateFinished" />
                 <ScalarProperty Name="dateInitial" ColumnName="dateInitial" />
                 <ScalarProperty Name="details" ColumnName="details" />

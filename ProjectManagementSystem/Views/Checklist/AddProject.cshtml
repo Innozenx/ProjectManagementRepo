@@ -1,0 +1,197 @@
+﻿@model ProjectManagementSystem.Models.Checklist
+@using System;
+@Html.Partial("_Navbar")
+@{
+    ViewBag.Title = "AddProject";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+<html>
+<head>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <!-- Include PapaParse for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <!-- Include DHTMLX library for charts -->
+    <link rel="stylesheet" href="https://cdn.dhtmlx.com/edge/dhtmlx.css">
+    <script src="https://cdn.dhtmlx.com/edge/dhtmlx.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+</head>
+<body>
+    <form name="form">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Start a Project</h4>
+            </div>
+            <div class="modal-body">
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(x => x.checkListID)
+                <div class="form-group">
+                    @Html.Label("Project Name")
+                    @Html.TextBoxFor(x => x.project_name, new { @class = "form-control", id = "floatingInput", placeholder = "Project Name" })
+                    @Html.ValidationMessageFor(x => x.project_name)
+                </div>
+                <div class="form-group">
+                    @Html.Label("Project Owner")
+                    @Html.TextBoxFor(x => x.project_owner, new { @class = "form-control", id = "floatingInput", placeholder = "Project Owner" })
+                    @Html.ValidationMessageFor(x => x.project_owner)
+                </div>
+                <div class="form-group">
+                    @Html.Label("Division")
+                    @Html.DropDownListFor(x => x.division,
+                new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "ITS" , Text = "Information Technology Services" },
+                    new SelectListItem { Value = "IPD" , Text = "Infrastructure Planning and Development" },
+                    new SelectListItem { Value = "IM" ,  Text = "Integrated Marketing" }
+                }, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="row">
+                <ol>
+                    <h4>Upload Project Schedule</h4>
+                    <li class="lifile">
+                        <input type="file" id="csv-file-input" accept=".csv" />
+                        <span class="field-validation-error" id="spanfile"></span>
+                    </li>
+                </ol>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="AddProject()">Add</button>
+            </div>
+        </div>
+    </form>
+    <!-- Container for the chart -->
+    <div id="chart_container" style="width: 600px; height: 400px; margin-top: 20px;"></div>
+</body>
+</html>
+<script>
+    function AddProject() {
+        var form = $('form[name="form"]');
+        $.validator.unobtrusive.parse(form);
+        if (!form.valid()) {
+            return;
+        }
+        else {
+            var data = form.serialize();
+            $.ajax({
+                url: "@Url.Action("AddProject", "Checklist")",
+                type: "POST",
+                datatype: "json",
+                data: data,
+                success: function (res, textStatus, jqXHR) {
+                    if (res.status) {
+                        $("#myModal").modal('hide');
+                        $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
+                        category_table.ajax.reload(false, null);
+                    } else {
+                        $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
+                    }
+                }
+            });
+        }
+    }
+
+    function plotData(data) {
+        const chartData = data.map(row => ({
+            x: row['XColumnName'],
+            y: row['YColumnName']
+        }));
+
+        // Initialize the chart
+        new dhx.Chart("chart_container", {
+            type: "timeline"
+            xAxis: {
+                title: "X Axis Title"
+            },
+            yAxis: {
+                title: "Y Axis Title"
+            },
+            series: [{
+                name: "Series Name",
+                data: chartData
+            }]
+        });
+    }
+
+    $(document).ready(function() {
+        $('#csv-file-input').change(function(event) {
+            const file = event.target.files[0];
+            Papa.parse(file, {
+                header: true,
+                dynamicTyping: true,
+                complete: function(results) {
+                    plotData(results.data);
+                }
+            });
+        });
+
+        function GetFileSize(fileid) {
+            try {
+                var fileSize = 0;
+                if ($.browser.msie) {
+                    var objFSO = new ActiveXObject("Scripting.FileSystemObject");
+                    var filePath = $("#" + fileid)[0].value;
+                    var objFile = objFSO.getFile(filePath);
+                    fileSize = objFile.size;
+                    fileSize = fileSize / 1048576;
+                }
+                else {
+                    fileSize = $("#" + fileid)[0].files[0].size
+                    fileSize = fileSize / 1048576;
+                }
+                return fileSize;
+            }
+            catch (e) {
+                alert("Error is :" + e);
+            }
+        }
+
+        function getNameFromPath(strFilepath) {
+            var objRE = new RegExp(/([^\/\\]+)$/);
+            var strName = objRE.exec(strFilepath);
+
+            if (strName == null) {
+                return null;
+            }
+            else {
+                return strName[0];
+            }
+        }
+
+        function checkfile() {
+            var file = getNameFromPath($("#fileToUpload").val());
+            if (file != null) {
+                var extension = file.substr((file.lastIndexOf('.') + 1));
+                switch (extension) {
+                    case 'csv':
+                        flag = true;
+                        break;
+                    default:
+                        flag = false;
+                }
+            }
+            if (flag == false) {
+                $("#spanfile").text("You can upload only csv files");
+                return false;
+            }
+            else {
+                var size = GetFileSize('fileToUpload');
+                if (size > 3) {
+                    $("#spanfile").text("You can upload files up to 3 MB");
+                    return false;
+                }
+                else {
+                    $("#spanfile").text("");
+                }
+            }
+        }
+
+        $("#fileToUpload").change(function () {
+            checkfile();
+        });
+    });
+</script>
