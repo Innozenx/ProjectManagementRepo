@@ -16,8 +16,6 @@
     <script src="https://cdn.dhtmlx.com/edge/dhtmlx.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-
-
 </head>
 <body>
     <form name="form">
@@ -68,6 +66,8 @@
     <div id="chart_container" style="width: 600px; height: 400px; margin-top: 20px;"></div>
 </body>
 </html>
+
+
 <script>
     function AddProject() {
         var form = $('form[name="form"]');
@@ -103,7 +103,7 @@
 
         // Initialize the chart
         new dhx.Chart("chart_container", {
-            type: "timeline"
+            type: "timeline",
             xAxis: {
                 title: "X Axis Title"
             },

@@ -3,9 +3,66 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Navbar specific styles */
+        .navbar-light {
+            background-color: #f8f9fa; /* Light background color */
+            border-bottom: 2px solid #e0e0e0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+            .navbar-light .navbar-nav > li > a {
+                color: #6b5b95; /* Enchanted purple */
+                font-weight: bold;
+            }
+
+                .navbar-light .navbar-nav > li > a:hover,
+                .navbar-light .navbar-nav > li > a:focus {
+                    color: #ffcc00; /* Golden hover color */
+                    background-color: transparent;
+                }
+
+        /* Navbar Toggle Button (for mobile) */
+        .navbar-toggle {
+            border-color: #6b5b95; /* Enchanted purple border */
+        }
+
+            .navbar-toggle .icon-bar {
+                background-color: #6b5b95; /* Enchanted purple bars */
+            }
+
+        /* Additional Styles for Enchanted Theme */
+        .navbar-light .navbar-nav > li.active > a,
+        .navbar-light .navbar-nav > li.active > a:hover,
+        .navbar-light .navbar-nav > li.active > a:focus {
+            color: #ffffff; /* White color for active link */
+            background-color: #6b5b95; /* Enchanted purple background */
+        }
+
+        .navbar-light .navbar-collapse {
+            border-color: #6b5b95; /* Enchanted purple collapse border */
+        }
+
+        .navbar-light .container {
+            border-color: #6b5b95; /* Enchanted purple container border */
+        }
+
+        /* Login Partial Styles */
+        .navbar-light .navbar-right {
+            color: #6b5b95; /* Enchanted purple for the login partial */
+        }
+
+    </style>
 
 </head>
 <body>
@@ -14,7 +71,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.Year Project Management System</p>
         </footer>
     </div>
 

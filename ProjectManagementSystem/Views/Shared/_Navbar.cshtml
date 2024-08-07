@@ -1,5 +1,58 @@
 ﻿
-<div class="navbar navbar-inverse navbar-fixed-top">
+<style>
+    /* General Navbar Styles */
+    .navbar-light {
+        background-color: #f8f9fa; /* Light background color */
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .navbar-light .navbar-nav > li > a {
+        color: #6b5b95; /* purple */
+        font-family: 'Poppins', sans-serif;
+        font-weight: normal;
+    }
+
+    .navbar-light .navbar-nav > li > a:hover,
+    .navbar-light .navbar-nav > li > a:focus {
+        color: #ffcc00; /* Golden hover color */
+        background-color: transparent;
+    }
+
+    /* Navbar Toggle Button (for mobile) */
+    .navbar-toggle {
+        border-color: #6b5b95; /* purple border */
+        text-align: center;
+    }
+
+    .navbar-toggle .icon-bar {
+        background-color: #6b5b95; /* purple bars */
+    }
+
+    /* Additional Styles for Enchanted Theme */
+    .navbar-light .navbar-nav > li.active > a,
+    .navbar-light .navbar-nav > li.active > a:hover,
+    .navbar-light .navbar-nav > li.active > a:focus {
+        color: #ffffff; /* White color for active link */
+        background-color: #6b5b95; /* Enchanted purple background */
+    }
+
+    .navbar-light .navbar-collapse {
+        border-color: #6b5b95; /* purple collapse border */
+    }
+
+    .navbar-light .container {
+        border-color: #6b5b95; /* purple container border */
+    }
+
+    /* Login Partial Styles */
+    .navbar-light .navbar-right {
+        color: #6b5b95; /* purple for the login partial */
+    }
+
+</style>
+
+
+<div class="navbar navbar-light navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -7,14 +60,12 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li>@Html.ActionLink("Dashboard", "WeeklyChecklist", "Checklist")</li>
                 <li>@Html.ActionLink("Project Onboarding", "AddProject", "Checklist")</li>
                 <li>@Html.ActionLink("Report", "Index", "PMReports")</li>
-
             </ul>
             @Html.Partial("_LoginPartial")
         </div>
