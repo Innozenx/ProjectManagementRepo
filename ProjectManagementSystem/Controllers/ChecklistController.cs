@@ -207,8 +207,6 @@ namespace ProjectManagementSystem.Controllers
                 message = "Added!";
                 status = true;
 
-
-
             }
             catch (Exception e)
             {
