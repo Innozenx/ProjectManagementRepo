@@ -179,11 +179,10 @@ namespace ProjectManagementSystem.Controllers
         }
 
 
-        //Test Push
-        //Test ulit
-        //Joycceeee@!!!!!!!!!!!!!
-        //TRY ULITTTT
-    }
+        public ActionResult AddProject()
+        {
+            return View();
+        }
 
 
         [HttpPost] //not yet done hehe! :D
