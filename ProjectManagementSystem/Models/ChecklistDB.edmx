@@ -28,7 +28,7 @@
           <Property Name="details" Type="nvarchar" MaxLength="250" />
           <Property Name="dateInitial" Type="datetime" />
           <Property Name="dateFinished" Type="datetime" />
-          <Property Name="project_owner" Type="varchar" MaxLength="100" />
+          <Property Name="project_owner" Type="nvarchar" MaxLength="255" />
           <Property Name="project_name" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Reports">
@@ -64,61 +64,64 @@
           <Property Name="subSub" Type="int" />
           <Property Name="division" Type="nvarchar" MaxLength="50" />
           <Property Name="category" Type="nvarchar" MaxLength="50" />
-          <Property Name="week52" Type="bit" Nullable="false" />
-          <Property Name="week51" Type="bit" Nullable="false" />
-          <Property Name="week50" Type="bit" Nullable="false" />
-          <Property Name="week49" Type="bit" Nullable="false" />
-          <Property Name="week48" Type="bit" Nullable="false" />
-          <Property Name="week47" Type="bit" Nullable="false" />
-          <Property Name="week46" Type="bit" Nullable="false" />
-          <Property Name="week45" Type="bit" Nullable="false" />
-          <Property Name="week44" Type="bit" Nullable="false" />
-          <Property Name="week43" Type="bit" Nullable="false" />
-          <Property Name="week42" Type="bit" Nullable="false" />
-          <Property Name="week41" Type="bit" Nullable="false" />
-          <Property Name="week40" Type="bit" Nullable="false" />
-          <Property Name="week39" Type="bit" Nullable="false" />
-          <Property Name="week38" Type="bit" Nullable="false" />
-          <Property Name="week37" Type="bit" Nullable="false" />
-          <Property Name="week36" Type="bit" Nullable="false" />
-          <Property Name="week35" Type="bit" Nullable="false" />
-          <Property Name="week34" Type="bit" Nullable="false" />
-          <Property Name="week33" Type="bit" Nullable="false" />
-          <Property Name="week32" Type="bit" Nullable="false" />
-          <Property Name="week31" Type="bit" Nullable="false" />
-          <Property Name="week30" Type="bit" Nullable="false" />
-          <Property Name="week29" Type="bit" Nullable="false" />
-          <Property Name="week28" Type="bit" Nullable="false" />
-          <Property Name="week27" Type="bit" Nullable="false" />
-          <Property Name="week26" Type="bit" Nullable="false" />
-          <Property Name="week25" Type="bit" Nullable="false" />
-          <Property Name="week24" Type="bit" Nullable="false" />
-          <Property Name="week23" Type="bit" Nullable="false" />
-          <Property Name="week22" Type="bit" Nullable="false" />
-          <Property Name="week21" Type="bit" Nullable="false" />
-          <Property Name="week20" Type="bit" Nullable="false" />
-          <Property Name="week19" Type="bit" Nullable="false" />
-          <Property Name="week18" Type="bit" Nullable="false" />
-          <Property Name="week17" Type="bit" Nullable="false" />
-          <Property Name="week16" Type="bit" Nullable="false" />
-          <Property Name="week15" Type="bit" Nullable="false" />
-          <Property Name="week14" Type="bit" Nullable="false" />
-          <Property Name="week13" Type="bit" Nullable="false" />
-          <Property Name="week12" Type="bit" Nullable="false" />
-          <Property Name="week11" Type="bit" Nullable="false" />
-          <Property Name="week10" Type="bit" Nullable="false" />
-          <Property Name="week9" Type="bit" Nullable="false" />
-          <Property Name="week8" Type="bit" Nullable="false" />
-          <Property Name="week7" Type="bit" Nullable="false" />
-          <Property Name="week6" Type="bit" Nullable="false" />
-          <Property Name="week5" Type="bit" Nullable="false" />
-          <Property Name="week4" Type="bit" Nullable="false" />
-          <Property Name="week3" Type="bit" Nullable="false" />
-          <Property Name="week2" Type="bit" Nullable="false" />
-          <Property Name="week1" Type="bit" Nullable="false" />
           <Property Name="inWeek" Type="int" />
           <Property Name="isCancelled" Type="bit" />
           <Property Name="isDelayed" Type="bit" />
+          <Property Name="WeeklyMonth" Type="int" />
+          <Property Name="WeeklyDay" Type="int" />
+          <Property Name="isCompleted" Type="bit" />
+          <Property Name="week1" Type="bit" />
+          <Property Name="week2" Type="bit" />
+          <Property Name="week3" Type="bit" />
+          <Property Name="week4" Type="bit" />
+          <Property Name="week5" Type="bit" />
+          <Property Name="week6" Type="bit" />
+          <Property Name="week7" Type="bit" />
+          <Property Name="week8" Type="bit" />
+          <Property Name="week9" Type="bit" />
+          <Property Name="week10" Type="bit" />
+          <Property Name="week11" Type="bit" />
+          <Property Name="week12" Type="bit" />
+          <Property Name="week13" Type="bit" />
+          <Property Name="week14" Type="bit" />
+          <Property Name="week15" Type="bit" />
+          <Property Name="week16" Type="bit" />
+          <Property Name="week17" Type="bit" />
+          <Property Name="week18" Type="bit" />
+          <Property Name="week19" Type="bit" />
+          <Property Name="week20" Type="bit" />
+          <Property Name="week21" Type="bit" />
+          <Property Name="week22" Type="bit" />
+          <Property Name="week23" Type="bit" />
+          <Property Name="week24" Type="bit" />
+          <Property Name="week25" Type="bit" />
+          <Property Name="week26" Type="bit" />
+          <Property Name="week27" Type="bit" />
+          <Property Name="week28" Type="bit" />
+          <Property Name="week29" Type="bit" />
+          <Property Name="week30" Type="bit" />
+          <Property Name="week31" Type="bit" />
+          <Property Name="week32" Type="bit" />
+          <Property Name="week33" Type="bit" />
+          <Property Name="week34" Type="bit" />
+          <Property Name="week35" Type="bit" />
+          <Property Name="week36" Type="bit" />
+          <Property Name="week37" Type="bit" />
+          <Property Name="week38" Type="bit" />
+          <Property Name="week39" Type="bit" />
+          <Property Name="week40" Type="bit" />
+          <Property Name="week41" Type="bit" />
+          <Property Name="week42" Type="bit" />
+          <Property Name="week43" Type="bit" />
+          <Property Name="week44" Type="bit" />
+          <Property Name="week45" Type="bit" />
+          <Property Name="week46" Type="bit" />
+          <Property Name="week47" Type="bit" />
+          <Property Name="week48" Type="bit" />
+          <Property Name="week49" Type="bit" />
+          <Property Name="week50" Type="bit" />
+          <Property Name="week51" Type="bit" />
+          <Property Name="week52" Type="bit" />
         </EntityType>
         <EntityContainer Name="ProjectManagementDBModelStoreContainer">
           <EntitySet Name="ChecklistTable" EntityType="Self.ChecklistTable" Schema="dbo" store:Type="Tables" />
@@ -157,7 +160,7 @@
           <Property Name="details" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="dateInitial" Type="DateTime" Precision="3" />
           <Property Name="dateFinished" Type="DateTime" Precision="3" />
-          <Property Name="project_owner" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="project_owner" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="project_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Report">
@@ -193,61 +196,64 @@
           <Property Name="subSub" Type="Int32" />
           <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="category" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="week52" Type="Boolean" Nullable="false" />
-          <Property Name="week51" Type="Boolean" Nullable="false" />
-          <Property Name="week50" Type="Boolean" Nullable="false" />
-          <Property Name="week49" Type="Boolean" Nullable="false" />
-          <Property Name="week48" Type="Boolean" Nullable="false" />
-          <Property Name="week47" Type="Boolean" Nullable="false" />
-          <Property Name="week46" Type="Boolean" Nullable="false" />
-          <Property Name="week45" Type="Boolean" Nullable="false" />
-          <Property Name="week44" Type="Boolean" Nullable="false" />
-          <Property Name="week43" Type="Boolean" Nullable="false" />
-          <Property Name="week42" Type="Boolean" Nullable="false" />
-          <Property Name="week41" Type="Boolean" Nullable="false" />
-          <Property Name="week40" Type="Boolean" Nullable="false" />
-          <Property Name="week39" Type="Boolean" Nullable="false" />
-          <Property Name="week38" Type="Boolean" Nullable="false" />
-          <Property Name="week37" Type="Boolean" Nullable="false" />
-          <Property Name="week36" Type="Boolean" Nullable="false" />
-          <Property Name="week35" Type="Boolean" Nullable="false" />
-          <Property Name="week34" Type="Boolean" Nullable="false" />
-          <Property Name="week33" Type="Boolean" Nullable="false" />
-          <Property Name="week32" Type="Boolean" Nullable="false" />
-          <Property Name="week31" Type="Boolean" Nullable="false" />
-          <Property Name="week30" Type="Boolean" Nullable="false" />
-          <Property Name="week29" Type="Boolean" Nullable="false" />
-          <Property Name="week28" Type="Boolean" Nullable="false" />
-          <Property Name="week27" Type="Boolean" Nullable="false" />
-          <Property Name="week26" Type="Boolean" Nullable="false" />
-          <Property Name="week25" Type="Boolean" Nullable="false" />
-          <Property Name="week24" Type="Boolean" Nullable="false" />
-          <Property Name="week23" Type="Boolean" Nullable="false" />
-          <Property Name="week22" Type="Boolean" Nullable="false" />
-          <Property Name="week21" Type="Boolean" Nullable="false" />
-          <Property Name="week20" Type="Boolean" Nullable="false" />
-          <Property Name="week19" Type="Boolean" Nullable="false" />
-          <Property Name="week18" Type="Boolean" Nullable="false" />
-          <Property Name="week17" Type="Boolean" Nullable="false" />
-          <Property Name="week16" Type="Boolean" Nullable="false" />
-          <Property Name="week15" Type="Boolean" Nullable="false" />
-          <Property Name="week14" Type="Boolean" Nullable="false" />
-          <Property Name="week13" Type="Boolean" Nullable="false" />
-          <Property Name="week12" Type="Boolean" Nullable="false" />
-          <Property Name="week11" Type="Boolean" Nullable="false" />
-          <Property Name="week10" Type="Boolean" Nullable="false" />
-          <Property Name="week9" Type="Boolean" Nullable="false" />
-          <Property Name="week8" Type="Boolean" Nullable="false" />
-          <Property Name="week7" Type="Boolean" Nullable="false" />
-          <Property Name="week6" Type="Boolean" Nullable="false" />
-          <Property Name="week5" Type="Boolean" Nullable="false" />
-          <Property Name="week4" Type="Boolean" Nullable="false" />
-          <Property Name="week3" Type="Boolean" Nullable="false" />
-          <Property Name="week2" Type="Boolean" Nullable="false" />
-          <Property Name="week1" Type="Boolean" Nullable="false" />
           <Property Name="inWeek" Type="Int32" />
           <Property Name="isCancelled" Type="Boolean" />
           <Property Name="isDelayed" Type="Boolean" />
+          <Property Name="WeeklyMonth" Type="Int32" />
+          <Property Name="WeeklyDay" Type="Int32" />
+          <Property Name="isCompleted" Type="Boolean" />
+          <Property Name="week1" Type="Boolean" />
+          <Property Name="week2" Type="Boolean" />
+          <Property Name="week3" Type="Boolean" />
+          <Property Name="week4" Type="Boolean" />
+          <Property Name="week5" Type="Boolean" />
+          <Property Name="week6" Type="Boolean" />
+          <Property Name="week7" Type="Boolean" />
+          <Property Name="week8" Type="Boolean" />
+          <Property Name="week9" Type="Boolean" />
+          <Property Name="week10" Type="Boolean" />
+          <Property Name="week11" Type="Boolean" />
+          <Property Name="week12" Type="Boolean" />
+          <Property Name="week13" Type="Boolean" />
+          <Property Name="week14" Type="Boolean" />
+          <Property Name="week15" Type="Boolean" />
+          <Property Name="week16" Type="Boolean" />
+          <Property Name="week17" Type="Boolean" />
+          <Property Name="week18" Type="Boolean" />
+          <Property Name="week19" Type="Boolean" />
+          <Property Name="week20" Type="Boolean" />
+          <Property Name="week21" Type="Boolean" />
+          <Property Name="week22" Type="Boolean" />
+          <Property Name="week23" Type="Boolean" />
+          <Property Name="week24" Type="Boolean" />
+          <Property Name="week25" Type="Boolean" />
+          <Property Name="week26" Type="Boolean" />
+          <Property Name="week27" Type="Boolean" />
+          <Property Name="week28" Type="Boolean" />
+          <Property Name="week29" Type="Boolean" />
+          <Property Name="week30" Type="Boolean" />
+          <Property Name="week31" Type="Boolean" />
+          <Property Name="week32" Type="Boolean" />
+          <Property Name="week33" Type="Boolean" />
+          <Property Name="week34" Type="Boolean" />
+          <Property Name="week35" Type="Boolean" />
+          <Property Name="week36" Type="Boolean" />
+          <Property Name="week37" Type="Boolean" />
+          <Property Name="week38" Type="Boolean" />
+          <Property Name="week39" Type="Boolean" />
+          <Property Name="week40" Type="Boolean" />
+          <Property Name="week41" Type="Boolean" />
+          <Property Name="week42" Type="Boolean" />
+          <Property Name="week43" Type="Boolean" />
+          <Property Name="week44" Type="Boolean" />
+          <Property Name="week45" Type="Boolean" />
+          <Property Name="week46" Type="Boolean" />
+          <Property Name="week47" Type="Boolean" />
+          <Property Name="week48" Type="Boolean" />
+          <Property Name="week49" Type="Boolean" />
+          <Property Name="week50" Type="Boolean" />
+          <Property Name="week51" Type="Boolean" />
+          <Property Name="week52" Type="Boolean" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -305,61 +311,64 @@
           <EntitySetMapping Name="WeeklyChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.WeeklyChecklistTable">
               <MappingFragment StoreEntitySet="WeeklyChecklistTable">
+                <ScalarProperty Name="week52" ColumnName="week52" />
+                <ScalarProperty Name="week51" ColumnName="week51" />
+                <ScalarProperty Name="week50" ColumnName="week50" />
+                <ScalarProperty Name="week49" ColumnName="week49" />
+                <ScalarProperty Name="week48" ColumnName="week48" />
+                <ScalarProperty Name="week47" ColumnName="week47" />
+                <ScalarProperty Name="week46" ColumnName="week46" />
+                <ScalarProperty Name="week45" ColumnName="week45" />
+                <ScalarProperty Name="week44" ColumnName="week44" />
+                <ScalarProperty Name="week43" ColumnName="week43" />
+                <ScalarProperty Name="week42" ColumnName="week42" />
+                <ScalarProperty Name="week41" ColumnName="week41" />
+                <ScalarProperty Name="week40" ColumnName="week40" />
+                <ScalarProperty Name="week39" ColumnName="week39" />
+                <ScalarProperty Name="week38" ColumnName="week38" />
+                <ScalarProperty Name="week37" ColumnName="week37" />
+                <ScalarProperty Name="week36" ColumnName="week36" />
+                <ScalarProperty Name="week35" ColumnName="week35" />
+                <ScalarProperty Name="week34" ColumnName="week34" />
+                <ScalarProperty Name="week33" ColumnName="week33" />
+                <ScalarProperty Name="week32" ColumnName="week32" />
+                <ScalarProperty Name="week31" ColumnName="week31" />
+                <ScalarProperty Name="week30" ColumnName="week30" />
+                <ScalarProperty Name="week29" ColumnName="week29" />
+                <ScalarProperty Name="week28" ColumnName="week28" />
+                <ScalarProperty Name="week27" ColumnName="week27" />
+                <ScalarProperty Name="week26" ColumnName="week26" />
+                <ScalarProperty Name="week25" ColumnName="week25" />
+                <ScalarProperty Name="week24" ColumnName="week24" />
+                <ScalarProperty Name="week23" ColumnName="week23" />
+                <ScalarProperty Name="week22" ColumnName="week22" />
+                <ScalarProperty Name="week21" ColumnName="week21" />
+                <ScalarProperty Name="week20" ColumnName="week20" />
+                <ScalarProperty Name="week19" ColumnName="week19" />
+                <ScalarProperty Name="week18" ColumnName="week18" />
+                <ScalarProperty Name="week17" ColumnName="week17" />
+                <ScalarProperty Name="week16" ColumnName="week16" />
+                <ScalarProperty Name="week15" ColumnName="week15" />
+                <ScalarProperty Name="week14" ColumnName="week14" />
+                <ScalarProperty Name="week13" ColumnName="week13" />
+                <ScalarProperty Name="week12" ColumnName="week12" />
+                <ScalarProperty Name="week11" ColumnName="week11" />
+                <ScalarProperty Name="week10" ColumnName="week10" />
+                <ScalarProperty Name="week9" ColumnName="week9" />
+                <ScalarProperty Name="week8" ColumnName="week8" />
+                <ScalarProperty Name="week7" ColumnName="week7" />
+                <ScalarProperty Name="week6" ColumnName="week6" />
+                <ScalarProperty Name="week5" ColumnName="week5" />
+                <ScalarProperty Name="week4" ColumnName="week4" />
+                <ScalarProperty Name="week3" ColumnName="week3" />
+                <ScalarProperty Name="week2" ColumnName="week2" />
+                <ScalarProperty Name="week1" ColumnName="week1" />
+                <ScalarProperty Name="isCompleted" ColumnName="isCompleted" />
+                <ScalarProperty Name="WeeklyDay" ColumnName="WeeklyDay" />
+                <ScalarProperty Name="WeeklyMonth" ColumnName="WeeklyMonth" />
                 <ScalarProperty Name="isDelayed" ColumnName="isDelayed" />
                 <ScalarProperty Name="isCancelled" ColumnName="isCancelled" />
                 <ScalarProperty Name="inWeek" ColumnName="inWeek" />
-                <ScalarProperty Name="week1" ColumnName="week1" />
-                <ScalarProperty Name="week2" ColumnName="week2" />
-                <ScalarProperty Name="week3" ColumnName="week3" />
-                <ScalarProperty Name="week4" ColumnName="week4" />
-                <ScalarProperty Name="week5" ColumnName="week5" />
-                <ScalarProperty Name="week6" ColumnName="week6" />
-                <ScalarProperty Name="week7" ColumnName="week7" />
-                <ScalarProperty Name="week8" ColumnName="week8" />
-                <ScalarProperty Name="week9" ColumnName="week9" />
-                <ScalarProperty Name="week10" ColumnName="week10" />
-                <ScalarProperty Name="week11" ColumnName="week11" />
-                <ScalarProperty Name="week12" ColumnName="week12" />
-                <ScalarProperty Name="week13" ColumnName="week13" />
-                <ScalarProperty Name="week14" ColumnName="week14" />
-                <ScalarProperty Name="week15" ColumnName="week15" />
-                <ScalarProperty Name="week16" ColumnName="week16" />
-                <ScalarProperty Name="week17" ColumnName="week17" />
-                <ScalarProperty Name="week18" ColumnName="week18" />
-                <ScalarProperty Name="week19" ColumnName="week19" />
-                <ScalarProperty Name="week20" ColumnName="week20" />
-                <ScalarProperty Name="week21" ColumnName="week21" />
-                <ScalarProperty Name="week22" ColumnName="week22" />
-                <ScalarProperty Name="week23" ColumnName="week23" />
-                <ScalarProperty Name="week24" ColumnName="week24" />
-                <ScalarProperty Name="week25" ColumnName="week25" />
-                <ScalarProperty Name="week26" ColumnName="week26" />
-                <ScalarProperty Name="week27" ColumnName="week27" />
-                <ScalarProperty Name="week28" ColumnName="week28" />
-                <ScalarProperty Name="week29" ColumnName="week29" />
-                <ScalarProperty Name="week30" ColumnName="week30" />
-                <ScalarProperty Name="week31" ColumnName="week31" />
-                <ScalarProperty Name="week32" ColumnName="week32" />
-                <ScalarProperty Name="week33" ColumnName="week33" />
-                <ScalarProperty Name="week34" ColumnName="week34" />
-                <ScalarProperty Name="week35" ColumnName="week35" />
-                <ScalarProperty Name="week36" ColumnName="week36" />
-                <ScalarProperty Name="week37" ColumnName="week37" />
-                <ScalarProperty Name="week38" ColumnName="week38" />
-                <ScalarProperty Name="week39" ColumnName="week39" />
-                <ScalarProperty Name="week40" ColumnName="week40" />
-                <ScalarProperty Name="week41" ColumnName="week41" />
-                <ScalarProperty Name="week42" ColumnName="week42" />
-                <ScalarProperty Name="week43" ColumnName="week43" />
-                <ScalarProperty Name="week44" ColumnName="week44" />
-                <ScalarProperty Name="week45" ColumnName="week45" />
-                <ScalarProperty Name="week46" ColumnName="week46" />
-                <ScalarProperty Name="week47" ColumnName="week47" />
-                <ScalarProperty Name="week48" ColumnName="week48" />
-                <ScalarProperty Name="week49" ColumnName="week49" />
-                <ScalarProperty Name="week50" ColumnName="week50" />
-                <ScalarProperty Name="week51" ColumnName="week51" />
-                <ScalarProperty Name="week52" ColumnName="week52" />
                 <ScalarProperty Name="category" ColumnName="category" />
                 <ScalarProperty Name="division" ColumnName="division" />
                 <ScalarProperty Name="subSub" ColumnName="subSub" />

@@ -1,5 +1,6 @@
 ﻿@model ProjectManagementSystem.Models.Checklist
 @using System;
+
 @Html.Partial("_Navbar")
 @{
     ViewBag.Title = "AddProject";
@@ -18,7 +19,7 @@
 
 </head>
 <body>
-    <form name="form">
+    <form id="onboardingForm" name="onboardingForm">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Start a Project</h4>
@@ -58,7 +59,7 @@
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="AddProject()">Add</button>
+                <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Add</button>
             </div>
         </div>
     </form>
@@ -67,33 +68,83 @@
 </body>
 </html>
 
-
 <script>
     function AddProject() {
-        var form = $('form[name="form"]');
+        var form = $('form[name="onboardingForm"]');
+        var fileUpload = document.getElementById("csv-file-input");
+
         $.validator.unobtrusive.parse(form);
-        if (!form.valid()) {
+        if (!form.valid() || fileUpload.value == null) {
+            alert("INCOMPLETE FORM. PLEASE UPLOAD AND/OR FILL UP THE DETAILS");
             return;
         }
         else {
             var data = form.serialize();
-            $.ajax({
-                url: "@Url.Action("AddProject", "Checklist")",
-                type: "POST",
-                datatype: "json",
-                data: data,
-                success: function (res, textStatus, jqXHR) {
-                    if (res.status) {
-                        $("#myModal").modal('hide');
-                        $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
-                        category_table.ajax.reload(false, null);
-                    } else {
-                        $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
+            var file = $("#csv-file-input").get(0).files;
+            var formData = new FormData();
+
+            if (file.length > 0) {
+                formData.append("pmcsv", file[0]);
+                $.ajax({
+                    url: "@Url.Action("AddProjectUpload", "Checklist")",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    //datatype: "json",
+                    //data: data,
+                    data: formData,
+                    success: function (res, textStatus, jqXHR) {
+                        if (res.status) {
+                            $("#myModal").modal('hide');
+                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
+                        } else {
+                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
+                        }
                     }
-                }
-            });
+                });
+            }
+
+            else {
+                alert("NO FILE SELECTED");
+            }
         }
     }
+
+    @*function AddProject() {
+        var form = $('form[name="onboardingForm"]');
+        var fileUpload = document.getElementById("csv-file-input");
+
+        $.validator.unobtrusive.parse(form);
+        if (!form.valid() || fileUpload.value == null) {
+            alert("INCOMPLETE FORM. PLEASE UPLOAD AND/OR FILL UP THE DETAILS");
+            return;
+        }
+        else {
+            var data = form.serialize();
+
+            if (fileUpload.files.length > 0) {
+
+                $.ajax({
+                    url: "@Url.Action("AddProjectUpload", "Checklist")",
+                    type: "POST",
+                    datatype: "json",
+                    data: data,
+                    success: function (res, textStatus, jqXHR) {
+                        if (res.status) {
+                            $("#myModal").modal('hide');
+                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
+                        } else {
+                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
+                        }
+                    }
+                });
+            }
+
+            else {
+                alert("NO FILE SELECTED");
+            }
+        }
+    }*@
 
     function plotData(data) {
         const chartData = data.map(row => ({
@@ -117,13 +168,13 @@
         });
     }
 
-    $(document).ready(function() {
-        $('#csv-file-input').change(function(event) {
+    $(document).ready(function () {
+        $('#csv-file-input').change(function (event) {
             const file = event.target.files[0];
             Papa.parse(file, {
                 header: true,
                 dynamicTyping: true,
-                complete: function(results) {
+                complete: function (results) {
                     plotData(results.data);
                 }
             });

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CsvHelper.Configuration;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
@@ -134,5 +135,58 @@ namespace ProjectManagementSystem.Models
 
         /*Extension from checklist to be used for the report*/
         public List<Checklist> listCheckList { get; set; }
+    }
+
+    public class exportCSV
+    {
+        public string process { get; set; }
+        public string processTitle { get; set; }
+        public DateTime start { get; set; }
+        public int duration { get; set; }
+        public string source { get; set; }
+        public string target { get; set; }
+        public string parent { get; set; }
+        public string projectTitle { get; set; }
+        public DateTime projectStart { get; set; }
+        public int projectDuration { get; set; }
+        public DateTime projectEnd { get; set; }
+        public int projectYear { get; set; }
+        public string division { get; set; }
+        public string category { get; set; }
+
+    }
+
+    public class exportCSVHeader
+    {
+        public string processTitle { get; set; }
+        public int duration { get; set; }
+        public DateTime start { get; set; }
+        public string target { get; set; }
+        public int projectYear { get; set; }
+        public string division { get; set; }
+        public string category { get; set; }
+
+    }
+
+    sealed class ProjectMap : ClassMap<exportCSV>
+    {
+        public ProjectMap()
+        {
+            Map(x => x.process).Name("Process");
+            Map(x => x.processTitle).Name("Process_Title");
+            Map(x => x.start).Name("Start");
+            Map(x => x.duration).Name("Duration");
+            Map(x => x.source).Name("Source");
+            Map(x => x.target).Name("Target");
+            Map(x => x.parent).Name("Parent");
+            Map(x => x.projectTitle).Name("Project_Title");
+            Map(x => x.projectStart).Name("Project_Start");
+            Map(x => x.projectDuration).Name("Project_Duration");
+            Map(x => x.projectEnd).Name("Project_End");
+            Map(x => x.projectYear).Name("Project_Year");
+            Map(x => x.division).Name("Division");
+            Map(x => x.category).Name("Category");
+
+        }
     }
 }

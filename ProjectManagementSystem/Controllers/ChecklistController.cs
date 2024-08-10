@@ -4,6 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Globalization;
+using System.Data.SqlClient;
+using System.Configuration;
+using System.Diagnostics;
+using System.Data;
+using System.IO;
+using System.Web;
+using Newtonsoft.Json;
+using CsvHelper;
+using CsvHelper.Configuration;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -186,36 +195,137 @@ namespace ProjectManagementSystem.Controllers
 
 
         [HttpPost] //not yet done hehe! :D
-        [ValidateAntiForgeryToken]
-        public JsonResult AddProject(Checklist data)
+        public JsonResult AddProjectUpload()
         {
             var message = "";
-            bool status = false;
+            var status = false;
 
-            try
+            var attachment = System.Web.HttpContext.Current.Request.Files["pmcsv"];
+
+            if (attachment == null || attachment.ContentLength <= 0)
             {
-                var add = new Checklist
+                return Json(null);
+            }
+
+            //var csvReader = new StreamReader(attachment.InputStream);
+            //var exportCsvList = new List<exportCSV>();
+            //string inputDataRead;
+            //var values = new List<String>();
+
+            //while((inputDataRead = csvReader.ReadLine()) != null)
+            //{
+            //    values.Add(inputDataRead.Trim().Replace(" ", "").Replace(",", " "));
+            //}
+
+            //values.Remove(values[0]);
+            //values.Remove(values[values.Count - 1]);
+
+            //foreach(var value in values)
+            //{
+            //    var valueContent = value.Split(' ');
+            //    var valueArr = value[0].ToString();
+            //}
+
+            using (var reader = new StreamReader(attachment.InputStream))
+            //using (var reader = new StreamReader(Path.Combine(Directory.GetCurrentDirectory(), "PMExport.CSV")))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+
+                csv.Context.RegisterClassMap<ProjectMap>();
+                List<exportCSV> export = new List<exportCSV>();
+                var isHeader = true;
+                int i = 0;
+
+                while (csv.Read())
                 {
-                    //project_name = data.ChecklistTable.project_name,
-                    //project_owner = data.ChecklistTable.project_owner,
-                    //division = data.ChecklistTable.division,
-                    //duration = data.ChecklistTable.duration,
-                    //startDate = data.ChecklistTable.startDate
-                };
-                //db.ChecklistTables.Add();
-                db.SaveChanges();
-                message = "Added!";
-                status = true;
+                    if (isHeader)
+                    {
+                        csv.ReadHeader();
+                        isHeader = false;
+                        continue;
+                    }
 
+                    else
+                    {
+                        export.Add(csv.GetRecord<exportCSV>());
+                    }
+                }
+
+                foreach (var content in export)
+                {
+                    //Console.WriteLine($"{content.projectTitle}");
+                    try
+                    {
+                        if(i == 0)
+                        {
+                            var addWeeklyChecklist = new WeeklyChecklistTable
+                            {
+                                weeklyTitle = content.processTitle,
+                                weeklyDuration = content.projectDuration.ToString(),
+                                weeklyStart = content.projectStart,
+                                weeklyTarget = content.projectStart,
+                                weeklyInYear = content.projectYear,
+                                subMain = null,
+                                subSub = null,
+                                division = content.division,
+                                category = content.category,
+                                inWeek = null,
+                                isCancelled = false,
+                                isDelayed = false,
+                                WeeklyMonth = null,
+                                WeeklyDay = null,
+                                isCompleted = false,
+
+                            };
+
+                            db.WeeklyChecklistTables.Add(addWeeklyChecklist);
+                            db.SaveChanges();
+                            i++;
+                        }
+
+                        var add = new ChecklistTable
+                        {
+                            text = content.processTitle,
+                            duration = content.duration,
+                            start_date = content.projectStart,
+                            parent = null,
+                            projectReference = null,
+                            source = null,
+                            target = null,
+                            type = "test",
+                            ofYear = content.projectYear,
+                            startWeek = 1,
+                            endWeek = 2,
+                            title = content.processTitle,
+                            projectType = "n/a",
+                            status = "active",
+                            color = "black",
+                            details = "n/a",
+                            dateInitial = content.start,
+                            dateFinished = null,
+                            project_name = "n/a",
+                            project_owner = "tester",
+                            
+                        };
+                        db.ChecklistTables.Add(add);
+                        db.SaveChanges();
+
+                        message = "Added!";
+                        status = true;
+
+                    }
+                    catch (Exception e)
+                    {
+                        message = e.Message;
+                    }
+
+                }
             }
-            catch (Exception e)
-            {
-                message = e.Message;
-            }
+
+            
             return Json(new { message = message, status = status },
                 JsonRequestBehavior.AllowGet);
         }
-
     }
 }
 

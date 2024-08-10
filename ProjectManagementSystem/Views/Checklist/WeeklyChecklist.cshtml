@@ -106,7 +106,7 @@
                         </div>
 
                     }
-                    <div style="overflow:auto">
+                    <div id="weeklyCalendar" style="overflow:auto">
                         <table id="example" class="table table-bordered" style="width:100%">
 
                             <thead>
@@ -171,8 +171,8 @@
                                             <td><input type="checkbox" name=""></td>
                                             <th>@item.weeklyTitle</th>
                                             <th>@item.weeklyDuration</th>
-                                            <th>@item.weeklyStart</th>
-                                            <th>@item.weeklyTarget</th>
+                                            <th>@item.weeklyStart.ToString("MMMM dd, yyyy")</th>
+                                            <th>@item.weeklyTarget.ToString("MMMM dd, yyyy")</th>
                                             @{
 
                                                 for (var k = 1; k <= 52; k++)
@@ -180,18 +180,58 @@
                                                     <th class="th-confirm" id="@item.weeklyTitle" style="
                                             @if (k == Calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday))
                                             {
-                                                <text>background-color: green</text>
+
+                                                if (k < weekNumber && item.isCompleted == false)
+                                                {
+                                                    <text>background-color: red</text>
+                                                }
+
+                                                else if(k > weekNumber)
+                                                {
+                                                    <text>background-color: black</text>
+                                                }
+
+                                                else
+                                                {
+                                                    <text>background-color: green</text>
+                                                }
 
                                             }
 
                                             else if (k > Calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday) && k < Calendar.GetWeekOfYear(item.weeklyTarget, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday))
                                             {
-                                                <text>background-color: green</text>
+                                                if (item.isCompleted == false)
+                                                {
+                                                    <text>background-color: red</text>
+                                                }
+
+                                                else if(k > weekNumber)
+                                                {
+                                                    <text>background-color: black</text>
+                                                }
+
+                                                else
+                                                {
+                                                    <text>background-color: green</text>
+                                                }
                                             }
 
                                             else if (k == Calendar.GetWeekOfYear(item.weeklyTarget, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday))
                                             {
-                                                <text>background-color: orange</text>
+                                                if (item.isCompleted == false)
+                                                {
+                                                    <text>background-color: red</text>
+                                                }
+
+                                                else if(k > weekNumber)
+                                                {
+                                                    <text>background-color: black</text>
+                                                }
+
+                                                else
+                                                {
+                                                    <text>background-color: green</text>
+                                                }
                                             }
 
                                             else
@@ -247,6 +287,12 @@
 
     <script>
 
+        var weekScroll = document.getElementById("weeklyCalendar");
+        var workWeek = document.getElementById("workWeek");
+        var weekPosition = workWeek.position();
+        alert(weekPosition);
+
+        weekScroll.scrollTo(weekPosition, 0);
 
         function weeklyMilestone(thVal) {
             weekCheck = $(thVal).attr("value");
