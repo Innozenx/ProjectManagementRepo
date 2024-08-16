@@ -9,7 +9,7 @@
           <Key>
             <PropertyRef Name="id" />
           </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id" Type="int" Nullable="false" />
           <Property Name="text" Type="varchar" MaxLength="50" />
           <Property Name="duration" Type="int" Nullable="false" />
           <Property Name="start_date" Type="date" Nullable="false" />
@@ -54,7 +54,7 @@
           <Key>
             <PropertyRef Name="weeklyID" />
           </Key>
-          <Property Name="weeklyID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="weeklyID" Type="int" Nullable="false" />
           <Property Name="weeklyTitle" Type="nvarchar" MaxLength="50" />
           <Property Name="weeklyDuration" Type="nvarchar" MaxLength="50" />
           <Property Name="weeklyStart" Type="date" Nullable="false" />
@@ -122,6 +122,7 @@
           <Property Name="week50" Type="bit" />
           <Property Name="week51" Type="bit" />
           <Property Name="week52" Type="bit" />
+          <Property Name="weeklyOwner" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="WeeklyStatus">
           <Key>
@@ -151,7 +152,7 @@
           <Key>
             <PropertyRef Name="id" />
           </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id" Type="Int32" Nullable="false" />
           <Property Name="text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="duration" Type="Int32" Nullable="false" />
           <Property Name="start_date" Type="DateTime" Nullable="false" Precision="0" />
@@ -196,7 +197,7 @@
           <Key>
             <PropertyRef Name="weeklyID" />
           </Key>
-          <Property Name="weeklyID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="weeklyID" Type="Int32" Nullable="false" />
           <Property Name="weeklyTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="weeklyDuration" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="weeklyStart" Type="DateTime" Nullable="false" Precision="0" />
@@ -264,6 +265,7 @@
           <Property Name="week50" Type="Boolean" />
           <Property Name="week51" Type="Boolean" />
           <Property Name="week52" Type="Boolean" />
+          <Property Name="weeklyOwner" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="WeeklyStatu">
           <Key>
@@ -329,6 +331,7 @@
           <EntitySetMapping Name="WeeklyChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.WeeklyChecklistTable">
               <MappingFragment StoreEntitySet="WeeklyChecklistTable">
+                <ScalarProperty Name="weeklyOwner" ColumnName="weeklyOwner" />
                 <ScalarProperty Name="week52" ColumnName="week52" />
                 <ScalarProperty Name="week51" ColumnName="week51" />
                 <ScalarProperty Name="week50" ColumnName="week50" />

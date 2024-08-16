@@ -2528,6 +2528,7 @@
     <Content Include="Views\Checklist\Index.cshtml" />
     <Content Include="Views\Checklist\Dashboard.cshtml" />
     <Content Include="Views\Checklist\WeeklyStatus.cshtml" />
+    <Content Include="Views\Checklist\Milestone.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

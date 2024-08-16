@@ -1,51 +1,181 @@
 ﻿@model ProjectManagementSystem.Models.WeeklyStatu
 @Html.Partial("_navbar")
-
-
 @{
     ViewBag.Title = "Weekly Status";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <head>
     <style>
-        .modal-body {
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f5f7; /* Light gray background */
+            margin-left: 150px; /* Margin for sidebar */
+            padding: 0;
+        }
+
+        h2 {
+            color: #5C2D91; /* Deep purple for headings */
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .container {
             padding: 20px;
-            margin-left: 160px;
+            margin-left: 0; /* Adjusted to align with sidebar margin */
+        }
+
+        .card {
+            border-radius: 8px; /* Slightly larger border radius for modern look */
+            border: 1px solid #ddd; /* Light border */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            background-color: #ffffff; /* White background for card */
+            padding: 20px;
+            margin-bottom: 20px; /* Space between cards */
+            width: 100%; /* Full width of its container */
+            max-width: 800px; /* Maximum width of the card */
+            transition: box-shadow 0.3s, transform 0.3s; /* Smooth transition for shadow and transform */
+        }
+
+            .card:hover {
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+                transform: translateY(-2px); /* Slight lift effect */
+            }
+
+        .card-header {
+            font-size: 1.5em; /* Larger header size */
+            font-weight: bold;
+            color: #333; /* Dark text color */
+            margin-bottom: 15px; /* Space below header */
+        }
+
+        .form-group {
+            margin-bottom: 20px; /* Space between form elements */
+        }
+
+            .form-group label {
+                font-weight: bold;
+                color: #333; /* Dark text color */
+                margin-bottom: 5px; /* Space below label */
+                display: block;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                width: 100%;
+                padding: 12px; /* Increased padding for better touch targets */
+                border: 1px solid #ddd; /* Light border */
+                border-radius: 4px; 
+                background-color: #f9f9f9; 
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); 
+                margin-top: 5px;
+                transition: border-color 0.3s, box-shadow 0.3s; 
+            }
+
+                .form-group input:focus,
+                .form-group select:focus,
+                .form-group textarea:focus {
+                    border-color: #5C2D91; 
+                    box-shadow: 0 0 4px rgba(92, 45, 145, 0.3); 
+                    outline: none; 
+                }
+
+        .btn-primary {
+            background-color: #5C2D91; 
+            border: none;
+            color: #fff;
+            padding: 12px 24px; 
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s; 
+            /*text-transform: uppercase;*/ 
+            /*font-weight: bold;*/ 
+        }
+
+            .btn-primary:hover {
+                background-color: #4a1a72; 
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+            }
+
+        .card-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px; 
+        }
+
+        .card-footer button {
+            background-color: #5C2D91; 
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s; 
+            font-weight: bold; 
+        }
+
+        .card-footer button:hover {
+            background-color: #4a1a72; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+        }
+
+        .modal-content {
+            border-radius: 8px; 
+            border: 1px solid #ddd; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+            padding: 20px;
+            background-color: #ffffff; 
+        }
+
+        .modal-header {
+            background-color: #5C2D91; 
+            color: #ffffff; 
+            padding: 15px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            margin-bottom: 20px; 
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.5rem; 
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea.textarea-large',
+            menubar: false,
+            plugins: 'lists link',
+            toolbar: 'undo redo | bold italic | bullist numlist | link',
+            branding: false,
+            width: '100%', 
+            height: 200 
+        });
+    </script>
 </head>
 
-<div class="status-container">
-    <h2>Weekly Status</h2>
-
-    <div class="row">
-        <div class="col-md-3">
-                <div class="card-body"> 
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
 <div class="container">
-    <form asp-action="SubmitWeeklyStatus" method="post" enctype="multipart/form-data">
-        <div class="modal-body">
-            <h2>Weekly Status</h2>
-            <div class="form-group">
-                @Html.LabelFor(x => x.description, "Description")
-                @Html.TextAreaFor(x => x.description, new { @class = "form-control", rows = 5, placeholder = "Enter your weekly status here..." })
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Weekly Status</h4>
+                </div>
+                <form asp-action="SubmitWeeklyStatus" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.description, "Description")
+                        @Html.TextAreaFor(x => x.description, new { @class = "form-control textarea-large", placeholder = "Enter your weekly status here..." })
+                    </div>
+                    <div class="form-group file-input-container">
+                        <label for="attachment"><i class="fas fa-paperclip"></i>Attachment</label>
+                        <input type="file" id="attachment" name="Attachment" class="form-control" />
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary" onclick="SaveStatus()">Submit</button>
+                    </div>
+                </form>
             </div>
-
-            <div class="form-group">
-                @Html.Label("Attachment")
-                <input type="file" name="Attachment" class="form-control" />
-            </div>
-
-            <button type="submit" class="btn btn-primary">Submit</button>
         </div>
-    </form>
-</div>
+       

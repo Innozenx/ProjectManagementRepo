@@ -1,100 +1,164 @@
-﻿<style>
-    .sidebar {
-        height: 100%;
-        width: 200px;
-        position: fixed;
-        top: 0;
-        left: 0;
-        background-color: #ffffff; 
-        padding-top: 20px; 
-        border-right: 2px solid #e0e0e0;
-        z-index: 1;
-        overflow-x: hidden; /* Prevent horizontal scroll */
-        transition: 0.3s; 
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); 
-    }
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Sidebar</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base Styles */
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f5f7; /* Light gray background for the whole page */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
 
-    .sidebar .sidebar-header {
-        font-size: 20px; 
-        font-weight: bold;
-        text-align: center;
-        color: #5c2d91; 
-        margin-bottom: 20px; 
-        padding: 10px; 
-    }
+        .sidebar {
+            height: 100vh; /* Full height */
+            width: 250px; /* Default width */
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #ffffff;
+            padding-top: 20px;
+            border-right: 1px solid #e0e0e0;
+            z-index: 1000;
+            transition: width 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
 
-    .sidebar ul {
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-    }
+        .sidebar-header {
+            font-size: 18px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: normal;
+            text-align: center;
+            color: #5c2d91;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
 
-    .sidebar ul li {
-        text-align: center;
-    }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
 
-    .sidebar a {
-        display: block;
-        padding: 12px 20px; 
-        text-decoration: none;
-        font-size: 16px; /* Font size for links */
-        color: #333; /* Dark text color */
-        font-family: 'Poppins', sans-serif;
-        font-weight: 500; /* Slightly bolder font weight */
-        transition: background-color 0.3s, color 0.3s; /* Smooth transition */
-        border-radius: 25px; /* Rounded corners for links */
-        margin: 5px 0; /* Margin between links */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    }
+        .sidebar ul li {
+            margin: 10px 0;
+        }
 
-    .sidebar a:hover {
-        color: #ffffff; /* White text on hover */
-        background-color: #5c2d91; /* Purple background on hover */
-        border-radius: 25px; /* Ensure hover state is rounded */
-    }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-size: 16px; /* Font size for links */
+            color: #333; /* Dark text color */
+            font-weight: 500; /* Slightly bolder font weight */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+            border-radius: 0.375rem; /* Rounded corners */
+        }
 
-    .sidebar a.active {
-        background-color: #5c2d91; /* Active link background */
-        color: #ffffff; /* Active link text color */
-        border-radius: 25px; /* Ensure active state is rounded */
-    }
+        .sidebar a i {
+            margin-right: 10px; /* Space between icon and text */
+            font-size: 18px; /* Icon size */
+        }
 
-    .content {
-        margin-left: 220px; /* Adjust margin to fit sidebar width */
-        padding: 20px; /* Padding for content area */
-    }
-</style>
+        .sidebar a:hover {
+            color:yellow; 
+            background-color: #5c2d91; /* Purple background on hover */
+        }
 
+        .sidebar a.active {
+            background-color: #5c2d91; /* Active link background */
+            color: #ffffff; /* Active link text color */
+        }
 
-@*<div id="wrapper">
-    <aside id="sidebar-wrapper">
-        <div class="sidebar"> 
-        <h2> Project Management System</h2>
+        .content {
+            margin-left: 250px; /* Default margin to fit sidebar width */
+            padding: 20px; /* Padding for content area */
+            transition: margin-left 0.3s ease; /* Smooth transition for content margin */
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 250px; /* Align with the right edge of the sidebar */
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 1050; /* Ensure it’s above other elements */
+            background-color: #5c2d91;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-toggle i {
+            font-size: 18px; 
+        }
+
+        /* When sidebar is collapsed */
+        .sidebar.collapsed {
+            width: 80px; /* Narrower width when collapsed */
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            display: none; /* Hide header when collapsed */
+        }
+
+        .sidebar.collapsed a {
+            
+            text-align: center; /* Center text */
+            font-size: 0px; /* Smaller font size */
+        }
+
+        .sidebar.collapsed i {
+            font-size: 20px; /* Larger icon size when collapsed */
+        }
+
+        .sidebar.collapsed ~ .content {
+            margin-left: 80px; /* Adjust margin when sidebar is collapsed */
+        }
+
+        .content {
+            margin-left: 0; /* Adjust content margin on smaller screens */
+        }
+
+        .sidebar-toggle {
+            left: 10px;
+            top: -5px;
+        }
+        
+    </style>
+</head>
+<body>
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span>Project Management System</span>
         </div>
-
-        <ul class="sidebar-nav">
-            <li class="active">
-                <a href="#"><i class="fa fa-dashboard">Dashboard</i></a>
-            </li>
+        <ul>
+            <li><a href="Dashboard" class="active"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="AddProject"><i class="fas fa-plus-circle"></i>Project Onboarding</a></li>
+            <li><a href="WeeklyStatus"><i class="fas fa-sync-alt"></i>Update</a></li>
+            <li><a href="#"><i class="fas fa-file-alt"></i>Reports</a></li>
         </ul>
-    </aside>
-</div>*@
-
-
-
-
-
-
-<div class="sidebar">
-    <div class="sidebar-header">
-        <span>Project Management System</span>
     </div>
-    <ul>
-        <li><a href="@Url.Action("WeeklyChecklist", "Checklist")" >Dashboard</a></li>
-        <li><a href="@Url.Action("AddProject", "Checklist")">Project Onboarding</a></li>
-        <li><a href="@Url.Action("Index", "PMReports")">Report</a></li>
-    </ul>
-</div>
-<div class="content">
-    @Html.Partial("_LoginPartial")
-</div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+    </script>
+</body>
+</html>

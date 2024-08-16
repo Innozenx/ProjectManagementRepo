@@ -18,61 +18,95 @@
     <style>
         body {
             margin-left: 150px; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f5f7; 
         }
 
         .container {
-            margin: 20px; 
+            padding: 15px;
+            align-content:center;
+            margin-left: 5px;
         }
 
         .modal-content {
-            border-radius: 10px;
-            border: 2px solid #5C2D91;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px; 
+            border: 1px solid #ddd; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
             padding: 20px;
-        }
-
-        #chart_container {
-            margin-top: 20px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-
-        .form-group label {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
+            background-color: #ffffff; 
         }
 
         .modal-header {
             background-color: #5C2D91; 
-            color: #fff;
+            color: #ffffff; 
             padding: 15px;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            margin-bottom: 20px;
         }
 
         .modal-title {
             margin: 0;
+            font-size: 1.5rem; 
         }
 
-        .modal-content {
-            border-radius: 10px;
-            border: 2px solid #5C2D91;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            padding: 20px;
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 5px; 
+                display: block;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ddd; /* Light border */
+                border-radius: 4px; /* Slightly rounded corners */
+                background-color: #f9f9f9; /* Light background color */
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inner shadow */
+                margin-top: 5px;
+                transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transition */
+            }
+
+        .form-group select {
+            height: 40px; /* Height for dropdown */
+            -webkit-appearance: none; /* Remove default styling in WebKit browsers */
+            background-color: #ffffff; /* White background */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M7 10l5 5 5-5H7z" fill="%23666"/></svg>'); /* Custom arrow */
+            background-repeat: no-repeat;
+            background-position: right 10px center; /* Position custom arrow */
+            background-size: 16px; /* Size of custom arrow */
+            }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #5C2D91; /* Border color on focus */
+            box-shadow: 0 0 4px rgba(92, 45, 145, 0.3); /* Shadow on focus */
+            outline: none; /* Remove default outline */
+        }
+
+        .btn-primary {
+            background-color: #5C2D91; /* Deep purple button */
+            border: none;
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            text-transform: uppercase; /* Uppercase text for button */
+        }
+
+        .btn-primary:hover {
+            background-color: #4a1a72; /* Darker purple on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow on hover */
         }
 
         .modal-footer {
@@ -82,35 +116,27 @@
             justify-content: flex-end;
         }
 
-            .modal-footer button {
-                margin-left: 10px;
-                background-color: #5C2D91;
-                border: none;
-                color: #fff;
-                padding: 10px 20px;
-                font-size: 16px;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s, box-shadow 0.3s;
-            }
-
-                .modal-footer button:hover {
-                    background-color: #4a1a72; 
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                }
-
-        .row h4 {
-            color: #5C2D91;
+        .modal-footer button {
+            margin-left: 10px;
+            background-color: #5C2D91; /* Deep purple button */
+            border: none;
+            color: #fff;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, box-shadow 0.3s;
         }
 
-        
-        #chart_container {
+        .modal-footer button:hover {
+            background-color: #4a1a72; /* Darker purple on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow on hover */
+        }
+
+        #csv-file-input {
+            margin-top: 10px;
+            display: block;
             width: 100%;
-            height: 400px;
-            margin-top: 20px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -161,7 +187,7 @@
             </div>
         </form>
     </div>
-    <!-- Container for the chart -->
+   
     <div id="chart_container"></div>
 
     <script>
@@ -226,18 +252,18 @@
             });
         }
 
-        $(document).ready(function () {
-            $('#csv-file-input').change(function (event) {
-                const file = event.target.files[0];
-                Papa.parse(file, {
-                    header: true,
-                    dynamicTyping: true,
-                    complete: function (results) {
-                        plotData(results.data);
-                    }
-                });
-            });
-        });
+        //$(document).ready(function () {
+        //    $('#csv-file-input').change(function (event) {
+        //        const file = event.target.files[0];
+        //        Papa.parse(file, {
+        //            header: true,
+        //            dynamicTyping: true,
+        //            complete: function (results) {
+        //                plotData(results.data);
+        //            }
+        //        });
+        //    });
+        //});
     </script>
 </body>
 </html>

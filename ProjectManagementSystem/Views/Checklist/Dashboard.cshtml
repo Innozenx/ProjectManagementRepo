@@ -19,9 +19,10 @@
 
     <style>
         .dashboard-container {
-            padding: 20px;
+            padding: 10px;
             margin-left: 160px; 
         }
+        
 
         .card {
             border-radius: 15px;
@@ -167,6 +168,10 @@
             
         }
 
+        .fifth-col{
+            display:none;
+        }
+
         /*.second-col {
             width: 350px;
             min-width: 150px;
@@ -234,6 +239,7 @@
                     <table class="table table-bordered" id="checklistTable">
                         <thead>
                             <tr>
+                                <th class="sticky-col fifth-col">ID</th>
                                 <th class="sticky-c ol first-col">TITLE</th>
                                 <th class="sticky-col second-col">DURATION</th>
                                 <th class="sticky-col third-col">START DATE</th>
@@ -248,6 +254,7 @@
                             @foreach (var item in Model.WeeklyChecklists)
                             {
                                 <tr>
+                                    <td class="sticky-col fifth-col">@item.weeklyID</td>
                                     <td class="sticky-col first-col">@item.weeklyTitle</td>
                                     <td class="sticky-col second-col">@item.weeklyDuration</td>
                                     <td class="sticky-col third-col">@item.weeklyStart.ToString("MMMM dd, yyyy")</td>
