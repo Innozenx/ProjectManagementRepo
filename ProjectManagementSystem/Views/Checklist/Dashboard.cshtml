@@ -1,0 +1,299 @@
+﻿@model ProjectManagementSystem.Models.DashboardViewModel
+@using System.Globalization;
+@Html.Partial("_Navbar")
+
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+
+<head>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.0/css/fixedColumns.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colvis/1.5.0/css/colVis.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/4.0.0/js/dataTables.fixedColumns.min.js"></script>
+    <script src="https://cdn.datatables.net/colvis/1.5.0/js/dataTables.colVis.min.js"></script>
+
+    <style>
+        .dashboard-container {
+            padding: 20px;
+            margin-left: 160px; 
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .card-success {
+            background-color: #4CAF50; 
+            
+        }
+
+        .card-warning {
+            background-color: #FFC107; 
+        }
+
+        .card-info {
+            background-color: #673AB7; 
+        }
+
+        .card-primary {
+            background-color: #9C27B0; 
+        }
+
+        .card-body {
+            padding: 25px;
+            color: #fff;
+        }
+
+        .card-title {
+            font-size: 1.75rem;
+            margin-bottom: 15px;
+        }
+
+        .card-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .row {
+            margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-align: center;
+            color: #4A148C; 
+        }
+
+        h4 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #311B92; 
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: center;
+            border: 2px solid #D1C4E9; 
+        }
+
+        .table th {
+            background-color: #7E57C2; 
+            color: #fff;
+        }
+
+        .table td {
+            background-color: #EDE7F6; 
+            color: #333;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #D1C4E9; 
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            min-width: 150px; 
+        }
+
+        td:first-child, th:first-child {
+            position: -webkit-sticky;
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            border-right: 2px solid #ddd;
+        }
+
+        h2 {
+            font-weight: bold;
+        }
+
+        .table-container {
+            overflow-x: auto; 
+            white-space: nowrap;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: center;
+            border: 2px solid #D1C4E9; 
+        }
+
+        .table th:nth-child(-n+4),
+        .table td:nth-child(-n+4) {
+            position: -webkit-sticky;
+            position: sticky;
+            z-index: 5; 
+        }
+
+        .table th:nth-child(-n+4),
+        .table td:nth-child(-n+4) {
+            border-right: 2px solid #D1C4E9; 
+        }
+
+        .card:hover,
+        .card:focus {
+            /*background-color: #e9ecef;*/ 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+            outline: none;
+        }
+
+        .sticky-col{
+            position: -webkit-sticky;
+            position: sticky;
+
+        }
+
+        .first-col {
+            width: 300px;
+            min-width: 300px;
+            max-width: 300px;
+            left: 0px;
+            
+        }
+
+        /*.second-col {
+            width: 350px;
+            min-width: 150px;
+            max-width: 150px;
+            left: 100px;
+        }
+        .third-col {
+            width: 200px;
+            min-width: 150px;
+            max-width: 150px;
+            left: 210px;
+        }
+        .fourth-col {
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            left: 345px;
+           
+        }*/
+    </style>
+</head>
+
+<div class="dashboard-container">
+    <h2>Dashboard</h2>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card card-success">
+                <div class="card-body">
+                    <h5 class="card-title">Completed Tasks</h5>
+                    <p class="card-text">@Model.CompletedTasks</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Tasks</h5>
+                    <p class="card-text">@Model.PendingTasks</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-info">
+                <div class="card-body">
+                    <h5 class="card-title">Total Tasks</h5>
+                    <p class="card-text">@Model.TotalTasks</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Current Week</h5>
+                    <p class="card-text">Week @Model.CurrentWeek</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="wrapper">
+            <div class="col-md-12">
+                <div class="table-container" style="overflow:auto">
+                    <table class="table table-bordered" id="checklistTable">
+                        <thead>
+                            <tr>
+                                <th class="sticky-c ol first-col">TITLE</th>
+                                <th class="sticky-col second-col">DURATION</th>
+                                <th class="sticky-col third-col">START DATE</th>
+                                <th class="sticky-col fourth-col">TARGET DATE</th>
+                                @for (var j = 0; j < 52; j++)
+                                {
+                                    <th class="weeks">Week @(j + 1)</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.WeeklyChecklists)
+                            {
+                                <tr>
+                                    <td class="sticky-col first-col">@item.weeklyTitle</td>
+                                    <td class="sticky-col second-col">@item.weeklyDuration</td>
+                                    <td class="sticky-col third-col">@item.weeklyStart.ToString("MMMM dd, yyyy")</td>
+                                    <td class="sticky-col fourth-col">@item.weeklyTarget.ToString("MMMM dd, yyyy")</td>
+                                    @{
+                                        var calendar = CultureInfo.InvariantCulture.Calendar;
+                                        int startWeekNumber = calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+                                        int targetWeekNumber = calendar.GetWeekOfYear(item.weeklyTarget, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+                                        for (var k = 1; k <= 52; k++)
+                                        {
+                                            var bgColor = "white";
+
+                                            if (k == startWeekNumber || (k > startWeekNumber && k < targetWeekNumber) || k == targetWeekNumber)
+                                            {
+                                                bgColor = k < Model.CurrentWeek && item.isCompleted.HasValue && !item.isCompleted.Value ? "red"
+                                                           : k > Model.CurrentWeek ? "black"
+                                                           : "green";
+                                            }
+                                            <td style="background-color:@bgColor"></td>
+                                        }
+                                    }
+                                </tr>
+                                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            var currentWeek =  @Model.CurrentWeek;
+
+            var table = $('#checklistTable');
+            var targetColumn = table.find('.weeks').eq(currentWeek - 3); 
+            console.log(targetColumn)
+
+            if (targetColumn.length) {
+                $('.table-container').animate({
+                    scrollLeft: targetColumn.position().left
+                }, 2000); 
+            }
+        });
+</script>
+
+    }

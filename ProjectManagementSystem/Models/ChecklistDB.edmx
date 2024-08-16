@@ -123,10 +123,19 @@
           <Property Name="week51" Type="bit" />
           <Property Name="week52" Type="bit" />
         </EntityType>
+        <EntityType Name="WeeklyStatus">
+          <Key>
+            <PropertyRef Name="status_id" />
+          </Key>
+          <Property Name="status_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="description" Type="nvarchar" MaxLength="500" />
+          <Property Name="attachment" Type="bit" />
+        </EntityType>
         <EntityContainer Name="ProjectManagementDBModelStoreContainer">
           <EntitySet Name="ChecklistTable" EntityType="Self.ChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Reports" EntityType="Self.Reports" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatus" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -136,6 +145,7 @@
           <EntitySet Name="ChecklistTables" EntityType="ProjectManagementDBModel.ChecklistTable" />
           <EntitySet Name="Reports" EntityType="ProjectManagementDBModel.Report" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
+          <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
         </EntityContainer>
         <EntityType Name="ChecklistTable">
           <Key>
@@ -254,6 +264,14 @@
           <Property Name="week50" Type="Boolean" />
           <Property Name="week51" Type="Boolean" />
           <Property Name="week52" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="WeeklyStatu">
+          <Key>
+            <PropertyRef Name="status_id" />
+          </Key>
+          <Property Name="status_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="attachment" Type="Boolean" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -379,6 +397,15 @@
                 <ScalarProperty Name="weeklyDuration" ColumnName="weeklyDuration" />
                 <ScalarProperty Name="weeklyTitle" ColumnName="weeklyTitle" />
                 <ScalarProperty Name="weeklyID" ColumnName="weeklyID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WeeklyStatus">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.WeeklyStatu">
+              <MappingFragment StoreEntitySet="WeeklyStatus">
+                <ScalarProperty Name="attachment" ColumnName="attachment" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="status_id" ColumnName="status_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -90,6 +90,15 @@ namespace ProjectManagementSystem.Models
         public bool week52 { get; set; }
     }
 
+    public class DashboardViewModel
+    {
+        public int CompletedTasks { get; set; }
+        public int PendingTasks { get; set; }
+        public int TotalTasks { get; set; }
+        public int CurrentWeek { get; set; }
+        public List<WeeklyChecklistTable> WeeklyChecklists { get; set; }
+    }
+
     public class TaskGantt
     {
         public int Id { get; set; }
@@ -187,6 +196,12 @@ namespace ProjectManagementSystem.Models
             Map(x => x.division).Name("Division");
             Map(x => x.category).Name("Category");
 
+        }
+        public class WeeeklyStatus
+        {
+            public int status_id { get; set; }
+            public string description { get; set; }
+            public bool attachment { get; set; }
         }
     }
 }

@@ -1,73 +1,100 @@
-﻿
-<style>
-    /* General Navbar Styles */
-    .navbar-light {
-        background-color: #f8f9fa; /* Light background color */
-        border-bottom: 2px solid #e0e0e0;
+﻿<style>
+    .sidebar {
+        height: 100%;
+        width: 200px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #ffffff; 
+        padding-top: 20px; 
+        border-right: 2px solid #e0e0e0;
+        z-index: 1;
+        overflow-x: hidden; /* Prevent horizontal scroll */
+        transition: 0.3s; 
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); 
     }
 
-    .navbar-light .navbar-nav > li > a {
-        color: #6b5b95; /* purple */
-        font-family: 'Poppins', sans-serif;
-        font-weight: normal;
+    .sidebar .sidebar-header {
+        font-size: 20px; 
+        font-weight: bold;
+        text-align: center;
+        color: #5c2d91; 
+        margin-bottom: 20px; 
+        padding: 10px; 
     }
 
-    .navbar-light .navbar-nav > li > a:hover,
-    .navbar-light .navbar-nav > li > a:focus {
-        color: #ffcc00; /* Golden hover color */
-        background-color: transparent;
+    .sidebar ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
     }
 
-    /* Navbar Toggle Button (for mobile) */
-    .navbar-toggle {
-        border-color: #6b5b95; /* purple border */
+    .sidebar ul li {
         text-align: center;
     }
 
-    .navbar-toggle .icon-bar {
-        background-color: #6b5b95; /* purple bars */
+    .sidebar a {
+        display: block;
+        padding: 12px 20px; 
+        text-decoration: none;
+        font-size: 16px; /* Font size for links */
+        color: #333; /* Dark text color */
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500; /* Slightly bolder font weight */
+        transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+        border-radius: 25px; /* Rounded corners for links */
+        margin: 5px 0; /* Margin between links */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     }
 
-    /* Additional Styles for Enchanted Theme */
-    .navbar-light .navbar-nav > li.active > a,
-    .navbar-light .navbar-nav > li.active > a:hover,
-    .navbar-light .navbar-nav > li.active > a:focus {
-        color: #ffffff; /* White color for active link */
-        background-color: #6b5b95; /* Enchanted purple background */
+    .sidebar a:hover {
+        color: #ffffff; /* White text on hover */
+        background-color: #5c2d91; /* Purple background on hover */
+        border-radius: 25px; /* Ensure hover state is rounded */
     }
 
-    .navbar-light .navbar-collapse {
-        border-color: #6b5b95; /* purple collapse border */
+    .sidebar a.active {
+        background-color: #5c2d91; /* Active link background */
+        color: #ffffff; /* Active link text color */
+        border-radius: 25px; /* Ensure active state is rounded */
     }
 
-    .navbar-light .container {
-        border-color: #6b5b95; /* purple container border */
+    .content {
+        margin-left: 220px; /* Adjust margin to fit sidebar width */
+        padding: 20px; /* Padding for content area */
     }
-
-    /* Login Partial Styles */
-    .navbar-light .navbar-right {
-        color: #6b5b95; /* purple for the login partial */
-    }
-
 </style>
 
 
-<div class="navbar navbar-light navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
+@*<div id="wrapper">
+    <aside id="sidebar-wrapper">
+        <div class="sidebar"> 
+        <h2> Project Management System</h2>
         </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li>@Html.ActionLink("Dashboard", "WeeklyChecklist", "Checklist")</li>
-                <li>@Html.ActionLink("Project Onboarding", "AddProject", "Checklist")</li>
-                <li>@Html.ActionLink("Report", "Index", "PMReports")</li>
-            </ul>
-            @Html.Partial("_LoginPartial")
-        </div>
+
+        <ul class="sidebar-nav">
+            <li class="active">
+                <a href="#"><i class="fa fa-dashboard">Dashboard</i></a>
+            </li>
+        </ul>
+    </aside>
+</div>*@
+
+
+
+
+
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <span>Project Management System</span>
     </div>
+    <ul>
+        <li><a href="@Url.Action("WeeklyChecklist", "Checklist")" >Dashboard</a></li>
+        <li><a href="@Url.Action("AddProject", "Checklist")">Project Onboarding</a></li>
+        <li><a href="@Url.Action("Index", "PMReports")">Report</a></li>
+    </ul>
+</div>
+<div class="content">
+    @Html.Partial("_LoginPartial")
 </div>

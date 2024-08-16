@@ -13,6 +13,7 @@ using System.Web;
 using Newtonsoft.Json;
 using CsvHelper;
 using CsvHelper.Configuration;
+using System.Threading.Tasks;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -128,12 +129,38 @@ namespace ProjectManagementSystem.Controllers
             List<WeeklyChecklistTable> checklist = new List<WeeklyChecklistTable>();
             Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
 
-
             var currentYear = DateTime.Now.Year;
             checklist = db.WeeklyChecklistTables.Where(x => x.weeklyInYear == currentYear).ToList();
 
             return View(checklist);
         }
+
+        public ActionResult Dashboard()
+        {
+            var currentYear = DateTime.Now.Year;
+            var calendar = CultureInfo.InvariantCulture.Calendar;
+            var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+
+            var checklist = db.WeeklyChecklistTables.Where(x => x.weeklyInYear == currentYear).ToList();
+
+            var completedTasks = checklist.Count(x => x.isCompleted == true);
+            var pendingTasks = checklist.Count(x => x.isCompleted == false);
+            var totalTasks = checklist.Count();
+
+            var model = new DashboardViewModel
+            {
+                CompletedTasks = completedTasks,
+                PendingTasks = pendingTasks,
+                TotalTasks = totalTasks,
+                CurrentWeek = currentWeek,
+                WeeklyChecklists = checklist
+            };
+
+            return View(model);
+        }
+
+
+
 
         public ActionResult weeklyMilestone(int id, string title)
         {
@@ -194,7 +221,7 @@ namespace ProjectManagementSystem.Controllers
         }
 
 
-        [HttpPost] //not yet done hehe! :D
+        [HttpPost]
         public JsonResult AddProjectUpload()
         {
             var message = "";
@@ -204,84 +231,55 @@ namespace ProjectManagementSystem.Controllers
 
             if (attachment == null || attachment.ContentLength <= 0)
             {
-                return Json(null);
+                return Json(new { message = "No file uploaded or file is empty", status = false });
             }
 
-            //var csvReader = new StreamReader(attachment.InputStream);
-            //var exportCsvList = new List<exportCSV>();
-            //string inputDataRead;
-            //var values = new List<String>();
-
-            //while((inputDataRead = csvReader.ReadLine()) != null)
-            //{
-            //    values.Add(inputDataRead.Trim().Replace(" ", "").Replace(",", " "));
-            //}
-
-            //values.Remove(values[0]);
-            //values.Remove(values[values.Count - 1]);
-
-            //foreach(var value in values)
-            //{
-            //    var valueContent = value.Split(' ');
-            //    var valueArr = value[0].ToString();
-            //}
-
-            using (var reader = new StreamReader(attachment.InputStream))
-            //using (var reader = new StreamReader(Path.Combine(Directory.GetCurrentDirectory(), "PMExport.CSV")))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            try
             {
-
-                csv.Context.RegisterClassMap<ProjectMap>();
-                List<exportCSV> export = new List<exportCSV>();
-                var isHeader = true;
-                int i = 0;
-
-                while (csv.Read())
+                using (var reader = new StreamReader(attachment.InputStream))
+                using (var csv = new CsvReader(reader, new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)))
                 {
-                    if (isHeader)
-                    {
-                        csv.ReadHeader();
-                        isHeader = false;
-                        continue;
-                    }
+                    csv.Context.RegisterClassMap<ProjectMap>();
+                    var export = new List<exportCSV>();
+                    var isHeader = true;
 
-                    else
+                    while (csv.Read())
                     {
+                        if (isHeader)
+                        {
+                            csv.ReadHeader();
+                            isHeader = false;
+                            continue;
+                        }
+
                         export.Add(csv.GetRecord<exportCSV>());
                     }
-                }
 
-                foreach (var content in export)
-                {
-                    //Console.WriteLine($"{content.projectTitle}");
-                    try
+                    foreach (var content in export)
                     {
-                        if(i == 0)
+                        if (content == null) continue;
+
+                        var addWeeklyChecklist = new WeeklyChecklistTable
                         {
-                            var addWeeklyChecklist = new WeeklyChecklistTable
-                            {
-                                weeklyTitle = content.processTitle,
-                                weeklyDuration = content.projectDuration.ToString(),
-                                weeklyStart = content.projectStart,
-                                weeklyTarget = content.projectStart,
-                                weeklyInYear = content.projectYear,
-                                subMain = null,
-                                subSub = null,
-                                division = content.division,
-                                category = content.category,
-                                inWeek = null,
-                                isCancelled = false,
-                                isDelayed = false,
-                                WeeklyMonth = null,
-                                WeeklyDay = null,
-                                isCompleted = false,
+                            weeklyTitle = content.processTitle,
+                            weeklyDuration = content.projectDuration.ToString(),
+                            weeklyStart = content.projectStart,
+                            weeklyTarget = content.projectStart,
+                            weeklyInYear = content.projectYear,
+                            subMain = null,
+                            subSub = null,
+                            division = content.division,
+                            category = content.category,
+                            inWeek = null,
+                            isCancelled = false,
+                            isDelayed = false,
+                            WeeklyMonth = null,
+                            WeeklyDay = null,
+                            isCompleted = false,
+                        };
 
-                            };
-
-                            db.WeeklyChecklistTables.Add(addWeeklyChecklist);
-                            db.SaveChanges();
-                            i++;
-                        }
+                        db.WeeklyChecklistTables.Add(addWeeklyChecklist);
+                        db.SaveChanges();
 
                         var add = new ChecklistTable
                         {
@@ -305,27 +303,35 @@ namespace ProjectManagementSystem.Controllers
                             dateFinished = null,
                             project_name = "n/a",
                             project_owner = "tester",
-                            
                         };
+
                         db.ChecklistTables.Add(add);
                         db.SaveChanges();
 
                         message = "Added!";
                         status = true;
-
                     }
-                    catch (Exception e)
-                    {
-                        message = e.Message;
-                    }
-
                 }
             }
+            catch (Exception e)
+            {
+                message = "An error occurred: " + e.Message;
+            }
 
-            
-            return Json(new { message = message, status = status },
-                JsonRequestBehavior.AllowGet);
+            return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
         }
+
+
+        public ActionResult WeeklyStatus()
+        {
+            return View();
+        }
+
+       
+        //public JsonResult WeeklyStatusUpdate()
+        //{
+        //    return Json();
+        //}
     }
 }
 

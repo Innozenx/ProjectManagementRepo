@@ -6,243 +6,238 @@
     ViewBag.Title = "AddProject";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<br />
 <html>
 <head>
     <link href="~/Content/Site.css" rel="stylesheet" />
-    <!-- Include PapaParse for CSV parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <!-- Include DHTMLX library for charts -->
     <link rel="stylesheet" href="https://cdn.dhtmlx.com/edge/dhtmlx.css">
     <script src="https://cdn.dhtmlx.com/edge/dhtmlx.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+
+    <style>
+        body {
+            margin-left: 150px; 
+        }
+
+        .container {
+            margin: 20px; 
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            border: 2px solid #5C2D91;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+
+        #chart_container {
+            margin-top: 20px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-header {
+            background-color: #5C2D91; 
+            color: #fff;
+            padding: 15px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .modal-title {
+            margin: 0;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            border: 2px solid #5C2D91;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+            .modal-footer button {
+                margin-left: 10px;
+                background-color: #5C2D91;
+                border: none;
+                color: #fff;
+                padding: 10px 20px;
+                font-size: 16px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s, box-shadow 0.3s;
+            }
+
+                .modal-footer button:hover {
+                    background-color: #4a1a72; 
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                }
+
+        .row h4 {
+            color: #5C2D91;
+        }
+
+        
+        #chart_container {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
-    <form id="onboardingForm" name="onboardingForm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Start a Project</h4>
-            </div>
-            <div class="modal-body">
-                @Html.AntiForgeryToken()
-                @Html.HiddenFor(x => x.checkListID)
-                <div class="form-group">
-                    @Html.Label("Project Name")
-                    @Html.TextBoxFor(x => x.project_name, new { @class = "form-control", id = "floatingInput", placeholder = "Project Name" })
-                    @Html.ValidationMessageFor(x => x.project_name)
+    <div class="container">
+        <form id="onboardingForm" name="onboardingForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Start a Project</h4>
                 </div>
-                <div class="form-group">
-                    @Html.Label("Project Owner")
-                    @Html.TextBoxFor(x => x.project_owner, new { @class = "form-control", id = "floatingInput", placeholder = "Project Owner" })
-                    @Html.ValidationMessageFor(x => x.project_owner)
+                <div class="modal-body">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(x => x.checkListID)
+                    <div class="form-group">
+                        @Html.Label("Project Name")
+                        @Html.TextBoxFor(x => x.project_name, new { @class = "form-control", id = "floatingInput", placeholder = "Project Name" })
+                        @Html.ValidationMessageFor(x => x.project_name)
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Project Owner")
+                        @Html.TextBoxFor(x => x.project_owner, new { @class = "form-control", id = "floatingInput", placeholder = "Project Owner" })
+                        @Html.ValidationMessageFor(x => x.project_owner)
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Division")
+                        @Html.DropDownListFor(x => x.division,
+                        new List<SelectListItem>
+                        {
+                            new SelectListItem { Value = "ITS" , Text = "Information Technology Services" },
+                            new SelectListItem { Value = "IPD" , Text = "Infrastructure Planning and Development" },
+                            new SelectListItem { Value = "IM" ,  Text = "Integrated Marketing" }
+                        }, new { @class = "form-control" })
+                    </div>
                 </div>
-                <div class="form-group">
-                    @Html.Label("Division")
-                    @Html.DropDownListFor(x => x.division,
-                new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "ITS" , Text = "Information Technology Services" },
-                    new SelectListItem { Value = "IPD" , Text = "Infrastructure Planning and Development" },
-                    new SelectListItem { Value = "IM" ,  Text = "Integrated Marketing" }
-                }, new { @class = "form-control" })
+                <div class="row">
+                    @*<ol>*@
+                        <h4>Upload Project Schedule</h4>
+                        @*<li class="lifile">*@
+                            <input type="file" id="csv-file-input" accept=".csv" />
+                            @*<span class="field-validation-error" id="spanfile"></span>
+                        </li>
+                    </ol>*@
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Add</button>
                 </div>
             </div>
-            <div class="row">
-                <ol>
-                    <h4>Upload Project Schedule</h4>
-                    <li class="lifile">
-                        <input type="file" id="csv-file-input" accept=".csv" />
-                        <span class="field-validation-error" id="spanfile"></span>
-                    </li>
-                </ol>
-            </div>
-            <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Add</button>
-            </div>
-        </div>
-    </form>
+        </form>
+    </div>
     <!-- Container for the chart -->
-    <div id="chart_container" style="width: 600px; height: 400px; margin-top: 20px;"></div>
-</body>
-</html>
+    <div id="chart_container"></div>
 
-<script>
-    function AddProject() {
-        var form = $('form[name="onboardingForm"]');
-        var fileUpload = document.getElementById("csv-file-input");
+    <script>
+        function AddProject() {
+            var form = $('form[name="onboardingForm"]');
+            var fileUpload = document.getElementById("csv-file-input");
 
-        $.validator.unobtrusive.parse(form);
-        if (!form.valid() || fileUpload.value == null) {
-            alert("INCOMPLETE FORM. PLEASE UPLOAD AND/OR FILL UP THE DETAILS");
-            return;
-        }
-        else {
-            var data = form.serialize();
-            var file = $("#csv-file-input").get(0).files;
-            var formData = new FormData();
-
-            if (file.length > 0) {
-                formData.append("pmcsv", file[0]);
-                $.ajax({
-                    url: "@Url.Action("AddProjectUpload", "Checklist")",
-                    type: "POST",
-                    processData: false,
-                    contentType: false,
-                    //datatype: "json",
-                    //data: data,
-                    data: formData,
-                    success: function (res, textStatus, jqXHR) {
-                        if (res.status) {
-                            $("#myModal").modal('hide');
-                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
-                        } else {
-                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
-                        }
-                    }
-                });
+            $.validator.unobtrusive.parse(form);
+            if (!form.valid() || fileUpload.value == null) {
+                alert("INCOMPLETE FORM. PLEASE UPLOAD AND/OR FILL UP THE DETAILS");
+                return;
             }
-
             else {
-                alert("NO FILE SELECTED");
-            }
-        }
-    }
+                var data = form.serialize();
+                var file = $("#csv-file-input").get(0).files;
+                var formData = new FormData();
 
-    @*function AddProject() {
-        var form = $('form[name="onboardingForm"]');
-        var fileUpload = document.getElementById("csv-file-input");
-
-        $.validator.unobtrusive.parse(form);
-        if (!form.valid() || fileUpload.value == null) {
-            alert("INCOMPLETE FORM. PLEASE UPLOAD AND/OR FILL UP THE DETAILS");
-            return;
-        }
-        else {
-            var data = form.serialize();
-
-            if (fileUpload.files.length > 0) {
-
-                $.ajax({
-                    url: "@Url.Action("AddProjectUpload", "Checklist")",
-                    type: "POST",
-                    datatype: "json",
-                    data: data,
-                    success: function (res, textStatus, jqXHR) {
-                        if (res.status) {
-                            $("#myModal").modal('hide');
-                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
-                        } else {
-                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
+                if (file.length > 0) {
+                    formData.append("pmcsv", file[0]);
+                    $.ajax({
+                        url: "@Url.Action("AddProjectUpload", "Checklist")",
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        data: formData,
+                        success: function (res, textStatus, jqXHR) {
+                            if (res.status) {
+                                $("#myModal").modal('hide');
+                                $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
+                            } else {
+                                $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
+                            }
                         }
-                    }
-                });
-            }
-
-            else {
-                alert("NO FILE SELECTED");
-            }
-        }
-    }*@
-
-    function plotData(data) {
-        const chartData = data.map(row => ({
-            x: row['XColumnName'],
-            y: row['YColumnName']
-        }));
-
-        // Initialize the chart
-        new dhx.Chart("chart_container", {
-            type: "timeline",
-            xAxis: {
-                title: "X Axis Title"
-            },
-            yAxis: {
-                title: "Y Axis Title"
-            },
-            series: [{
-                name: "Series Name",
-                data: chartData
-            }]
-        });
-    }
-
-    $(document).ready(function () {
-        $('#csv-file-input').change(function (event) {
-            const file = event.target.files[0];
-            Papa.parse(file, {
-                header: true,
-                dynamicTyping: true,
-                complete: function (results) {
-                    plotData(results.data);
+                    });
                 }
+
+                else {
+                    alert("NO FILE SELECTED");
+                }
+            }
+        }
+
+        function plotData(data) {
+            const chartData = data.map(row => ({
+                x: row['XColumnName'],
+                y: row['YColumnName']
+            }));
+
+            // Initialize the chart
+            new dhx.Chart("chart_container", {
+                type: "timeline",
+                xAxis: {
+                    title: "X Axis Title"
+                },
+                yAxis: {
+                    title: "Y Axis Title"
+                },
+                series: [{
+                    name: "Series Name",
+                    data: chartData
+                }]
+            });
+        }
+
+        $(document).ready(function () {
+            $('#csv-file-input').change(function (event) {
+                const file = event.target.files[0];
+                Papa.parse(file, {
+                    header: true,
+                    dynamicTyping: true,
+                    complete: function (results) {
+                        plotData(results.data);
+                    }
+                });
             });
         });
-
-        function GetFileSize(fileid) {
-            try {
-                var fileSize = 0;
-                if ($.browser.msie) {
-                    var objFSO = new ActiveXObject("Scripting.FileSystemObject");
-                    var filePath = $("#" + fileid)[0].value;
-                    var objFile = objFSO.getFile(filePath);
-                    fileSize = objFile.size;
-                    fileSize = fileSize / 1048576;
-                }
-                else {
-                    fileSize = $("#" + fileid)[0].files[0].size
-                    fileSize = fileSize / 1048576;
-                }
-                return fileSize;
-            }
-            catch (e) {
-                alert("Error is :" + e);
-            }
-        }
-
-        function getNameFromPath(strFilepath) {
-            var objRE = new RegExp(/([^\/\\]+)$/);
-            var strName = objRE.exec(strFilepath);
-
-            if (strName == null) {
-                return null;
-            }
-            else {
-                return strName[0];
-            }
-        }
-
-        function checkfile() {
-            var file = getNameFromPath($("#fileToUpload").val());
-            if (file != null) {
-                var extension = file.substr((file.lastIndexOf('.') + 1));
-                switch (extension) {
-                    case 'csv':
-                        flag = true;
-                        break;
-                    default:
-                        flag = false;
-                }
-            }
-            if (flag == false) {
-                $("#spanfile").text("You can upload only csv files");
-                return false;
-            }
-            else {
-                var size = GetFileSize('fileToUpload');
-                if (size > 3) {
-                    $("#spanfile").text("You can upload files up to 3 MB");
-                    return false;
-                }
-                else {
-                    $("#spanfile").text("");
-                }
-            }
-        }
-
-        $("#fileToUpload").change(function () {
-            checkfile();
-        });
-    });
-</script>
+    </script>
+</body>
+</html>
