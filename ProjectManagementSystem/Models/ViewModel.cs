@@ -5,9 +5,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using CsvHelper.Configuration.Attributes;
 
 namespace ProjectManagementSystem.Models
 {
+
     public class ViewModel
     {
     }
@@ -18,6 +20,7 @@ namespace ProjectManagementSystem.Models
         public string title { get; set; }
         public string duration { get; set; }
         public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
         public int parent { get; set; }
         public int weeklyReference { get; set; }
         public string project_owner { get; set; }
@@ -150,14 +153,17 @@ namespace ProjectManagementSystem.Models
     {
         public string process { get; set; }
         public string processTitle { get; set; }
+        [Format("MM/dd/yyyy")]
         public DateTime start { get; set; }
         public int duration { get; set; }
         public string source { get; set; }
         public string target { get; set; }
         public int parent { get; set; }
         public string projectTitle { get; set; }
+        [Format("MM/dd/yyyy")]
         public DateTime projectStart { get; set; }
         public int projectDuration { get; set; }
+        [Format("MM/dd/yyyy")]
         public DateTime projectEnd { get; set; }
         public int projectYear { get; set; }
         public string division { get; set; }

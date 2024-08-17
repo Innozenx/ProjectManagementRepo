@@ -12,7 +12,8 @@
           <Property Name="id" Type="int" Nullable="false" />
           <Property Name="text" Type="varchar" MaxLength="50" />
           <Property Name="duration" Type="int" Nullable="false" />
-          <Property Name="start_date" Type="date" Nullable="false" />
+          <Property Name="start_date" Type="date" />
+          <Property Name="end_date" Type="date" />
           <Property Name="parent" Type="int" />
           <Property Name="projectReference" Type="int" />
           <Property Name="source" Type="int" />
@@ -155,7 +156,8 @@
           <Property Name="id" Type="Int32" Nullable="false" />
           <Property Name="text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="duration" Type="Int32" Nullable="false" />
-          <Property Name="start_date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="start_date" Type="DateTime" Precision="0" />
+          <Property Name="end_date" Type="DateTime" Precision="0" />
           <Property Name="parent" Type="Int32" />
           <Property Name="projectReference" Type="Int32" />
           <Property Name="source" Type="Int32" />
@@ -301,6 +303,7 @@
                 <ScalarProperty Name="source" ColumnName="source" />
                 <ScalarProperty Name="projectReference" ColumnName="projectReference" />
                 <ScalarProperty Name="parent" ColumnName="parent" />
+                <ScalarProperty Name="end_date" ColumnName="end_date" />
                 <ScalarProperty Name="start_date" ColumnName="start_date" />
                 <ScalarProperty Name="duration" ColumnName="duration" />
                 <ScalarProperty Name="text" ColumnName="text" />

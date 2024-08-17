@@ -21,109 +21,6 @@ namespace ProjectManagementSystem.Controllers
     {
         ProjectManagementDBEntities db = new ProjectManagementDBEntities();
 
-        //public ActionResult Checklist()
-        //{
-        //    List<ChecklistTable> checklist = new List<ChecklistTable>();
-        //    Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
-
-        //    var currentWeek = Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-        //    var currentYear = DateTime.Now.Year;
-        //    checklist = db.ChecklistTables.ToList();
-
-        //    return View(checklist);
-        //}
-
-        //[System.Web.Http.HttpPost]
-        //public JsonResult checkUncheck(int workDay, int workWeek, bool check, int checklist, int workYear)
-        //{
-
-        //    var dbQuery = db.ChecklistTables.Where(x => x.ofYear == workYear).Where(x => x.inWeek == workWeek).Where(x => x.checkListId == checklist).SingleOrDefault();
-
-        //    if(check == true)
-        //    {
-        //        switch (workDay)
-        //        {
-        //            case 0:
-        //                dbQuery.isChecked0 = true;
-        //                break;
-
-        //            case 1:
-        //                dbQuery.isChecked1 = true;
-        //                break;
-
-        //            case 2:
-        //                dbQuery.isChecked2 = true;
-        //                break;
-
-        //            case 3:
-        //                dbQuery.isChecked3 = true;
-        //                break;
-
-        //            case 4:
-        //                dbQuery.isChecked4 = true;
-        //                break;
-
-        //            case 5:
-        //                dbQuery.isChecked5 = true;
-        //                break;
-
-        //            case 6:
-        //                dbQuery.isChecked6 = true;
-        //                break;
-
-        //        }
-        //    }
-
-        //    else
-        //    {
-        //        switch (workDay)
-        //        {
-        //            case 0:
-        //                dbQuery.isChecked0 = false;
-        //                break;
-
-        //            case 1:
-        //                dbQuery.isChecked1 = false;
-        //                break;
-
-        //            case 2:
-        //                dbQuery.isChecked2 = false;
-        //                break;
-
-        //            case 3:
-        //                dbQuery.isChecked3 = false;
-        //                break;
-
-        //            case 4:
-        //                dbQuery.isChecked4 = false;
-        //                break;
-
-        //            case 5:
-        //                dbQuery.isChecked5 = false;
-        //                break;
-
-        //            case 6:
-        //                dbQuery.isChecked6 = false;
-        //                break;
-
-        //        }
-        //    }
-
-        //    var res = "";
-        //    try
-        //    {
-        //        db.SaveChanges();
-        //        res = "success";
-        //    }
-
-        //    catch{
-        //        res = "failed";
-        //    }
-
-
-        //    return Json(new { res = res }, JsonRequestBehavior.AllowGet);
-        //}
-
         public ActionResult WeeklyChecklist()
         {
             List<WeeklyChecklistTable> checklist = new List<WeeklyChecklistTable>();
@@ -180,8 +77,6 @@ namespace ProjectManagementSystem.Controllers
 
             var currentYear = DateTime.Now.Year;
 
-            //if (db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).Any())
-            //{
             checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).ToList();
 
             var data = checklist.Select(x => new
@@ -204,8 +99,6 @@ namespace ProjectManagementSystem.Controllers
                 links = data
             };
 
-
-            //}
             return new JsonResult { Data = jsonData, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
@@ -240,7 +133,7 @@ namespace ProjectManagementSystem.Controllers
             try
             {
                 using (var reader = new StreamReader(attachment.InputStream))
-                using (var csv = new CsvReader(reader, new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)))
+                using (var csv = new CsvReader(reader, new CsvHelper.Configuration.CsvConfiguration(CultureInfo.CurrentCulture)))
                 
                 {
                     csv.Context.RegisterClassMap<ProjectMap>();
@@ -270,7 +163,7 @@ namespace ProjectManagementSystem.Controllers
                                 weeklyTitle = content.projectTitle,
                                 weeklyDuration = content.projectDuration.ToString(),
                                 weeklyStart = content.projectStart,
-                                weeklyTarget = content.projectStart,
+                                weeklyTarget = content.projectEnd,
                                 weeklyInYear = content.projectYear,
                                 subMain = null,
                                 subSub = null,
@@ -296,6 +189,7 @@ namespace ProjectManagementSystem.Controllers
                             text = content.processTitle,
                             duration = content.duration,
                             start_date = content.projectStart,
+                            end_date = content.projectEnd,
                             parent = content.parent,
                             projectReference = null,
                             source = null,
@@ -303,8 +197,8 @@ namespace ProjectManagementSystem.Controllers
                             type = "test",
                             ofYear = content.projectYear,
                             startWeek = cal.GetWeekOfYear(content.projectStart, CalendarWeekRule.FirstDay, DayOfWeek.Sunday),
-                            endWeek = cal.GetWeekOfYear(content.projectStart, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) + content.duration,
-                            title = content.processTitle,
+                            endWeek = cal.GetWeekOfYear(content.projectEnd, CalendarWeekRule.FirstDay, DayOfWeek.Sunday),
+                            title = content.projectTitle,
                             projectType = "n/a",
                             status = "active",
                             color = "black",
