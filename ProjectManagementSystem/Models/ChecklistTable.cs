@@ -20,6 +20,8 @@ public partial class ChecklistTable
 
     public int id { get; set; }
 
+    public string sequenceId { get; set; }
+
     public string text { get; set; }
 
     public int duration { get; set; }
@@ -61,6 +63,10 @@ public partial class ChecklistTable
     public string project_owner { get; set; }
 
     public string project_name { get; set; }
+
+    public string process { get; set; }
+
+    public Nullable<bool> isUnscheduled { get; set; }
 
 }
 

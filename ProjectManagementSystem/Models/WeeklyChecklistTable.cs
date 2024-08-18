@@ -20,6 +20,8 @@ public partial class WeeklyChecklistTable
 
     public int weeklyID { get; set; }
 
+    public string sequenceId { get; set; }
+
     public string weeklyTitle { get; set; }
 
     public string weeklyDuration { get; set; }

@@ -78,18 +78,24 @@ namespace ProjectManagementSystem.Controllers
             var currentYear = DateTime.Now.Year;
 
             checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).ToList();
+            checklist.AddRange(db.ChecklistTables.Where(x => x.id >= 1 && x.id <= 5).ToList());
 
             var data = checklist.Select(x => new
             {
                 id = x.id,
-                start_date = x.dateInitial.Value.ToString("yyyy-MM-dd"),
-                color = DateTime.Now < x.dateInitial ? "black" : x.status == "completed" ? "green" : DateTime.Now <= DateTime.Parse(x.dateInitial.ToString()).AddDays(x.duration) && DateTime.Now > x.dateInitial ? "orange" : "red",
+                start_date = x.dateInitial != null 
+                    ? x.dateInitial.Value.ToString("yyyy-MM-dd")
+                    : DateTime.Now.ToString("yyyy-MM-dd"),
+                color = x.dateInitial != null 
+                    ? DateTime.Now < x.dateInitial ? "black" : x.status == "completed" ? "green" : DateTime.Now <= DateTime.Parse(x.dateInitial.ToString()).AddDays(x.duration) && DateTime.Now > x.dateInitial ? "orange" : "red"
+                    : "white",
                 duration = x.duration,
                 text = x.text,
                 parent = x.parent,
                 target = x.target,
                 source = x.source,
-                type = x.type
+                type = x.type,
+                unscheduled = x.isUnscheduled
             }).ToArray();
 
             var jsonData = new
@@ -186,6 +192,7 @@ namespace ProjectManagementSystem.Controllers
 
                         var add = new ChecklistTable
                         {
+                            process = content.process,
                             text = content.processTitle,
                             duration = content.duration,
                             start_date = content.projectStart,
