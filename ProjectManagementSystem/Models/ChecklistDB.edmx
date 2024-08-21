@@ -10,7 +10,7 @@
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="int" Nullable="false" />
-          <Property Name="sequenceId" Type="nchar" MaxLength="20" />
+          <Property Name="sequenceId" Type="int" />
           <Property Name="text" Type="varchar" MaxLength="50" />
           <Property Name="duration" Type="int" Nullable="false" />
           <Property Name="start_date" Type="date" />
@@ -34,6 +34,7 @@
           <Property Name="project_name" Type="nvarchar" MaxLength="255" />
           <Property Name="process" Type="nvarchar" MaxLength="50" />
           <Property Name="isUnscheduled" Type="bit" />
+          <Property Name="projectId" Type="int" />
         </EntityType>
         <EntityType Name="Reports">
           <Key>
@@ -158,7 +159,7 @@
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" />
-          <Property Name="sequenceId" Type="String" MaxLength="20" FixedLength="true" Unicode="true" />
+          <Property Name="sequenceId" Type="Int32" />
           <Property Name="text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="duration" Type="Int32" Nullable="false" />
           <Property Name="start_date" Type="DateTime" Precision="0" />
@@ -182,6 +183,7 @@
           <Property Name="project_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="process" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="isUnscheduled" Type="Boolean" />
+          <Property Name="projectId" Type="Int32" />
         </EntityType>
         <EntityType Name="Report">
           <Key>
@@ -294,6 +296,7 @@
           <EntitySetMapping Name="ChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistTable">
               <MappingFragment StoreEntitySet="ChecklistTable">
+                <ScalarProperty Name="projectId" ColumnName="projectId" />
                 <ScalarProperty Name="isUnscheduled" ColumnName="isUnscheduled" />
                 <ScalarProperty Name="process" ColumnName="process" />
                 <ScalarProperty Name="project_name" ColumnName="project_name" />

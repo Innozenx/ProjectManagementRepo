@@ -77,7 +77,7 @@ namespace ProjectManagementSystem.Controllers
 
             var currentYear = DateTime.Now.Year;
 
-            checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).ToList();
+            checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).OrderBy(x => x.sequenceId).ToList();
             checklist.AddRange(db.ChecklistTables.Where(x => x.id >= 1 && x.id <= 5).ToList());
 
             var data = checklist.Select(x => new
@@ -182,7 +182,7 @@ namespace ProjectManagementSystem.Controllers
                                 WeeklyDay = null,
                                 isCompleted = false,
                                 weeklyOwner = content.owner,
-                                weeklyID = content.id
+                                weeklyID = content.projectId
                             };
 
                             db.WeeklyChecklistTables.Add(addWeeklyChecklist);
@@ -214,7 +214,9 @@ namespace ProjectManagementSystem.Controllers
                             dateFinished = null,
                             project_name = content.projectTitle,
                             project_owner = content.owner,
-                            id = content.id
+                            id = content.id,
+                            sequenceId = content.sequence,
+                            projectId = content.projectId
 
                         };
 

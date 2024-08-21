@@ -254,8 +254,8 @@
                                     <td class="sticky-col fourth-col">@item.weeklyTarget.ToString("MMMM dd, yyyy")</td>
                                     @{
                                         var calendar = CultureInfo.InvariantCulture.Calendar;
-                                        int startWeekNumber = calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-                                        int targetWeekNumber = calendar.GetWeekOfYear(item.weeklyTarget, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+                                        int startWeekNumber = calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                                        int targetWeekNumber = calendar.GetWeekOfYear(item.weeklyTarget, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                                         for (var k = 1; k <= 52; k++)
                                         {
                                             var bgColor = "white";

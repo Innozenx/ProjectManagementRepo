@@ -170,6 +170,8 @@ namespace ProjectManagementSystem.Models
         public string category { get; set; }
         public string owner { get; set; }
         public int id { get; set; }
+        public int sequence { get; set; }
+        public int projectId { get; set; }
 
     }
 
@@ -186,7 +188,8 @@ namespace ProjectManagementSystem.Models
         public string category { get; set; }
         public string owner { get; set; }
         public int id { get; set; }
-
+        public int sequence { get; set; }
+        public int projectId { get; set; }
 
 
     }
@@ -211,6 +214,8 @@ namespace ProjectManagementSystem.Models
             Map(x => x.category).Name("Category");
             Map(x => x.owner).Name("Owner");
             Map(x => x.id).Name("ID");
+            Map(x => x.sequence).Name("Sequence");
+            Map(x => x.projectId).Name("Project_ID");
 
         }
         public class WeeeklyStatus
