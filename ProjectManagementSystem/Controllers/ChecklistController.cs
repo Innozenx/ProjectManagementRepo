@@ -259,10 +259,7 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Milestone()
-        {
-            return View();
-        }
+      
        
         //public JsonResult WeeklyStatusUpdate()
         //{
