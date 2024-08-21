@@ -154,7 +154,7 @@ namespace ProjectManagementSystem.Models
         public int duration { get; set; }
         public string source { get; set; }
         public string target { get; set; }
-        public int parent { get; set; }
+        public string parent { get; set; }
         public string projectTitle { get; set; }
         public DateTime projectStart { get; set; }
         public int projectDuration { get; set; }
@@ -162,8 +162,6 @@ namespace ProjectManagementSystem.Models
         public int projectYear { get; set; }
         public string division { get; set; }
         public string category { get; set; }
-        public string owner { get; set; }
-        public int id { get; set; }
 
     }
 
@@ -173,15 +171,9 @@ namespace ProjectManagementSystem.Models
         public int duration { get; set; }
         public DateTime start { get; set; }
         public string target { get; set; }
-        public int parent { get; set; }
-        public string title { get; set; }
         public int projectYear { get; set; }
         public string division { get; set; }
         public string category { get; set; }
-        public string owner { get; set; }
-        public int id { get; set; }
-
-
 
     }
 
@@ -203,8 +195,6 @@ namespace ProjectManagementSystem.Models
             Map(x => x.projectYear).Name("Project_Year");
             Map(x => x.division).Name("Division");
             Map(x => x.category).Name("Category");
-            Map(x => x.owner).Name("Owner");
-            Map(x => x.id).Name("ID");
 
         }
         public class WeeeklyStatus

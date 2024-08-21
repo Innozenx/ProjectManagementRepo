@@ -224,11 +224,8 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult AddProjectUpload()
         {
-            Calendar cal = new CultureInfo("en-US").Calendar;
-
             var message = "";
             var status = false;
-            int weeklyCtr = 0;
 
             var attachment = System.Web.HttpContext.Current.Request.Files["pmcsv"];
 
@@ -241,7 +238,6 @@ namespace ProjectManagementSystem.Controllers
             {
                 using (var reader = new StreamReader(attachment.InputStream))
                 using (var csv = new CsvReader(reader, new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)))
-                
                 {
                     csv.Context.RegisterClassMap<ProjectMap>();
                     var export = new List<exportCSV>();
@@ -263,47 +259,41 @@ namespace ProjectManagementSystem.Controllers
                     {
                         if (content == null) continue;
 
-                        if(weeklyCtr < 1)
+                        var addWeeklyChecklist = new WeeklyChecklistTable
                         {
-                            var addWeeklyChecklist = new WeeklyChecklistTable
-                            {
-                                weeklyTitle = content.projectTitle,
-                                weeklyDuration = content.projectDuration.ToString(),
-                                weeklyStart = content.projectStart,
-                                weeklyTarget = content.projectStart,
-                                weeklyInYear = content.projectYear,
-                                subMain = null,
-                                subSub = null,
-                                division = content.division,
-                                category = content.category,
-                                inWeek = cal.GetWeekOfYear(content.projectStart, CalendarWeekRule.FirstDay, DayOfWeek.Sunday),
-                                isCancelled = false,
-                                isDelayed = false,
-                                WeeklyMonth = null,
-                                WeeklyDay = null,
-                                isCompleted = false,
-                                weeklyOwner = content.owner,
-                                weeklyID = content.id
-                            };
+                            weeklyTitle = content.processTitle,
+                            weeklyDuration = content.projectDuration.ToString(),
+                            weeklyStart = content.projectStart,
+                            weeklyTarget = content.projectStart,
+                            weeklyInYear = content.projectYear,
+                            subMain = null,
+                            subSub = null,
+                            division = content.division,
+                            category = content.category,
+                            inWeek = null,
+                            isCancelled = false,
+                            isDelayed = false,
+                            WeeklyMonth = null,
+                            WeeklyDay = null,
+                            isCompleted = false,
+                        };
 
-                            db.WeeklyChecklistTables.Add(addWeeklyChecklist);
-                            db.SaveChanges();
-                            weeklyCtr = 1;
-                        }
+                        db.WeeklyChecklistTables.Add(addWeeklyChecklist);
+                        db.SaveChanges();
 
                         var add = new ChecklistTable
                         {
                             text = content.processTitle,
                             duration = content.duration,
                             start_date = content.projectStart,
-                            parent = content.parent,
+                            parent = null,
                             projectReference = null,
                             source = null,
                             target = null,
                             type = "test",
                             ofYear = content.projectYear,
-                            startWeek = cal.GetWeekOfYear(content.projectStart, CalendarWeekRule.FirstDay, DayOfWeek.Sunday),
-                            endWeek = cal.GetWeekOfYear(content.projectStart, CalendarWeekRule.FirstDay, DayOfWeek.Sunday) + content.duration,
+                            startWeek = 1,
+                            endWeek = 2,
                             title = content.processTitle,
                             projectType = "n/a",
                             status = "active",
@@ -311,10 +301,8 @@ namespace ProjectManagementSystem.Controllers
                             details = "n/a",
                             dateInitial = content.start,
                             dateFinished = null,
-                            project_name = content.projectTitle,
-                            project_owner = content.owner,
-                            id = content.id
-
+                            project_name = "n/a",
+                            project_owner = "tester",
                         };
 
                         db.ChecklistTables.Add(add);
