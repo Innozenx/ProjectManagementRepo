@@ -132,33 +132,16 @@
             margin-left: 0; /* Adjust content margin on smaller screens */
         }
 
-        .sidebar-toggle {
-            left: 10px;
-            top: -5px;
-        }
-        
-    </style>
-</head>
-<body>
-    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <span>Project Management System</span>
-        </div>
-        <ul>
-            <li><a href="Dashboard" class="active"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
-            <li><a href="AddProject"><i class="fas fa-plus-circle"></i>Project Onboarding</a></li>
-            <li><a href="WeeklyStatus"><i class="fas fa-sync-alt"></i>Update</a></li>
-            <li><a href="#"><i class="fas fa-file-alt"></i>Reports</a></li>
-        </ul>
+<div class="sidebar">
+    <div class="sidebar-header">
+        <span>Project Management System</span>
     </div>
-
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('collapsed');
-        }
-    </script>
-</body>
-</html>
+    <ul>
+        <li><a href="@Url.Action("Dashboard", "Checklist")" >Dashboard</a></li>
+        <li><a href="@Url.Action("AddProject", "Checklist")">Project Onboarding</a></li>
+        <li><a href="@Url.Action("Index", "PMReports")">Report</a></li>
+    </ul>
+</div>
+<div class="content">
+    @Html.Partial("_LoginPartial")
+</div>

@@ -252,18 +252,18 @@
             });
         }
 
-        $(document).ready(function () {
-            $('#csv-file-input').change(function (event) {
-                const file = event.target.files[0];
-                Papa.parse(file, {
-                    header: true,
-                    dynamicTyping: true,
-                    complete: function (results) {
-                        plotData(results.data);
-                    }
-                });
-            });
-        });
+        //$(document).ready(function () {
+        //    $('#csv-file-input').change(function (event) {
+        //        const file = event.target.files[0];
+        //        Papa.parse(file, {
+        //            header: true,
+        //            dynamicTyping: true,
+        //            complete: function (results) {
+        //                plotData(results.data);
+        //            }
+        //        });
+        //    });
+        //});
     </script>
 </body>
 </html>

@@ -5,9 +5,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using CsvHelper.Configuration.Attributes;
 
 namespace ProjectManagementSystem.Models
 {
+
     public class ViewModel
     {
     }
@@ -18,6 +20,7 @@ namespace ProjectManagementSystem.Models
         public string title { get; set; }
         public string duration { get; set; }
         public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
         public int parent { get; set; }
         public int weeklyReference { get; set; }
         public string project_owner { get; set; }
@@ -150,18 +153,25 @@ namespace ProjectManagementSystem.Models
     {
         public string process { get; set; }
         public string processTitle { get; set; }
+        [Format("MM/dd/yyyy")]
         public DateTime start { get; set; }
         public int duration { get; set; }
         public string source { get; set; }
         public string target { get; set; }
-        public string parent { get; set; }
+        public int parent { get; set; }
         public string projectTitle { get; set; }
+        [Format("MM/dd/yyyy")]
         public DateTime projectStart { get; set; }
         public int projectDuration { get; set; }
+        [Format("MM/dd/yyyy")]
         public DateTime projectEnd { get; set; }
         public int projectYear { get; set; }
         public string division { get; set; }
         public string category { get; set; }
+        public string owner { get; set; }
+        public int id { get; set; }
+        public int sequence { get; set; }
+        public int projectId { get; set; }
 
     }
 
@@ -171,9 +181,16 @@ namespace ProjectManagementSystem.Models
         public int duration { get; set; }
         public DateTime start { get; set; }
         public string target { get; set; }
+        public int parent { get; set; }
+        public string title { get; set; }
         public int projectYear { get; set; }
         public string division { get; set; }
         public string category { get; set; }
+        public string owner { get; set; }
+        public int id { get; set; }
+        public int sequence { get; set; }
+        public int projectId { get; set; }
+
 
     }
 
@@ -195,6 +212,10 @@ namespace ProjectManagementSystem.Models
             Map(x => x.projectYear).Name("Project_Year");
             Map(x => x.division).Name("Division");
             Map(x => x.category).Name("Category");
+            Map(x => x.owner).Name("Owner");
+            Map(x => x.id).Name("ID");
+            Map(x => x.sequence).Name("Sequence");
+            Map(x => x.projectId).Name("Project_ID");
 
         }
         public class WeeeklyStatus

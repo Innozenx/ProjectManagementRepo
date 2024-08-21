@@ -256,13 +256,13 @@
                                 <tr>
                                     <td class="sticky-col fifth-col">@item.weeklyID</td>
                                     <td class="sticky-col first-col">@item.weeklyTitle</td>
-                                    <td class="sticky-col second-col">@item.weeklyDuration</td>
+                                    <td class="sticky-col second-col">@item.weeklyDuration days</td>
                                     <td class="sticky-col third-col">@item.weeklyStart.ToString("MMMM dd, yyyy")</td>
                                     <td class="sticky-col fourth-col">@item.weeklyTarget.ToString("MMMM dd, yyyy")</td>
                                     @{
                                         var calendar = CultureInfo.InvariantCulture.Calendar;
-                                        int startWeekNumber = calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-                                        int targetWeekNumber = calendar.GetWeekOfYear(item.weeklyTarget, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+                                        int startWeekNumber = calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                                        int targetWeekNumber = calendar.GetWeekOfYear(item.weeklyTarget, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
                                         for (var k = 1; k <= 52; k++)
                                         {
                                             var bgColor = "white";
@@ -273,7 +273,7 @@
                                                            : k > Model.CurrentWeek ? "black"
                                                            : "green";
                                             }
-                                            <td style="background-color:@bgColor"></td>
+                                            <td style="background-color:@bgColor" name="weeklyColumn" id="@(item.weeklyTitle)" value="@(k)" onclick="toDetailedView(this.getAttribute('value'), this.id)"></td>
                                         }
                                     }
                                 </tr>
@@ -301,6 +301,13 @@
                 }, 2000); 
             }
         });
+
+        function toDetailedView(value, id) {
+
+            window.location.href = "@Url.Action("weeklyMilestone", "Checklist")?id="+ value +"&title="+id;
+        }
+
+
 </script>
 
     }
