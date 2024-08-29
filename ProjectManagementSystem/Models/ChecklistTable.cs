@@ -18,7 +18,7 @@ using System;
 public partial class ChecklistTable
 {
 
-    public int id { get; set; }
+    public string id { get; set; }
 
     public Nullable<int> sequenceId { get; set; }
 
@@ -68,7 +68,9 @@ public partial class ChecklistTable
 
     public Nullable<bool> isUnscheduled { get; set; }
 
-    public Nullable<int> projectId { get; set; }
+    public string projectId { get; set; }
+
+    public int localId { get; set; }
 
 }
 

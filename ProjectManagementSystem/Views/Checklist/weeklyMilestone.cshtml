@@ -138,7 +138,7 @@
 
             gantt.init("gantt_here");
 
-            gantt.load("/Checklist/getGanttData?week=" + @TempData["entry"].ToString() + "&title=" + '@TempData["title"].ToString()', "json");
+            gantt.load("/Checklist/getGanttData?week=" + @TempData["entry"].ToString() + "&title=" + '@TempData["title"].ToString()' + "&projectId=" + '@TempData["project"].ToString()', "json");
 
             gantt.attachEvent("onTaskDblClick", function (name, e) {
                 alert(name);

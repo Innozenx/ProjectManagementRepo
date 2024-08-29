@@ -7,9 +7,9 @@
     <Schema Namespace="ProjectManagementDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ChecklistTable">
           <Key>
-            <PropertyRef Name="id" />
+            <PropertyRef Name="localId" />
           </Key>
-          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="id" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="sequenceId" Type="int" />
           <Property Name="text" Type="varchar" MaxLength="50" />
           <Property Name="duration" Type="int" Nullable="false" />
@@ -34,7 +34,8 @@
           <Property Name="project_name" Type="nvarchar" MaxLength="255" />
           <Property Name="process" Type="nvarchar" MaxLength="50" />
           <Property Name="isUnscheduled" Type="bit" />
-          <Property Name="projectId" Type="int" />
+          <Property Name="projectId" Type="nvarchar" MaxLength="20" />
+          <Property Name="localId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="Reports">
           <Key>
@@ -57,10 +58,10 @@
         </EntityType>
         <EntityType Name="WeeklyChecklistTable">
           <Key>
-            <PropertyRef Name="weeklyID" />
+            <PropertyRef Name="localId" />
           </Key>
-          <Property Name="weeklyID" Type="int" Nullable="false" />
-          <Property Name="sequenceId" Type="nvarchar" MaxLength="20" />
+          <Property Name="weeklyID" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="sequenceId" Type="int" />
           <Property Name="weeklyTitle" Type="nvarchar" MaxLength="50" />
           <Property Name="weeklyDuration" Type="nvarchar" MaxLength="50" />
           <Property Name="weeklyStart" Type="date" Nullable="false" />
@@ -129,6 +130,7 @@
           <Property Name="week51" Type="bit" />
           <Property Name="week52" Type="bit" />
           <Property Name="weeklyOwner" Type="nvarchar" MaxLength="250" />
+          <Property Name="localId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="WeeklyStatus">
           <Key>
@@ -156,9 +158,9 @@
         </EntityContainer>
         <EntityType Name="ChecklistTable">
           <Key>
-            <PropertyRef Name="id" />
+            <PropertyRef Name="localId" />
           </Key>
-          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="id" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="sequenceId" Type="Int32" />
           <Property Name="text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="duration" Type="Int32" Nullable="false" />
@@ -183,7 +185,8 @@
           <Property Name="project_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="process" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="isUnscheduled" Type="Boolean" />
-          <Property Name="projectId" Type="Int32" />
+          <Property Name="projectId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="localId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <EntityType Name="Report">
           <Key>
@@ -206,10 +209,10 @@
         </EntityType>
         <EntityType Name="WeeklyChecklistTable">
           <Key>
-            <PropertyRef Name="weeklyID" />
+            <PropertyRef Name="localId" />
           </Key>
-          <Property Name="weeklyID" Type="Int32" Nullable="false" />
-          <Property Name="sequenceId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="weeklyID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="sequenceId" Type="Int32" />
           <Property Name="weeklyTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="weeklyDuration" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="weeklyStart" Type="DateTime" Nullable="false" Precision="0" />
@@ -278,6 +281,7 @@
           <Property Name="week51" Type="Boolean" />
           <Property Name="week52" Type="Boolean" />
           <Property Name="weeklyOwner" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="localId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <EntityType Name="WeeklyStatu">
           <Key>
@@ -296,6 +300,7 @@
           <EntitySetMapping Name="ChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistTable">
               <MappingFragment StoreEntitySet="ChecklistTable">
+                <ScalarProperty Name="localId" ColumnName="localId" />
                 <ScalarProperty Name="projectId" ColumnName="projectId" />
                 <ScalarProperty Name="isUnscheduled" ColumnName="isUnscheduled" />
                 <ScalarProperty Name="process" ColumnName="process" />
@@ -348,6 +353,7 @@
           <EntitySetMapping Name="WeeklyChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.WeeklyChecklistTable">
               <MappingFragment StoreEntitySet="WeeklyChecklistTable">
+                <ScalarProperty Name="localId" ColumnName="localId" />
                 <ScalarProperty Name="weeklyOwner" ColumnName="weeklyOwner" />
                 <ScalarProperty Name="week52" ColumnName="week52" />
                 <ScalarProperty Name="week51" ColumnName="week51" />

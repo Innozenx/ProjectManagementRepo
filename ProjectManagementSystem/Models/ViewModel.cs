@@ -16,7 +16,7 @@ namespace ProjectManagementSystem.Models
 
     public class Checklist
     {
-        public int checkListID { get; set; }
+        public string checkListID { get; set; }
         public string title { get; set; }
         public string duration { get; set; }
         public DateTime startDate { get; set; }
@@ -32,7 +32,7 @@ namespace ProjectManagementSystem.Models
 
     public class WeeklyChecklist
     {
-        public int weeklyID { get; set; }
+        public string weeklyID { get; set; }
         public string weeklyTitle { get; set; }
         public string weeklyDuration { get; set; }
         public string weeklyStart { get; set; }
@@ -169,9 +169,9 @@ namespace ProjectManagementSystem.Models
         public string division { get; set; }
         public string category { get; set; }
         public string owner { get; set; }
-        public int id { get; set; }
+        public string id { get; set; }
         public int sequence { get; set; }
-        public int projectId { get; set; }
+        public string projectId { get; set; }
 
     }
 
@@ -187,9 +187,9 @@ namespace ProjectManagementSystem.Models
         public string division { get; set; }
         public string category { get; set; }
         public string owner { get; set; }
-        public int id { get; set; }
+        public string id { get; set; }
         public int sequence { get; set; }
-        public int projectId { get; set; }
+        public string projectId { get; set; }
 
 
     }

@@ -18,9 +18,9 @@ using System;
 public partial class WeeklyChecklistTable
 {
 
-    public int weeklyID { get; set; }
+    public string weeklyID { get; set; }
 
-    public string sequenceId { get; set; }
+    public Nullable<int> sequenceId { get; set; }
 
     public string weeklyTitle { get; set; }
 
@@ -157,6 +157,8 @@ public partial class WeeklyChecklistTable
     public Nullable<bool> week52 { get; set; }
 
     public string weeklyOwner { get; set; }
+
+    public int localId { get; set; }
 
 }
 

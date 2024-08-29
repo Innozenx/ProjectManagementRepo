@@ -59,17 +59,17 @@ namespace ProjectManagementSystem.Controllers
 
 
 
-        public ActionResult weeklyMilestone(int id, string title)
+        public ActionResult weeklyMilestone(int id, string title, string projectId)
         {
-            var entry = id;
-            var entryTitle = title;
-            TempData["entry"] = entry;
+            TempData["entry"] = id;
             TempData["title"] = title;
+            TempData["project"] = projectId;
+
 
             return View();
         }
 
-        public JsonResult getGanttData(int week, string title)
+        public JsonResult getGanttData(int week, string title, string projectId)
         {
 
             List<ChecklistTable> checklist = new List<ChecklistTable>();
@@ -77,8 +77,8 @@ namespace ProjectManagementSystem.Controllers
 
             var currentYear = DateTime.Now.Year;
 
-            checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title)).OrderBy(x => x.sequenceId).ToList();
-            checklist.AddRange(db.ChecklistTables.Where(x => x.id >= 1 && x.id <= 5).ToList());
+            checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title) && x.projectId.Equals(projectId)).OrderBy(x => x.sequenceId).ToList();
+            checklist.AddRange(db.ChecklistTables.Where(x => x.localId >= 1 && x.localId <= 5).ToList());
 
             var data = checklist.Select(x => new
             {
@@ -230,7 +230,8 @@ namespace ProjectManagementSystem.Controllers
             }
             catch (Exception e)
             {
-                message = "An error occurred: " + e.Message;
+                message = "An error occurred: " + e.InnerException.Message;
+
             }
 
             return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);

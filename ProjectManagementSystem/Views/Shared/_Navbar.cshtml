@@ -143,10 +143,10 @@
             <span>Project Management System</span>
         </div>
         <ul>
-            <li><a href="Dashboard" class="active"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
-            <li><a href="AddProject"><i class="fas fa-plus-circle"></i>Project Onboarding</a></li>
-            <li><a href="WeeklyStatus"><i class="fas fa-sync-alt"></i>Update</a></li>
-            <li><a href="#"><i class="fas fa-file-alt"></i>Reports</a></li>
+            <li><a href="@Url.Action("Dashboard", "Checklist")" class="active"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+            <li><a href="@Url.Action("AddProject", "Checklist")"><i class="fas fa-plus-circle"></i>Project Onboarding</a></li>
+            <li><a href="@Url.Action("WeeklyStatus", "Checklist")"><i class="fas fa-sync-alt"></i>Update</a></li>
+            <li><a href="@Url.Action("Index", "PMReports")"><i class="fas fa-file-alt"></i>Reports</a></li>
 
         </ul>
     </div>
@@ -161,3 +161,4 @@
     </script>
 </body>
 </html>
+

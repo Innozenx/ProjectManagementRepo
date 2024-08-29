@@ -273,7 +273,7 @@
                                                            : k > Model.CurrentWeek ? "black"
                                                            : "green";
                                             }
-                                            <td style="background-color:@bgColor" name="weeklyColumn" id="@(item.weeklyTitle)" value="@(k)" onclick="toDetailedView(this.getAttribute('value'), this.id)"></td>
+                                            <td style="background-color:@bgColor" name="@(item.weeklyID)" id="@(item.weeklyTitle)" value="@(k)" onclick="toDetailedView(this.getAttribute('value'), this.id, this.getAttribute('name'))"></td>
                                         }
                                     }
                                 </tr>
@@ -302,9 +302,9 @@
             }
         });
 
-        function toDetailedView(value, id) {
+        function toDetailedView(value, id, name) {
 
-            window.location.href = "@Url.Action("weeklyMilestone", "Checklist")?id="+ value +"&title="+id;
+            window.location.href = "@Url.Action("weeklyMilestone", "Checklist")?id="+ value +"&title="+ id + "&projectId=" + name;
         }
 
 
