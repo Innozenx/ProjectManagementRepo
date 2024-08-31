@@ -1,116 +1,104 @@
 ﻿@model ProjectManagementSystem.Models.DashboardViewModel
 @using System.Globalization;
-@Html.Partial("_Navbar")
-
 @{
     ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 
-<head>
+<style>
+    .dashboard-container {
+        padding: 10px;
+        margin-left: 160px;
+    }
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.0/css/fixedColumns.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colvis/1.5.0/css/colVis.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/fixedcolumns/4.0.0/js/dataTables.fixedColumns.min.js"></script>
-    <script src="https://cdn.datatables.net/colvis/1.5.0/js/dataTables.colVis.min.js"></script>
 
-    <style>
-        .dashboard-container {
-            padding: 10px;
-            margin-left: 160px; 
-        }
-        
+    .card {
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+        border: none;
+    }
 
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
-            border: none;
-        }
+    .card-success {
+        background-color: #4CAF50;
+    }
 
-        .card-success {
-            background-color: #4CAF50; 
-            
-        }
+    .card-warning {
+        background-color: #FFC107;
+    }
 
-        .card-warning {
-            background-color: #FFC107; 
-        }
+    .card-info {
+        background-color: #673AB7;
+    }
 
-        .card-info {
-            background-color: #673AB7; 
-        }
+    .card-primary {
+        background-color: #9C27B0;
+    }
 
-        .card-primary {
-            background-color: #9C27B0; 
-        }
+    .card-body {
+        padding: 25px;
+        color: #fff;
+    }
 
-        .card-body {
-            padding: 25px;
-            color: #fff;
-        }
+    .card-title {
+        font-size: 1.75rem;
+        margin-bottom: 15px;
+    }
 
-        .card-title {
-            font-size: 1.75rem;
-            margin-bottom: 15px;
-        }
+    .card-text {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
 
-        .card-text {
-            font-size: 2.5rem;
-            font-weight: bold;
-        }
+    .row {
+        margin-top: 20px;
+    }
 
-        .row {
-            margin-top: 20px;
-        }
+    h2 {
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+        text-align: center;
+        color: #4A148C;
+    }
 
-        h2 {
-            font-size: 2.5rem;
-            margin-bottom: 40px;
-            text-align: center;
-            color: #4A148C; 
-        }
+    h4 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+        color: #311B92;
+    }
 
-        h4 {
-            font-size: 2rem;
-            margin-bottom: 30px;
-            color: #311B92; 
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-        }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+    }
 
         .table th, .table td {
             padding: 12px;
             text-align: center;
-            border: 2px solid #D1C4E9; 
+            border: 2px solid #D1C4E9;
         }
 
         .table th {
-            background-color: #7E57C2; 
+            background-color: #7E57C2;
             color: #fff;
         }
 
         .table td {
-            background-color: #EDE7F6; 
+            background-color: #EDE7F6;
             color: #333;
         }
 
         .table tr:nth-child(even) {
-            background-color: #D1C4E9; 
+            background-color: #D1C4E9;
         }
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            min-width: 150px; 
-        }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        min-width: 150px;
+    }
 
         td:first-child, th:first-child {
             position: -webkit-sticky;
@@ -120,59 +108,57 @@
             border-right: 2px solid #ddd;
         }
 
-        h2 {
-            font-weight: bold;
-        }
+    h2 {
+        font-weight: bold;
+    }
 
-        .table-container {
-            overflow-x: auto; 
-            white-space: nowrap;
-        }
+    .table-container {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
 
-        .table th, .table td {
-            padding: 12px;
-            text-align: center;
-            border: 2px solid #D1C4E9; 
-        }
+    .table th, .table td {
+        padding: 12px;
+        text-align: center;
+        border: 2px solid #D1C4E9;
+    }
 
         .table th:nth-child(-n+4),
         .table td:nth-child(-n+4) {
             position: -webkit-sticky;
             position: sticky;
-            z-index: 5; 
+            z-index: 5;
         }
 
         .table th:nth-child(-n+4),
         .table td:nth-child(-n+4) {
-            border-right: 2px solid #D1C4E9; 
+            border-right: 2px solid #D1C4E9;
         }
 
-        .card:hover,
-        .card:focus {
-            /*background-color: #e9ecef;*/ 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-            outline: none;
-        }
+    .card:hover,
+    .card:focus {
+        /*background-color: #e9ecef;*/
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        outline: none;
+    }
 
-        .sticky-col{
-            position: -webkit-sticky;
-            position: sticky;
+    .sticky-col {
+        position: -webkit-sticky;
+        position: sticky;
+    }
 
-        }
+    .first-col {
+        width: 300px;
+        min-width: 300px;
+        max-width: 300px;
+        left: 0px;
+    }
 
-        .first-col {
-            width: 300px;
-            min-width: 300px;
-            max-width: 300px;
-            left: 0px;
-            
-        }
+    .fifth-col {
+        display: none;
+    }
 
-        .fifth-col{
-            display:none;
-        }
-
-        /*.second-col {
+    /*.second-col {
             width: 350px;
             min-width: 150px;
             max-width: 150px;
@@ -189,52 +175,68 @@
             min-width: 150px;
             max-width: 150px;
             left: 345px;
-           
+
         }*/
-    </style>
-</head>
+</style>
 
-<div class="dashboard-container">
-    <h2>Dashboard</h2>
-
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card card-success">
-                <div class="card-body">
-                    <h5 class="card-title">Completed Tasks</h5>
-                    <p class="card-text">@Model.CompletedTasks</p>
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">@ViewBag.Title</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Checklist")">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+<!-- Main content -->
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Completed Tasks</h5>
+                        <p class="card-text">@Model.CompletedTasks</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-warning">
+                    <div class="card-body">
+                        <h5 class="card-title">Pending Tasks</h5>
+                        <p class="card-text">@Model.PendingTasks</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card card-warning">
-                <div class="card-body">
-                    <h5 class="card-title">Pending Tasks</h5>
-                    <p class="card-text">@Model.PendingTasks</p>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-info">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Tasks</h5>
+                        <p class="card-text">@Model.TotalTasks</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Current Week</h5>
+                        <p class="card-text">Week @Model.CurrentWeek</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card card-info">
-                <div class="card-body">
-                    <h5 class="card-title">Total Tasks</h5>
-                    <p class="card-text">@Model.TotalTasks</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card card-primary">
-                <div class="card-body">
-                    <h5 class="card-title">Current Week</h5>
-                    <p class="card-text">Week @Model.CurrentWeek</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mt-4">
-        <div class="wrapper">
-            <div class="col-md-12">
+        <div class="row">
+            <div class="col-lg-12">
                 <div class="table-container" style="overflow:auto">
                     <table class="table table-bordered" id="checklistTable">
                         <thead>
@@ -277,28 +279,31 @@
                                         }
                                     }
                                 </tr>
-                                        }
+                            }
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+    <!-- /.container-fluid -->
 </div>
-
+<!-- /.content -->
 @section scripts{
+    <!-- jQuery -->
+    <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
     <script>
         $(document).ready(function () {
-            var currentWeek =  @Model.CurrentWeek;
+            var currentWeek = @Model.CurrentWeek;
 
             var table = $('#checklistTable');
-            var targetColumn = table.find('.weeks').eq(currentWeek - 3); 
+            var targetColumn = table.find('.weeks').eq(currentWeek - 3);
             console.log(targetColumn)
 
             if (targetColumn.length) {
                 $('.table-container').animate({
                     scrollLeft: targetColumn.position().left
-                }, 2000); 
+                }, 2000);
             }
         });
 
@@ -308,6 +313,6 @@
         }
 
 
-</script>
+    </script>
 
-    }
+}
