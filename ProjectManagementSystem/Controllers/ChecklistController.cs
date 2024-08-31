@@ -116,7 +116,8 @@ namespace ProjectManagementSystem.Controllers
 
         public ActionResult AddProject()
         {
-            return View();
+            List<WeeklyChecklistTable> listWeekly = db.WeeklyChecklistTables.ToList();
+            return View(listWeekly);
         }
 
 

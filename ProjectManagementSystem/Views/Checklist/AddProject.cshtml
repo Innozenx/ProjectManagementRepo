@@ -1,4 +1,4 @@
-﻿@model ProjectManagementSystem.Models.Checklist
+﻿@model List<ProjectManagementSystem.Models.WeeklyChecklistTable>
 @using System;
 
 @Html.Partial("_Navbar")
@@ -148,7 +148,7 @@
                     <h4 class="modal-title">Start a Project</h4>
                 </div>
                 <div class="modal-body">
-                    @Html.AntiForgeryToken()
+                    @*@Html.AntiForgeryToken()
                     @Html.HiddenFor(x => x.checkListID)
                     <div class="form-group">
                         @Html.Label("Project Name")
@@ -169,7 +169,7 @@
                             new SelectListItem { Value = "IPD" , Text = "Infrastructure Planning and Development" },
                             new SelectListItem { Value = "IM" ,  Text = "Integrated Marketing" }
                         }, new { @class = "form-control" })
-                    </div>
+                    </div>*@
                 </div>
                 <div class="row">
                     @*<ol>*@
@@ -183,6 +183,38 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Add</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container" id="cancelBody" name="cancelBody">
+        <form id="cancellationForm" name="cancellationForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Cancel a Project</h4>
+                </div>
+                <div class="modal-body">
+                    <h4>Division</h4>
+                    <select id="divisionOpt" name="divisionOpt">
+                        @foreach (var item in Model.GroupBy(x => new {x.division}).Select(y => y.First()))
+                        {
+                            <option value="@(item.division)">@item.division</option>
+                        }
+                    </select>
+                    
+                    <h4>Project</h4>
+                    <select>
+                        @foreach (var item in Model.Where(x => x.division == "ITS").Select(x => x.weeklyTitle))
+                        {
+                            <option>@item</option>
+                        }
+                        
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="cancelBtn" type="button" class="btn btn-primary" onclick="">Cancel</button>
                 </div>
             </div>
         </form>
@@ -251,19 +283,17 @@
                 }]
             });
         }
-
-        //$(document).ready(function () {
-        //    $('#csv-file-input').change(function (event) {
-        //        const file = event.target.files[0];
-        //        Papa.parse(file, {
-        //            header: true,
-        //            dynamicTyping: true,
-        //            complete: function (results) {
-        //                plotData(results.data);
-        //            }
-        //        });
-        //    });
-        //});
     </script>
 </body>
 </html>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('#divisionOpt').change(function () {
+                var division = $('#divisionOpt').val();
+                alert(division);
+            });
+        });
+    </script>    
+}
