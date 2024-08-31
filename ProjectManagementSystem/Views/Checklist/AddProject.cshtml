@@ -6,6 +6,9 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
+<head>
+    
+</head>
 <!-- Content Header (Page header) -->
 <div class="content-header">
     <div class="container-fluid">
@@ -82,16 +85,61 @@
     <!-- /.container-fluid -->
 </div>
 
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <form id="onboardingForm" name="onboardingForm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Cancel a Project</h4>
+                        </div>
+                        <div class="modal-body">
+                            @Html.AntiForgeryToken()
+                            <div class="form-group">
+                                <label for="csv-file-input">Project Title</label><br>
+                                <select>
+                                    @{ 
+                                        foreach(var item in Model)
+                                        {
+                                            <option>@item.weeklyTitle</option>
+                                        }
+                                    }
+                                </select>
+                                @*<p class="help-block">Example block-level help text here.</p>*@
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button id="addProjButton" type="button" class="btn btn-primary" onclick="">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-12">
+                <div id="chart_container"></div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</div>
+
 @section scripts{
     <!-- jQuery -->
     <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
+
     <script>
         function AddProject() {
             var form = $('form[name="onboardingForm"]');
             var fileUpload = document.getElementById("csv-file-input");
 
-            $.validator.unobtrusive.parse(form);
-            if (!form.valid() || fileUpload.value == null) {
+            //$.validator.unobtrusive.parse(form);
+            if (fileUpload.value == null) {
                 alert("INCOMPLETE FORM. PLEASE UPLOAD AND/OR FILL UP THE DETAILS");
                 return;
             }
@@ -130,7 +178,7 @@
                 x: row['XColumnName'],
                 y: row['YColumnName']
             }));
-
+            
             // Initialize the chart
             new dhx.Chart("chart_container", {
                 type: "timeline",
@@ -146,5 +194,12 @@
                 }]
             });
         }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#divisionPicker').change(function () {
+                alert($('#divisionPicker').val());
+            });
+        });
     </script>
     }
