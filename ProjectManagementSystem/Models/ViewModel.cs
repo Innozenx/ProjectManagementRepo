@@ -224,5 +224,10 @@ namespace ProjectManagementSystem.Models
             public string description { get; set; }
             public bool attachment { get; set; }
         }
+
+        public class listWeekly
+        {
+            List<WeeklyChecklistTable> ProjectList { get; set; }
+        }
     }
 }
