@@ -1,227 +1,90 @@
 ﻿@model List<ProjectManagementSystem.Models.WeeklyChecklistTable>
 @using System;
 
-@Html.Partial("_Navbar")
 @{
-    ViewBag.Title = "AddProject";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Project Onboarding";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-<html>
-<head>
-    <link href="~/Content/Site.css" rel="stylesheet" />
-    <!-- Include DHTMLX library for charts -->
-    <link rel="stylesheet" href="https://cdn.dhtmlx.com/edge/dhtmlx.css">
-    <script src="https://cdn.dhtmlx.com/edge/dhtmlx.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">@ViewBag.Title</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Checklist")">Home</a></li>
+                    <li class="breadcrumb-item active">Project Onboarding</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
 
 
-    <style>
-        body {
-            margin-left: 150px; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f5f7; 
-        }
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <form id="onboardingForm" name="onboardingForm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Start a Project</h4>
+                        </div>
+                        <div class="modal-body">
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(x => x.checkListID)
+                            <div class="form-group">
+                                @Html.Label("Project Name")
+                                @Html.TextBoxFor(x => x.project_name, new { @class = "form-control", id = "floatingInput", placeholder = "Project Name" })
+                                @Html.ValidationMessageFor(x => x.project_name)
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Project Owner")
+                                @Html.TextBoxFor(x => x.project_owner, new { @class = "form-control", id = "floatingInput", placeholder = "Project Owner" })
+                                @Html.ValidationMessageFor(x => x.project_owner)
+                            </div>
+                            <div class="form-group">
+                                @Html.Label("Division")
+                                @Html.DropDownListFor(x => x.division,
+                                new List<SelectListItem>
+                                {
+                                    new SelectListItem { Value = "ITS" , Text = "Information Technology Services" },
+                                    new SelectListItem { Value = "IPD" , Text = "Infrastructure Planning and Development" },
+                                    new SelectListItem { Value = "IM" ,  Text = "Integrated Marketing" }
+                                }, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label for="csv-file-input">Upload Project Schedule</label><br>
+                                <input type="file" id="csv-file-input" accept=".csv" />
+                                @*<p class="help-block">Example block-level help text here.</p>*@
+                            </div>
+                        </div>
 
-        .container {
-            padding: 15px;
-            align-content:center;
-            margin-left: 5px;
-        }
-
-        .modal-content {
-            border-radius: 8px; 
-            border: 1px solid #ddd; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-            padding: 20px;
-            background-color: #ffffff; 
-        }
-
-        .modal-header {
-            background-color: #5C2D91; 
-            color: #ffffff; 
-            padding: 15px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            margin: 0;
-            font-size: 1.5rem; 
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-            .form-group label {
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 5px; 
-                display: block;
-            }
-
-            .form-group input,
-            .form-group select,
-            .form-group textarea {
-                width: 100%;
-                padding: 12px;
-                border: 1px solid #ddd; /* Light border */
-                border-radius: 4px; /* Slightly rounded corners */
-                background-color: #f9f9f9; /* Light background color */
-                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Inner shadow */
-                margin-top: 5px;
-                transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transition */
-            }
-
-        .form-group select {
-            height: 40px; /* Height for dropdown */
-            -webkit-appearance: none; /* Remove default styling in WebKit browsers */
-            background-color: #ffffff; /* White background */
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M7 10l5 5 5-5H7z" fill="%23666"/></svg>'); /* Custom arrow */
-            background-repeat: no-repeat;
-            background-position: right 10px center; /* Position custom arrow */
-            background-size: 16px; /* Size of custom arrow */
-            }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: #5C2D91; /* Border color on focus */
-            box-shadow: 0 0 4px rgba(92, 45, 145, 0.3); /* Shadow on focus */
-            outline: none; /* Remove default outline */
-        }
-
-        .btn-primary {
-            background-color: #5C2D91; /* Deep purple button */
-            border: none;
-            color: #fff;
-            padding: 12px 20px;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s, box-shadow 0.3s;
-            text-transform: uppercase; /* Uppercase text for button */
-        }
-
-        .btn-primary:hover {
-            background-color: #4a1a72; /* Darker purple on hover */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow on hover */
-        }
-
-        .modal-footer {
-            padding: 15px;
-            border-top: 1px solid #ddd;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .modal-footer button {
-            margin-left: 10px;
-            background-color: #5C2D91; /* Deep purple button */
-            border: none;
-            color: #fff;
-            padding: 10px 15px;
-            font-size: 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-
-        .modal-footer button:hover {
-            background-color: #4a1a72; /* Darker purple on hover */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow on hover */
-        }
-
-        #csv-file-input {
-            margin-top: 10px;
-            display: block;
-            width: 100%;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <form id="onboardingForm" name="onboardingForm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Start a Project</h4>
-                </div>
-                <div class="modal-body">
-                    @*@Html.AntiForgeryToken()
-                    @Html.HiddenFor(x => x.checkListID)
-                    <div class="form-group">
-                        @Html.Label("Project Name")
-                        @Html.TextBoxFor(x => x.project_name, new { @class = "form-control", id = "floatingInput", placeholder = "Project Name" })
-                        @Html.ValidationMessageFor(x => x.project_name)
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Add</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        @Html.Label("Project Owner")
-                        @Html.TextBoxFor(x => x.project_owner, new { @class = "form-control", id = "floatingInput", placeholder = "Project Owner" })
-                        @Html.ValidationMessageFor(x => x.project_owner)
-                    </div>
-                    <div class="form-group">
-                        @Html.Label("Division")
-                        @Html.DropDownListFor(x => x.division,
-                        new List<SelectListItem>
-                        {
-                            new SelectListItem { Value = "ITS" , Text = "Information Technology Services" },
-                            new SelectListItem { Value = "IPD" , Text = "Infrastructure Planning and Development" },
-                            new SelectListItem { Value = "IM" ,  Text = "Integrated Marketing" }
-                        }, new { @class = "form-control" })
-                    </div>*@
-                </div>
-                <div class="row">
-                    @*<ol>*@
-                        <h4>Upload Project Schedule</h4>
-                        @*<li class="lifile">*@
-                            <input type="file" id="csv-file-input" accept=".csv" />
-                            @*<span class="field-validation-error" id="spanfile"></span>
-                        </li>
-                    </ol>*@
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Add</button>
-                </div>
+                </form>
             </div>
-        </form>
-    </div>
+        </div>
 
-    <div class="container" id="cancelBody" name="cancelBody">
-        <form id="cancellationForm" name="cancellationForm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Cancel a Project</h4>
-                </div>
-                <div class="modal-body">
-                    <h4>Division</h4>
-                    <select id="divisionOpt" name="divisionOpt">
-                        @foreach (var item in Model.GroupBy(x => new {x.division}).Select(y => y.First()))
-                        {
-                            <option value="@(item.division)">@item.division</option>
-                        }
-                    </select>
-                    
-                    <h4>Project</h4>
-                    <select>
-                        @foreach (var item in Model.Where(x => x.division == "ITS").Select(x => x.weeklyTitle))
-                        {
-                            <option>@item</option>
-                        }
-                        
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="cancelBtn" type="button" class="btn btn-primary" onclick="">Cancel</button>
-                </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div id="chart_container"></div>
             </div>
-        </form>
+        </div>
     </div>
-   
-    <div id="chart_container"></div>
+    <!-- /.container-fluid -->
+</div>
 
+@section scripts{
+    <!-- jQuery -->
+    <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
     <script>
         function AddProject() {
             var form = $('form[name="onboardingForm"]');
@@ -286,14 +149,3 @@
     </script>
 </body>
 </html>
-
-@section scripts{
-    <script>
-        $(document).ready(function () {
-            $('#divisionOpt').change(function () {
-                var division = $('#divisionOpt').val();
-                alert(division);
-            });
-        });
-    </script>    
-}
