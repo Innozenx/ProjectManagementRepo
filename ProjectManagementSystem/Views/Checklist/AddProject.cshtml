@@ -35,7 +35,7 @@
                         </div>
                         <div class="modal-body">
                             @Html.AntiForgeryToken()
-                            @Html.HiddenFor(x => x.checkListID)
+                            @*@Html.HiddenFor(x => x.checkListID)
                             <div class="form-group">
                                 @Html.Label("Project Name")
                                 @Html.TextBoxFor(x => x.project_name, new { @class = "form-control", id = "floatingInput", placeholder = "Project Name" })
@@ -55,7 +55,7 @@
                                     new SelectListItem { Value = "IPD" , Text = "Infrastructure Planning and Development" },
                                     new SelectListItem { Value = "IM" ,  Text = "Integrated Marketing" }
                                 }, new { @class = "form-control" })
-                            </div>
+                            </div>*@
                             <div class="form-group">
                                 <label for="csv-file-input">Upload Project Schedule</label><br>
                                 <input type="file" id="csv-file-input" accept=".csv" />
@@ -147,5 +147,4 @@
             });
         }
     </script>
-</body>
-</html>
+    }
