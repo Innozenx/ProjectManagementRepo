@@ -38,7 +38,7 @@ namespace ProjectManagementSystem.Controllers
             var calendar = CultureInfo.InvariantCulture.Calendar;
             var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
 
-            var checklist = db.WeeklyChecklistTables.Where(x => x.weeklyInYear == currentYear).ToList();
+            var checklist = db.WeeklyChecklistTables.Where(x => x.weeklyInYear == currentYear && x.isCancelled == false).ToList();
 
             var completedTasks = checklist.Count(x => x.isCompleted == true);
             var pendingTasks = checklist.Count(x => x.isCompleted == false);
@@ -261,6 +261,30 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult Cancellation(string cancelOpt)
+        {
+            var message = "";
+            var status = false;
+
+
+            try
+            {
+                var toCancel = db.WeeklyChecklistTables.Where(x => x.weeklyTitle == cancelOpt).First();
+
+                toCancel.isCancelled = true;
+
+                db.SaveChanges();
+
+                message = "success";
+                status = true;
+            }
+            catch (Exception e)
+            {
+                message = "failed";
+            }
+
+            return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
+        }
       
        
         //public JsonResult WeeklyStatusUpdate()

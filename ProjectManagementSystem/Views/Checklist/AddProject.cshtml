@@ -6,9 +6,6 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<head>
-    
-</head>
 <!-- Content Header (Page header) -->
 <div class="content-header">
     <div class="container-fluid">
@@ -98,7 +95,7 @@
                             @Html.AntiForgeryToken()
                             <div class="form-group">
                                 <label for="csv-file-input">Project Title</label><br>
-                                <select>
+                                <select id="cancelSelect" name="cancelSelect">
                                     @{ 
                                         foreach(var item in Model)
                                         {
@@ -112,7 +109,7 @@
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button id="addProjButton" type="button" class="btn btn-primary" onclick="">Submit</button>
+                            <button id="cancelProjButton" name="cancelProjButton" type="button" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
                 </form>
@@ -132,6 +129,8 @@
 @section scripts{
     <!-- jQuery -->
     <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
+
+
 
     <script>
         function AddProject() {
@@ -195,10 +194,31 @@
             });
         }
     </script>
+
     <script>
         $(document).ready(function () {
-            $('#divisionPicker').change(function () {
-                alert($('#divisionPicker').val());
+            //$('#cancelSelect').change(function () {
+            //    alert($('#cancelSelect').val());
+            //});
+
+            $('#cancelProjButton').click(function () {
+
+                var cancelOpt = $('#cancelSelect').val();
+
+                $.ajax({
+                    type: "post",
+                    url: "@Url.Action("Cancellation", "Checklist")",
+                    data: { 'cancelOpt': cancelOpt },
+                    success: function (res) {
+                        if (res.status == true){
+                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
+                        }
+
+                        else {
+                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
+                        }
+                    }
+                });
             });
         });
     </script>
