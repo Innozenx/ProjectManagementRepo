@@ -37,7 +37,7 @@
     }
 
     .card-body {
-        padding: 25px;
+        padding: 15px;
         color: #fff;
     }
 
@@ -158,31 +158,12 @@
         display: none;
     }
 
-    /*.second-col {
-            width: 350px;
-            min-width: 150px;
-            max-width: 150px;
-            left: 100px;
-        }
-        .third-col {
-            width: 200px;
-            min-width: 150px;
-            max-width: 150px;
-            left: 210px;
-        }
-        .fourth-col {
-            width: 150px;
-            min-width: 150px;
-            max-width: 150px;
-            left: 345px;
-
-        }*/
 </style>
 
 <!-- Content Header (Page header) -->
 <div class="content-header">
     <div class="container-fluid">
-        <div class="row mb-2">
+        <div class="row">
             <div class="col-sm-6">
                 <h1 class="m-0">@ViewBag.Title</h1>
             </div><!-- /.col -->
@@ -200,7 +181,7 @@
 <div class="content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card card-success">
                     <div class="card-body">
                         <h5 class="card-title">Completed Tasks</h5>
@@ -208,7 +189,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card card-warning">
                     <div class="card-body">
                         <h5 class="card-title">Pending Tasks</h5>
@@ -216,9 +197,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card card-info">
                     <div class="card-body">
                         <h5 class="card-title">Total Tasks</h5>
@@ -226,7 +205,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card card-primary">
                     <div class="card-body">
                         <h5 class="card-title">Current Week</h5>
@@ -235,6 +214,8 @@
                 </div>
             </div>
         </div>
+
+        <!--table-->
         <div class="row">
             <div class="col-lg-12">
                 <div class="table-container" style="overflow:auto">
