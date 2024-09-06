@@ -1,7 +1,8 @@
 ﻿        <!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:#5c2d91; ">
+<aside class="main-sidebar elevation-4 sidebar-light-purple">
+
     <!-- Brand Logo -->
-    <a href="@Url.Action("Dashboard", "Checklist")" class="brand-link">
+    <a href="@Url.Action("Dashboard", "Checklist")" class="brand-link bg-purple">
         <img src="~/AdminLTE-3.2.0/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light">Project MS</span>
     </a>
@@ -33,11 +34,11 @@
                 <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
                 <li class="nav-header">Panels</li>
                 <li class="nav-item">
-                    <a href="@Url.Action("Dashboard", "Checklist")" class="nav-link">
+                    <a href="@Url.Action("Dashboard", "Checklist")" class="nav-link active">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
-                </li>
+                    @*</li>
                 <li class="nav-item">
                     <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
                         <i class="nav-icon fas fa-plus-circle"></i>
@@ -49,8 +50,46 @@
                         <i class="nav-icon fas fa-sync-alt"></i>
                         <p>Weekly Status</p>
                     </a>
+                </li>*@
+
+                <li class="nav-item">
+                    <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
+                        <i class="nav-icon fas fa-plus-circle"></i>
+                        <p>Project Onboarding</p>
+                        <i class="right fas fa-angle-left"></i>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                        <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-plus-circle"></i>
+                            <p>Add Project</p>
+                        </a>
                 </li>
+            </ul>
+                   
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("WeeklyStatus", "Checklist")" class="nav-link">
+                                <i class="nav-icon fas fa-sync-alt"></i>
+                                <p>Status</p>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("Checklist","Checklist")" class="nav-link">
+                                <i class="nav-icon fas fa-list-ul"></i>
+                                <p>Checklist</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
                 <li class="nav-header">Report</li>
+
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-pie"></i>
@@ -724,3 +763,22 @@
     </div>
     <!-- /.sidebar -->
 </aside>
+
+@section script { 
+@*<script>
+    $(document).ready(function () {
+    $('.nav-link').on('click', function (e) {
+        e.preventDefault();
+
+        var $this = $(this);
+        var $subMenu = $this.siblings('.nav-treeview');
+
+        if ($subMenu.length) {
+            $subMenu.slideToggle();
+            $this.find('.nav-item-expand').toggleClass('rotate');
+        }
+    });
+});*@
+
+@*</script>*@
+}

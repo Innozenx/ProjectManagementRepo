@@ -119,6 +119,7 @@ namespace ProjectManagementSystem.Models
         public string Type { get; set; }
         public int SourceTaskId { get; set; }
         public int TargetTaskId { get; set; }
+
     }
 
     public class GanttJson
@@ -223,6 +224,11 @@ namespace ProjectManagementSystem.Models
             public int status_id { get; set; }
             public string description { get; set; }
             public bool attachment { get; set; }
+            public string project_name { get; set; }
+            public string project_owner { get; set; }
+            public DateTime dateInitial { get; set; }
+            public DateTime dateFinished { get; set; }
+            public string projectType { get; set; }
         }
 
         public class listWeekly

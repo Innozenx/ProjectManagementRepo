@@ -1,6 +1,6 @@
 ﻿@model ProjectManagementSystem.Models.WeeklyStatu
 @{
-    ViewBag.Title = "Weekly Status";
+    ViewBag.Title = "Status";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
@@ -14,7 +14,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Checklist")">Home</a></li>
-                    <li class="breadcrumb-item active">Weekly Status</li>
+                    <li class="breadcrumb-item active">Status</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -27,12 +27,19 @@
             <div class="col-lg-12">
                 <form asp-action="SubmitWeeklyStatus" method="post" enctype="multipart/form-data">
                     <div class="form-group">
+                       
                         @Html.LabelFor(x => x.description, "Description")
                         @Html.TextAreaFor(x => x.description, new { @class = "form-control textarea-large", placeholder = "Enter your weekly status here..." })
                     </div>
                     <div class="form-group file-input-container">
                         <label for="attachment"><i class="fas fa-paperclip"></i>Attachment</label>
                         <input type="file" id="attachment" name="Attachment" class="form-control" />
+
+                        <!--INCOMPLETE-->
+                        @*<label for="file-input">Upload File</label>
+                        <input type="file" id="fileSelect" accept="iamge/*,.pdf,.jpg"/>*@
+
+
                     </div>
                     <div class="card-footer">
                         <button type="submit" class="btn btn-primary" onclick="SaveStatus()">Submit</button>
@@ -46,18 +53,23 @@
 @section scripts{
     <!-- jQuery -->
     <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/tinymce@6.7.0/tinymce.min.js"></script>
+@*<link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/43.1.0/ckeditor5.css">*@
     <script>
         tinymce.init({
             selector: 'textarea.textarea-large',
             menubar: false,
-            plugins: 'lists link',
-            toolbar: 'undo redo | bold italic | bullist numlist | link',
+            plugins: 'lists link image',
+            toolbar: 'image | undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
             branding: false,
             width: '100%',
             height: 200
         });
+
+   
+
     </script>
 
-}
 
+    }
