@@ -286,11 +286,19 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
         }
       
-       
+       public ActionResult Checklist()
+        {
+            return View();
+        }
+
+
+
         //public JsonResult WeeklyStatusUpdate()
         //{
         //    return Json();
         //}
+
+    
     }
 }
 

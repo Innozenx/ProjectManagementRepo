@@ -14,9 +14,11 @@
 
 
     .card {
-        border-radius: 15px;
+        border-radius: 25px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        margin-bottom: 20px;
+        
+        /*margin-bottom: 20px;*/
+       
         border: none;
     }
 
@@ -42,13 +44,14 @@
     }
 
     .card-title {
-        font-size: 1.75rem;
+        font-size: 2.5rem;
+        font-weight:bold;
         margin-bottom: 15px;
     }
 
     .card-text {
-        font-size: 2.5rem;
-        font-weight: bold;
+        font-size: 1.75rem;
+        /*font-weight: bold;*/
     }
 
     .row {
@@ -69,6 +72,7 @@
     }
 
     .table {
+        
         width: 100%;
         border-collapse: collapse;
         margin-top: 30px;
@@ -81,7 +85,7 @@
         }
 
         .table th {
-            background-color: #7E57C2;
+            background-color: #66339A;
             color: #fff;
         }
 
@@ -182,34 +186,34 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-3">
-                <div class="card card-success">
+                <div class="card card-success h-100">
                     <div class="card-body">
-                        <h5 class="card-title">Completed Tasks</h5>
-                        <p class="card-text">@Model.CompletedTasks</p>
+                        <h3 class="card-title">@Model.CompletedTasks</h3>
+                        <p class="card-text">Completed Tasks</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card card-warning">
+                <div class="card card-warning h-100">
                     <div class="card-body">
-                        <h5 class="card-title">Pending Tasks</h5>
-                        <p class="card-text">@Model.PendingTasks</p>
+                        <h3 class="card-title">@Model.PendingTasks</h3>
+                        <p class="card-text">Pending Tasks</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card card-info">
+                <div class="card card-info h-100">
                     <div class="card-body">
-                        <h5 class="card-title">Total Tasks</h5>
-                        <p class="card-text">@Model.TotalTasks</p>
+                        <h3 class="card-title">@Model.TotalTasks</h3>
+                        <p class="card-text">Total Tasks</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card card-primary">
+                <div class="card card-primary h-100">
                     <div class="card-body">
-                        <h5 class="card-title">Current Week</h5>
-                        <p class="card-text">Week @Model.CurrentWeek</p>
+                        <h3 class="card-title">Week @Model.CurrentWeek</h3>
+                        <p class="card-text">Current Week</p>
                     </div>
                 </div>
             </div>
@@ -253,7 +257,7 @@
                                             if (k == startWeekNumber || (k > startWeekNumber && k < targetWeekNumber) || k == targetWeekNumber)
                                             {
                                                 bgColor = k < Model.CurrentWeek && item.isCompleted.HasValue && !item.isCompleted.Value ? "red"
-                                                           : k > Model.CurrentWeek ? "black"
+                                                           : k > Model.CurrentWeek ? "white"
                                                            : "green";
                                             }
                                             <td style="background-color:@bgColor" name="@(item.weeklyID)" id="@(item.weeklyTitle)" value="@(k)" onclick="toDetailedView(this.getAttribute('value'), this.id, this.getAttribute('name'))"></td>

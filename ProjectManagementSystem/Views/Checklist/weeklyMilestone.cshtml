@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Weekly Milestone";
+    ViewBag.Title = "Milestone";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
@@ -8,7 +8,7 @@
     #gantt_here {
         width: calc(100% - 160px); /* Adjust width to account for sidebar */
         height: 85vh;
-        margin-top: 20px;
+        /*margin-top: 10px;*/
         /*border: 2px solid #5C2D91;*/ /* Purple border for the container */
         border-radius: 10px;
         overflow: hidden;
@@ -21,7 +21,7 @@
     }
 
         .view-controls button {
-            background-color: #5C2D91; /* Purple */
+            background-color: #66339A; /* Purple */
             border: none;
             color: yellow;
             padding: 10px 20px;
@@ -32,7 +32,7 @@
         }
 
             .view-controls button:hover {
-                background-color: #4a1a72; /* Darker purple */
+                background-color: #4a1a72; 
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             }
 
@@ -59,7 +59,6 @@
         border-bottom: 2px solid #ddd;
     }
 
-    /* Lightbox section styling */
     .gantt_lightbox {
         font-size: 14px;
         background-color: #fff; /* White background for lightbox */
@@ -82,6 +81,12 @@
             padding: 10px;
             font-size: 14px;
         }
+
+    h1 {
+        font-weight: bold;
+        color: #66399A;
+      
+    }
 </style>
 
 <!-- Content Header (Page header) -->
@@ -90,11 +95,13 @@
         <div class="row mb-2">
             <div class="col-sm-6">
                 <h1 class="m-0">@ViewBag.Title</h1>
-            </div><!-- /.col -->
+                <p>Project name:@Model.project_name<p>
+                </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Checklist")">Home</a></li>
-                    <li class="breadcrumb-item active">Weekly Milestone</li>
+                    
+                    <li class="breadcrumb-item active">Milestone</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -110,7 +117,7 @@
                     <button onclick="setWeekView()">Week View</button>
                     <button onclick="setDayView()">Day View</button>
                 </div>
-                <div id="gantt_here"></div>
+                <div id="gantt_here" style="width:100%"></div>
             </div>
         </div>
     </div>
@@ -119,12 +126,24 @@
 
 @section scripts{
     <script>
+        //$(document).ready(function () {
+        //    $('.gantt_grid_head_cell gantt_grid_head_text').text("Milestones");
+        //});
+
         document.addEventListener("DOMContentLoaded", function () {
             // Initialize Gantt chart
             gantt.config.xml_date = "%Y-%m-%d %H:%i";
+
+
             gantt.config.readonly = true;
 
-            // Default view configuration
+            gantt.config.columns = [
+                { name: "text", label: "Milestones", width: "*", tree: true },
+                { name: "start_date", label: "Start Date", align: "center" },
+                { name: "start_date", label: "End Date", align: "center" },
+                { name: "duration", label: "Duration", align: "center" },
+            ];
+
             gantt.config.scale_unit = "week";
             gantt.config.step = 1;
             gantt.config.date_scale = "%d %M";
@@ -170,9 +189,13 @@
                 return false;
             });
 
+
+          
             gantt.plugins({
                 tooltip: true
             });
+
+            gantt.init("gantt_here");
 
             // Set month view
             window.setMonthView = function () {
