@@ -5,20 +5,15 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-
 <style>
     .dashboard-container {
         padding: 10px;
         margin-left: 160px;
     }
 
-
     .card {
         border-radius: 25px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        
-        /*margin-bottom: 20px;*/
-       
         border: none;
     }
 
@@ -45,13 +40,12 @@
 
     .card-title {
         font-size: 2.5rem;
-        font-weight:bold;
+        font-weight: bold;
         margin-bottom: 15px;
     }
 
     .card-text {
         font-size: 1.75rem;
-        /*font-weight: bold;*/
     }
 
     .row {
@@ -71,32 +65,30 @@
         color: #311B92;
     }
 
-    .table {
-        
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 30px;
+    .table-container {
+        overflow-x: auto;
+        white-space: nowrap;
     }
 
-        .table th, .table td {
-            padding: 12px;
-            text-align: center;
-            border: 2px solid #D1C4E9;
-        }
+    .table th, .table td {
+        padding: 12px;
+        text-align: center;
+        border: 2px solid #D1C4E9;
+    }
 
-        .table th {
-            background-color: #66339A;
-            color: #fff;
-        }
+    .table th {
+        background-color: #66339A;
+        color: #fff;
+    }
 
-        .table td {
-            background-color: #EDE7F6;
-            color: #333;
-        }
+    .table td {
+        background-color: #EDE7F6;
+        color: #333;
+    }
 
-        .table tr:nth-child(even) {
-            background-color: #D1C4E9;
-        }
+    .table tr:nth-child(even) {
+        background-color: #D1C4E9;
+    }
 
     th, td {
         border: 1px solid #ddd;
@@ -111,40 +103,6 @@
             z-index: 2;
             border-right: 2px solid #ddd;
         }
-
-    h2 {
-        font-weight: bold;
-    }
-
-    .table-container {
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    .table th, .table td {
-        padding: 12px;
-        text-align: center;
-        border: 2px solid #D1C4E9;
-    }
-
-        .table th:nth-child(-n+4),
-        .table td:nth-child(-n+4) {
-            position: -webkit-sticky;
-            position: sticky;
-            z-index: 5;
-        }
-
-        .table th:nth-child(-n+4),
-        .table td:nth-child(-n+4) {
-            border-right: 2px solid #D1C4E9;
-        }
-
-    .card:hover,
-    .card:focus {
-        /*background-color: #e9ecef;*/
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        outline: none;
-    }
 
     .sticky-col {
         position: -webkit-sticky;
@@ -162,6 +120,23 @@
         display: none;
     }
 
+    /* DataTables specific styles */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.5em;
+    }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+    .dataTables_wrapper .dataTables_filter input {
+        margin: 0.5em;
+    }
+
+    .dataTables_wrapper .dataTables_info {
+        margin: 0.5em;
+    }
 </style>
 
 <!-- Content Header (Page header) -->
@@ -170,11 +145,16 @@
         <div class="row">
             <div class="col-sm-6">
                 <h1 class="m-0">@ViewBag.Title</h1>
+                <h5 class="text-muted">
+                    @DateTime.Now.ToString("MMMM dd, yyyy h:mm tt")
+                </h5>
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Checklist")">Home</a></li>
                     <li class="breadcrumb-item active">Dashboard</li>
+                    @*<li class="breadcr7j-tem active">Dashboard</li>*@
+
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -219,49 +199,52 @@
             </div>
         </div>
 
-        <!--table-->
+        <!-- table -->
         <div class="row">
             <div class="col-lg-12">
                 <div class="table-container" style="overflow:auto">
-                    <table class="table table-bordered" id="checklistTable">
+                    <table id="milestonesTable" class="display">
                         <thead>
                             <tr>
-                                <th class="sticky-col fifth-col">ID</th>
-                                <th class="sticky-c ol first-col">TITLE</th>
-                                <th class="sticky-col second-col">DURATION</th>
-                                <th class="sticky-col third-col">START DATE</th>
-                                <th class="sticky-col fourth-col">TARGET DATE</th>
-                                @for (var j = 0; j < 52; j++)
+                                <th>Project Title</th>
+                                @foreach (var milestoneName in Model.UniqueMilestoneNames)
                                 {
-                                    <th class="weeks">Week @(j + 1)</th>
+                                    <th>@milestoneName</th>
+
+
+                                  
                                 }
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.WeeklyChecklists)
+                            @foreach (var projectGroup in Model.ProjectsMilestones.GroupBy(pm => pm.ProjectTitle))
                             {
                                 <tr>
-                                    <td class="sticky-col fifth-col">@item.weeklyID</td>
-                                    <td class="sticky-col first-col">@item.weeklyTitle</td>
-                                    <td class="sticky-col second-col">@item.weeklyDuration days</td>
-                                    <td class="sticky-col third-col">@item.weeklyStart.ToString("MMMM dd, yyyy")</td>
-                                    <td class="sticky-col fourth-col">@item.weeklyTarget.ToString("MMMM dd, yyyy")</td>
-                                    @{
-                                        var calendar = CultureInfo.InvariantCulture.Calendar;
-                                        int startWeekNumber = calendar.GetWeekOfYear(item.weeklyStart, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                                        int targetWeekNumber = calendar.GetWeekOfYear(item.weeklyTarget, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                                        for (var k = 1; k <= 52; k++)
-                                        {
-                                            var bgColor = "white";
+                                    <td>
+                                        <a href="javascript:void(0);" onclick="toDetailedView('@projectGroup.Key', '@projectGroup.Key', '@projectGroup.Key')">
+                                            @projectGroup.Key
+                                        </a>
+                                    </td>
+                                    @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                    {
+                                        var milestone = projectGroup.FirstOrDefault(pm => pm.MilestoneName == milestoneName);
+                                        var bgColor = "transparent";
 
-                                            if (k == startWeekNumber || (k > startWeekNumber && k < targetWeekNumber) || k == targetWeekNumber)
-                                            {
-                                                bgColor = k < Model.CurrentWeek && item.isCompleted.HasValue && !item.isCompleted.Value ? "red"
-                                                           : k > Model.CurrentWeek ? "white"
-                                                           : "green";
-                                            }
-                                            <td style="background-color:@bgColor" name="@(item.weeklyID)" id="@(item.weeklyTitle)" value="@(k)" onclick="toDetailedView(this.getAttribute('value'), this.id, this.getAttribute('name'))"></td>
+                                        if (milestone != null && milestone.EndDate.HasValue)
+                                        {
+                                            var endWeekNumber = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+                                            var currentWeek = Model.CurrentWeek;
+
+                                            bgColor = endWeekNumber < currentWeek && milestone.EndDate.HasValue ? "red"
+                                                       : endWeekNumber > currentWeek ? "white"
+                                                       : "green"; 
                                         }
+
+                                        <td class="week-cell" style="background-color:@bgColor" onclick="toDetailedView('@projectGroup.Key', '@milestoneName', 'week-@milestoneName')">
+                                            @(milestone != null ? milestone.EndDateFormat : "N/A")
+                                        </td>
+
+                                   
                                     }
                                 </tr>
                             }
@@ -271,33 +254,35 @@
             </div>
         </div>
     </div>
+
     <!-- /.container-fluid -->
 </div>
 <!-- /.content -->
 @section scripts{
     <!-- jQuery -->
     <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            var currentWeek = @Model.CurrentWeek;
-
-            var table = $('#checklistTable');
-            var targetColumn = table.find('.weeks').eq(currentWeek - 3);
-            console.log(targetColumn)
-
-            if (targetColumn.length) {
-                $('.table-container').animate({
-                    scrollLeft: targetColumn.position().left
-                }, 2000);
-            }
+            $('#milestonesTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "info": true,
+                "autoWidth": false,
+                "columnDefs": [
+                    { "targets": "_all", "className": "dt-center" }
+                ]
+            });
         });
 
-        function toDetailedView(value, id, name) {
-
-            window.location.href = "@Url.Action("weeklyMilestone", "Checklist")?id="+ value +"&title="+ id + "&projectId=" + name;
-        }
-
-
+     function toDetailedView(value, id, name) {
+            var url = "@Url.Action("weeklyMilestone", "Checklist")";
+            var queryString = $.param({
+                id: value,
+                title: id,
+                projectId: name
+            });
+            window.location.href = url + "?" + queryString;
+    }
     </script>
-
 }

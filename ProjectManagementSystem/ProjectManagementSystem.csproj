@@ -253,8 +253,17 @@
     <Compile Include="Models\ChecklistTable.cs">
       <DependentUpon>ChecklistDB.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DetailsTbl.cs">
+      <DependentUpon>ChecklistDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\MainTable.cs">
+      <DependentUpon>ChecklistDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\MilestoneTbl.cs">
+      <DependentUpon>ChecklistDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Report.cs">
       <DependentUpon>ChecklistDB.tt</DependentUpon>
     </Compile>
