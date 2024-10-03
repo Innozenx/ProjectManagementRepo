@@ -47,9 +47,9 @@
           <Property Name="task_id" Type="int" />
           <Property Name="main_subtask_id" Type="int" />
           <Property Name="IsSubtask" Type="bit" />
-          <Property Name="start_date" Type="datetime" />
-          <Property Name="end_date" Type="datetime" />
-          <Property Name="duration" Type="int" />
+          <Property Name="task_start" Type="datetime" />
+          <Property Name="task_end" Type="datetime" />
+          <Property Name="task_duration" Type="int" />
           <Property Name="source" Type="int" />
           <Property Name="target" Type="int" />
           <Property Name="parent" Type="int" />
@@ -64,7 +64,7 @@
           <Property Name="project_start" Type="date" />
           <Property Name="project_end" Type="date" />
           <Property Name="duration" Type="int" />
-          <Property Name="year" Type="date" />
+          <Property Name="year" Type="int" />
           <Property Name="division" Type="nvarchar" MaxLength="255" />
           <Property Name="category" Type="nvarchar" MaxLength="255" />
           <Property Name="project_owner" Type="nvarchar" MaxLength="255" />
@@ -76,8 +76,6 @@
           <Property Name="milestone_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="main_id" Type="int" />
           <Property Name="milestone_name" Type="nvarchar" MaxLength="255" />
-          <Property Name="start_date" Type="datetime" />
-          <Property Name="end_date" Type="datetime" />
           <Property Name="created_date" Type="datetime" />
           <Property Name="milestone_position" Type="int" />
         </EntityType>
@@ -238,17 +236,17 @@
           <Property Name="details_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="milestone_id" Type="Int32" />
           <Property Name="process_title" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="task_id" Type="Int32" />
+          <Property Name="main_subtask_id" Type="Int32" />
           <Property Name="IsSubtask" Type="Boolean" />
-          <Property Name="start_date" Type="DateTime" Precision="3" />
-          <Property Name="end_date" Type="DateTime" Precision="3" />
-          <Property Name="duration" Type="Int32" />
+          <Property Name="task_start" Type="DateTime" Precision="3" />
+          <Property Name="task_end" Type="DateTime" Precision="3" />
+          <Property Name="task_duration" Type="Int32" />
           <Property Name="source" Type="Int32" />
           <Property Name="target" Type="Int32" />
           <Property Name="parent" Type="Int32" />
           <Property Name="created_date" Type="DateTime" Precision="0" />
           <NavigationProperty Name="MilestoneTbl" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="DetailsTbl" ToRole="MilestoneTbl" />
-          <Property Name="main_subtask_id" Type="Int32" />
-          <Property Name="task_id" Type="Int32" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -259,7 +257,7 @@
           <Property Name="project_start" Type="DateTime" Precision="0" />
           <Property Name="project_end" Type="DateTime" Precision="0" />
           <Property Name="duration" Type="Int32" />
-          <Property Name="year" Type="DateTime" Precision="0" />
+          <Property Name="year" Type="Int32" />
           <Property Name="division" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="category" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="project_owner" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
@@ -272,8 +270,6 @@
           <Property Name="milestone_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="main_id" Type="Int32" />
           <Property Name="milestone_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="start_date" Type="DateTime" Precision="3" />
-          <Property Name="end_date" Type="DateTime" Precision="3" />
           <Property Name="created_date" Type="DateTime" Precision="3" />
           <Property Name="milestone_position" Type="Int32" />
           <NavigationProperty Name="DetailsTbls" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="MilestoneTbl" ToRole="DetailsTbl" />
@@ -401,16 +397,16 @@
           <EntitySetMapping Name="DetailsTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.DetailsTbl">
               <MappingFragment StoreEntitySet="DetailsTbl">
-                <ScalarProperty Name="task_id" ColumnName="task_id" />
-                <ScalarProperty Name="main_subtask_id" ColumnName="main_subtask_id" />
                 <ScalarProperty Name="created_date" ColumnName="created_date" />
                 <ScalarProperty Name="parent" ColumnName="parent" />
                 <ScalarProperty Name="target" ColumnName="target" />
                 <ScalarProperty Name="source" ColumnName="source" />
-                <ScalarProperty Name="duration" ColumnName="duration" />
-                <ScalarProperty Name="end_date" ColumnName="end_date" />
-                <ScalarProperty Name="start_date" ColumnName="start_date" />
+                <ScalarProperty Name="task_duration" ColumnName="task_duration" />
+                <ScalarProperty Name="task_end" ColumnName="task_end" />
+                <ScalarProperty Name="task_start" ColumnName="task_start" />
                 <ScalarProperty Name="IsSubtask" ColumnName="IsSubtask" />
+                <ScalarProperty Name="main_subtask_id" ColumnName="main_subtask_id" />
+                <ScalarProperty Name="task_id" ColumnName="task_id" />
                 <ScalarProperty Name="process_title" ColumnName="process_title" />
                 <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
                 <ScalarProperty Name="details_id" ColumnName="details_id" />
@@ -437,8 +433,6 @@
               <MappingFragment StoreEntitySet="MilestoneTbl">
                 <ScalarProperty Name="milestone_position" ColumnName="milestone_position" />
                 <ScalarProperty Name="created_date" ColumnName="created_date" />
-                <ScalarProperty Name="end_date" ColumnName="end_date" />
-                <ScalarProperty Name="start_date" ColumnName="start_date" />
                 <ScalarProperty Name="milestone_name" ColumnName="milestone_name" />
                 <ScalarProperty Name="main_id" ColumnName="main_id" />
                 <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />

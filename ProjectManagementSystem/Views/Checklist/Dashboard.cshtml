@@ -207,17 +207,16 @@
                         <thead>
                             <tr>
                                 <th>Project Title</th>
-                                @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                @foreach(var milestoneName in Model.UniqueMilestoneNames)
                                 {
                                     <th>@milestoneName</th>
-
-
-                                  
                                 }
+                    
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var projectGroup in Model.ProjectsMilestones.GroupBy(pm => pm.ProjectTitle))
+                            @foreach (var projectGroup in Model.ProjectsMilestones
+                                .GroupBy(pm => pm.ProjectTitle))
                             {
                                 <tr>
                                     <td>
@@ -235,9 +234,11 @@
                                             var endWeekNumber = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
                                             var currentWeek = Model.CurrentWeek;
 
+
+
                                             bgColor = endWeekNumber < currentWeek && milestone.EndDate.HasValue ? "red"
                                                        : endWeekNumber > currentWeek ? "white"
-                                                       : "green"; 
+                                                       : "green";
                                         }
 
                                         <td class="week-cell" style="background-color:@bgColor" onclick="toDetailedView('@projectGroup.Key', '@milestoneName', 'week-@milestoneName')">

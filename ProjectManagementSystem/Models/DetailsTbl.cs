@@ -17,16 +17,16 @@ namespace ProjectManagementSystem.Models
         public int details_id { get; set; }
         public Nullable<int> milestone_id { get; set; }
         public string process_title { get; set; }
+        public Nullable<int> task_id { get; set; }
+        public Nullable<int> main_subtask_id { get; set; }
         public Nullable<bool> IsSubtask { get; set; }
-        public Nullable<System.DateTime> start_date { get; set; }
-        public Nullable<System.DateTime> end_date { get; set; }
-        public Nullable<int> duration { get; set; }
+        public Nullable<System.DateTime> task_start { get; set; }
+        public Nullable<System.DateTime> task_end { get; set; }
+        public Nullable<int> task_duration { get; set; }
         public Nullable<int> source { get; set; }
         public Nullable<int> target { get; set; }
         public Nullable<int> parent { get; set; }
         public Nullable<System.DateTime> created_date { get; set; }
-        public Nullable<int> main_subtask_id { get; set; }
-        public Nullable<int> task_id { get; set; }
     
         public virtual MilestoneTbl MilestoneTbl { get; set; }
     }

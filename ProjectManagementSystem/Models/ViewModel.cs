@@ -39,73 +39,7 @@ namespace ProjectManagementSystem.Models
         public string weeklyTarget { get; set; }
         public string weeklyInYear { get; set; }
 
-        //public bool week1 { get; set; }
-        //public bool week2 { get; set; }
-        //public bool week3 { get; set; }
-        //public bool week4 { get; set; }
-        //public bool week5 { get; set; }
-        //public bool week6 { get; set; }
-        //public bool week7 { get; set; }
-        //public bool week8 { get; set; }
-        //public bool week9 { get; set; }
-        //public bool week10 { get; set; }
-        //public bool week11 { get; set; }
-        //public bool week12 { get; set; }
-        //public bool week13 { get; set; }
-        //public bool week14 { get; set; }
-        //public bool week15 { get; set; }
-        //public bool week16 { get; set; }
-        //public bool week17 { get; set; }
-        //public bool week18 { get; set; }
-        //public bool week19 { get; set; }
-        //public bool week20 { get; set; }
-        //public bool week21 { get; set; }
-        //public bool week22 { get; set; }
-        //public bool week23 { get; set; }
-        //public bool week24 { get; set; }
-        //public bool week25 { get; set; }
-        //public bool week26 { get; set; }
-        //public bool week27 { get; set; }
-        //public bool week28 { get; set; }
-        //public bool week29 { get; set; }
-        //public bool week30 { get; set; }
-        //public bool week31 { get; set; }
-        //public bool week32 { get; set; }
-        //public bool week33 { get; set; }
-        //public bool week34 { get; set; }
-        //public bool week35 { get; set; }
-        //public bool week36 { get; set; }
-        //public bool week37 { get; set; }
-        //public bool week38 { get; set; }
-        //public bool week39 { get; set; }
-        //public bool week40 { get; set; }
-        //public bool week41 { get; set; }
-        //public bool week42 { get; set; }
-        //public bool week43 { get; set; }
-        //public bool week44 { get; set; }
-        //public bool week45 { get; set; }
-        //public bool week46 { get; set; }
-        //public bool week47 { get; set; }
-        //public bool week48 { get; set; }
-        //public bool week49 { get; set; }
-        //public bool week50 { get; set; }
-        //public bool week51 { get; set; }
-        //public bool week52 { get; set; }
     }
-
-    //public class MilestoneViewModel
-    //{
-    //    public string ProjectTitle { get; set; }
-    //    public DateTime StartDate { get; set; }
-    //    public DateTime EndDate { get; set; }
-    //    public string ProjectName { get; set; }
-    //    public string Divsion { get; set; }
-    //    public byte Completed { get; set; }
-    //    public byte Cancelled { get; set; }
-    //    public List<MilestoneTbl> MilesetoneTable { get; set; }
-    //}
-
-
 
 
     public class DashboardViewModel
@@ -117,6 +51,7 @@ namespace ProjectManagementSystem.Models
         public List<WeeklyChecklist> WeeklyChecklists { get; set; }
         public List<ProjectMilestoneViewModel> ProjectsMilestones { get; set; }
         public List<string> UniqueMilestoneNames { get; set; }
+        public List<dynamic> Tasks { get; set; } 
     }
 
 
@@ -129,60 +64,6 @@ namespace ProjectManagementSystem.Models
         public DateTime? EndDate { get; set; }
     }
 
-    //public class ProjectWithMilestones
-    //{
-    //    public string ProjectTitle { get; set; }
-    //    public List<MilestoneViewModel> Milestones { get; set; }
-    //}
-
-
-    //public class DashboardViewModel
-    //{
-    //    public int CompletedTasks { get; set; }
-    //    public int PendingTasks { get; set; }
-    //    public int TotalTasks { get; set; }
-    //    public int CurrentWeek { get; set; }
-    //    public List<WeeklyChecklist> WeeklyChecklists { get; set; }
-    //    public List<MilestoneViewModel> Milestones { get; set; }
-    //}
-
-    //public class ProjectViewModel
-    //{
-    //    public int ProjectId { get; set; }
-    //    public string ProjectTitle { get; set; }
-    //    public List<MilestoneViewModel> Milestones { get; set; }
-    //}
-
-
-    //public class DashboardViewModel
-    //{
-    //    public int CompletedTasks { get; set; }
-    //    public int PendingTasks { get; set; }
-    //    public int TotalTasks { get; set; }
-    //    public int CurrentWeek { get; set; }
-    //    public List<WeeklyChecklist> WeeklyChecklists { get; set; }
-    //    public List<MilestoneViewModel> Milestones { get; set; } 
-    //}
-
-    //public class MilestoneViewModel
-    //{
-    //    public string Title { get; set; }
-    //    public DateTime? StartDate { get; set; }
-    //    public DateTime? EndDate { get; set; }
-    //    public DateTime? Year { get; set; }
-    //}
-
-    //public class WeeklyChecklist
-    //{
-    //    public int weeklyID { get; set; }
-    //    public string weeklyTitle { get; set; }
-    //    public int weeklyDuration { get; set; }
-    //    public DateTime weeklyStart { get; set; }
-    //    public DateTime weeklyTarget { get; set; }
-    //    public bool? isCompleted { get; set; }
-    //}
-
-
     public class TaskGantt
     {
         public int Id { get; set; }
@@ -193,7 +74,6 @@ namespace ProjectManagementSystem.Models
         public int? ParentId { get; set; }
         public string Type { get; set; }
     }
-
 
     public class PMReport
     {
@@ -227,14 +107,14 @@ namespace ProjectManagementSystem.Models
         public bool IsSubtask { get; set; }
         public DateTime projectStart { get; set; }
         public DateTime projectEnd { get; set; }
-        public int duration { get; set; }
-        public DateTime year { get; set; }
+        public int task_duration { get; set; }
+        public int year { get; set; }
         public string division { get; set; }
         public string category { get; set; }
         public string projectOwner { get; set; }
         public string MilestoneName { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime TaskStart { get; set; }
+        public DateTime TaskEnd { get; set; }
         public int? Source { get; set; } 
         public int? Target { get; set; } 
         public int? Parent { get; set; }
@@ -245,53 +125,12 @@ namespace ProjectManagementSystem.Models
         public int Duration { get; set; }
     }
 
-    //public class exportCSV
-    //{
-    //    public int id { get; set; }
-    //    public string projectTitle { get; set; }
-    //    public DateTime projectStart { get; set; }
-    //    public DateTime projectEnd { get; set; }
-    //    public int duration { get; set; }
-    //    public DateTime year { get; set; }
-    //    public string division { get; set; }
-    //    public string category { get; set; }
-    //    public string projectOwner { get; set; }
-
-    //    public string MilestoneName { get; set; }
-    //    public DateTime CreatedDate { get; set; }
-    //    public DateTime StartDate { get; set; }
-    //    public DateTime EndDate { get; set; }
-    //    public int Source { get; set; }
-    //    public int Target { get; set; }
-    //    public int Parent { get; set; }  
-
-    //    //public string processTitle { get; set; }
-    //    //[Format("MM/dd/yyyy")]
-    //    //public DateTime start { get; set; }
-    //    //public int duration { get; set; }
-    //    //public string source { get; set; }
-    //    //public string target { get; set; }
-    //    //public int parent { get; set; }
-    //    //public string projectTitle { get; set; }
-    //    //[Format("MM/dd/yyyy")]
-    //    //public DateTime projectStart { get; set; }
-    //    //public int projectDuration { get; set; }
-    //    //[Format("MM/dd/yyyy")]
-    //    //public DateTime projectEnd { get; set; }
-    //    //public int projectYear { get; set; }
-    //    //public string division { get; set; }
-    //    //public string category { get; set; }
-    //    //public string owner { get; set; }
-    //    //public string id { get; set; }
-    //    //public int sequence { get; set; }
-    //    //public string projectId { get; set; }
-
-    //}
 
     public class exportCSVHeader
     { 
         public string ProcessTitle { get; set; }
-        public DateTime StartDate { get; set; } 
+        public DateTime StartDate { get; set; }
+        public int TaskDuration { get; set; }
         public DateTime EndDate { get; set; }
         public string ProjectTitle { get; set; }
         public DateTime ProjectStart { get; set; }
@@ -326,8 +165,6 @@ namespace ProjectManagementSystem.Models
 
     }
 
-
-
     sealed class ProjectMap : ClassMap<exportCSV>
     {
         public ProjectMap()
@@ -335,17 +172,18 @@ namespace ProjectManagementSystem.Models
             Map(x => x.Process).Name("Process");
             Map(x => x.ProjectTitle).Name("Project_Title");
             Map(x => x.ProcessTitle).Name("Process_Title");
+            Map(x => x.TaskStart).Name("Start");
             Map(x => x.projectStart).Name("Project_Start");
             Map(x => x.projectEnd).Name("Project_End");
-            Map(x => x.duration).Name("Duration");
+            Map(x => x.task_duration).Name("Duration");
             Map(x => x.division).Name("Division");
             Map(x => x.category).Name("Category");
             Map(x => x.projectOwner).Name("Owner");
             Map(x => x.MilestoneName).Name("Process");
 
-            Map(x => x.StartDate).Name("Project_Start");
-            Map(x => x.EndDate).Name("Project_End");
-            Map(x => x.duration).Name("Project_Duration");
+            Map(x => x.projectStart).Name("Project_Start");
+            Map(x => x.TaskEnd).Name("Project_End");
+            Map(x => x.Duration).Name("Project_Duration");
             Map(x => x.Source).Name("Source");
             Map(x => x.Target).Name("Target");
             Map(x => x.Parent).Name("Parent");
@@ -353,51 +191,6 @@ namespace ProjectManagementSystem.Models
             Map(x => x.id).Name("ID");
         }
     }
-
-
-
-    //sealed class ProjectMap : ClassMap<exportCSV>
-    //{
-    //    public ProjectMap()
-    //    {
-    //        Map(x => x.projectTitle).Name("Project_Title");
-    //        Map(x => x.projectStart).Name("Project_Start");
-    //        Map(x => x.projectEnd).Name("Project_End");
-    //        Map(x => x.duration).Name("Duration");
-    //        Map(x => x.division).Name("Division");
-    //        Map(x => x.category).Name("Category");
-    //        Map(x => x.projectOwner).Name("Owner");
-    //        Map(x => x.MilestoneName).Name("Process");
-
-    //        Map(x => x.StartDate).Name("Project_Start");
-    //        Map(x => x.EndDate).Name("Project_End");
-    //        Map(x => x.duration).Name("Project_Duration");
-    //        Map(x => x.Source).Name("Source");
-    //        Map(x => x.Target).Name("Target");
-    //        Map(x => x.Parent).Name("Parent");
-
-
-
-    //        //Map(x => x.process).Name("Process");
-    //        //Map(x => x.processTitle).Name("Process_Title");
-    //        //Map(x => x.start).Name("Start");
-    //        //Map(x => x.duration).Name("Duration");
-    //        //Map(x => x.source).Name("Source");
-    //        //Map(x => x.target).Name("Target");
-    //        //Map(x => x.parent).Name("Parent");
-    //        //Map(x => x.projectTitle).Name("Project_Title");
-    //        //Map(x => x.projectStart).Name("Project_Start");
-    //        //Map(x => x.projectDuration).Name("Project_Duration");
-    //        //Map(x => x.projectEnd).Name("Project_End");
-    //        //Map(x => x.projectYear).Name("Project_Year");
-    //        //Map(x => x.division).Name("Division");
-    //        //Map(x => x.category).Name("Category");
-    //        //Map(x => x.owner).Name("Owner");
-    //        //Map(x => x.id).Name("ID");
-    //        //Map(x => x.sequence).Name("Sequence");
-    //        //Map(x => x.projectId).Name("Project_ID");
-
-    //    }
     public class WeeeklyStatus
         {
             public int status_id { get; set; }
@@ -410,7 +203,11 @@ namespace ProjectManagementSystem.Models
             public string projectType { get; set; }
     }
 
-   
+    public class detailsList
+    {
+        List<DetailsTbl> TasksList { get; set; }
+    }
+
 
 
     //public class listWeekly
@@ -434,3 +231,10 @@ namespace ProjectManagementSystem.Models
     //}
 
 }
+
+
+
+
+
+
+

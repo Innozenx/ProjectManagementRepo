@@ -23,8 +23,6 @@ namespace ProjectManagementSystem.Models
         public int milestone_id { get; set; }
         public Nullable<int> main_id { get; set; }
         public string milestone_name { get; set; }
-        public Nullable<System.DateTime> start_date { get; set; }
-        public Nullable<System.DateTime> end_date { get; set; }
         public Nullable<System.DateTime> created_date { get; set; }
         public Nullable<int> milestone_position { get; set; }
     
