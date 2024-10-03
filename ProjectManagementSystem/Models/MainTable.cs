@@ -25,7 +25,7 @@ namespace ProjectManagementSystem.Models
         public Nullable<System.DateTime> project_start { get; set; }
         public Nullable<System.DateTime> project_end { get; set; }
         public Nullable<int> duration { get; set; }
-        public Nullable<System.DateTime> year { get; set; }
+        public Nullable<int> year { get; set; }
         public string division { get; set; }
         public string category { get; set; }
         public string project_owner { get; set; }
