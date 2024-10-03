@@ -79,6 +79,8 @@ namespace ProjectManagementSystem.Controllers
         //}
 
 
+            // datetime i-parse then convert to datetime sa db
+
         public ActionResult Dashboard()
         {
             var currentYear = DateTime.Now.Year;
@@ -318,8 +320,8 @@ namespace ProjectManagementSystem.Controllers
                             var addWeeklyChecklist = new MainTable
                             {
                                 project_title = getProject.ProjectTitle,
-                                project_start = getProject.projectStart,
-                                project_end = getProject.projectEnd,
+                                project_start = Convert.ToDateTime(getProject.projectStart),
+                                project_end = Convert.ToDateTime(getProject.projectEnd),
                                 duration = getProject.Duration,
                                 year = getProject.year,
                                 division = getProject.division,
@@ -369,7 +371,7 @@ namespace ProjectManagementSystem.Controllers
                                 {
 
                                     // calculate task end_date based on task_start and duration
-                                    DateTime taskStartDate = taskGroup.TaskStart;
+                                    DateTime taskStartDate = Convert.ToDateTime(taskGroup.TaskStart);
                                     int taskDuration = taskGroup.task_duration;
                                     DateTime taskEnddate = taskStartDate.AddDays(taskDuration);
 
@@ -393,7 +395,7 @@ namespace ProjectManagementSystem.Controllers
                                     {
                                         milestone_id = milestone.milestone_id,
                                         process_title = taskGroup.ProcessTitle,
-                                        task_start = taskGroup.TaskStart, 
+                                        task_start = Convert.ToDateTime(taskGroup.TaskStart), 
                                         //task_end = taskGroup.TaskEnd,
                                         task_duration = taskGroup.task_duration,
                                         source = taskGroup.Source,

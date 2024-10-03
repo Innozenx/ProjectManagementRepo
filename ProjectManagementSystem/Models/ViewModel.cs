@@ -105,16 +105,16 @@ namespace ProjectManagementSystem.Models
         public string ProcessTitle { get; set; }
         public int MainSubTaskID { get; set; }
         public bool IsSubtask { get; set; }
-        public DateTime projectStart { get; set; }
-        public DateTime projectEnd { get; set; }
+        public string projectStart { get; set; }
+        public string projectEnd { get; set; }
         public int task_duration { get; set; }
         public int year { get; set; }
         public string division { get; set; }
         public string category { get; set; }
         public string projectOwner { get; set; }
         public string MilestoneName { get; set; }
-        public DateTime TaskStart { get; set; }
-        public DateTime TaskEnd { get; set; }
+        public string TaskStart { get; set; }
+        public string TaskEnd { get; set; }
         public int? Source { get; set; } 
         public int? Target { get; set; } 
         public int? Parent { get; set; }
