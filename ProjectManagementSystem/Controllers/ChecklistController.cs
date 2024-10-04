@@ -234,7 +234,6 @@ namespace ProjectManagementSystem.Controllers
             var message = "";
             var status = false;
 
-
             var attachment = System.Web.HttpContext.Current.Request.Files["pmcsv"];
             if (attachment == null || attachment.ContentLength <= 0)
             {
@@ -250,7 +249,6 @@ namespace ProjectManagementSystem.Controllers
                     var exportList = new List<exportCSV>();
                     var isHeader = true;
 
-
                     while (csv.Read())
                     {
                         if (isHeader)
@@ -260,37 +258,20 @@ namespace ProjectManagementSystem.Controllers
                             continue;
                         }
 
-                        exportList.Add(csv.GetRecord<exportCSV>());
+                        try
+                        {
+                            exportList.Add(csv.GetRecord<exportCSV>());
+                        }
+                        catch (Exception ex)
+                        {
+                            return Json(new { message = "Error parsing CSV: " + ex.Message, status = false }, JsonRequestBehavior.AllowGet);
+                        }
                     }
 
                     using (var transaction = db.Database.BeginTransaction())
                     {
                         try
                         {
-                            //#region Main Table
-                            //var getProject = exportList.GroupBy(x => x.ProjectTitle).Select(x => x.First()).FirstOrDefault();
-
-                            //if (getProject == null)
-                            //{
-                            //    throw new Exception("No valid project data found.");
-                            //}
-
-                            //var addWeeklyChecklist = new MainTable
-                            //{
-                            //    project_title = getProject.ProjectTitle,
-                            //    project_start = Convert.ToDateTime(getProject.projectStart),
-                            //    project_end = Convert.ToDateTime(getProject.projectEnd),
-                            //    duration = getProject.Duration,
-                            //    year = getProject.year,
-                            //    division = getProject.division,
-                            //    category = getProject.category,
-                            //    project_owner = getProject.projectOwner
-                            //};
-                            //var _mainTableId = db.MainTables.Add(addWeeklyChecklist);
-                            //db.SaveChanges();
-                            //#endregion
-
-                            #region Main Table
                             var getProject = exportList.GroupBy(x => x.ProjectTitle).Select(x => x.First()).FirstOrDefault();
 
                             if (getProject == null)
@@ -298,27 +279,23 @@ namespace ProjectManagementSystem.Controllers
                                 throw new Exception("No valid project data found.");
                             }
 
-                            // date format and culture
-                            string dateFormat = "dd/MM/yyyy"; 
-                            IFormatProvider culture = new CultureInfo("en-US", true);
+                            string dateFormat = "dd/MM/yyyy";
 
                             var addWeeklyChecklist = new MainTable
                             {
                                 project_title = getProject.ProjectTitle,
-                                project_start = DateTime.ParseExact(getProject.projectStart, dateFormat, culture),
-                                project_end = DateTime.ParseExact(getProject.projectEnd, dateFormat, culture),
+                                project_start = DateTime.ParseExact(getProject.projectStart, dateFormat, CultureInfo.InvariantCulture),
+                                project_end = DateTime.ParseExact(getProject.projectEnd, dateFormat, CultureInfo.InvariantCulture),
                                 duration = getProject.Duration,
                                 year = getProject.ProjectYear,
                                 division = getProject.division,
                                 category = getProject.category,
                                 project_owner = getProject.projectOwner
                             };
-                            var _mainTableId = db.MainTables.Add(addWeeklyChecklist);
-                            db.SaveChanges();
-                            #endregion
 
+                            db.MainTables.Add(addWeeklyChecklist);
+                            db.SaveChanges(); 
 
-                            #region Milestones
                             var milestones = exportList
                                 .Where(x => x.ProjectTitle == getProject.ProjectTitle)
                                 .GroupBy(x => x.MilestoneName)
@@ -327,89 +304,75 @@ namespace ProjectManagementSystem.Controllers
 
                             List<MilestoneTbl> milestoneList = new List<MilestoneTbl>();
 
-                            // iterate milestones and create record
                             foreach (var content in milestones)
                             {
-                               
                                 var addMilestone = new MilestoneTbl
                                 {
                                     milestone_name = content.MilestoneName,
-                                    main_id = _mainTableId.main_id,
+                                    main_id = addWeeklyChecklist.main_id, 
                                     created_date = DateTime.Now,
                                     milestone_position = content.Sequence
                                 };
                                 milestoneList.Add(addMilestone);
                             }
                             db.MilestoneTbls.AddRange(milestoneList);
-                            db.SaveChanges();
-                            #endregion
+                            db.SaveChanges(); 
 
-                            #region Details and Subtasks 
                             List<DetailsTbl> detailList = new List<DetailsTbl>();
-                            foreach (var milestone in milestoneList) 
+                            foreach (var milestone in milestoneList)
                             {
                                 var groupedTasks = exportList
                                     .Where(x => x.MilestoneName == milestone.milestone_name)
                                     .ToList();
 
-
                                 foreach (var taskGroup in groupedTasks)
                                 {
-
-                                    // calculate task end_date based on task_start and duration
-                                    DateTime taskStartDate = DateTime.ParseExact(taskGroup.TaskStart, dateFormat, culture);
+                                    DateTime taskStartDate = DateTime.ParseExact(taskGroup.TaskStart, dateFormat, CultureInfo.InvariantCulture);
                                     int taskDuration = taskGroup.task_duration;
-                                    DateTime taskEnddate = taskStartDate.AddDays(taskDuration);
+                                    DateTime taskEndDate = taskStartDate.AddDays(taskDuration);
 
                                     var subtask = false; // subtask
                                     int? parentId = null; // parent id
-                                    var _parentID = taskGroup.Parent; // get parent id
+                                    var _parentID = taskGroup.Parent;
 
-                                    // check if subtask
                                     var isSubtask = exportList.Any(x => x.id == _parentID);
-
-                                    // if subtask, get process title and parent id 
                                     if (isSubtask)
                                     {
                                         subtask = true;
-                                        var processTitle = exportList.FirstOrDefault(x => x.id == _parentID).ProcessTitle;
-                                        parentId = db.DetailsTbls.OrderByDescending(x => x.details_id).FirstOrDefault(x => x.process_title == processTitle).details_id;
+                                        var processTitle = exportList.FirstOrDefault(x => x.id == _parentID)?.ProcessTitle;
+                                        parentId = db.DetailsTbls.OrderByDescending(x => x.details_id)
+                                            .FirstOrDefault(x => x.process_title == processTitle)?.details_id;
                                     }
 
-                                    // create new task and set details
                                     var addTask = new DetailsTbl
                                     {
                                         milestone_id = milestone.milestone_id,
                                         process_title = taskGroup.ProcessTitle,
-                                        task_start = DateTime.ParseExact(taskGroup.TaskStart, dateFormat, culture), 
-                                        //task_end = taskGroup.TaskEnd,
+                                        task_start = taskStartDate,
                                         task_duration = taskGroup.task_duration,
                                         source = taskGroup.Source,
                                         target = taskGroup.Target,
                                         parent = parentId,
-                                        created_date = DateTime.Now.ToLocalTime(), 
+                                        created_date = DateTime.Now.ToLocalTime(),
                                         IsSubtask = subtask,
-
                                     };
 
-                                    db.DetailsTbls.Add(addTask);
-                                    db.SaveChanges();
-
+                                    detailList.Add(addTask); 
                                 }
                             }
-                            #endregion
+
+                            db.DetailsTbls.AddRange(detailList);
+                            db.SaveChanges(); 
 
                             transaction.Commit();
-                           
                             message = "Project added successfully!";
                             status = true;
                         }
                         catch (Exception ex)
                         {
                             transaction.Rollback();
-                            message = "An error occured while saving: " + ex.Message;
+                            message = "An error occurred while saving: " + (ex.InnerException?.Message ?? ex.Message);
                         }
-
                     }
 
                     return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
@@ -417,10 +380,11 @@ namespace ProjectManagementSystem.Controllers
             }
             catch (Exception ex)
             {
-                message = "An error occurred: " + ex.Message;
+                message = "An error occurred: " + (ex.InnerException?.Message ?? ex.Message);
                 return Json(new { message = message, status = false }, JsonRequestBehavior.AllowGet);
             }
         }
+
 
         public JsonResult SaveStatus()
         {

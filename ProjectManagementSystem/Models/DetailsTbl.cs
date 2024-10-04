@@ -17,8 +17,6 @@ namespace ProjectManagementSystem.Models
         public int details_id { get; set; }
         public Nullable<int> milestone_id { get; set; }
         public string process_title { get; set; }
-        public Nullable<int> task_id { get; set; }
-        public Nullable<int> main_subtask_id { get; set; }
         public Nullable<bool> IsSubtask { get; set; }
         public Nullable<System.DateTime> task_start { get; set; }
         public Nullable<System.DateTime> task_end { get; set; }
