@@ -4,17 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Globalization;
-using System.Data.SqlClient;
-using System.Configuration;
-using System.Diagnostics;
 using System.Data;
 using System.IO;
-using System.Web;
-using Newtonsoft.Json;
 using CsvHelper;
 using CsvHelper.Configuration;
-using System.Threading.Tasks;
 using CsvHelper.TypeConversion;
+
+
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -147,6 +143,9 @@ namespace ProjectManagementSystem.Controllers
             return View(viewModel);
         }
 
+
+        
+
         private List<string> GetUniqueMilestoneNames()
         {
             return db.MilestoneTbls.Select(m => m.milestone_name).Distinct().ToList();
@@ -161,47 +160,6 @@ namespace ProjectManagementSystem.Controllers
 
             return View();
         }
-
-        //public JsonResult getGanttData(int week, string title, string projectId)
-        //{
-        //    List<DetailsTbl> details = new List<DetailsTbl>();
-        //    Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
-        //    var currentYear = DateTime.Now.Year;
-
-        //    details = db.DetailsTbls.Where(x => x.task_start <= week && x.duration >= week && x.year == currentYear && x.process_title.Equals(title) && x.details_id.Equals(projectId)).OrderBy(x => x.sequenceId).ToList();
-        //    details.AddRange(db.DetailsTbl.Where(x => x.localId >= 1 && x.localId <= 5).ToList());
-
-        //    var data = details.Select(x => new
-        //    {
-        //        id = x.id,
-        //        start_date = x.dateInitial != null
-        //            ? x.dateInitial.Value.ToString("yyyy-MM-dd")
-        //            : DateTime.Now.ToString("yyyy-MM-dd"),
-        //        duration = x.duration,
-        //        end_date = x.dateInitial != null
-        //            ? x.dateInitial.Value.AddDays(x.duration).ToString("yyyy-MM-dd")
-        //            : DateTime.Now.AddDays(x.duration).ToString("yyyy-MM-dd"),
-        //        color = x.dateInitial != null
-        //            ? DateTime.Now < x.dateInitial ? "black" : x.status == "completed" ? "green" : DateTime.Now <= x.dateInitial.Value.AddDays(x.duration) && DateTime.Now > x.dateInitial ? "orange" : "red"
-        //            : "white",
-        //        text = x.text,
-        //        parent = x.parent,
-        //        target = x.target,
-        //        source = x.source,
-        //        type = x.type,
-        //        unscheduled = x.isUnscheduled
-        //    }).ToArray();
-
-        //    var jsonData = new
-        //    {
-        //        tasks = data,
-        //        links = data
-        //    };
-
-        //    return new JsonResult { Data = jsonData, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-        //}
-
-
 
         public JsonResult getGanttData(int week, string title, string projectId)
         {
@@ -309,6 +267,29 @@ namespace ProjectManagementSystem.Controllers
                     {
                         try
                         {
+                            //#region Main Table
+                            //var getProject = exportList.GroupBy(x => x.ProjectTitle).Select(x => x.First()).FirstOrDefault();
+
+                            //if (getProject == null)
+                            //{
+                            //    throw new Exception("No valid project data found.");
+                            //}
+
+                            //var addWeeklyChecklist = new MainTable
+                            //{
+                            //    project_title = getProject.ProjectTitle,
+                            //    project_start = Convert.ToDateTime(getProject.projectStart),
+                            //    project_end = Convert.ToDateTime(getProject.projectEnd),
+                            //    duration = getProject.Duration,
+                            //    year = getProject.year,
+                            //    division = getProject.division,
+                            //    category = getProject.category,
+                            //    project_owner = getProject.projectOwner
+                            //};
+                            //var _mainTableId = db.MainTables.Add(addWeeklyChecklist);
+                            //db.SaveChanges();
+                            //#endregion
+
                             #region Main Table
                             var getProject = exportList.GroupBy(x => x.ProjectTitle).Select(x => x.First()).FirstOrDefault();
 
@@ -317,13 +298,17 @@ namespace ProjectManagementSystem.Controllers
                                 throw new Exception("No valid project data found.");
                             }
 
+                            // date format and culture
+                            string dateFormat = "dd/MM/yyyy"; 
+                            IFormatProvider culture = new CultureInfo("en-US", true);
+
                             var addWeeklyChecklist = new MainTable
                             {
                                 project_title = getProject.ProjectTitle,
-                                project_start = Convert.ToDateTime(getProject.projectStart),
-                                project_end = Convert.ToDateTime(getProject.projectEnd),
+                                project_start = DateTime.ParseExact(getProject.projectStart, dateFormat, culture),
+                                project_end = DateTime.ParseExact(getProject.projectEnd, dateFormat, culture),
                                 duration = getProject.Duration,
-                                year = getProject.year,
+                                year = getProject.ProjectYear,
                                 division = getProject.division,
                                 category = getProject.category,
                                 project_owner = getProject.projectOwner
@@ -331,6 +316,7 @@ namespace ProjectManagementSystem.Controllers
                             var _mainTableId = db.MainTables.Add(addWeeklyChecklist);
                             db.SaveChanges();
                             #endregion
+
 
                             #region Milestones
                             var milestones = exportList
@@ -371,7 +357,7 @@ namespace ProjectManagementSystem.Controllers
                                 {
 
                                     // calculate task end_date based on task_start and duration
-                                    DateTime taskStartDate = Convert.ToDateTime(taskGroup.TaskStart);
+                                    DateTime taskStartDate = DateTime.ParseExact(taskGroup.TaskStart, dateFormat, culture);
                                     int taskDuration = taskGroup.task_duration;
                                     DateTime taskEnddate = taskStartDate.AddDays(taskDuration);
 
@@ -395,7 +381,7 @@ namespace ProjectManagementSystem.Controllers
                                     {
                                         milestone_id = milestone.milestone_id,
                                         process_title = taskGroup.ProcessTitle,
-                                        task_start = Convert.ToDateTime(taskGroup.TaskStart), 
+                                        task_start = DateTime.ParseExact(taskGroup.TaskStart, dateFormat, culture), 
                                         //task_end = taskGroup.TaskEnd,
                                         task_duration = taskGroup.task_duration,
                                         source = taskGroup.Source,

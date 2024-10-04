@@ -108,7 +108,7 @@ namespace ProjectManagementSystem.Models
         public string projectStart { get; set; }
         public string projectEnd { get; set; }
         public int task_duration { get; set; }
-        public int year { get; set; }
+        public int ProjectYear { get; set; }
         public string division { get; set; }
         public string category { get; set; }
         public string projectOwner { get; set; }
@@ -180,6 +180,8 @@ namespace ProjectManagementSystem.Models
             Map(x => x.category).Name("Category");
             Map(x => x.projectOwner).Name("Owner");
             Map(x => x.MilestoneName).Name("Process");
+            Map(x => x.ProjectYear).Name("Project_Year");
+
 
             Map(x => x.projectStart).Name("Project_Start");
             Map(x => x.TaskEnd).Name("Project_End");
