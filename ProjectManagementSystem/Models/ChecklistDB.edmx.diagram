@@ -7,8 +7,8 @@
       <Diagram DiagramId="0c1c90b7fb0d4d5b8294d5bfb7cb887f" Name="Diagram1" ZoomLevel="76">
         <EntityTypeShape EntityType="ProjectManagementDBModel.ChecklistTable" Width="1.5" PointX="0.75" PointY="5.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.DetailsTbl" Width="1.5" PointX="5.25" PointY="1" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.MainTable" Width="1.5" PointX="0.75" PointY="1.375" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.MilestoneTbl" Width="1.5" PointX="3" PointY="1.625" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.MainTable" Width="1.5" PointX="0.75" PointY="1.125" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.MilestoneTbl" Width="1.5" PointX="3" PointY="1.5" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.Report" Width="1.5" PointX="2.75" PointY="5.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyChecklistTable" Width="1.5" PointX="4.75" PointY="5.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyStatu" Width="1.5" PointX="6.75" PointY="5.75" />

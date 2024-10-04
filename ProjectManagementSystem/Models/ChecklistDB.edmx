@@ -44,8 +44,6 @@
           <Property Name="details_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="milestone_id" Type="int" />
           <Property Name="process_title" Type="varchar" MaxLength="500" />
-          <Property Name="task_id" Type="int" />
-          <Property Name="main_subtask_id" Type="int" />
           <Property Name="IsSubtask" Type="bit" />
           <Property Name="task_start" Type="datetime" />
           <Property Name="task_end" Type="datetime" />
@@ -236,8 +234,6 @@
           <Property Name="details_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="milestone_id" Type="Int32" />
           <Property Name="process_title" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="task_id" Type="Int32" />
-          <Property Name="main_subtask_id" Type="Int32" />
           <Property Name="IsSubtask" Type="Boolean" />
           <Property Name="task_start" Type="DateTime" Precision="3" />
           <Property Name="task_end" Type="DateTime" Precision="3" />
@@ -405,8 +401,6 @@
                 <ScalarProperty Name="task_end" ColumnName="task_end" />
                 <ScalarProperty Name="task_start" ColumnName="task_start" />
                 <ScalarProperty Name="IsSubtask" ColumnName="IsSubtask" />
-                <ScalarProperty Name="main_subtask_id" ColumnName="main_subtask_id" />
-                <ScalarProperty Name="task_id" ColumnName="task_id" />
                 <ScalarProperty Name="process_title" ColumnName="process_title" />
                 <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
                 <ScalarProperty Name="details_id" ColumnName="details_id" />
