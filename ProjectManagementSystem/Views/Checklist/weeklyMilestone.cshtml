@@ -1,28 +1,24 @@
-﻿
+﻿@model ProjectManagementSystem.Models.exportCSV
 @{
     ViewBag.Title = "Milestone";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <style>
-    /* Gantt chart container */
     #gantt_here {
-        width: calc(100% - 160px); /* Adjust width to account for sidebar */
+        width: calc(100% - 160px);
         height: 85vh;
-        /*margin-top: 10px;*/
-        /*border: 2px solid #5C2D91;*/ /* Purple border for the container */
         border-radius: 10px;
         overflow: hidden;
     }
 
-    /* View controls */
     .view-controls {
         margin: 20px 0;
         text-align: left;
     }
 
         .view-controls button {
-            background-color: #66339A; /* Purple */
+            background-color: #66339A;
             border: none;
             color: yellow;
             padding: 10px 20px;
@@ -33,80 +29,58 @@
         }
 
             .view-controls button:hover {
-                background-color: #4a1a72; 
+                background-color: #4a1a72;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             }
 
-    /* Task bar styling */
-    .gantt_task_bar {
-        background-color: #FFD700; /* Gold */
-        color: white;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    .table-container {
+        margin: 20px 0;
+        padding: 10px;
+        background-color: #f4f4f4;
+        border-radius: 10px;
     }
-
-        .gantt_task_bar:hover {
-            background-color: #FFBF00; /* Darker gold */
-        }
-
-    /* Gantt chart header styling */
-    .gantt_task_content {
-        font-size: 14px;
-        color: #333;
-    }
-
-    .gantt_scale {
-        background-color: #f4f4f4; /* Light gray for contrast */
-        border-bottom: 2px solid #ddd;
-    }
-
-    .gantt_lightbox {
-        font-size: 14px;
-        background-color: #fff; /* White background for lightbox */
-        border: 1px solid #ddd; /* Light gray border */
-        border-radius: 5px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-        .gantt_lightbox textarea {
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-        }
-
-        .gantt_lightbox select {
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            font-size: 14px;
-        }
 
     h1 {
         font-weight: bold;
         color: #66399A;
-      
     }
 </style>
 
-<!-- Content Header (Page header) -->
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="m-0">@ViewBag.Title</h1>
-        
-                </div><!-- /.col -->
-            <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Checklist")">Home</a></li>
-                    
-                    <li class="breadcrumb-item active">Milestone</li>
-                </ol>
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
+<div class="table-container">
+    <h1>Project Details</h1>
+    <table id="projectDetails" class="table">
+        <thead>
+            <tr>
+                <th>Project Title</th>
+                <th>Project Start</th>
+                <th>Project End</th>
+                <th>Duration</th>
+                <th>Year</th>
+                <th>Division</th>
+                <th>Category</th>
+                <th>Project Owner</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in Model.ProjectDetails)
+            {
+                <tr>
+                    <td>
+                        <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.id, title = project.ProjectTitle, projectId = project.DetailsID })">
+                            @project.ProjectTitle
+                        </a>
+                    </td>
+                    <td>@DateTime.Parse(project.projectStart).ToString("MMMM dd, yyyy")</td>
+                    <td>@DateTime.Parse(project.projectEnd).ToString("MMMM dd, yyyy")</td>
+                    <td>@project.ProjectDuration days</td>
+                    <td>@project.ProjectYear</td>
+                    <td>@project.division</td>
+                    <td>@project.category</td>
+                    <td>@project.projectOwner</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
 <div class="content">
@@ -122,35 +96,24 @@
             </div>
         </div>
     </div>
-    <!-- /.container-fluid -->
 </div>
 
-@section scripts{
+@section scripts {
     <script>
-        //$(document).ready(function () {
-        //    $('.gantt_grid_head_cell gantt_grid_head_text').text("Milestones");
-        //});
-
         document.addEventListener("DOMContentLoaded", function () {
-            // Initialize Gantt chart
             gantt.config.xml_date = "%Y-%m-%d %H:%i";
-
-
             gantt.config.readonly = true;
 
             gantt.config.columns = [
                 { name: "text", label: "Milestones", width: "*", tree: true },
                 { name: "start_date", label: "Start Date", align: "center" },
-                { name: "start_date", label: "End Date", align: "center" },
-                { name: "duration", label: "Duration", align: "center" },
+                { name: "end_date", label: "End Date", align: "center" },
+                { name: "duration", label: "Duration", align: "center" }
             ];
 
             gantt.config.scale_unit = "week";
-            gantt.config.step = 1;
             gantt.config.date_scale = "%d %M";
-            gantt.config.subscales = [
-                { unit: "month", step: 1, date: "%M" }
-            ];
+            gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
             gantt.config.scale_height = 75;
 
             gantt.templates.date_scale = function (date) {
@@ -159,85 +122,44 @@
                 return dateToStr(date) + " - " + dateToStr(endDate);
             };
 
-            // Configure milestone description
             gantt.templates.rightside_text = function (start, end, task) {
-                if (task.type === gantt.config.types.milestone) {
-                    return task.text;
-                }
-                return "";
+                return task.type === gantt.config.types.milestone ? task.text : "";
             };
 
-            // Add section to lightbox for task editing
             gantt.config.lightbox.sections = [
                 { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
                 { name: "type", type: "typeselect", map_to: "type" },
                 { name: "time", height: 72, type: "duration", map_to: "auto" }
             ];
 
+            gantt.plugins({ tooltip: true });
             gantt.init("gantt_here");
 
-            gantt.load("/Checklist/getGanttData?week=" + @TempData["entry"].ToString() + "&title=" + '@TempData["title"].ToString()' + "&projectId=" + '@TempData["project"].ToString()', "json");
-
-            gantt.attachEvent("onTaskDblClick", function (name, e) {
-                alert(name);
-                return true;
-            });
-
-            gantt.attachEvent("onBeforeLightbox", function (id) {
-                const task = gantt.getTask(id);
-                task.my_template = `<span id='title1'>Holders: </span>${task.users}
-                <span id='title2'>Progress: </span>${task.progress * 100}%`;
-                return false;
-            });
+            gantt.load(`/Checklist/getGanttData?week=${@TempData["entry"]}&title='@TempData["title"]'&detailsId='@TempData["project"]'`, "json");
 
 
-          
-            gantt.plugins({
-                tooltip: true
-            });
-
-            gantt.init("gantt_here");
-
-            // Set month view
             window.setMonthView = function () {
                 gantt.config.scale_unit = "month";
                 gantt.config.date_scale = "%F, %Y";
-                gantt.config.subscales = [
-                    { unit: "month", step: 1, date: "%m" }
-                ];
+                gantt.config.subscales = [{ unit: "month", step: 1, date: "%m" }];
                 gantt.render();
             };
 
-            // Set week view
             window.setWeekView = function () {
                 gantt.config.scale_unit = "week";
                 gantt.config.date_scale = "%d %M";
-                gantt.config.subscales = [
-                    { unit: "week", step: 1, date: "%W" }
-                ];
+                gantt.config.subscales = [{ unit: "week", step: 1, date: "%W" }];
                 gantt.render();
             };
 
-            // Set day view
             window.setDayView = function () {
                 gantt.config.scale_unit = "day";
                 gantt.config.date_scale = "%d %M";
-                gantt.config.subscales = [
-                    { unit: "day", step: 1, date: "%d" }
-                ];
+                gantt.config.subscales = [{ unit: "day", step: 1, date: "%d" }];
                 gantt.render();
             };
 
-            // Initial view setup
-            setWeekView(); // Default to week view
-
-            // Sample data for testing
-            //gantt.parse({
-            //    data: [
-            //        { id: 1, text: "Task #1", start_date: "2024-08-01 00:00", duration: 5 },
-            //        { id: 2, text: "Task #2", start_date: "2024-08-06 00:00", duration: 3 }
-            //    ]
-            //});
+            setWeekView();
         });
     </script>
 }

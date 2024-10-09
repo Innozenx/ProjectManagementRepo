@@ -1,4 +1,4 @@
-﻿@model List<ProjectManagementSystem.Models.WeeklyChecklistTable>
+﻿@model List<ProjectManagementSystem.Models.MainTable>
 @using System;
 
 @{
@@ -31,24 +31,16 @@
                 <form id="onboardingForm" name="onboardingForm">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title">Start a Project</h4>
+                            <h4 class="modal-title">Upload Schedule</h4>
+                          
+                            
                         </div>
                         <div class="modal-body">
                             @Html.AntiForgeryToken()
-                            @*@Html.HiddenFor(x => x.checkListID)
-                            <div class="form-group">
-                                @Html.Label("Project Name")
-                                @Html.TextBoxFor(x => x.project_name, new { @class = "form-control", id = "floatingInput", placeholder = "Project Name" })
-                                @Html.ValidationMessageFor(x => x.project_name)
-                            </div>
-                            <div class="form-group">
-                                @Html.Label("Project Owner")
-                                @Html.TextBoxFor(x => x.project_owner, new { @class = "form-control", id = "floatingInput", placeholder = "Project Owner" })
-                                @Html.ValidationMessageFor(x => x.project_owner)
-                            </div>
-                            <div class="form-group">
-                                @Html.Label("Division")
-                                @Html.DropDownListFor(x => x.division,
+
+                            @*<div class="form-group">
+                                @Html.Label("Select Project")
+                                @Html.DropDownListFor(x => x.main_id,
                                 new List<SelectListItem>
                                 {
                                     new SelectListItem { Value = "ITS" , Text = "Information Technology Services" },
@@ -56,15 +48,14 @@
                                     new SelectListItem { Value = "IM" ,  Text = "Integrated Marketing" }
                                 }, new { @class = "form-control" })
                             </div>*@
+
                             <div class="form-group">
-                                <label for="csv-file-input">Upload Project Schedule</label><br>
+                                <label for="csv-file-input">Upload Schedule</label><br>
                                 <input type="file" id="csv-file-input" accept=".csv" />
-                                @*<p class="help-block">Example block-level help text here.</p>*@
+                           
                             </div>
                         </div>
                        
-
-
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Add</button>
@@ -101,7 +92,7 @@
                                     @{ 
                                         foreach(var item in Model)
                                         {
-                                            <option>@item.weeklyTitle</option>
+                                            <option>@item.project_title</option>
                                         }
                                     }
                                 </select>
@@ -141,7 +132,7 @@
 
             //$.validator.unobtrusive.parse(form);
             if (fileUpload.value == null) {
-                alert("INCOMPLETE FORM. PLEASE UPLOAD AND/OR FILL UP THE DETAILS");
+                alert("Icomplete Form. Please upload and/or fill up the details.");
                 return;
             }
             else {
@@ -169,7 +160,7 @@
                 }
 
                 else {
-                    alert("NO FILE SELECTED");
+                    alert("No file selected.");
                 }
             }
         }

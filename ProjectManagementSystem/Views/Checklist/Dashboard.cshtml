@@ -1,142 +1,159 @@
 ﻿@model ProjectManagementSystem.Models.DashboardViewModel
 @using System.Globalization;
+
 @{
     ViewBag.Title = "Dashboard";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var calendar = CultureInfo.InvariantCulture.Calendar;
+    var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+
+    // formula for percentage completed tasks
+    var totalTasks = Model.TotalTasks > 0 ? Model.TotalTasks : 1;
+    var completedPercentage = (double)Model.CompletedTasks / totalTasks * 100;
+    var pendingPercentage = 100 - completedPercentage;
+
 }
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMzIYfK/5Ez7g5F1RzXJtWra1c4G5X5Fh5A6nT" crossorigin="anonymous">
+</head>
 
 <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
+
     .dashboard-container {
-        padding: 10px;
-        margin-left: 160px;
+        padding: 20px;
+        max-width: 1200px;
+        margin: auto;
     }
 
     .card {
-        border-radius: 25px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        border: none;
-    }
-
-    .card-success {
-        background-color: #4CAF50;
-    }
-
-    .card-warning {
-        background-color: #FFC107;
-    }
-
-    .card-info {
-        background-color: #673AB7;
-    }
-
-    .card-primary {
-        background-color: #9C27B0;
-    }
-
-    .card-body {
+        border-radius: 15px;
         padding: 15px;
-        color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        background-color: white;
+        color: #333;
+        margin-bottom: 20px;
+        cursor: pointer;
+        position: relative;
     }
 
     .card-title {
-        font-size: 2.5rem;
+        font-family: 'Poppins', sans-serif;
+        font-size: 2rem;
         font-weight: bold;
         margin-bottom: 15px;
     }
 
+    .title-completed {
+        color: #4CAF50;
+    }
+
+    .title-pending {
+        color: #FFC107;
+    }
+
+    .title-total {
+        color: #673AB7;
+    }
+
+    .title-week {
+        color: #673AB7;
+    }
+
     .card-text {
-        font-size: 1.75rem;
+        font-size: 1rem;
+        color: #303030;
     }
 
-    .row {
-        margin-top: 20px;
-    }
-
-    h2 {
-        font-size: 2.5rem;
-        margin-bottom: 40px;
-        text-align: center;
-        color: #4A148C;
-    }
-
-    h4 {
-        font-size: 2rem;
-        margin-bottom: 30px;
-        color: #311B92;
+    .chart-container {
+        max-width: 300px;
+        max-height: 300px;
+        margin: auto;
+        position: relative;
     }
 
     .table-container {
         overflow-x: auto;
-        white-space: nowrap;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 10px;
+    }
+
+    .col-lg-8, .col-lg-4 {
+        padding: 10px;
+    }
+
+    .col-md-3 {
+        padding: 10px;
+    }
+
+    .col-lg-8 {
+        flex: 0 0 65%;
+    }
+
+    .col-lg-4 {
+        flex: 0 0 35%;
     }
 
     .table th, .table td {
-        padding: 12px;
+        padding: 10px;
         text-align: center;
-        border: 2px solid #D1C4E9;
+        border: 0;
+        border-bottom: 2px solid #D1C4E9;
     }
 
     .table th {
         background-color: #66339A;
         color: #fff;
+        font-size: 1rem;
+        font-weight: normal;
     }
 
-    .table td {
-        background-color: #EDE7F6;
-        color: #333;
+    .dataTables_wrapper {
+        overflow-x: auto;
     }
 
-    .table tr:nth-child(even) {
-        background-color: #D1C4E9;
+    .card-body i {
+        font-size: 2rem;
+        position: absolute;
+        top: 15px;
+        right: 15px;
     }
 
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        min-width: 150px;
+    .card-success i {
+        color: #4CAF50;
     }
 
-        td:first-child, th:first-child {
-            position: -webkit-sticky;
-            position: sticky;
-            left: 0;
-            z-index: 2;
-            border-right: 2px solid #ddd;
+    .card-warning i {
+        color: #FFC107;
+    }
+
+    .card-info i {
+        color: #673AB7;
+    }
+
+    .card-primary i {
+        color: #673AB7;
+    }
+
+    .upcoming-deliverables-list {
+        list-style: none;
+        padding: 0;
+    }
+
+        .upcoming-deliverables-list li {
+            background-color: #f9f9f9;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
-    .sticky-col {
-        position: -webkit-sticky;
-        position: sticky;
-    }
-
-    .first-col {
-        width: 300px;
-        min-width: 300px;
-        max-width: 300px;
-        left: 0px;
-    }
-
-    .fifth-col {
-        display: none;
-    }
-
-    /* DataTables specific styles */
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding: 0.5em;
-    }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-    .dataTables_wrapper .dataTables_filter input {
-        margin: 0.5em;
-    }
-
-    .dataTables_wrapper .dataTables_info {
-        margin: 0.5em;
-    }
 </style>
 
 <!-- Content Header (Page header) -->
@@ -145,110 +162,106 @@
         <div class="row">
             <div class="col-sm-6">
                 <h1 class="m-0">@ViewBag.Title</h1>
-                <h5 class="text-muted">
-                    @DateTime.Now.ToString("MMMM dd, yyyy h:mm tt")
-                </h5>
-            </div><!-- /.col -->
+                <p>@DateTime.Now.ToString("MMMM dd, yyyy h:mm tt")</p>
+            </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Checklist")">Home</a></li>
                     <li class="breadcrumb-item active">Dashboard</li>
-                    @*<li class="breadcr7j-tem active">Dashboard</li>*@
-
                 </ol>
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-</div>
-<!-- /.content-header -->
-<!-- Main content -->
-<div class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="card card-success h-100">
-                    <div class="card-body">
-                        <h3 class="card-title">@Model.CompletedTasks</h3>
-                        <p class="card-text">Completed Tasks</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card card-warning h-100">
-                    <div class="card-body">
-                        <h3 class="card-title">@Model.PendingTasks</h3>
-                        <p class="card-text">Pending Tasks</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card card-info h-100">
-                    <div class="card-body">
-                        <h3 class="card-title">@Model.TotalTasks</h3>
-                        <p class="card-text">Total Tasks</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card card-primary h-100">
-                    <div class="card-body">
-                        <h3 class="card-title">Week @Model.CurrentWeek</h3>
-                        <p class="card-text">Current Week</p>
-                    </div>
-                </div>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- table -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="table-container" style="overflow:auto">
-                    <table id="milestonesTable" class="display">
+<div class="row">
+    <!-- completed -->
+    <div class="col-md-3">
+        <div class="card card-success h-100" onclick="viewTasks('completed')">
+            <div class="card-body">
+                <i class="fas fa-check-circle"></i>
+                <p class="card-text">Completed Tasks</p>
+                <h3 class="card-title title-completed">@Model.CompletedTasks</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- pending -->
+    <div class="col-md-3">
+        <div class="card card-warning h-100" onclick="viewTasks('pending')">
+            <div class="card-body">
+                <i class="fas fa-exclamation-circle"></i>
+                <p class="card-text">Pending Tasks</p>
+                <h3 class="card-title title-pending">@Model.PendingTasks</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- total-->
+    <div class="col-md-3">
+        <div class="card card-info h-100" onclick="viewTasks('all')">
+            <div class="card-body">
+                <i class="fas fa-tasks"></i>
+                <p class="card-text">Total Tasks</p>
+                <h3 class="card-title title-total">@Model.TotalTasks</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- current week-->
+    <div class="col-md-3">
+        <div class="card card-primary h-100">
+            <div class="card-body">
+                <i class="fas fa-calendar-week"></i>
+                <p class="card-text">Current Week</p>
+                <h3 class="card-title title-week">Week @currentWeek</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Project Summary and Donut Chart -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h5>Project Summary</h5>
+
+                <div class="table-container">
+                    <table id="milestonesTable" class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Project Title</th>
-                                @foreach(var milestoneName in Model.UniqueMilestoneNames)
+                                <th>Title</th>
+                                @foreach (var milestoneName in Model.UniqueMilestoneNames)
                                 {
                                     <th>@milestoneName</th>
                                 }
-                    
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var projectGroup in Model.ProjectsMilestones
-                                .GroupBy(pm => pm.ProjectTitle))
-                            {
-                                <tr>
-                                    <td>
-                                        <a href="javascript:void(0);" onclick="toDetailedView('@projectGroup.Key', '@projectGroup.Key', '@projectGroup.Key')">
-                                            @projectGroup.Key
-                                        </a>
-                                    </td>
-                                    @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                    {
-                                        var milestone = projectGroup.FirstOrDefault(pm => pm.MilestoneName == milestoneName);
-                                        var bgColor = "transparent";
+                               
+                       @foreach (var projectGroup in Model.ProjectsMilestones.GroupBy(pm => pm.ProjectTitle))
+                       {
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0);" onclick="toDetailedView('@projectGroup.Key', '', 'project-@projectGroup.Key')">
+                                        @projectGroup.Key
+                                    </a>
+                                </td>
+                                @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                {
+                                    // fetch the milestone tasks and get the last end date of the task per milestone
+                                    var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName && pm.EndDate.HasValue);
+                                    var latestEndDate = milestoneTasks.Any() ? milestoneTasks.Max(pm => pm.EndDate.Value) : (DateTime?)null;
 
-                                        if (milestone != null && milestone.EndDate.HasValue)
-                                        {
-                                            var endWeekNumber = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-                                            var currentWeek = Model.CurrentWeek;
+                                    var endDateFormatted = latestEndDate.HasValue
+                                        ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                        : "N/A";
 
-
-
-                                            bgColor = endWeekNumber < currentWeek && milestone.EndDate.HasValue ? "red"
-                                                       : endWeekNumber > currentWeek ? "white"
-                                                       : "green";
-                                        }
-
-                                        <td class="week-cell" style="background-color:@bgColor" onclick="toDetailedView('@projectGroup.Key', '@milestoneName', 'week-@milestoneName')">
-                                            @(milestone != null ? milestone.EndDateFormat : "N/A")
-                                        </td>
-
-                                   
-                                    }
-                                </tr>
-                            }
+                                    <td class="week-cell">@endDateFormatted</td>
+                                }
+                            </tr>
+                       }
                         </tbody>
                     </table>
                 </div>
@@ -256,34 +269,115 @@
         </div>
     </div>
 
-    <!-- /.container-fluid -->
+    <!-- donut Chart for Overall Progress -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h5>Overall Progress</h5>
+                <div class="chart-container" style="max-width: 300px; max-height: 300px; margin: auto;">
+                    <canvas id="progressChart" style="width: 100%; height: 100%;"></canvas>
+                </div>
+                <p class="text-center">
+                    @if (Model.CompletedTasks == 0)
+                    {
+                        <strong>No tasks completed yet. Let's get started!</strong>
+                    }
+                    else
+                    {
+                        <p>
+                            Completed: @completedPercentage.ToString("F2") %<br />
+                            Pending @pendingPercentage.ToString("F2") %
+                        </p>
+                    }
+
+            </div>
+        </div>
+    </div>
 </div>
-<!-- /.content -->
-@section scripts{
-    <!-- jQuery -->
-    <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
-    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+
+
+
+<!-- Upcoming Tasks -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h5>Upcoming Tasks</h5>
+                <ul class="upcoming-deliverables-list">
+                    @if (Model.UpcomingDeliverables != null && Model.UpcomingDeliverables.Any())
+                    {
+                        foreach (var deliverable in Model.UpcomingDeliverables)
+                        {
+                            <li>
+                                <strong>@deliverable.Tasks</strong> - Due on @deliverable.DueDate.ToString("MMMM dd, yyyy")
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li>No upcoming tasks.</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
     <script>
         $(document).ready(function () {
-            $('#milestonesTable').DataTable({
+            var table = $('#milestonesTable').DataTable({
+                "scrollX": true,
                 "paging": true,
                 "searching": true,
                 "info": true,
                 "autoWidth": false,
                 "columnDefs": [
                     { "targets": "_all", "className": "dt-center" }
-                ]
+                ],
+                fixedColumns: {
+                    leftColumns: 1
+                }
+            });
+
+            // Donut Chart for Overall Progress
+            var ctx = document.getElementById('progressChart').getContext('2d');
+            var progressChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed Tasks', 'Pending Tasks'],
+                    datasets: [{
+                        data: [@Model.CompletedTasks, @Model.PendingTasks],
+                        backgroundColor: ['#4CAF50', '#FFC107'],
+                        hoverBackgroundColor: ['#45A049', '#FFB300']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        }
+                    }
+                }
             });
         });
 
-     function toDetailedView(value, id, name) {
-            var url = "@Url.Action("weeklyMilestone", "Checklist")";
+        function toDetailedView(projectTitle, milestoneName, projectId) {
+    
+            var url = '@Url.Action("weeklyMilestone", "Checklist")';  
             var queryString = $.param({
-                id: value,
-                title: id,
-                projectId: name
+                id: parseInt(projectTitle), 
+                title: milestoneName,
+                projectId: projectId
             });
             window.location.href = url + "?" + queryString;
-    }
+        }
+
     </script>
 }

@@ -49,10 +49,39 @@ namespace ProjectManagementSystem.Models
         public int TotalTasks { get; set; }
         public int CurrentWeek { get; set; }
         public List<WeeklyChecklist> WeeklyChecklists { get; set; }
-        public List<ProjectMilestoneViewModel> ProjectsMilestones { get; set; }
-        public List<string> UniqueMilestoneNames { get; set; }
-        public List<dynamic> Tasks { get; set; } 
+        public List<dynamic> Tasks { get; set; }
+        public List<string> ProjectTitles { get; set; }
+        public List<exportCSV> ExportProjects { get; set; }
+        public List<Deliverable> UpcomingDeliverables { get; set; } = new List<Deliverable>();
+        public DbSet<TaskDetail> DetailsTbl { get; set; }
+
+        public int OverallProgress
+        {
+            get
+            {
+                return TotalTasks > 0 ? (int)((CompletedTasks / (double)TotalTasks) * 100) : 0;
+            }
+        }
+
+     
+
+        public IEnumerable<string> UniqueMilestoneNames { get; set; }
+        public IEnumerable<ProjectMilestoneViewModel> ProjectsMilestones { get; set; }
     }
+
+    public class TaskDetail
+    {
+        public string Title { get; set; }
+        public DateTime EndDate { get; set; }
+    }
+
+
+    public class Deliverable
+    {
+        public string Tasks { get; set; }
+        public DateTime DueDate { get; set; }
+    }
+
 
 
     public class ProjectMilestoneViewModel
@@ -62,7 +91,31 @@ namespace ProjectManagementSystem.Models
         public string EndDateFormat { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public bool isCompleted { get; set; }
+        public List<TaskViewModel> Tasks { get; set; }
+        public int Duration { get; set; }
+        public int ProjectYear { get; set; }
+        public string Division { get; set; }
+        public string Category { get; set; }
+        public string ProjectOwner { get; set; }
+        public DateTime ProjectStart { get; set; }
+        public DateTime ProjectEnd { get; set; }
+        public string Milestones { get; set; }
+        public int MainId { get; set; }
     }
+
+
+
+
+
+    public class TaskViewModel
+    {
+        public DateTime? TaskStart { get; set; }
+        public int Duration { get; set; } 
+        public bool IsCompleted { get; set; } 
+    }
+
+    
 
     public class TaskGantt
     {
@@ -122,7 +175,9 @@ namespace ProjectManagementSystem.Models
         public int DetailsID { get; set; }
         public int MilestoneID { get; set; }
         public DateTime CreatedDate { get; set; }
-        public int Duration { get; set; }
+        public int ProjectDuration { get; set; }
+        public List<exportCSV> ProjectDetails { get; set; }
+   
     }
 
 
@@ -165,6 +220,16 @@ namespace ProjectManagementSystem.Models
 
     }
 
+    //public class DetailsTbl
+    //{
+    //    public int milestone_id { get; set; }
+    //    public DateTime? task_start { get; set; }
+    //    public int task_duration { get; set; }
+    //    public bool isCompleted { get; set; }
+    //}
+
+
+
     sealed class ProjectMap : ClassMap<exportCSV>
     {
         public ProjectMap()
@@ -185,7 +250,7 @@ namespace ProjectManagementSystem.Models
 
             Map(x => x.projectStart).Name("Project_Start");
             Map(x => x.TaskEnd).Name("Project_End");
-            Map(x => x.Duration).Name("Project_Duration");
+            Map(x => x.ProjectDuration).Name("Project_Duration");
             Map(x => x.Source).Name("Source");
             Map(x => x.Target).Name("Target");
             Map(x => x.Parent).Name("Parent");
@@ -208,6 +273,7 @@ namespace ProjectManagementSystem.Models
     public class detailsList
     {
         List<DetailsTbl> TasksList { get; set; }
+ 
     }
 
 
