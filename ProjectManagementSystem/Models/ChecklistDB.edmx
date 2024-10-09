@@ -52,6 +52,10 @@
           <Property Name="target" Type="int" />
           <Property Name="parent" Type="int" />
           <Property Name="created_date" Type="date" />
+          <Property Name="task_status" Type="nvarchar" MaxLength="20" />
+          <Property Name="color_status" Type="nvarchar" MaxLength="20" />
+          <Property Name="isUnscheduled" Type="bit" />
+          <Property Name="isCompleted" Type="bit" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -242,6 +246,10 @@
           <Property Name="target" Type="Int32" />
           <Property Name="parent" Type="Int32" />
           <Property Name="created_date" Type="DateTime" Precision="0" />
+          <Property Name="task_status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="color_status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="isUnscheduled" Type="Boolean" />
+          <Property Name="isCompleted" Type="Boolean" />
           <NavigationProperty Name="MilestoneTbl" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="DetailsTbl" ToRole="MilestoneTbl" />
         </EntityType>
         <EntityType Name="MainTable">
@@ -393,6 +401,10 @@
           <EntitySetMapping Name="DetailsTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.DetailsTbl">
               <MappingFragment StoreEntitySet="DetailsTbl">
+                <ScalarProperty Name="isCompleted" ColumnName="isCompleted" />
+                <ScalarProperty Name="isUnscheduled" ColumnName="isUnscheduled" />
+                <ScalarProperty Name="color_status" ColumnName="color_status" />
+                <ScalarProperty Name="task_status" ColumnName="task_status" />
                 <ScalarProperty Name="created_date" ColumnName="created_date" />
                 <ScalarProperty Name="parent" ColumnName="parent" />
                 <ScalarProperty Name="target" ColumnName="target" />

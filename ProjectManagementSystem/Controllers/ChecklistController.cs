@@ -10,8 +10,6 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
-
-
 namespace ProjectManagementSystem.Controllers
 {
     public class ChecklistController : Controller
@@ -30,104 +28,65 @@ namespace ProjectManagementSystem.Controllers
 
         }
 
-        //public ActionResult Dashboard()
-        //{
-        //    var currentYear = DateTime.Now.Year;
-        //    var calendar = CultureInfo.InvariantCulture.Calendar;
-        //    var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-
-        //    var checklistTables = db.WeeklyChecklistTables
-        //        .Where(x => x.weeklyInYear == currentYear && x.isCancelled == false)
-        //        .ToList();
-
-        //    // fetch projects and their associated milestones
-        //    var projectsAndMilestones = (from m in db.MilestoneTbls
-        //                                 join p in db.MainTables on m.main_id equals p.main_id
-        //                                 select new ProjectMilestoneViewModel
-        //                                 {
-        //                                     ProjectTitle = p.project_title,
-        //                                     MilestoneName = m.milestone_name,
-        //                                     // You can also calculate EndDate here if needed
-        //                                 }).ToList();
-
-        //    var tasks = db.DetailsTbls
-        //        .Select(t => new
-        //        {
-        //            t.process_title,
-        //            t.task_start,
-        //            t.duration,
-
-        //    // calculate enddate by adding duration to task_start
-        //    EndDate = t.task_start != null ? t.task_start.Value.AddDays(t.duration ?? 0) : (DateTime?)null
-        //        }).ToList();
-
-        //    var viewModel = new DashboardViewModel
-        //    {
-        //        CompletedTasks = db.DetailsTbls.Count(x => x.isCompleted == true),
-        //        PendingTasks = db.DetailsTbls.Count(x => x.isCompleted == false),
-        //        TotalTasks = db.DetailsTbls.Count(),
-        //        CurrentWeek = currentWeek,
-        //        ProjectsMilestones = projectsAndMilestones,
-        //        Tasks = tasks
-        //    };
-
-        //    return View(viewModel);
-        //}
-
-
-            // datetime i-parse then convert to datetime sa db
-
         public ActionResult Dashboard()
         {
             var currentYear = DateTime.Now.Year;
             var calendar = CultureInfo.InvariantCulture.Calendar;
             var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
 
+            // fetch raw data from the database
+            var rawProjectsAndMilestones = (from m in db.MilestoneTbls
+                                            join p in db.MainTables on m.main_id equals p.main_id
+                                            join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
+                                            from task in tasks.DefaultIfEmpty()
+                                            group task by new { p.project_title, m.milestone_name } into g
+                                            select new
+                                            {
+                                                ProjectTitle = g.Key.project_title,
+                                                MilestoneName = g.Key.milestone_name,
+                                                Tasks = g.Where(t => t != null).Select(t => new
+                                                {
+                                                    t.task_start,
+                                                    t.task_duration,
+                                                    t.isCompleted
+                                                }).ToList()
+                                            }).ToList();
 
-            var checklistTables = db.WeeklyChecklistTables
-                .Where(x => x.weeklyInYear == currentYear && x.isCancelled == false)
-                .ToList();
-
-            var completedTasks = checklistTables.Count(x => x.isCompleted == true);
-            var pendingTasks = checklistTables.Count(x => x.isCompleted == false);
-            var totalTasks = checklistTables.Count();
-
-            // fetch checklist data 
-            var weeklyChecklists = checklistTables.Select(x => new WeeklyChecklist
+            var projectsAndMilestones = rawProjectsAndMilestones.Select(g => new ProjectMilestoneViewModel
             {
-                weeklyID = x.weeklyID,
-                weeklyTitle = x.weeklyTitle,
+                ProjectTitle = g.ProjectTitle,
+                MilestoneName = g.MilestoneName,
+                Tasks = g.Tasks.Select(t => new TaskViewModel
+                {
+                    TaskStart = t.task_start,
+                    Duration = t.task_duration ?? 0,
+                    IsCompleted = t.isCompleted ?? false
+                }).ToList(),
+                EndDate = g.Tasks.Where(t => t.task_start.HasValue && t.task_duration > 0)
+                                 .Max(t => t.task_start.Value.AddDays((double)t.task_duration)) // Calculate the end date
             }).ToList();
 
-            string FormatEndDate(DateTime? endDate)
-            {
-                if (endDate.HasValue)
+            var completedTasks = projectsAndMilestones.Sum(x => x.Tasks.Count(t => t.IsCompleted));
+            var totalTasks = projectsAndMilestones.Sum(x => x.Tasks.Count());
+            var pendingTasks = totalTasks - completedTasks;
+
+            // Fetch upcoming tasks based on pending tasks and its end date
+            var upcomingDeliverables = db.DetailsTbls
+                .Where(t => t.isCompleted == false && t.task_start.HasValue && t.task_duration.HasValue)
+                .Select(t => new
                 {
-                    var year = endDate.Value.Year % 100; // last two digits of the year
-                    var week = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(endDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-                    return $"WW{year:D2}{week:D2}";
-                }
-                return "N/A";
-            }
-
-            // fetch projects and their associated milestones
-            var projectsAndMilestones = (from m in db.MilestoneTbls
-                                         join p in db.MainTables on m.milestone_id equals p.main_id
-                                         select new ProjectMilestoneViewModel
-                                         {
-                                             ProjectTitle = p.project_title,
-                                             MilestoneName = m.milestone_name,
-                                            // EndDate = m.end_date
-                                         }).ToList();
-
-
-            projectsAndMilestones.ForEach(pm =>
-            {
-                pm.EndDateFormat = FormatEndDate(pm.EndDate);
-            });
-
-            var uniqueMilestoneNames = projectsAndMilestones
-                .Select(m => m.MilestoneName)
+                    Tasks = t.process_title,
+                    TaskStart = t.task_start.Value,
+                    TaskDuration = t.task_duration.Value
+                })
+                .ToList()
+                .Select(t => new Deliverable
+                {
+                    Tasks = t.Tasks,
+                    DueDate = t.TaskStart.AddDays(t.TaskDuration) // end date calculated here
+                })
+                .Where(d => d.DueDate >= DateTime.Now) // filter for upcoming
+                .OrderBy(d => d.DueDate) // order by due date
                 .ToList();
 
             var viewModel = new DashboardViewModel
@@ -137,14 +96,13 @@ namespace ProjectManagementSystem.Controllers
                 TotalTasks = totalTasks,
                 CurrentWeek = currentWeek,
                 ProjectsMilestones = projectsAndMilestones,
-                UniqueMilestoneNames = uniqueMilestoneNames
+                UniqueMilestoneNames = projectsAndMilestones.Select(m => m.MilestoneName).Distinct().ToList(),
+                ProjectTitles = projectsAndMilestones.Select(pm => pm.ProjectTitle).Distinct().ToList(),
+                UpcomingDeliverables = upcomingDeliverables 
             };
 
             return View(viewModel);
         }
-
-
-        
 
         private List<string> GetUniqueMilestoneNames()
         {
@@ -158,48 +116,207 @@ namespace ProjectManagementSystem.Controllers
             TempData["title"] = title;
             TempData["project"] = projectId;
 
-            return View();
+            var milestones = db.MainTables
+                .Where(m => m.main_id == id)
+                .Select(m => new ProjectMilestoneViewModel
+                {
+                    ProjectTitle = m.project_title,
+                    StartDate = m.project_start,
+                    EndDate = m.project_end,
+                    Duration = m.duration ?? 0,
+                    ProjectYear = m.year ?? 0,
+                    Division = m.division,
+                    Category = m.category,
+                    ProjectOwner = m.project_owner,
+                    MainId = m.main_id
+                })
+                .FirstOrDefault();
+
+            if (milestones == null)
+            {
+                return HttpNotFound("No milestones found for the specified project.");
+            }
+
+            var viewModel = new ProjectMilestoneViewModel
+            {
+                ProjectTitle = milestones.ProjectTitle,
+                StartDate = milestones.ProjectStart,
+                EndDate = milestones.ProjectEnd,
+                Duration = milestones.Duration,
+                ProjectYear = milestones.ProjectYear,
+                Division = milestones.Division,
+                Category = milestones.Category,
+                ProjectOwner = milestones.ProjectOwner
+                
+            };
+
+            return View(viewModel);
         }
 
-        public JsonResult getGanttData(int week, string title, string projectId)
-        {
 
-            List<ChecklistTable> checklist = new List<ChecklistTable>();
-            Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
+
+        public JsonResult getGanttData(int week, string title, string detailsId)
+        {
+   
+            if (!int.TryParse(detailsId, out int parentId))
+            {
+                return Json(new { error = "Invalid parent ID format" }, JsonRequestBehavior.AllowGet);
+            }
 
             var currentYear = DateTime.Now.Year;
 
-            checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title) && x.projectId.Equals(projectId)).OrderBy(x => x.sequenceId).ToList();
-            checklist.AddRange(db.ChecklistTables.Where(x => x.localId >= 1 && x.localId <= 5).ToList());
+            // calculate date range for the selected week
+            var startDate = DateTime.Now.AddDays(7 * (week - 1));
+            var endDate = DateTime.Now.AddDays(7 * week);
 
-            var data = checklist.Select(x => new
+            // fetch tasks from DetailsTbl based on main_id (parentId), title, and week
+            var tasks = db.DetailsTbls
+                .Where(x => x.task_start.HasValue &&
+                            x.task_start.Value.Year == currentYear &&
+                            x.task_start <= endDate &&
+                            x.task_start >= startDate &&
+                            x.process_title.Equals(title) &&
+                            x.parent == parentId) 
+                .OrderBy(x => x.milestone_id)
+                .ToList();
+
+
+            var data = tasks.Select(x => new
             {
-
-                id = x.id,
-                start_date = x.dateInitial != null
-                    ? x.dateInitial.Value.ToString("yyyy-MM-dd")
-                    : DateTime.Now.ToString("yyyy-MM-dd"),
-                color = x.dateInitial != null
-                    ? DateTime.Now < x.dateInitial ? "black" : x.status == "completed" ? "green" : DateTime.Now <= DateTime.Parse(x.dateInitial.ToString()).AddDays(x.duration) && DateTime.Now > x.dateInitial ? "orange" : "red"
-                    : "white",
-                duration = x.duration,
-                text = x.text,
+                id = x.details_id,
+                start_date = x.task_start.HasValue ? x.task_start.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"),
+                duration = x.task_duration ?? 0,
+                text = x.process_title,
                 parent = x.parent,
-                target = x.target,
-                source = x.source,
-                type = x.type,
-                unscheduled = x.isUnscheduled
+                color = GetTaskColor(x),
+                unscheduled = x.isUnscheduled,
+                completed = x.isCompleted
             }).ToArray();
 
             var jsonData = new
             {
                 tasks = data,
-
-                links = data
+                links = new object[] { } 
             };
 
-            return new JsonResult { Data = jsonData, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return Json(jsonData, JsonRequestBehavior.AllowGet);
         }
+
+
+        //troy changes
+        //public JsonResult getGanttData(int id)
+        //{
+        //    var ganttData = db.DetailsTbls
+        //        .Where(t => t.details_id == id)
+        //        .Select(t => new
+        //        {
+        //            id = t.details_id,
+        //            text = t.process_title,
+        //            start_date = t.task_start/*.ToString("yyyy-MM-dd HH:mm")*/,
+        //            duration = t.task_duration,
+        //            parent = t.parent
+        //        }).ToList();
+
+        //    return Json(ganttData, JsonRequestBehavior.AllowGet);
+        //}
+        private string GetTaskColor(DetailsTbl task)
+        {
+            if (task.task_start == null)
+                return "white"; // default if task hasn't started yet
+
+            DateTime startDate = task.task_start.Value;
+
+            if (DateTime.Now < startDate)
+                return "white"; // future task
+            else if (task.isCompleted.GetValueOrDefault(false))
+                return "green"; // Completed task
+            else if (DateTime.Now <= startDate.AddDays(task.task_duration ?? 0) && DateTime.Now > startDate)
+                return "blue"; // ongoing task
+            else
+                return "red"; // overdue task
+        }
+
+
+
+        //public JsonResult getGanttData(int week, string title, string projectId)
+        //{
+
+        //    List<ChecklistTable> checklist = new List<ChecklistTable>();
+        //    Calendar Calendar = CultureInfo.InvariantCulture.Calendar;
+
+        //    var currentYear = DateTime.Now.Year;
+
+        //    checklist = db.ChecklistTables.Where(x => x.startWeek <= week && x.endWeek >= week && x.ofYear == currentYear && x.title.Equals(title) && x.projectId.Equals(projectId)).OrderBy(x => x.sequenceId).ToList();
+        //    checklist.AddRange(db.ChecklistTables.Where(x => x.localId >= 1 && x.localId <= 5).ToList());
+
+        //    var data = checklist.Select(x => new
+        //    {
+
+        //        id = x.id,
+        //        start_date = x.dateInitial != null
+        //            ? x.dateInitial.Value.ToString("yyyy-MM-dd")
+        //            : DateTime.Now.ToString("yyyy-MM-dd"),
+        //        color = x.dateInitial != null
+        //            ? DateTime.Now < x.dateInitial ? "black" : x.status == "completed" ? "green" : DateTime.Now <= DateTime.Parse(x.dateInitial.ToString()).AddDays(x.duration) && DateTime.Now > x.dateInitial ? "orange" : "red"
+        //            : "white",
+        //        duration = x.duration,
+        //        text = x.text,
+        //        parent = x.parent,
+        //        target = x.target,
+        //        source = x.source,
+        //        type = x.type,
+        //        unscheduled = x.isUnscheduled
+        //    }).ToArray();
+
+        //    var jsonData = new
+        //    {
+        //        tasks = data,
+
+        //        links = data
+        //    };
+
+        //    return new JsonResult { Data = jsonData, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        //}
+
+
+        //public JsonResult getGanttData(int week, string title, string projectId)
+        //{
+        //    List<DetailsTbl> details = new List<DetailsTbl>();
+        //    Calendar calendar = CultureInfo.InvariantCulture.Calendar;
+        //    var currentYear = DateTime.Now.Year;
+
+        //    details = db.DetailsTbls
+        //        .Where(x => x.task_start <= week && x.task_duration >= week && x.task_duration == currentYear && x.process_title.Equals(title) && x.details_id.Equals(projectId))
+        //        .OrderBy(x => x.sequenceId)
+        //        .ToList();
+
+        //    var data = details.Select(x => new
+        //    {
+        //        id = x.details_id, // use detailsID
+        //        start_date = x.task_start != null
+        //            ? x.task_start.Value.ToString("yyyy-MM-dd")
+        //            : DateTime.Now.ToString("yyyy-MM-dd"),
+        //        duration = x.task_duration
+        //        color = x.task_start != null
+        //            ? DateTime.Now < x.task_start ? "black" : x.isCompleted ? "green" : DateTime.Now <= x.task_start.Value.AddDays(x.duration) && DateTime.Now > x.task_start ? "orange" : "red"
+        //            : "white",
+        //        text = x.process_title,
+        //        parent = x.parent,
+        //        target = x.target,
+        //        source = x.source,
+        //        type = x.type,
+        //        unscheduled = x.isUnscheduled
+        //    }).ToArray();
+
+        //    var jsonData = new
+        //    {
+        //        tasks = data,
+        //        links = data 
+        //    };
+
+        //    return new JsonResult { Data = jsonData, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        //}
+
 
         public ActionResult Index()
         {
@@ -210,8 +327,11 @@ namespace ProjectManagementSystem.Controllers
         public ActionResult AddProject()
         { 
 
-            List<WeeklyChecklistTable> listWeekly = db.WeeklyChecklistTables.ToList();
-            return View(listWeekly);
+            //List<WeeklyChecklistTable> listWeekly = db.WeeklyChecklistTables.ToList();
+            //return View(listWeekly);
+
+            List<MainTable> listProjects = db.MainTables.ToList();
+            return View(listProjects);
         }
 
         public class NullableInt32Converter : DefaultTypeConverter
@@ -281,12 +401,20 @@ namespace ProjectManagementSystem.Controllers
 
                             string dateFormat = "dd/MM/yyyy";
 
+                            if (string.IsNullOrWhiteSpace(getProject.projectStart) ||
+                                 string.IsNullOrWhiteSpace(getProject.projectEnd) ||
+                                 getProject.ProjectDuration <= 0 ||
+                                 getProject.ProjectYear <= 0)
+                            {
+                                throw new Exception("Start date, end date, duration, and year cannot be null or empty.");
+                            }
+
                             var addWeeklyChecklist = new MainTable
                             {
                                 project_title = getProject.ProjectTitle,
                                 project_start = DateTime.ParseExact(getProject.projectStart, dateFormat, CultureInfo.InvariantCulture),
                                 project_end = DateTime.ParseExact(getProject.projectEnd, dateFormat, CultureInfo.InvariantCulture),
-                                duration = getProject.Duration,
+                                duration = getProject.ProjectDuration,
                                 year = getProject.ProjectYear,
                                 division = getProject.division,
                                 category = getProject.category,

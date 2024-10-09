@@ -25,6 +25,10 @@ namespace ProjectManagementSystem.Models
         public Nullable<int> target { get; set; }
         public Nullable<int> parent { get; set; }
         public Nullable<System.DateTime> created_date { get; set; }
+        public string task_status { get; set; }
+        public string color_status { get; set; }
+        public Nullable<bool> isUnscheduled { get; set; }
+        public Nullable<bool> isCompleted { get; set; }
     
         public virtual MilestoneTbl MilestoneTbl { get; set; }
     }
