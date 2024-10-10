@@ -1,96 +1,327 @@
-﻿@model ProjectManagementSystem.Models.exportCSV
+﻿@model ProjectManagementSystem.Models.ProjectMilestoneViewModel
 @{
     ViewBag.Title = "Milestone";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
     #gantt_here {
-        width: calc(100% - 160px);
-        height: 85vh;
+        width: 100%;
+        height: 60vh;
         border-radius: 10px;
         overflow: hidden;
+        margin-top: 10px;
+        position:relative;
     }
 
     .view-controls {
         margin: 20px 0;
-        text-align: left;
+        text-align: right; 
+        /*display: flex;
+        justify-content: flex-end;*/ 
     }
 
         .view-controls button {
             background-color: #66339A;
             border: none;
             color: yellow;
-            padding: 10px 20px;
+            padding: 8px 15px;
             font-size: 16px;
             border-radius: 25px;
             cursor: pointer;
             transition: background-color 0.3s, box-shadow 0.3s;
+            margin-right: 10px;
         }
 
-            .view-controls button:hover {
-                background-color: #4a1a72;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
-
-    .table-container {
-        margin: 20px 0;
-        padding: 10px;
-        background-color: #f4f4f4;
-        border-radius: 10px;
+    .view-controls button:hover {
+        background-color: #4a1a72;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    h1 {
+    h3 {
         font-weight: bold;
         color: #66399A;
+        align-content:center;
     }
-</style>
 
-<div class="table-container">
-    <h1>Project Details</h1>
-    <table id="projectDetails" class="table">
-        <thead>
-            <tr>
-                <th>Project Title</th>
-                <th>Project Start</th>
-                <th>Project End</th>
-                <th>Duration</th>
-                <th>Year</th>
-                <th>Division</th>
-                <th>Category</th>
-                <th>Project Owner</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var project in Model.ProjectDetails)
-            {
-                <tr>
-                    <td>
-                        <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.id, title = project.ProjectTitle, projectId = project.DetailsID })">
-                            @project.ProjectTitle
-                        </a>
-                    </td>
-                    <td>@DateTime.Parse(project.projectStart).ToString("MMMM dd, yyyy")</td>
-                    <td>@DateTime.Parse(project.projectEnd).ToString("MMMM dd, yyyy")</td>
-                    <td>@project.ProjectDuration days</td>
-                    <td>@project.ProjectYear</td>
-                    <td>@project.division</td>
-                    <td>@project.category</td>
-                    <td>@project.projectOwner</td>
-                </tr>
+    .card-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        margin-top: 40px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .table-container {
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 1200px; 
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin: 0 auto;
+    }
+
+        .table-container h5 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+
+    #projectDetails {
+        width: 100%;
+        font-size: 14px;
+        border-collapse: collapse;
+    }
+
+    #projectDetails th, #projectDetails td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ccc;
+    }
+
+    #projectDetails th {
+        font-weight: bold;
+        color: #555;
+    }
+
+    #projectDetails td a {
+        color: #66339A;
+        text-decoration: none;
+    }
+
+        #projectDetails td a:hover {
+            text-decoration: underline;
+        }
+
+    #projectDetails td {
+        color: #333;
+    }
+
+
+    #projectDetails th, #projectDetails td {
+        padding: 8px; 
+        text-align: left;
+        border-bottom: 1px solid #ccc;
+    }
+
+    #projectDetails th {
+        font-weight: bold;
+        color: #555;
+    }
+
+    #projectDetails td a {
+        color: #66339A;
+        text-decoration: none;
+    }
+
+    #projectDetails td a:hover {
+        text-decoration: underline;
+    }
+
+    #projectDetails td {
+        color: #333;
+    }
+
+        #projectDetails th, #projectDetails td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        #projectDetails th {
+            font-weight: bold;
+            color: #555;
+        }
+
+        #projectDetails td a {
+            color: #66339A;
+            text-decoration: none;
+        }
+
+        #projectDetails td a:hover {
+            text-decoration: underline;
+        }
+
+        #projectDetails td {
+            color: #333;
+        }
+
+
+        #projectDetails th, #projectDetails td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        #projectDetails th {
+            font-weight: bold;
+            color: #555;
+        }
+
+        #projectDetails td a {
+            color: #66339A;
+            text-decoration: none;
+        }
+
+            #projectDetails td a:hover {
+                text-decoration: underline;
             }
-        </tbody>
-    </table>
-</div>
 
+        #projectDetails td {
+            color: #333;
+        }
+
+    #projectDetails td a {
+        color: #66339A;
+        text-decoration: none;
+    }
+
+        #projectDetails td a:hover {
+            text-decoration: underline;
+        }
+
+ 
+    #projectDetails td {
+        color: #333;
+    }
+    .checklist-container {
+        display: flex;
+        flex-direction: column;
+       
+    }
+
+    .checklist-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .task-box {
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        width: 300px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+    .attachment {
+        display: flex;
+        align-items: center;
+    }
+
+        .attachment span {
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+    .attachment-box {
+        background-color: #ccc;
+        border-radius: 5px;
+        padding: 8px 15px;
+        font-size: 14px;
+        color: white;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .submit-button {
+        background-color: #4a1a72;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        margin-top: 20px;
+        cursor: pointer;
+        border-radius: 25px;
+        transition: background-color 0.3s ease;
+    }
+
+        .submit-button:hover {
+            background-color: #66339A;
+        }
+</style>
+<div class="card-container">
+    <div class="table-container card">
+        <h3>Project Details</h3>
+        @if (Model.ProjectDetails.Any())
+        {
+            var data = Model.ProjectDetails.FirstOrDefault();
+
+            <table id="projectDetails">
+                <tr>
+                    <!-- first col with 4 rows -->
+                    <td style="vertical-align: top; width: 50%;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <th>Project Title:</th>
+                                <td>
+                                    <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = data.Id, title = data.ProjectTitle, projectId = data.DetailsID })">
+                                        @data.ProjectTitle
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Project Start:</th>
+                                <td>@DateTime.Parse(data.ProjectStart).ToString("MMMM dd, yyyy")</td>
+                            </tr>
+                            <tr>
+                                <th>Project End:</th>
+                                <td>@DateTime.Parse(data.ProjectEnd).ToString("MMMM dd, yyyy")</td>
+                            </tr>
+                            <tr>
+                                <th>Duration:</th>
+                                <td>@data.ProjectDuration days</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <!-- second col with 4 rows -->
+                    <td style="vertical-align: top; width: 50%;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <th>Year:</th>
+                                <td>@data.ProjectYear</td>
+                            </tr>
+                            <tr>
+                                <th>Division:</th>
+                                <td>@data.Division</td>
+                            </tr>
+                            <tr>
+                                <th>Category:</th>
+                                <td>@data.Category</td>
+                            </tr>
+                            <tr>
+                                <th>Project Owner:</th>
+                                <td>@data.ProjectOwner</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        }
+    </div>
+</div>
+<!-- Gantt Chart Section -->
 <div class="content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
                 <div class="view-controls">
-                    <button onclick="setMonthView()">Month View</button>
-                    <button onclick="setWeekView()">Week View</button>
-                    <button onclick="setDayView()">Day View</button>
+                    <select id="viewSelector" onchange="updateView()">
+                        <option value="month">Month View</option>
+                        <option value="week">Week View</option>
+                        <option value="day">Day View</option>
+                       
+                    </select>
                 </div>
                 <div id="gantt_here" style="width:100%"></div>
             </div>
@@ -98,68 +329,119 @@
     </div>
 </div>
 
+<!-- Checklist Section -->
+<div class="content">
+    <div class="table-container card">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3>Checklist</h3>
+                <div class="checklist-container">
+                    @*@foreach (var item in Model.ChecklistItems)
+                        {
+                            <div class="checklist-row">
+                                <div class="task">
+                                    <div class="task-box">@item.Task</div>
+                                </div>
+                                <div class="attachment">
+                                    <span>Attachment</span>
+                                    <div class="attachment-box">@item.Attachment</div>
+                                </div>
+                            </div>
+                        }*@
+                </div>
+                <button class="submit-button">Complete Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 @section scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            gantt.config.xml_date = "%Y-%m-%d %H:%i";
-            gantt.config.readonly = true;
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        gantt.config.xml_date = "%Y-%m-%d %H:%i";
+        gantt.config.readonly = true;
 
-            gantt.config.columns = [
-                { name: "text", label: "Milestones", width: "*", tree: true },
-                { name: "start_date", label: "Start Date", align: "center" },
-                { name: "end_date", label: "End Date", align: "center" },
-                { name: "duration", label: "Duration", align: "center" }
-            ];
+        gantt.config.columns = [
+            { name: "text", label: "Milestones", width: "*", tree: true },
+            { name: "start_date", label: "Start Date", align: "center" },
+            { name: "end_date", label: "End Date", align: "center" },
+            { name: "duration", label: "Duration", align: "center" }
+        ];
 
+        gantt.config.scale_unit = "week";
+        gantt.config.date_scale = "%d %M";
+        gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+        gantt.config.scale_height = 50; 
+
+        gantt.templates.date_scale = function (date) {
+            var dateToStr = gantt.date.date_to_str("%d %M");
+            var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
+            return dateToStr(date) + " - " + dateToStr(endDate);
+        };
+
+        gantt.templates.rightside_text = function (start, end, task) {
+            return task.type === gantt.config.types.milestone ? task.text : "";
+        };
+
+        gantt.config.lightbox.sections = [
+            { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
+            { name: "type", type: "typeselect", map_to: "type" },
+            { name: "time", height: 72, type: "duration", map_to: "auto" }
+        ];
+
+        gantt.plugins({ tooltip: true });
+        gantt.init("gantt_here");
+
+        // dynamically load the Gantt chart data using TempData values
+        gantt.load(`/Checklist/getGanttData?id=${@TempData["entry"]}&title='@TempData["title"]'&detailsId='@TempData["project"]'`, "json");
+
+        // set Gantt view to Month
+        window.setMonthView = function () {
+            gantt.config.scale_unit = "month";
+            gantt.config.date_scale = "%F, %Y";
+            gantt.config.subscales = [{ unit: "month", step: 1, date: "%m" }];
+            gantt.render();
+        };
+
+        // set Gantt view to Week
+        window.setWeekView = function () {
             gantt.config.scale_unit = "week";
             gantt.config.date_scale = "%d %M";
-            gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-            gantt.config.scale_height = 75;
+            gantt.config.subscales = [{ unit: "week", step: 1, date: "%W" }];
+            gantt.render();
+        };
 
-            gantt.templates.date_scale = function (date) {
-                var dateToStr = gantt.date.date_to_str("%d %M");
-                var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
-                return dateToStr(date) + " - " + dateToStr(endDate);
-            };
+        // set Gantt view to Day
+        window.setDayView = function () {
+            gantt.config.scale_unit = "day";
+            gantt.config.date_scale = "%d %M";
+            gantt.config.subscales = [{ unit: "day", step: 1, date: "%d" }];
+            gantt.render();
+        };
 
-            gantt.templates.rightside_text = function (start, end, task) {
-                return task.type === gantt.config.types.milestone ? task.text : "";
-            };
+        window.updateView = function () {
+            const view = document.getElementById('viewSelector').value;
+            switch (view) {
+                case 'month':
+                    setMonthView();
+                    break;
+                case 'week':
+                    setWeekView();
+                    break;
+                case 'day':
+                    setDayView();
+                    break;
+               
+            }
+        };
 
-            gantt.config.lightbox.sections = [
-                { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
-                { name: "type", type: "typeselect", map_to: "type" },
-                { name: "time", height: 72, type: "duration", map_to: "auto" }
-            ];
+        // set the default view to Week View
+        setWeekView(); // Adjust this to the default view you want
+    });
+</script>
 
-            gantt.plugins({ tooltip: true });
-            gantt.init("gantt_here");
-
-            gantt.load(`/Checklist/getGanttData?week=${@TempData["entry"]}&title='@TempData["title"]'&detailsId='@TempData["project"]'`, "json");
-
-
-            window.setMonthView = function () {
-                gantt.config.scale_unit = "month";
-                gantt.config.date_scale = "%F, %Y";
-                gantt.config.subscales = [{ unit: "month", step: 1, date: "%m" }];
-                gantt.render();
-            };
-
-            window.setWeekView = function () {
-                gantt.config.scale_unit = "week";
-                gantt.config.date_scale = "%d %M";
-                gantt.config.subscales = [{ unit: "week", step: 1, date: "%W" }];
-                gantt.render();
-            };
-
-            window.setDayView = function () {
-                gantt.config.scale_unit = "day";
-                gantt.config.date_scale = "%d %M";
-                gantt.config.subscales = [{ unit: "day", step: 1, date: "%d" }];
-                gantt.render();
-            };
-
-            setWeekView();
-        });
-    </script>
 }
+
+
