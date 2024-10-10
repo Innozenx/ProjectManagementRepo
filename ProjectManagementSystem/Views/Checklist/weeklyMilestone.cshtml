@@ -329,32 +329,6 @@
     </div>
 </div>
 
-<!-- Checklist Section -->
-<div class="content">
-    <div class="table-container card">
-        <div class="row">
-            <div class="col-lg-12">
-                <h3>Checklist</h3>
-                <div class="checklist-container">
-                    @*@foreach (var item in Model.ChecklistItems)
-                        {
-                            <div class="checklist-row">
-                                <div class="task">
-                                    <div class="task-box">@item.Task</div>
-                                </div>
-                                <div class="attachment">
-                                    <span>Attachment</span>
-                                    <div class="attachment-box">@item.Attachment</div>
-                                </div>
-                            </div>
-                        }*@
-                </div>
-                <button class="submit-button">Complete Submit</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 
 @section scripts {
@@ -395,7 +369,7 @@
         gantt.init("gantt_here");
 
         // dynamically load the Gantt chart data using TempData values
-        gantt.load(`/Checklist/getGanttData?id=${@TempData["entry"]}&title='@TempData["title"]'&detailsId='@TempData["project"]'`, "json");
+        gantt.load(`/Checklist/getGanttData?id=${@TempData["entry"]}`, "json");
 
         // set Gantt view to Month
         window.setMonthView = function () {

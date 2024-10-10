@@ -193,7 +193,7 @@ namespace ProjectManagementSystem.Controllers
 
             // fetch tasks based on main_id (project id)
             var tasks = db.DetailsTbls
-                .Where(x => x.details_id == id && x.task_start.HasValue && x.task_start.Value.Year == currentYear)
+                .Where(x => x.main_id == id && x.task_start.HasValue /*&& x.task_start.Value.Year == currentYear*/)
                 .OrderBy(x => x.milestone_id)
                 .ToList();
 

@@ -43,6 +43,7 @@
           </Key>
           <Property Name="details_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="milestone_id" Type="int" />
+          <Property Name="main_id" Type="int" />
           <Property Name="process_title" Type="varchar" MaxLength="500" />
           <Property Name="IsSubtask" Type="bit" />
           <Property Name="task_start" Type="datetime" />
@@ -251,6 +252,7 @@
           <Property Name="isUnscheduled" Type="Boolean" />
           <Property Name="isCompleted" Type="Boolean" />
           <NavigationProperty Name="MilestoneTbl" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="DetailsTbl" ToRole="MilestoneTbl" />
+          <Property Name="main_id" Type="Int32" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -401,6 +403,7 @@
           <EntitySetMapping Name="DetailsTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.DetailsTbl">
               <MappingFragment StoreEntitySet="DetailsTbl">
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
                 <ScalarProperty Name="isCompleted" ColumnName="isCompleted" />
                 <ScalarProperty Name="isUnscheduled" ColumnName="isUnscheduled" />
                 <ScalarProperty Name="color_status" ColumnName="color_status" />
