@@ -23,196 +23,106 @@
     </div><!-- /.container-fluid -->
 </div>
 
-
+<!-- Main content -->
 <div class="content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-12">
-                <form id="onboardingForm" name="onboardingForm">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Upload Schedule</h4>
-                          
-                            
-                        </div>
-                        <div class="modal-body">
-                            @Html.AntiForgeryToken()
-
-                            @*<div class="form-group">
-                                @Html.Label("Select Project")
-                                @Html.DropDownListFor(x => x.main_id,
-                                new List<SelectListItem>
-                                {
-                                    new SelectListItem { Value = "ITS" , Text = "Information Technology Services" },
-                                    new SelectListItem { Value = "IPD" , Text = "Infrastructure Planning and Development" },
-                                    new SelectListItem { Value = "IM" ,  Text = "Integrated Marketing" }
-                                }, new { @class = "form-control" })
-                            </div>*@
-
-                            <div class="form-group">
-                                <label for="csv-file-input">Upload Schedule</label><br>
-                                <input type="file" id="csv-file-input" accept=".csv" />
-                           
-                            </div>
-                        </div>
-                       
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Add</button>
-                        </div>
+            <div class="col-lg-8 offset-lg-2">
+                <div class="card" style="background-color: white;">
+                    <div class="card-header" style="color:#66339A">
+                        <h3 class="card-title"><strong>Project Onboarding Form</strong></h3>
                     </div>
-                </form>
-            </div>
-        </div>
+                    <!-- form start -->
+                    <form id="onboardingForm" name="onboardingForm" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
 
-
-        <div class="row">
-            <div class="col-12">
-                <div id="chart_container"></div>
-            </div>
-        </div>
-    </div>
-    <!-- /.container-fluid -->
-</div>
-
-<!--<div class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <form id="onboardingForm" name="onboardingForm">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Cancel a Project</h4>
-                        </div>
-                        <div class="modal-body">
-                            @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            <!-- project title dropdown -->
                             <div class="form-group">
-                                <label for="csv-file-input">Project Title</label><br>
-                                <select id="cancelSelect" name="cancelSelect">
-                                    @{ 
-                                        foreach(var item in Model)
-                                        {
-                                            <option>@item.project_title</option>
-                                        }
+                                <label for="projectTitle">Select Project Title</label>
+                                <select class="form-control" id="projectTitle" name="projectTitle">
+                                    <option value="" disabled selected>Select a Project</option>
+                                    @foreach (var project in Model)
+                                    {
+                                        <option value="@project.main_id">@project.project_title</option>
                                     }
                                 </select>
-                                @*<p class="help-block">Example block-level help text here.</p>*@
                             </div>
+
+                            <!-- file upload -->
+                            <div class="form-group">
+                                <label for="csv-file-input">Upload Schedule</label>
+                                <input type="file" id="csv-file-input" accept=".csv" class="form-control-file" />
+                                <small class="form-text text-muted">Accepted format: .csv</small>
+                            </div>
+
                         </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button id="cancelProjButton" name="cancelProjButton" type="button" class="btn btn-primary">Submit</button>
+                        <!-- button-->
+                        <div class="card-footer text-right">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Add Project</button>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
 
-
-        <div class="row">
-            <div class="col-12">
-                <div id="chart_container"></div>
+        <div class="row mt-3">
+            <div class="col-lg-12">
+                <div id="chart_container" class="p-4 bg-light border rounded"></div>
             </div>
         </div>
     </div>
-    <!-- /.container-fluid -->
+</div>
 
-
+<!-- Add Project Form Script -->
 @section scripts{
-    <!-- jQuery -->
     <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
-
-
 
     <script>
         function AddProject() {
             var form = $('form[name="onboardingForm"]');
             var fileUpload = document.getElementById("csv-file-input");
+            var projectTitle = $('#projectTitle').val();
 
-            //$.validator.unobtrusive.parse(form);
-            if (fileUpload.value == null) {
-                alert("Icomplete Form. Please upload and/or fill up the details.");
+            //if (!projectTitle) {
+            //    alert("Please select a project title.");
+            //    return;
+            //}
+
+          
+
+            if (!fileUpload.value) {
+                alert("Please upload a CSV file.");
                 return;
             }
-            else {
-                var data = form.serialize();
-                var file = $("#csv-file-input").get(0).files;
-                var formData = new FormData();
 
-                if (file.length > 0) {
-                    formData.append("pmcsv", file[0]);
-                    $.ajax({
-                        url: "@Url.Action("AddProjectUpload", "Checklist")",
-                        type: "POST",
-                        processData: false,
-                        contentType: false,
-                        data: formData,
-                        success: function (res, textStatus, jqXHR) {
-                            if (res.status) {
-                                $("#myModal").modal('hide');
-                                $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
-                            } else {
-                                $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
-                            }
-                        }
-                    });
-                }
+            var formData = new FormData();
+            var file = $("#csv-file-input").get(0).files;
 
-                else {
-                    alert("No file selected.");
-                }
-            }
-        }
-
-        function plotData(data) {
-            const chartData = data.map(row => ({
-                x: row['XColumnName'],
-                y: row['YColumnName']
-            }));
-            
-            // Initialize the chart
-            new dhx.Chart("chart_container", {
-                type: "timeline",
-                xAxis: {
-                    title: "X Axis Title"
-                },
-                yAxis: {
-                    title: "Y Axis Title"
-                },
-                series: [{
-                    name: "Series Name",
-                    data: chartData
-                }]
-            });
-        }
-    </script>
-
-    <script>
-        $(document).ready(function () {
-            //$('#cancelSelect').change(function () {
-            //    alert($('#cancelSelect').val());
-            //});
-
-            $('#cancelProjButton').click(function () {
-
-                var cancelOpt = $('#cancelSelect').val();
+            if (file.length > 0) {
+                formData.append("pmcsv", file[0]);
+                formData.append("projectTitle", projectTitle); 
 
                 $.ajax({
-                    type: "post",
-                    url: "@Url.Action("Cancellation", "Checklist")",
-                    data: { 'cancelOpt': cancelOpt },
+                    url: "@Url.Action("AddProjectUpload", "Checklist")",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    data: formData,
                     success: function (res) {
-                        if (res.status == true){
+                        if (res.status) {
                             $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
-                        }
-
-                        else {
+                            $("#csv-file-input").val("");  
+                        } else {
                             $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
                         }
                     }
                 });
-            });
-        });
+            } else {
+                alert("No file selected.");
+            }
+        }
     </script>
-    }
+}

@@ -67,6 +67,7 @@ namespace ProjectManagementSystem.Models
 
         public IEnumerable<string> UniqueMilestoneNames { get; set; }
         public IEnumerable<ProjectMilestoneViewModel> ProjectsMilestones { get; set; }
+        public List<string> MilestoneOrder { get; set; }
     }
 
     public class TaskDetail
@@ -86,6 +87,7 @@ namespace ProjectManagementSystem.Models
 
     public class ProjectMilestoneViewModel
     {
+        public int MainId { get; set; }
         public string ProjectTitle { get; set; }
         public string MilestoneName { get; set; }
         public string EndDateFormat { get; set; }
@@ -101,11 +103,24 @@ namespace ProjectManagementSystem.Models
         public DateTime ProjectStart { get; set; }
         public DateTime ProjectEnd { get; set; }
         public string Milestones { get; set; }
-        public int MainId { get; set; }
+        public List<ProjectDetailViewModel> ProjectDetails { get; set; } = new List<ProjectDetailViewModel>();
     }
 
 
-
+    public class ProjectDetailViewModel
+    {
+        public int Id { get; set; }
+        public string ProjectTitle { get; set; }
+        public string ProjectStart { get; set; }
+        public string ProjectEnd { get; set; }
+        public int ProjectDuration { get; set; }
+        public int ProjectYear { get; set; }
+        public string Division { get; set; }
+        public string Category { get; set; }
+        public string ProjectOwner { get; set; }
+        public int DetailsID { get; set; }
+     
+    }
 
 
     public class TaskViewModel
