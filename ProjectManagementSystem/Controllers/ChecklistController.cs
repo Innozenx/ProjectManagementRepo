@@ -207,7 +207,7 @@ namespace ProjectManagementSystem.Controllers
             var data = tasks.Select(x => new
             {
                 id = x.details_id,
-                start_date = x.task_start.HasValue ? x.task_start.Value.ToString("dd/MM/yyyy") : DateTime.Now.ToString("dd/MM/yyyy"),
+                start_date = x.task_start.HasValue ? x.task_start.Value.ToString("yyyy/MM/dd") : DateTime.Now.ToString("yyyy/MM/dd"),
                 duration = x.task_duration ?? 0,
                 text = x.process_title,
                 parent = x.parent,
