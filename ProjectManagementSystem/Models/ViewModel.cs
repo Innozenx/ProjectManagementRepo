@@ -291,6 +291,21 @@ namespace ProjectManagementSystem.Models
  
     }
 
+    public class projectRegister
+    {
+        public string project_name { get; set; }
+        public int main_id { get; set; }
+        public DateTime date_registered { get; set; }
+        public string division { get; set; }
+        public string registered_by { get; set; }
+        public int year { get; set; }
+        public bool is_completed { get; set; }
+        public bool unregistered { get; set; }
+        public string unregister_reason { get; set; }
+        public DateTime date_unregistered { get; set; }
+
+    }
+
 
 
     //public class listWeekly

@@ -16,6 +16,7 @@ namespace ProjectManagementSystem.Models
     {
         public int details_id { get; set; }
         public Nullable<int> milestone_id { get; set; }
+        public Nullable<int> main_id { get; set; }
         public string process_title { get; set; }
         public Nullable<bool> IsSubtask { get; set; }
         public Nullable<System.DateTime> task_start { get; set; }
@@ -29,7 +30,6 @@ namespace ProjectManagementSystem.Models
         public string color_status { get; set; }
         public Nullable<bool> isUnscheduled { get; set; }
         public Nullable<bool> isCompleted { get; set; }
-        public Nullable<int> main_id { get; set; }
     
         public virtual MilestoneTbl MilestoneTbl { get; set; }
     }

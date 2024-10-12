@@ -82,6 +82,21 @@
           <Property Name="created_date" Type="datetime" />
           <Property Name="milestone_position" Type="int" />
         </EntityType>
+        <EntityType Name="RegistrationTbl">
+          <Key>
+            <PropertyRef Name="registration_id" />
+          </Key>
+          <Property Name="registration_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="project_name" Type="varchar" MaxLength="50" />
+          <Property Name="date_registered" Type="datetime" />
+          <Property Name="division" Type="varchar" MaxLength="50" />
+          <Property Name="registered_by" Type="varchar" MaxLength="255" />
+          <Property Name="year" Type="int" />
+          <Property Name="is_completed" Type="bit" />
+          <Property Name="unregistered" Type="bit" />
+          <Property Name="unregister_reason" Type="varchar" MaxLength="255" />
+          <Property Name="date_unregistered" Type="datetime" />
+        </EntityType>
         <EntityType Name="Reports">
           <Key>
             <PropertyRef Name="id" />
@@ -167,6 +182,7 @@
           <EntitySet Name="DetailsTbl" EntityType="Self.DetailsTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MainTable" EntityType="Self.MainTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MilestoneTbl" EntityType="Self.MilestoneTbl" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RegistrationTbl" EntityType="Self.RegistrationTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Reports" EntityType="Self.Reports" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatus" Schema="dbo" store:Type="Tables" />
@@ -188,6 +204,7 @@
           <EntitySet Name="DetailsTbls" EntityType="ProjectManagementDBModel.DetailsTbl" />
           <EntitySet Name="MainTables" EntityType="ProjectManagementDBModel.MainTable" />
           <EntitySet Name="MilestoneTbls" EntityType="ProjectManagementDBModel.MilestoneTbl" />
+          <EntitySet Name="RegistrationTbls" EntityType="ProjectManagementDBModel.RegistrationTbl" />
           <EntitySet Name="Reports" EntityType="ProjectManagementDBModel.Report" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
           <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
@@ -238,6 +255,7 @@
           </Key>
           <Property Name="details_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="milestone_id" Type="Int32" />
+          <Property Name="main_id" Type="Int32" />
           <Property Name="process_title" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="IsSubtask" Type="Boolean" />
           <Property Name="task_start" Type="DateTime" Precision="3" />
@@ -252,7 +270,6 @@
           <Property Name="isUnscheduled" Type="Boolean" />
           <Property Name="isCompleted" Type="Boolean" />
           <NavigationProperty Name="MilestoneTbl" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="DetailsTbl" ToRole="MilestoneTbl" />
-          <Property Name="main_id" Type="Int32" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -280,6 +297,21 @@
           <Property Name="milestone_position" Type="Int32" />
           <NavigationProperty Name="DetailsTbls" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="MilestoneTbl" ToRole="DetailsTbl" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
+        </EntityType>
+        <EntityType Name="RegistrationTbl">
+          <Key>
+            <PropertyRef Name="registration_id" />
+          </Key>
+          <Property Name="registration_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="project_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="date_registered" Type="DateTime" Precision="3" />
+          <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="registered_by" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="year" Type="Int32" />
+          <Property Name="is_completed" Type="Boolean" />
+          <Property Name="unregistered" Type="Boolean" />
+          <Property Name="unregister_reason" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="date_unregistered" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Report">
           <Key>
@@ -403,7 +435,6 @@
           <EntitySetMapping Name="DetailsTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.DetailsTbl">
               <MappingFragment StoreEntitySet="DetailsTbl">
-                <ScalarProperty Name="main_id" ColumnName="main_id" />
                 <ScalarProperty Name="isCompleted" ColumnName="isCompleted" />
                 <ScalarProperty Name="isUnscheduled" ColumnName="isUnscheduled" />
                 <ScalarProperty Name="color_status" ColumnName="color_status" />
@@ -417,6 +448,7 @@
                 <ScalarProperty Name="task_start" ColumnName="task_start" />
                 <ScalarProperty Name="IsSubtask" ColumnName="IsSubtask" />
                 <ScalarProperty Name="process_title" ColumnName="process_title" />
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
                 <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
                 <ScalarProperty Name="details_id" ColumnName="details_id" />
               </MappingFragment>
@@ -445,6 +477,22 @@
                 <ScalarProperty Name="milestone_name" ColumnName="milestone_name" />
                 <ScalarProperty Name="main_id" ColumnName="main_id" />
                 <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RegistrationTbls">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.RegistrationTbl">
+              <MappingFragment StoreEntitySet="RegistrationTbl">
+                <ScalarProperty Name="date_unregistered" ColumnName="date_unregistered" />
+                <ScalarProperty Name="unregister_reason" ColumnName="unregister_reason" />
+                <ScalarProperty Name="unregistered" ColumnName="unregistered" />
+                <ScalarProperty Name="is_completed" ColumnName="is_completed" />
+                <ScalarProperty Name="year" ColumnName="year" />
+                <ScalarProperty Name="registered_by" ColumnName="registered_by" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="date_registered" ColumnName="date_registered" />
+                <ScalarProperty Name="project_name" ColumnName="project_name" />
+                <ScalarProperty Name="registration_id" ColumnName="registration_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

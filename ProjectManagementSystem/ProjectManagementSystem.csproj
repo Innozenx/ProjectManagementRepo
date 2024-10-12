@@ -265,6 +265,9 @@
     <Compile Include="Models\MilestoneTbl.cs">
       <DependentUpon>ChecklistDB.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\RegistrationTbl.cs">
+      <DependentUpon>ChecklistDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Report.cs">
       <DependentUpon>ChecklistDB.tt</DependentUpon>
     </Compile>
@@ -4980,10 +4983,10 @@
     <Content Include="Views\Shared\_AdminNav.cshtml" />
     <Content Include="Views\Shared\_AdminSidebar.cshtml" />
     <Content Include="Views\Shared\_DefaultPage.cshtml" />
+    <Content Include="Views\Admin\Register.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Admin\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

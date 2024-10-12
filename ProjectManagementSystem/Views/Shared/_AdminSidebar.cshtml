@@ -38,19 +38,19 @@
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
-                    @*</li>
-                <li class="nav-item">
-                    <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
-                        <i class="nav-icon fas fa-plus-circle"></i>
-                        <p>Project Onboarding</p>
-                    </a>
                 </li>
-                <li class="nav-item">
-                    <a href="@Url.Action("WeeklyStatus", "Checklist")" class="nav-link">
-                        <i class="nav-icon fas fa-sync-alt"></i>
-                        <p>Weekly Status</p>
-                    </a>
-                </li>*@
+                @*<li class="nav-item">
+                        <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-plus-circle"></i>
+                            <p>Project Onboarding</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("WeeklyStatus", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-sync-alt"></i>
+                            <p>Weekly Status</p>
+                        </a>
+                    </li>*@
 
                 <li class="nav-item">
                     <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
@@ -61,32 +61,52 @@
 
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                        <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
-                            <i class="nav-icon fas fa-plus-circle"></i>
-                            <p>Add Project</p>
-                        </a>
-                </li>
-            </ul>
-                   
-                    @*<ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="@Url.Action("WeeklyStatus", "Checklist")" class="nav-link">
-                                <i class="nav-icon fas fa-sync-alt"></i>
-                                <p>Status</p>
+                            <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
+                                <i class="nav-icon fas fa-plus-circle"></i>
+                                <p>Add Project</p>
                             </a>
                         </li>
                     </ul>
 
+                    @*<ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="@Url.Action("WeeklyStatus", "Checklist")" class="nav-link">
+                                    <i class="nav-icon fas fa-sync-alt"></i>
+                                    <p>Status</p>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="@Url.Action("Checklist","Checklist")" class="nav-link">
+                                    <i class="nav-icon fas fa-list-ul"></i>
+                                    <p>Checklist</p>
+                                </a>
+                            </li>
+
+                        </ul>*@
+                </li>
+
+                <li class="nav-header">Admin</li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user-tie"></i>
+                        <p>
+                            Admin
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="@Url.Action("Checklist","Checklist")" class="nav-link">
-                                <i class="nav-icon fas fa-list-ul"></i>
-                                <p>Checklist</p>
+                            <a href="@Url.Action("Register", "Admin")" class="nav-link">
+                                <i class="far fa-edit nav-icon"></i>
+                                <p>Register Project</p>
                             </a>
                         </li>
-
                     </ul>
-                </li>*@
+                </li>
 
                 <li class="nav-header">Report</li>
 
@@ -764,21 +784,21 @@
     <!-- /.sidebar -->
 </aside>
 
-@section script { 
-@*<script>
-    $(document).ready(function () {
-    $('.nav-link').on('click', function (e) {
-        e.preventDefault();
+@section script {
+    @*<script>
+            $(document).ready(function () {
+            $('.nav-link').on('click', function (e) {
+                e.preventDefault();
 
-        var $this = $(this);
-        var $subMenu = $this.siblings('.nav-treeview');
+                var $this = $(this);
+                var $subMenu = $this.siblings('.nav-treeview');
 
-        if ($subMenu.length) {
-            $subMenu.slideToggle();
-            $this.find('.nav-item-expand').toggleClass('rotate');
-        }
-    });
-});*@
+                if ($subMenu.length) {
+                    $subMenu.slideToggle();
+                    $this.find('.nav-item-expand').toggleClass('rotate');
+                }
+            });
+        });*@
 
-@*</script>*@
+    @*</script>*@
 }
