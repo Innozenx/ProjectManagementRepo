@@ -96,6 +96,7 @@
           <Property Name="unregistered" Type="bit" />
           <Property Name="unregister_reason" Type="varchar" MaxLength="255" />
           <Property Name="date_unregistered" Type="datetime" />
+          <Property Name="is_file_uploaded" Type="bit" />
         </EntityType>
         <EntityType Name="Reports">
           <Key>
@@ -312,6 +313,7 @@
           <Property Name="unregistered" Type="Boolean" />
           <Property Name="unregister_reason" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="date_unregistered" Type="DateTime" Precision="3" />
+          <Property Name="is_file_uploaded" Type="Boolean" />
         </EntityType>
         <EntityType Name="Report">
           <Key>
@@ -483,6 +485,7 @@
           <EntitySetMapping Name="RegistrationTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.RegistrationTbl">
               <MappingFragment StoreEntitySet="RegistrationTbl">
+                <ScalarProperty Name="is_file_uploaded" ColumnName="is_file_uploaded" />
                 <ScalarProperty Name="date_unregistered" ColumnName="date_unregistered" />
                 <ScalarProperty Name="unregister_reason" ColumnName="unregister_reason" />
                 <ScalarProperty Name="unregistered" ColumnName="unregistered" />

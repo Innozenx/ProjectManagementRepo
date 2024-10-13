@@ -1,4 +1,4 @@
-﻿@model List<ProjectManagementSystem.Models.MainTable>
+﻿@model List<ProjectManagementSystem.Models.RegistrationTbl>
 @using System;
 
 @{
@@ -44,7 +44,7 @@
                                     <option value="" disabled selected>Select a Project</option>
                                     @foreach (var project in Model)
                                     {
-                                        <option value="@project.main_id">@project.project_title</option>
+                                        <option value="@project.registration_id">@project.project_name</option>
                                     }
                                 </select>
                             </div>
@@ -110,7 +110,7 @@
                     type: "POST",
                     processData: false,
                     contentType: false,
-                    data: formData,
+                    data: formData, projectTitle,
                     success: function (res) {
                         if (res.status) {
                             $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });

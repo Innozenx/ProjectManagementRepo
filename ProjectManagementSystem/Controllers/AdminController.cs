@@ -39,6 +39,7 @@ namespace ProjectManagementSystem.Controllers
                     registered_by = "ME",
                     is_completed = false,
                     unregistered = false,
+                    is_file_uploaded = false,
 
                     year = DateTime.Now.Year
                 };
@@ -51,6 +52,7 @@ namespace ProjectManagementSystem.Controllers
                     registered_by = details.registered_by,
                     is_completed = details.is_completed,
                     unregistered = details.unregistered,
+                    is_file_uploaded = details.is_file_uploaded,
                     year = details.year
                 };
 

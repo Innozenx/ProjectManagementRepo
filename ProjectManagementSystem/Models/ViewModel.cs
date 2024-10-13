@@ -303,6 +303,7 @@ namespace ProjectManagementSystem.Models
         public bool unregistered { get; set; }
         public string unregister_reason { get; set; }
         public DateTime date_unregistered { get; set; }
+        public bool is_file_uploaded { get; set; }
 
     }
 
