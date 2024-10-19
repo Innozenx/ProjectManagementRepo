@@ -261,7 +261,7 @@ namespace ProjectManagementSystem.Controllers
             }
             AddErrors(result);
             return View();
-        }
+        } 
 
         //
         // GET: /Account/ResetPasswordConfirmation

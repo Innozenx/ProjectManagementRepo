@@ -15,12 +15,11 @@ namespace ProjectManagementSystem.Models
     public partial class WeeklyStatu
     {
         public int status_id { get; set; }
-        public string project_name { get; set; }
+        public Nullable<int> milestone_id { get; set; }
         public string project_owner { get; set; }
-        public Nullable<System.DateTime> dateInitial { get; set; }
-        public Nullable<System.DateTime> dateFinished { get; set; }
-        public string projectType { get; set; }
         public string description { get; set; }
-        public byte[] attachment { get; set; }
+        public Nullable<System.DateTime> date_updated { get; set; }
+    
+        public virtual MilestoneTbl MilestoneTbl { get; set; }
     }
 }

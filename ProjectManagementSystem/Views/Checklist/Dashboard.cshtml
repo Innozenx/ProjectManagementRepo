@@ -8,12 +8,12 @@
     var calendar = CultureInfo.InvariantCulture.Calendar;
     var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
 
-    // formula for percentage completed tasks
+    // Calculate percentages for completed and pending tasks
     var totalTasks = Model.TotalTasks > 0 ? Model.TotalTasks : 1;
     var completedPercentage = (double)Model.CompletedTasks / totalTasks * 100;
     var pendingPercentage = 100 - completedPercentage;
-
 }
+
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMzIYfK/5Ez7g5F1RzXJtWra1c4G5X5Fh5A6nT" crossorigin="anonymous">
 </head>
@@ -26,12 +26,70 @@
     .dashboard-container {
         padding: 20px;
         max-width: 1200px;
-        margin: auto;
+        margin: 0 auto;
     }
+
+    .row {
+        margin-left: 30px;
+        margin-right: 30px;
+    }
+
+    .top-card-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+    .top-cards {
+        flex: 1;
+        max-width: 350px;
+        min-width: 250px;
+        height: 140px;
+        background-color: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .top-cards:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .top-cards .icon {
+        font-size: 26px;
+        color: #888;
+        margin-bottom: 10px;
+    }
+
+    .top-cards .card-text {
+        font-size: 0.9rem; 
+        font-weight: 500;
+            
+    }
+
+    .top-cards .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        /*margin-top: auto;*/
+    }
+
+    .top-cards .change-indicator {
+        font-size: 0.8rem;
+        font-weight: 400;
+        color: #888;
+        margin-top: 5px;
+    }
+
 
     .card {
         border-radius: 15px;
-        padding: 15px;
+        padding: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         background-color: white;
         color: #333;
@@ -40,11 +98,18 @@
         position: relative;
     }
 
+    .card-text {
+        font-size: 1rem;
+        color: #303030;
+        font-weight: normal;
+    }
+
     .card-title {
         font-family: 'Poppins', sans-serif;
         font-size: 2rem;
         font-weight: bold;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
+        color: inherit;
     }
 
     .title-completed {
@@ -63,11 +128,6 @@
         color: #673AB7;
     }
 
-    .card-text {
-        font-size: 1rem;
-        color: #303030;
-    }
-
     .chart-container {
         max-width: 300px;
         max-height: 300px;
@@ -77,28 +137,6 @@
 
     .table-container {
         overflow-x: auto;
-    }
-
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        margin: 0 10px;
-    }
-
-    .col-lg-8, .col-lg-4 {
-        padding: 10px;
-    }
-
-    .col-md-3 {
-        padding: 10px;
-    }
-
-    .col-lg-8 {
-        flex: 0 0 65%;
-    }
-
-    .col-lg-4 {
-        flex: 0 0 35%;
     }
 
     .table th, .table td {
@@ -115,45 +153,19 @@
         font-weight: normal;
     }
 
-    .dataTables_wrapper {
-        overflow-x: auto;
-    }
-
-    .card-body i {
-        font-size: 2rem;
-        position: absolute;
-        top: 15px;
-        right: 15px;
-    }
-
-    .card-success i {
-        color: #4CAF50;
-    }
-
-    .card-warning i {
-        color: #FFC107;
-    }
-
-    .card-info i {
-        color: #673AB7;
-    }
-
-    .card-primary i {
-        color: #673AB7;
-    }
-
     .upcoming-deliverables-list {
         list-style: none;
         padding: 0;
     }
 
-        .upcoming-deliverables-list li {
-            background-color: #f9f9f9;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+    .upcoming-deliverables-list li {
+        background-color: #f9f9f9;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
 </style>
 
 <!-- Content Header (Page header) -->
@@ -174,43 +186,34 @@
     </div>
 </div>
 
-<div class="row">
-    <!-- completed -->
-    <div class="col-md-3">
-        <div class="card card-success h-100" onclick="viewTasks('completed')">
+<div class="dashboard-container">
+    <div class="row top-card-row justify-content-center">
+        <!-- Completed Tasks -->
+        <div class="card top-cards card-success">
             <div class="card-body">
                 <i class="fas fa-check-circle"></i>
                 <p class="card-text">Completed Tasks</p>
-                <h3 class="card-title <tabke-completed">@Model.CompletedTasks</h3>
+                <h3 class="card-title title-completed">@Model.CompletedTasks</h3>
             </div>
         </div>
-    </div>
-
-    <!-- pending -->
-    <div class="col-md-3">
-        <div class="card card-warning h-100" onclick="viewTasks('pending')">
+        <!-- Pending Tasks -->
+        <div class="card top-cards card-warning">
             <div class="card-body">
                 <i class="fas fa-exclamation-circle"></i>
                 <p class="card-text">Pending Tasks</p>
                 <h3 class="card-title title-pending">@Model.PendingTasks</h3>
             </div>
         </div>
-    </div>
-
-    <!-- total-->
-    <div class="col-md-3">
-        <div class="card card-info h-100" onclick="viewTasks('all')">
+        <!-- Total Tasks -->
+        <div class="card top-cards card-info">
             <div class="card-body">
                 <i class="fas fa-tasks"></i>
                 <p class="card-text">Total Tasks</p>
                 <h3 class="card-title title-total">@Model.TotalTasks</h3>
             </div>
         </div>
-    </div>
-
-    <!-- current week-->
-    <div class="col-md-3">
-        <div class="card card-primary h-100">
+        <!-- Current Week -->
+        <div class="card top-cards card-primary">
             <div class="card-body">
                 <i class="fas fa-calendar-week"></i>
                 <p class="card-text">Current Week</p>
@@ -220,13 +223,15 @@
     </div>
 </div>
 
+
+
+
 <!-- Project Summary and Donut Chart -->
 <div class="row">
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
                 <h5>Project Summary</h5>
-
                 <div class="table-container">
                     <table id="milestonesTable" class="table table-striped">
                         <thead>
@@ -238,8 +243,6 @@
                                 }
                             </tr>
                         </thead>
-
-
                         <tbody>
                             @foreach (var projectGroup in Model.ProjectsMilestones.GroupBy(pm => pm.ProjectTitle))
                             {
@@ -248,89 +251,76 @@
                                         <a href="javascript:void(0);" onclick="toDetailedView('@projectGroup.First().MainId', '@projectGroup.Key')">
                                             @projectGroup.Key
                                         </a>
-                                        @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                        {
-
-                                            // fetch the milestone tasks and get the last end date of the task per milestone
-                                            var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName && pm.EndDate.HasValue);
-                                            var latestEndDate = milestoneTasks.Any() ? milestoneTasks.Max(pm => pm.EndDate.Value) : (DateTime?)null;
-
-                                            var endDateFormatted = latestEndDate.HasValue
-                                                ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
-                                                : "N/A";
-
+                                    </td>
+                                    @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                    {
+                                        var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName && pm.EndDate.HasValue);
+                                        var latestEndDate = milestoneTasks.Any() ? milestoneTasks.Max(pm => pm.EndDate.Value) : (DateTime?)null;
+                                        var endDateFormatted = latestEndDate.HasValue
+                                            ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                            : "N/A";
                                         <td class="week-cell">@endDateFormatted</td>
-                                        }
-                                    </tr>
-                       
+                                    }
+                                </tr>
                             }
                         </tbody>
-
-
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- donut Chart for Overall Progress -->
+    <!-- Donut Chart for Overall Progress -->
     <div class="col-lg-4">
         <div class="card">
             <div class="card-body">
                 <h5>Overall Progress</h5>
-                <div class="chart-container" style="max-width: 300px; max-height: 300px; margin: auto;">
+                <div class="chart-container">
                     <canvas id="progressChart" style="width: 100%; height: 100%;"></canvas>
                 </div>
-                <p class="text-center">
+                <p class="text-center"></p>
                     @if (Model.CompletedTasks == 0)
                     {
                         <strong>No tasks completed yet. Let's get started!</strong>
                     }
                     else
                     {
-                        <p>
-                            Completed: @completedPercentage.ToString("F2") %<br />
-                            Pending @pendingPercentage.ToString("F2") %
-                        </p>
-                    }
-
+                    <p>Completed: @completedPercentage.ToString("F2") %<br />Pending @pendingPercentage.ToString("F2") %</p>
+                    }    
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-
-<!-- Upcoming Tasks -->
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <h5>Upcoming Tasks</h5>
-                <ul class="upcoming-deliverables-list">
-                    @if (Model.UpcomingDeliverables != null && Model.UpcomingDeliverables.Any())
-                    {
-                        foreach (var deliverable in Model.UpcomingDeliverables)
+    <!-- Upcoming Tasks -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Upcoming Tasks</h5>
+                    <ul class="upcoming-deliverables-list">
+                        @if (Model.UpcomingDeliverables != null && Model.UpcomingDeliverables.Any())
                         {
-                            <li>
-                                <strong>@deliverable.Tasks</strong> - Due on @deliverable.DueDate.ToString("MMMM dd, yyyy")
-                            </li>
+                            foreach (var deliverable in Model.UpcomingDeliverables)
+                            {
+                                <li><strong>@deliverable.Tasks</strong> - Due on @deliverable.DueDate.ToString("MMMM dd, yyyy")</li>
+                            }
                         }
-                    }
-                    else
-                    {
-                        <li>No upcoming tasks.</li>
-                    }
-                </ul>
+                        else
+                        {
+                            <li>No upcoming tasks.</li>
+                        }
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-
-@section scripts {
-    <script>
+    <!-- DataTables and Chart.js Setup -->
+    @section scripts {
+        <script>
         $(document).ready(function () {
-            var table = $('#milestonesTable').DataTable({
+            $('#milestonesTable').DataTable({
                 "scrollX": true,
                 "paging": true,
                 "searching": true,
@@ -338,13 +328,9 @@
                 "autoWidth": false,
                 "columnDefs": [
                     { "targets": "_all", "className": "dt-center" }
-                ],
-                fixedColumns: {
-                    leftColumns: 1
-                }
+                ]
             });
 
-            // Donut Chart for Overall Progress
             var ctx = document.getElementById('progressChart').getContext('2d');
             var progressChart = new Chart(ctx, {
                 type: 'doughnut',
@@ -370,7 +356,6 @@
             });
         });
 
-        // Function to redirect to detailed view when a project is clicked
         function toDetailedView(mainId, projectTitle) {
             var url = '/Checklist/weeklyMilestone';
             var queryString = $.param({
@@ -379,5 +364,5 @@
             });
             window.location.href = url + "?" + queryString;
         }
-    </script>
-}
+        </script>
+    }

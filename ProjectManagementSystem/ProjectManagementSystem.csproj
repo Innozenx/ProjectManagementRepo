@@ -236,47 +236,47 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\ChecklistDB.Context.cs">
+    <Compile Include="Models\CheckListDB.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ChecklistDB.Context.tt</DependentUpon>
+      <DependentUpon>CheckListDB.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ChecklistDB.cs">
+    <Compile Include="Models\CheckListDB.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ChecklistDB.tt</DependentUpon>
+      <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ChecklistDB.Designer.cs">
+    <Compile Include="Models\CheckListDB.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ChecklistDB.edmx</DependentUpon>
+      <DependentUpon>CheckListDB.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\ChecklistTable.cs">
-      <DependentUpon>ChecklistDB.tt</DependentUpon>
+      <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DetailsTbl.cs">
-      <DependentUpon>ChecklistDB.tt</DependentUpon>
+      <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\MainTable.cs">
-      <DependentUpon>ChecklistDB.tt</DependentUpon>
+      <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MilestoneTbl.cs">
-      <DependentUpon>ChecklistDB.tt</DependentUpon>
+      <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\RegistrationTbl.cs">
-      <DependentUpon>ChecklistDB.tt</DependentUpon>
+      <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Report.cs">
-      <DependentUpon>ChecklistDB.tt</DependentUpon>
+      <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Models\WeeklyChecklistTable.cs">
-      <DependentUpon>ChecklistDB.tt</DependentUpon>
+      <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\WeeklyStatu.cs">
-      <DependentUpon>ChecklistDB.tt</DependentUpon>
+      <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -4334,27 +4334,20 @@
     <Content Include="FrontEnd\plugins\uplot\uPlot.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Models\ChecklistDB.Context.tt">
+    <Content Include="Models\CheckListDB.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>ChecklistDB.edmx</DependentUpon>
-      <LastGenOutput>ChecklistDB.Context.cs</LastGenOutput>
+      <DependentUpon>CheckListDB.edmx</DependentUpon>
+      <LastGenOutput>CheckListDB.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Models\ChecklistDB.tt">
+    <Content Include="Models\CheckListDB.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>ChecklistDB.edmx</DependentUpon>
-      <LastGenOutput>ChecklistDB.cs</LastGenOutput>
+      <DependentUpon>CheckListDB.edmx</DependentUpon>
+      <LastGenOutput>CheckListDB.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <EntityDeploy Include="Models\ChecklistDB.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>ChecklistDB.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\ChecklistDB.edmx.diagram">
-      <DependentUpon>ChecklistDB.edmx</DependentUpon>
     </Content>
     <Content Include="FrontEnd\build\config\.eslintrc.json" />
     <Content Include="FrontEnd\build\npm\.eslintrc.json" />
@@ -4915,6 +4908,13 @@
     <Content Include="AdminLTE-3.2.0\plugins\summernote\summernote.min.js.map" />
     <Content Include="AdminLTE-3.2.0\plugins\toastr\toastr.js.map" />
     <Content Include="AdminLTE-3.2.0\README.md" />
+    <EntityDeploy Include="Models\CheckListDB.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>CheckListDB.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\CheckListDB.edmx.diagram">
+      <DependentUpon>CheckListDB.edmx</DependentUpon>
+    </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />

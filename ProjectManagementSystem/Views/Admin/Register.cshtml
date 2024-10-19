@@ -1,6 +1,6 @@
-﻿@model ProjectManagementSystem.Models.projectRegister
+﻿@model ProjectManagementSystem.Models.ProjectRegister
 @{
-    ViewBag.Title = "Register";
+    ViewBag.Title = "Project Registration";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
@@ -17,12 +17,13 @@
                     <div class="card-header" style="color:#66339A">
                         <h3 class="card-title"><strong>Project Registration</strong></h3>
                     </div>
-
+                    <br />
                     <div style="text-align: center">
-                        <label>Project Name: </label>
-                        <input type="text" id="project_name" placeholder="Please Enter your Project Name Here" style="width: 50%"/>
+                        <label>Project Name </label>
+                        <input type="text" id="project_name" placeholder="Please enter your project name here..." style="width: 50%"/>
                         <br />
-                        <span><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: red"></i> <i>Please make sure that the project name is exactly identical to the project name in the excel file</i></span>
+                        <br />
+                        <span><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: red"></i> <i style="font-size: 14px;">Make sure the Project Name you enter corresponds exactly to the project name in the Excel file.</i></span>
                         <div class="card-footer text-right">
                             <button id="submit_project" type="submit" class="btn btn-primary">Submit</button>
                         </div>
@@ -33,7 +34,6 @@
                         @Html.AntiForgeryToken()
 
                         <!-- button-->
-                        
                     </form>
                 </div>
             </div>
