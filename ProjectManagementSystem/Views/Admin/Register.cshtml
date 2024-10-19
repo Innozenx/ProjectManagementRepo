@@ -6,56 +6,93 @@
 
 <head>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <style>
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 50px 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,.12);
+        }
+
+        .btn-primary {
+            background-color: #66339A;
+            border: none;
+            padding: 10px 20px;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background-color: #532c7e;
+            }
+
+        .form-text {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .form-footer {
+            text-align: right;
+            padding-top: 20px;
+        }
+    </style>
 </head>
 
 <!-- Main content -->
-<div class="content" style="padding-top: 15%">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-8 offset-lg-2">
-                <div class="card" style="background-color: white;">
-                    <div class="card-header" style="color:#66339A">
-                        <h3 class="card-title"><strong>Project Registration</strong></h3>
-                    </div>
-                    <br />
-                    <div style="text-align: center">
-                        <label>Project Name </label>
-                        <input type="text" id="project_name" placeholder="Please enter your project name here..." style="width: 50%"/>
-                        <br />
-                        <br />
-                        <span><i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: red"></i> <i style="font-size: 14px;">Make sure the Project Name you enter corresponds exactly to the project name in the Excel file.</i></span>
-                        <div class="card-footer text-right">
-                            <button id="submit_project" type="submit" class="btn btn-primary">Submit</button>
-                        </div>
-                    </div>
+<div class="content">
+    <div class="form-container">
+        <h3 class="text-center" style="color: #66339A;"><strong>Project Registration</strong></h3>
+        <p class="text-center text-muted">Please enter your project name below</p>
 
-                    <!-- form start -->
-                    <form id="onboardingForm" name="onboardingForm" enctype="multipart/form-data">
-                        @Html.AntiForgeryToken()
+        <!-- Project Name Input -->
+        <form id="projectRegistrationForm" name="projectRegistrationForm" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
 
-                        <!-- button-->
-                    </form>
-                </div>
+            <div class="form-group">
+                <label for="project_name"><strong>Project Name</strong></label>
+                <input type="text" id="project_name" name="project_name" class="form-control" placeholder="Enter project name" required />
+                <small class="form-text">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: red"></i> Make sure the project name matches exactly with the Excel file.
+                </small>
             </div>
-        </div>
 
-        <div class="row mt-3">
-            <div class="col-lg-12">
-                <div id="chart_container" class="p-4 bg-light border rounded"></div>
+            <!-- Submit Button -->
+            <div class="form-footer">
+                <button id="submit_project" type="submit" class="btn btn-primary">Submit</button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
 @section scripts{
     <script>
-$(document).ready(function(){
-            $("#submit_project").on("click", function(){
-                var name = $("#project_name").val();
+        $(document).ready(function(){
+            $("#projectRegistrationForm").on("submit", function(e){
+                e.preventDefault();
+                var projectName = $("#project_name").val();
+
                 $.ajax({
-                    method: "post",
-                    data: {"name" : name},
+                    method: "POST",
                     url: "@Url.Action("Register_Project", "Admin")",
+                    data: { "name": projectName },
                     success: function(res){
                         alert(res.message);
                     }
