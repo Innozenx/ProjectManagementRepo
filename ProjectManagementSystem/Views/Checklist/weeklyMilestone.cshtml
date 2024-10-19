@@ -7,71 +7,35 @@
 <style>
     body {
         font-family: 'Poppins', sans-serif;
-    }
-    #gantt_here {
-        width: 100%;
-        height: 60vh;
-        border-radius: 10px;
-        overflow: hidden;
-        margin-top: 10px;
-        position:relative;
-    }
-
-    .view-controls {
-        margin: 20px 0;
-        text-align: right; 
-        /*display: flex;
-        justify-content: flex-end;*/ 
-    }
-
-        .view-controls button {
-            background-color: #66339A;
-            border: none;
-            color: yellow;
-            padding: 8px 15px;
-            font-size: 16px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background-color 0.3s, box-shadow 0.3s;
-            margin-right: 10px;
-        }
-
-    .view-controls button:hover {
-        background-color: #4a1a72;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    h3 {
-        font-weight: bold;
-        color: #66399A;
-        align-content:center;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 0;
     }
 
     .card-container {
         display: flex;
         justify-content: center;
-        align-items: flex-start;
-        margin-top: 40px;
-        padding-left: 20px;
-        padding-right: 20px;
+        margin-top: 30px;
+        padding: 20px;
     }
 
     .table-container {
-        padding: 15px;
         background-color: #fff;
         border-radius: 10px;
-        width: 100%;
-        max-width: 1200px; 
+        padding: 20px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 1200px;
         margin: 0 auto;
     }
 
-        .table-container h5 {
-            font-size: 20px;
-            margin-bottom: 15px;
-            color: #333;
-            text-align: center;
-        }
+    h3 {
+        font-weight: bold;
+        color: #66399A;
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
 
     #projectDetails {
         width: 100%;
@@ -80,34 +44,9 @@
     }
 
     #projectDetails th, #projectDetails td {
-        padding: 8px;
+        padding: 10px;
         text-align: left;
-        border-bottom: 1px solid #ccc;
-    }
-
-    #projectDetails th {
-        font-weight: bold;
-        color: #555;
-    }
-
-    #projectDetails td a {
-        color: #66339A;
-        text-decoration: none;
-    }
-
-        #projectDetails td a:hover {
-            text-decoration: underline;
-        }
-
-    #projectDetails td {
-        color: #333;
-    }
-
-
-    #projectDetails th, #projectDetails td {
-        padding: 8px; 
-        text-align: left;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #ddd;
     }
 
     #projectDetails th {
@@ -128,130 +67,116 @@
         color: #333;
     }
 
-        #projectDetails th, #projectDetails td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ccc;
-        }
-
-        #projectDetails th {
-            font-weight: bold;
-            color: #555;
-        }
-
-        #projectDetails td a {
-            color: #66339A;
-            text-decoration: none;
-        }
-
-        #projectDetails td a:hover {
-            text-decoration: underline;
-        }
-
-        #projectDetails td {
-            color: #333;
-        }
-
-
-        #projectDetails th, #projectDetails td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ccc;
-        }
-
-        #projectDetails th {
-            font-weight: bold;
-            color: #555;
-        }
-
-        #projectDetails td a {
-            color: #66339A;
-            text-decoration: none;
-        }
-
-            #projectDetails td a:hover {
-                text-decoration: underline;
-            }
-
-        #projectDetails td {
-            color: #333;
-        }
-
-    #projectDetails td a {
-        color: #66339A;
-        text-decoration: none;
-    }
-
-        #projectDetails td a:hover {
-            text-decoration: underline;
-        }
-
- 
-    #projectDetails td {
-        color: #333;
-    }
-    .checklist-container {
-        display: flex;
-        flex-direction: column;
-       
-    }
-
-    .checklist-row {
+    .gantt-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
 
-    .task-box {
-        background-color: #f9f9f9;
-        border: 1px solid #ccc;
-        width: 300px;
-        height: 50px;
-        line-height: 50px;
-        text-align: center;
-        font-size: 16px;
-        margin-right: 10px;
-    }
-
-    .attachment {
-        display: flex;
-        align-items: center;
-    }
-
-        .attachment span {
-            margin-right: 10px;
-            font-size: 14px;
-        }
-
-    .attachment-box {
-        background-color: #ccc;
-        border-radius: 5px;
+    .gantt-view-btn {
+        background-color: #66399A;
+        border: none;
+        color: white;
         padding: 8px 15px;
         font-size: 14px;
-        color: white;
-        text-align: center;
+        border-radius: 5px;
         cursor: pointer;
-    }
-
-    .submit-button {
-        background-color: #4a1a72;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        margin-top: 20px;
-        cursor: pointer;
-        border-radius: 25px;
+        margin-right: 5px;
         transition: background-color 0.3s ease;
     }
 
-        .submit-button:hover {
-            background-color: #66339A;
-        }
+    .gantt-view-btn:hover, .gantt-view-btn.active {
+        background-color: #552788;
+    }
+
+    .gantt-nav-btn, .gantt-today-btn {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        color: #333;
+        padding: 8px 12px;
+        font-size: 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+
+    .gantt-nav-btn:hover, .gantt-today-btn:hover {
+        background-color: #eaeaea;
+    }
+
+    #gantt_here {
+        margin-top: 20px;
+        height: 60vh;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+
+    @@media (max-width: 768px) {
+    .gantt-header {
+        flex-direction: column;
+    }
+
+    .gantt-view-btn, .gantt-nav-btn, .gantt-today-btn {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-dialog.modal-lg {
+        max-width: 900px;
+    }
+
+    .modal-header {
+        border-bottom: none;
+    }
+
+    .modal-header .close {
+        font-size: 1.5rem;
+    }
+
+    .form-control {
+        border: 1px solid #ddd;
+        font-size: 14px;
+        padding: 12px;
+        border-radius: 6px;
+        transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: none;
+    }
+
+    .btn-primary {
+        background-color: #66399A;
+        border: none;
+        border-radius: 50px;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #66399A;
+    }
+
+    .text-muted {
+        color: #6c757d;
+    }
+
+    .btn-success {
+        color: #66399A;
+    }
+}
 </style>
+
 <div class="card-container">
-    <div class="table-container card">
+    <div class="table-container">
         <h3>Project Details</h3>
         @if (Model.ProjectDetails.Any())
         {
@@ -259,7 +184,6 @@
 
             <table id="projectDetails">
                 <tr>
-                    <!-- first col with 4 rows -->
                     <td style="vertical-align: top; width: 50%;">
                         <table style="width: 100%;">
                             <tr>
@@ -284,7 +208,6 @@
                             </tr>
                         </table>
                     </td>
-                    <!-- second col with 4 rows -->
                     <td style="vertical-align: top; width: 50%;">
                         <table style="width: 100%;">
                             <tr>
@@ -307,115 +230,145 @@
                     </td>
                 </tr>
             </table>
-        }
+         }
     </div>
 </div>
-<!-- Gantt Chart Section -->
-<div class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="view-controls">
-                    <select id="viewSelector" onchange="updateView()">
-                        <option value="month">Month View</option>
-                        <option value="week">Week View</option>
-                        <option value="day">Day View</option>
-                       
-                    </select>
-                </div>
-                <div id="gantt_here" style="width:100%"></div>
+
+<!-- Update status Button -->
+<div class="text-center mt-4">
+    <button class="btn btn-success" data-toggle="modal" data-target="#updateMilestoneModal">
+        Update Status
+    </button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="updateMilestoneModal" tabindex="-1" role="dialog" aria-labelledby="updateMilestoneLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content shadow-lg rounded">
+            <div class="modal-header bg-white">
+                <h5 class="modal-title" id="updateMilestoneLabel">Update Status</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body bg-white p-4">
+                @using (Html.BeginForm("UpdateStatus", "Checklist", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                 {
+                    <div class="form-group mb-4">
+                        <label for="milestone" class="text-muted">Select Milestone</label>
+                        @Html.DropDownListFor(m => m.SelectedMilestone, Model.Milestones, "Choose a Milestone", new { @class = "form-control rounded border-light" })
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="statusUpdate" class="text-muted">Status Update</label>
+                        @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3 })
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="fileUpload" class="text-muted">Attachment</label>
+                        <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2">Submit</button>
+                    </div>
+                 }
             </div>
         </div>
     </div>
 </div>
 
-
+<!-- Gantt Chart Section -->
+<div class="card-container">
+    <div class="table-container">
+        <div class="gantt-header">
+            <div class="gantt-view-controls">
+                <button id="day-view" class="gantt-view-btn active">Day</button>
+                <button id="week-view" class="gantt-view-btn">Week</button>
+                <button id="month-view" class="gantt-view-btn">Month</button>
+            </div>
+            <div class="gantt-date-controls">
+                <button id="prev-date" class="gantt-nav-btn">«</button>
+                <span id="date-range"></span>
+                <button id="today-btn" class="gantt-today-btn">Today</button>
+                <button id="next-date" class="gantt-nav-btn">»</button>
+            </div>
+        </div>
+        <div id="gantt_here" style="width:100%; height:60vh;"></div>
+    </div>
+</div>
 
 @section scripts {
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        gantt.config.xml_date = "%Y-%m-%d %H:%i";
-        gantt.config.readonly = true;
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            gantt.config.xml_date = "%Y-%m-%d %H:%i";
+            gantt.config.readonly = true;
 
-        gantt.config.columns = [
-            { name: "text", label: "Milestones", width: "*", tree: true },
-            { name: "start_date", label: "Start Date", align: "center" },
-            { name: "end_date", label: "End Date", align: "center" },
-            { name: "duration", label: "Duration", align: "center" }
-        ];
+            gantt.config.columns = [
+                { name: "text", label: "Milestone", tree: true, width: 200 },
+                { name: "duration", label: "Duration", align: "center", width: 70 },
+                { name: "start_date", label: "Start", align: "center", width: 90 },
+                { name: "end_date", label: "Finish", align: "center", width: 90 }
+            ];
 
-        gantt.config.scale_unit = "week";
-        gantt.config.date_scale = "%d %M";
-        gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
-        gantt.config.scale_height = 50; 
-
-        gantt.templates.date_scale = function (date) {
-            var dateToStr = gantt.date.date_to_str("%d %M");
-            var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
-            return dateToStr(date) + " - " + dateToStr(endDate);
-        };
-
-        gantt.templates.rightside_text = function (start, end, task) {
-            return task.type === gantt.config.types.milestone ? task.text : "";
-        };
-
-        gantt.config.lightbox.sections = [
-            { name: "description", height: 70, map_to: "text", type: "textarea", focus: true },
-            { name: "type", type: "typeselect", map_to: "type" },
-            { name: "time", height: 72, type: "duration", map_to: "auto" }
-        ];
-
-        gantt.plugins({ tooltip: true });
-        gantt.init("gantt_here");
-
-        // dynamically load the Gantt chart data using TempData values
-        gantt.load(`/Checklist/getGanttData?id=${@TempData["entry"]}`, "json");
-
-        // set Gantt view to Month
-        window.setMonthView = function () {
-            gantt.config.scale_unit = "month";
-            gantt.config.date_scale = "%F, %Y";
-            gantt.config.subscales = [{ unit: "month", step: 1, date: "%m" }];
-            gantt.render();
-        };
-
-        // set Gantt view to Week
-        window.setWeekView = function () {
             gantt.config.scale_unit = "week";
             gantt.config.date_scale = "%d %M";
-            gantt.config.subscales = [{ unit: "week", step: 1, date: "%W" }];
-            gantt.render();
-        };
+            gantt.config.subscales = [{ unit: "month", step: 1, date: "%F" }];
+            gantt.config.scale_height = 50;
 
-        // set Gantt view to Day
-        window.setDayView = function () {
-            gantt.config.scale_unit = "day";
-            gantt.config.date_scale = "%d %M";
-            gantt.config.subscales = [{ unit: "day", step: 1, date: "%d" }];
-            gantt.render();
-        };
+            gantt.init("gantt_here");
 
-        window.updateView = function () {
-            const view = document.getElementById('viewSelector').value;
-            switch (view) {
-                case 'month':
-                    setMonthView();
-                    break;
-                case 'week':
-                    setWeekView();
-                    break;
-                case 'day':
-                    setDayView();
-                    break;
-               
-            }
-        };
+            gantt.load(`/Checklist/getGanttData?id=${@TempData["entry"]}`, "json");
 
-        // set the default view to Week View
-        setWeekView(); // Adjust this to the default view you want
-    });
-</script>
+            const updateDateRangeDisplay = () => {
+                const dateRange = gantt.getState().min_date;
+                const endDate = gantt.getState().max_date;
+                document.getElementById("date-range").innerText =
+                    gantt.templates.date_range(dateRange, endDate);
+            };
 
+            document.querySelectorAll('.gantt-view-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    document.querySelectorAll('.gantt-view-btn').forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    switch (this.id.split('-')[0]) {
+                        case 'day': setDayView(); break;
+                        case 'week': setWeekView(); break;
+                        case 'month': setMonthView(); break;
+                    }
+                    updateDateRangeDisplay();
+                });
+            });
+
+            gantt.templates.date_range = (start, end) => {
+                return gantt.templates.date_to_str("%d %M %Y")(start) + " - " + gantt.templates.date_to_str("%d %M %Y")(end);
+            };
+
+            document.getElementById("prev-date").addEventListener("click", () => gantt.navigateLeft() & updateDateRangeDisplay());
+            document.getElementById("next-date").addEventListener("click", () => gantt.navigateRight() & updateDateRangeDisplay());
+            document.getElementById("today-btn").addEventListener("click", () => gantt.showDate(new Date()) & updateDateRangeDisplay());
+
+            const setDayView = () => {
+                gantt.config.scale_unit = "day";
+                gantt.config.subscales = [{ unit: "day", step: 1, date: "%d" }];
+                gantt.render();
+            };
+
+            const setWeekView = () => {
+                gantt.config.scale_unit = "week";
+                gantt.config.subscales = [{ unit: "week", step: 1, date: "Week %W" }];
+                gantt.render();
+            };
+
+            const setMonthView = () => {
+                gantt.config.scale_unit = "month";
+                gantt.config.subscales = [{ unit: "month", step: 1, date: "%F" }];
+                gantt.render();
+            };
+
+            setWeekView();
+            updateDateRangeDisplay();
+        });
+    </script>
 }
-
-

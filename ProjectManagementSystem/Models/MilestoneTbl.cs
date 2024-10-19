@@ -25,9 +25,11 @@ namespace ProjectManagementSystem.Models
         public string milestone_name { get; set; }
         public Nullable<System.DateTime> created_date { get; set; }
         public Nullable<int> milestone_position { get; set; }
+        public string status_update { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DetailsTbl> DetailsTbls { get; set; }
         public virtual MainTable MainTable { get; set; }
+        public virtual WeeklyStatu WeeklyStatu { get; set; }
     }
 }
