@@ -236,6 +236,21 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AspNetRole.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUser.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUserClaim.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUserLogin.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUserRole.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\CheckListDB.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -254,10 +269,40 @@
     <Compile Include="Models\ChecklistTable.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CMIdentity.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CMIdentity.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CMIdentity.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CMIdentity.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CMIdentity.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CM_EmailUpdate.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CM_WifiAccess.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\C__MigrationHistory.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\DetailsTbl.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Identity_JobDescription.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Identity_Keywords.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\MainTable.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
@@ -272,6 +317,9 @@
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
+    <Compile Include="Models\vw_CMInfo.cs">
+      <DependentUpon>CMIdentity.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\WeeklyChecklistTable.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
@@ -4344,6 +4392,16 @@
       <DependentUpon>CheckListDB.edmx</DependentUpon>
       <LastGenOutput>CheckListDB.cs</LastGenOutput>
     </Content>
+    <Content Include="Models\CMIdentity.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>CMIdentity.edmx</DependentUpon>
+      <LastGenOutput>CMIdentity.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\CMIdentity.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>CMIdentity.edmx</DependentUpon>
+      <LastGenOutput>CMIdentity.cs</LastGenOutput>
+    </Content>
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
@@ -4914,6 +4972,13 @@
     </EntityDeploy>
     <Content Include="Models\CheckListDB.edmx.diagram">
       <DependentUpon>CheckListDB.edmx</DependentUpon>
+    </Content>
+    <EntityDeploy Include="Models\CMIdentity.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>CMIdentity.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\CMIdentity.edmx.diagram">
+      <DependentUpon>CMIdentity.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
