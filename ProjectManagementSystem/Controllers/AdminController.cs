@@ -64,7 +64,7 @@ namespace ProjectManagementSystem.Controllers
                 db.RegistrationTbls.Add(insDeets);
                 db.SaveChanges();
 
-                message = "Project name has been successfully registered";
+                message = "Project name has been successfully registered!";
                 status = true;
             }
             catch (Exception e)
