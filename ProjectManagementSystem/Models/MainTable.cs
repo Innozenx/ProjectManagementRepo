@@ -29,6 +29,7 @@ namespace ProjectManagementSystem.Models
         public string division { get; set; }
         public string category { get; set; }
         public string project_owner { get; set; }
+        public string user_id { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MilestoneTbl> MilestoneTbls { get; set; }

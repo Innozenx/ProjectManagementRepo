@@ -10,6 +10,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using System.Diagnostics;
+using Microsoft.AspNet.Identity;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -33,16 +34,18 @@ namespace ProjectManagementSystem.Controllers
             var currentYear = DateTime.Now.Year;
             var calendar = CultureInfo.InvariantCulture.Calendar;
             var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+            var UserId = User.Identity.GetUserId();
 
             var rawProjectsAndMilestones = (from m in db.MilestoneTbls
                                             join p in db.MainTables on m.main_id equals p.main_id
                                             join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
                                             from task in tasks.DefaultIfEmpty()
-                                            group task by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position }
+                                            group task by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position, p.user_id }
                                             into g
                                             select new
                                             {
                                                 MainId = g.Key.main_id,
+                                                UserId = g.Key.user_id,
                                                 ProjectTitle = g.Key.project_title,
                                                 MilestoneName = g.Key.milestone_name,
                                                 MilestonePosition = g.Key.milestone_position,
@@ -55,6 +58,7 @@ namespace ProjectManagementSystem.Controllers
                                             }).ToList();
 
             var projectsAndMilestones = rawProjectsAndMilestones
+                .Where(g => g.UserId == UserId)
                 .OrderBy(g => g.MilestonePosition)
                 .Select(g => new ProjectMilestoneViewModel
                 {
@@ -249,6 +253,8 @@ namespace ProjectManagementSystem.Controllers
             var attachment = System.Web.HttpContext.Current.Request.Files["pmcsv"];
             var projectId = System.Web.HttpContext.Current.Request.Params.GetValues(0)[0];
             var project = db.RegistrationTbls.Where(x => x.registration_id.ToString() == projectId).Single();
+            var UserId = User.Identity.GetUserId();
+
 
             if (attachment == null || attachment.ContentLength <= 0)
             {
@@ -317,7 +323,9 @@ namespace ProjectManagementSystem.Controllers
                                     year = getProject.ProjectYear,
                                     division = getProject.division,
                                     category = getProject.category,
-                                    project_owner = getProject.projectOwner
+                                    project_owner = getProject.projectOwner,
+                                    user_id = UserId
+                                    
                                 };
 
                                 db.MainTables.Add(addWeeklyChecklist);

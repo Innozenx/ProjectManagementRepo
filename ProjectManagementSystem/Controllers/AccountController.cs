@@ -61,6 +61,7 @@ namespace ProjectManagementSystem.Controllers
             bool logged = (System.Web.HttpContext.Current.User != null) && System.Web.HttpContext.Current.User.Identity.IsAuthenticated;
             if (!logged)
             {
+                
                 ViewBag.ReturnUrl = returnUrl;
                 return View();
             }
@@ -86,17 +87,18 @@ namespace ProjectManagementSystem.Controllers
             {
                 return View(model);
             }
+
             var username = model.Email;
             var email = _db.AspNetUsers.FirstOrDefault(x => x.CMId == model.Email);
             if (email != null)
             {
                 username = email.Email;
             }
+
             if (_db.AspNetUsers.Where(x => x.Email == username).Any())
             {
                 if ((bool)_db.AspNetUsers.Single(x => x.Email == username).CM_status)
                 {
-                    var data = _db.AspNetUsers.Single(x => x.Email == username);
                     ModelState.AddModelError("", "Credential Error. Please contact ITS");
                     return View(model);
                 }
@@ -106,13 +108,15 @@ namespace ProjectManagementSystem.Controllers
                 ModelState.AddModelError("", "Invalid login attempt.");
                 return View(model);
             }
+
+
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(username, model.Password, model.RememberMe, shouldLockout: false);
+
             switch (result)
             {
                 case SignInStatus.Success:
-                    //return RedirectToLocal(returnUrl);
                     return Redirect("Checklist/Dashboard");
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -124,6 +128,7 @@ namespace ProjectManagementSystem.Controllers
                     return View(model);
             }
         }
+
 
         //
         // GET: /Account/VerifyCode
@@ -326,6 +331,8 @@ namespace ProjectManagementSystem.Controllers
             {
                 return View("Error");
             }
+
+
             var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });

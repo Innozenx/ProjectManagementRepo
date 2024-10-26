@@ -7,13 +7,23 @@
 <head>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .content {
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+
         .form-container {
             max-width: 500px;
-            margin: 0 auto;
             padding: 50px 20px;
             background-color: #f9f9f9;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
         }
 
         .form-group label {
@@ -82,7 +92,7 @@
     </div>
 </div>
 
-@section scripts{
+@section scripts {
     <script>
         $(document).ready(function(){
             $("#projectRegistrationForm").on("submit", function(e){

@@ -12,6 +12,9 @@
     var totalTasks = Model.TotalTasks > 0 ? Model.TotalTasks : 1;
     var completedPercentage = (double)Model.CompletedTasks / totalTasks * 100;
     var pendingPercentage = 100 - completedPercentage;
+
+    // logged-in user
+    var userName = User.Identity.Name;
 }
 
 <head>
@@ -24,9 +27,11 @@
     }
 
     .dashboard-container {
-        padding: 20px;
+        /*padding: 20px;*/
         max-width: 1200px;
         margin: 0 auto;
+
+        
     }
 
     .row {
@@ -55,39 +60,48 @@
         justify-content: space-between;
         margin: 10px;
         transition: all 0.3s ease;
+        margin-top:-7px;
     }
 
-    .top-cards:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
+        .top-cards:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
 
-    .top-cards .icon {
-        font-size: 26px;
-        color: #888;
-        margin-bottom: 10px;
-    }
+        .top-cards .icon {
+            font-size: 26px;
+            color: #888;
+            margin-bottom: 10px;
+        }
 
-    .top-cards .card-text {
-        font-size: 0.9rem; 
-        font-weight: 500;
-            
-    }
+        .top-cards .card-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
 
-    .top-cards .card-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        /*margin-top: auto;*/
-    }
+        .top-cards .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
 
-    .top-cards .change-indicator {
-        font-size: 0.8rem;
-        font-weight: 400;
-        color: #888;
-        margin-top: 5px;
-    }
-
+        .top-cards .change-indicator {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #888;
+            margin-top: 5px;
+        }
 
     .card {
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        background-color: white;
+        color: #333;
+        margin-bottom: 20px;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .card-header {
         border-radius: 15px;
         padding: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -139,32 +153,91 @@
         overflow-x: auto;
     }
 
-    .table th, .table td {
-        padding: 10px;
-        text-align: center;
-        border: 0;
-        border-bottom: 2px solid #D1C4E9;
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        box-shadow: none;
+        border-radius: 8px;
+        overflow: hidden;
     }
 
-    .table th {
-        background-color: #66339A;
-        color: #fff;
-        font-size: 1rem;
-        font-weight: normal;
+        .table th, .table td {
+            padding: 10px 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .table th {
+            background-color: #66339A;
+            color: white;
+        }
+
+        .table td:first-child a {
+            font-weight: bold;
+            color: #0056b3;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+            .table tbody tr:hover {
+                background-color: #f7f7f7;
+            }
+
+    .table-container {
+        overflow-x: auto;
+        max-width: 100%;
     }
 
     .upcoming-deliverables-list {
         list-style: none;
         padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px; 
     }
 
-    .upcoming-deliverables-list li {
-        background-color: #f9f9f9;
-        margin: 10px 0;
-        padding: 10px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+        .upcoming-deliverables-list li {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+            position: relative;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            max-width: 200px; 
+        }
+
+            .upcoming-deliverables-list li strong {
+                font-size: 1rem;
+                margin-bottom: 4px;
+                color: #3f51b5;
+            }
+
+            .upcoming-deliverables-list li p {
+                font-size: 0.85rem;
+                color: #666;
+                margin: 0;
+            }
+
+                .upcoming-deliverables-list li p i {
+                    margin-right: 5px;
+                    font-size: 0.9rem;
+                    color: #666;
+                    vertical-align: middle;
+                }
+
+            .upcoming-deliverables-list li:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            }
 
 </style>
 
@@ -187,6 +260,7 @@
 </div>
 
 <div class="dashboard-container">
+    <!-- Top Cards Row -->
     <div class="row top-card-row justify-content-center">
         <!-- Completed Tasks -->
         <div class="card top-cards card-success">
@@ -223,11 +297,9 @@
     </div>
 </div>
 
-
-
-
-<!-- Project Summary and Donut Chart -->
+<!-- Project Summary and Right Side Content -->
 <div class="row">
+    <!-- Project Summary Table -->
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
@@ -270,47 +342,48 @@
         </div>
     </div>
 
-    <!-- Donut Chart for Overall Progress -->
+    <!-- Right Side Column: Upcoming Tasks + Overall Progress -->
     <div class="col-lg-4">
+        <!-- Upcoming Tasks Card (Placed at the top) -->
         <div class="card">
+            <div class="card-body">
+                <h5>Upcoming Tasks</h5>
+                <ul class="upcoming-deliverables-list">
+                    @if (Model.UpcomingDeliverables != null && Model.UpcomingDeliverables.Any())
+                    {
+                        foreach (var deliverable in Model.UpcomingDeliverables)
+                        {
+                            <li>
+                                <strong>@deliverable.Tasks</strong>
+                                <p><i class="fas fa-calendar-alt"></i> Due on @deliverable.DueDate.ToString("MMMM dd, yyyy")</p>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li>No upcoming tasks.</li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Overall Progress Card (Placed Below Upcoming Tasks) -->
+        <div class="card mt-4">
             <div class="card-body">
                 <h5>Overall Progress</h5>
                 <div class="chart-container">
                     <canvas id="progressChart" style="width: 100%; height: 100%;"></canvas>
                 </div>
-                <p class="text-center"></p>
+                <p class="text-center">
                     @if (Model.CompletedTasks == 0)
                     {
                         <strong>No tasks completed yet. Let's get started!</strong>
                     }
                     else
                     {
-                    <p>Completed: @completedPercentage.ToString("F2") %<br />Pending @pendingPercentage.ToString("F2") %</p>
-                    }    
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Upcoming Tasks -->
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Upcoming Tasks</h5>
-                    <ul class="upcoming-deliverables-list">
-                        @if (Model.UpcomingDeliverables != null && Model.UpcomingDeliverables.Any())
-                        {
-                            foreach (var deliverable in Model.UpcomingDeliverables)
-                            {
-                                <li><strong>@deliverable.Tasks</strong> - Due on @deliverable.DueDate.ToString("MMMM dd, yyyy")</li>
-                            }
-                        }
-                        else
-                        {
-                            <li>No upcoming tasks.</li>
-                        }
-                    </ul>
+                    <p>Completed: @completedPercentage.ToString("F2") %<br />Pending: @pendingPercentage.ToString("F2") %</p>
+                    }
+                    </p>
                 </div>
             </div>
         </div>

@@ -70,6 +70,7 @@ namespace ProjectManagementSystem.Models
         public IEnumerable<string> UniqueMilestoneNames { get; set; }
         public IEnumerable<ProjectMilestoneViewModel> ProjectsMilestones { get; set; }
         public List<string> MilestoneOrder { get; set; }
+    
     }
 
     public class TaskDetail
@@ -214,6 +215,7 @@ namespace ProjectManagementSystem.Models
         public DateTime CreatedDate { get; set; }
         public int ProjectDuration { get; set; }
         public List<exportCSV> ProjectDetails { get; set; }
+        public string UserId { get; set; }
 
     }
 
