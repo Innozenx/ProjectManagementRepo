@@ -2,61 +2,153 @@
 @model LoginViewModel
 @{
     ViewBag.Title = "Log in";
+    Layout = null;  // No layout for a clean login page
 }
 
-<h2>@ViewBag.Title.</h2>
-<div class="row">
-    <div class="col-md-8">
+<head>
+    <!-- Import Poppins font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            max-width: 500px;
+            width: 100%;
+            padding: 50px 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+            .form-container img {
+                width: 100px; 
+                margin-bottom: 20px;
+            }
+
+            .form-container h1 {
+                color: #66339A;
+                margin-bottom: 10px;
+                font-weight: 600;
+            }
+
+            .form-container p {
+                color: #888;
+                margin-bottom: 20px;
+            }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .12);
+        }
+
+        .btn-primary {
+            background-color: #66339A;
+            border: none;
+            padding: 10px 20px;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+            .btn-primary:hover {
+                background-color: #532c7e;
+            }
+
+        .checkbox {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .form-footer {
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        .text-danger {
+            color: red;
+        }
+
+        .form-footer a {
+            display: block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #66339A;
+        }
+
+            .form-footer a:hover {
+                text-decoration: underline;
+            }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        @*<img src="/path-to-your-logo.png" alt="PMS Logo">*@
+
+        <!-- Title and subtitle -->
+        <h1>Project Management System</h1>
+        <h3>Login to your Account</h3>
+        <p>Enter your email and password to login</p>
+
         <section id="loginForm">
             @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
                 @Html.AntiForgeryToken()
-                <h4>Use a local account to log in.</h4>
-                <hr />
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <!-- Email Input -->
                 <div class="form-group">
-                    @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                    </div>
+                    @Html.LabelFor(m => m.Email, "Email")
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                 </div>
+
+                <!-- Password Input -->
                 <div class="form-group">
-                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                    </div>
+                    @Html.LabelFor(m => m.Password, "Password")
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                 </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <div class="checkbox">
-                            @Html.CheckBoxFor(m => m.RememberMe)
-                            @Html.LabelFor(m => m.RememberMe)
-                        </div>
-                    </div>
+
+                <!-- Submit Button -->
+                <div class="form-footer">
+                    <button type="submit" class="btn btn-primary">Log in</button>
                 </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Log in" class="btn btn-default" />
-                    </div>
-                </div>
-                <p>
-                    @Html.ActionLink("Register as a new user", "Register")
-                </p>
-                @* Enable this once you have account confirmation enabled for password reset functionality
-                    <p>
+
+                <!-- Links -->
+                @*<div class="form-footer">*@
+                    @*@Html.ActionLink("Register as a new user", "Register")*@
+                    @* Uncomment if password recovery is needed
                         @Html.ActionLink("Forgot your password?", "ForgotPassword")
-                    </p>*@
+                    *@
+                @*</div>*@
             }
         </section>
     </div>
-    <div class="col-md-4">
-        <section id="socialLoginForm">
-            @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
-        </section>
-    </div>
-</div>
+</body>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

@@ -15,7 +15,7 @@
     .card-container {
         display: flex;
         justify-content: center;
-        margin-top: 30px;
+        margin-top: 10px;
         padding: 20px;
     }
 
@@ -43,29 +43,29 @@
         border-collapse: collapse;
     }
 
-    #projectDetails th, #projectDetails td {
-        padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
+        #projectDetails th, #projectDetails td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
 
-    #projectDetails th {
-        font-weight: bold;
-        color: #555;
-    }
+        #projectDetails th {
+            font-weight: bold;
+            color: #555;
+        }
 
-    #projectDetails td a {
-        color: #66339A;
-        text-decoration: none;
-    }
+        #projectDetails td a {
+            color: #66339A;
+            text-decoration: none;
+        }
 
-    #projectDetails td a:hover {
-        text-decoration: underline;
-    }
+            #projectDetails td a:hover {
+                text-decoration: underline;
+            }
 
-    #projectDetails td {
-        color: #333;
-    }
+        #projectDetails td {
+            color: #333;
+        }
 
     .gantt-header {
         display: flex;
@@ -85,9 +85,9 @@
         transition: background-color 0.3s ease;
     }
 
-    .gantt-view-btn:hover, .gantt-view-btn.active {
-        background-color: #552788;
-    }
+        .gantt-view-btn:hover, .gantt-view-btn.active {
+            background-color: #552788;
+        }
 
     .gantt-nav-btn, .gantt-today-btn {
         background-color: #f9f9f9;
@@ -100,9 +100,9 @@
         margin-right: 5px;
     }
 
-    .gantt-nav-btn:hover, .gantt-today-btn:hover {
-        background-color: #eaeaea;
-    }
+        .gantt-nav-btn:hover, .gantt-today-btn:hover {
+            background-color: #eaeaea;
+        }
 
     #gantt_here {
         margin-top: 20px;
@@ -112,69 +112,91 @@
     }
 
     @@media (max-width: 768px) {
-    .gantt-header {
-        flex-direction: column;
-    }
+        .gantt-header {
+            flex-direction: column;
+        }
 
-    .gantt-view-btn, .gantt-nav-btn, .gantt-today-btn {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 10px;
-    }
+        .gantt-view-btn, .gantt-nav-btn, .gantt-today-btn {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10px;
+        }
 
-    .modal-content {
-        border-radius: 8px;
-        border: none;
-        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-    }
+        .modal-content {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+        }
 
-    .modal-dialog.modal-lg {
-        max-width: 900px;
-    }
+        .modal-dialog.modal-lg {
+            max-width: 900px;
+        }
 
-    .modal-header {
-        border-bottom: none;
-    }
+        .modal-header {
+            border-bottom: none;
+        }
 
-    .modal-header .close {
-        font-size: 1.5rem;
-    }
+            .modal-header .close {
+                font-size: 1.5rem;
+            }
 
-    .form-control {
-        border: 1px solid #ddd;
-        font-size: 14px;
-        padding: 12px;
-        border-radius: 6px;
-        transition: border-color 0.2s;
-    }
+        .form-control {
+            border: 1px solid #ddd;
+            font-size: 14px;
+            padding: 12px;
+            border-radius: 6px;
+            transition: border-color 0.2s;
+        }
 
-    .form-control:focus {
-        border-color: #007bff;
-        box-shadow: none;
-    }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: none;
+        }
 
-    .btn-primary {
-        background-color: #66399A;
-        border: none;
-        border-radius: 50px;
-        font-size: 14px;
-        transition: background-color 0.3s;
-    }
+        .buttons-container {
+            display: flex;
+            justify-content: flex-end;
+            margin: 20px 20px 0 0;
+            margin-right: 40px;
+            gap: 10px;
+        }
 
-    .btn-primary:hover {
-        background-color: #66399A;
-    }
+        .btn-primary {
+            background-color: #66399A;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-    .text-muted {
-        color: #6c757d;
-    }
+            .btn-primary:hover {
+                background-color: #552788;
+            }
 
-    .btn-success {
-        color: #66399A;
+        .text-muted {
+            color: #6c757d;
+        }
+
+        .btn-success {
+            color: #66399A;
+        }
     }
-}
 </style>
 
+<!-- Update Status and Activity Log Buttons -->
+<div class="buttons-container">
+    <button class="btn btn-primary" data-toggle="modal" data-target="#updateMilestoneModal">
+        Update Status
+    </button>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#activityLog">
+        Activity Log
+    </button>
+</div>
+
+<!-- Project Details Section -->
 <div class="card-container">
     <div class="table-container">
         <h3>Project Details</h3>
@@ -230,18 +252,11 @@
                     </td>
                 </tr>
             </table>
-         }
+        }
     </div>
 </div>
 
-<!-- Update status Button -->
-<div class="text-center mt-4">
-    <button class="btn btn-success" data-toggle="modal" data-target="#updateMilestoneModal">
-        Update Status
-    </button>
-</div>
-
-<!-- Modal -->
+<!-- Update Status Modal -->
 <div class="modal fade" id="updateMilestoneModal" tabindex="-1" role="dialog" aria-labelledby="updateMilestoneLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content shadow-lg rounded">
@@ -253,7 +268,7 @@
             </div>
             <div class="modal-body bg-white p-4">
                 @using (Html.BeginForm("UpdateStatus", "Checklist", FormMethod.Post, new { enctype = "multipart/form-data" }))
-                 {
+                {
                     <div class="form-group mb-4">
                         <label for="milestone" class="text-muted">Select Milestone</label>
                         @Html.DropDownListFor(m => m.SelectedMilestone, Model.Milestones, "Choose a Milestone", new { @class = "form-control rounded border-light" })
@@ -272,7 +287,7 @@
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary rounded-pill px-4 py-2">Submit</button>
                     </div>
-                 }
+                }
             </div>
         </div>
     </div>
@@ -300,6 +315,7 @@
 
 @section scripts {
     <script>
+        // Gantt chart configuration and initialization
         document.addEventListener("DOMContentLoaded", function () {
             gantt.config.xml_date = "%Y-%m-%d %H:%i";
             gantt.config.readonly = true;
