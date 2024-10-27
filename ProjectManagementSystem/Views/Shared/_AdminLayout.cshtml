@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@ViewBag.Title </title>
+    <title>@ViewBag.Title</title>
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome Icons -->
@@ -13,25 +13,69 @@
     <!-- Theme style -->
     <link rel="stylesheet" href="~/AdminLTE-3.2.0/dist/css/adminlte.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-
     <!-- Grant Charts-->
     <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet" type="text/css" />
 
+    <style>
+        /* Define light and dark mode variables */
+        :root {
+            --background-color: #ffffff;
+            --text-color: #333333;
+            --sidebar-background: #f4f6f9;
+            --primary-color: #66399A;
+        }
 
+        .dark-mode {
+            --background-color: #121212;
+            --text-color: #e0e0e0;
+            --sidebar-background: #333333;
+            --primary-color: #bb86fc;
+        }
 
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .main-header, .main-footer, .content-wrapper, .wrapper {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .sidebar {
+            background-color: var(--sidebar-background);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        #theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.2rem;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: var(--primary-color);
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+            #theme-toggle:hover {
+                background-color: #532c7e;
+            }
+    </style>
 </head>
-<!--
-`body` tag options:
-
-  Apply one or more of the following classes to to the body tag
-  to get the desired effect
-
-  * sidebar-collapse
-  * sidebar-mini
--->
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
+        <!-- Add theme toggle button in the header -->
+        <button id="theme-toggle">🌞/🌙</button>
+
         @Html.Partial("_AdminNav")
         @Html.Partial("_AdminSidebar")
         <!-- Content Wrapper. Contains page content -->
@@ -64,12 +108,26 @@
     <script src="~/AdminLTE-3.2.0/dist/js/adminlte.js"></script>
     <!-- OPTIONAL SCRIPTS -->
     <script src="~/AdminLTE-3.2.0/plugins/chart.js/Chart.min.js"></script>
-
     <!--Gant Chart-->
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
-
     <!--Notify JS-->
     <script src="~/Scripts/notify.min.js"></script>
+
+    <!-- JavaScript for Theme Toggle -->
+    <script>
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme) {
+            document.body.classList.toggle('dark-mode', currentTheme === 'dark');
+        }
+
+        // toggle button
+        const themeToggleButton = document.getElementById('theme-toggle');
+        themeToggleButton.addEventListener('click', function () {
+            document.body.classList.toggle('dark-mode');
+            // save current theme to localStorage
+            const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+        });
+    </script>
 </body>
 </html>
-
