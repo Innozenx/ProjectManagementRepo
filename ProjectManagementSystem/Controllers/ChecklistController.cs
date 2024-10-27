@@ -251,14 +251,9 @@ namespace ProjectManagementSystem.Controllers
             var message = "";
             var status = false;
             var attachment = System.Web.HttpContext.Current.Request.Files["pmcsv"];
-
-            var projectId = System.Web.HttpContext.Current.Request.Params.GetValues(0)[0];
-            var project = db.RegistrationTbls.Where(x => x.registration_id.ToString() == projectId).Single();
             var UserId = User.Identity.GetUserId();
-
-            int projectId = Int32.Parse(System.Web.HttpContext.Current.Request.Params.GetValues(0)[0]);\
-            //Stash test below
-            var project = db.RegistrationTbls.Where(x => x.registration_id == projectId);
+            int projectId = Int32.Parse(System.Web.HttpContext.Current.Request.Params.GetValues(0)[0]);
+            var project = db.RegistrationTbls.Where(x => x.registration_id == projectId).Single();
 
             if (attachment == null || attachment.ContentLength <= 0)
             {
