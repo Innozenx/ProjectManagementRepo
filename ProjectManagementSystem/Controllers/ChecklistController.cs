@@ -255,6 +255,8 @@ namespace ProjectManagementSystem.Controllers
             var project = db.RegistrationTbls.Where(x => x.registration_id.ToString() == projectId).Single();
             var UserId = User.Identity.GetUserId();
 
+            int projectId = Int32.Parse(System.Web.HttpContext.Current.Request.Params.GetValues(0)[0]);
+            var project = db.RegistrationTbls.Where(x => x.registration_id == projectId).Single();
 
             if (attachment == null || attachment.ContentLength <= 0)
             {
@@ -331,6 +333,8 @@ namespace ProjectManagementSystem.Controllers
                                 db.MainTables.Add(addWeeklyChecklist);
                                 db.SaveChanges();
 
+                                var mainIDfordetails = addWeeklyChecklist.main_id;
+
                                 var milestones = exportList
                                     .Where(x => x.ProjectTitle == getProject.ProjectTitle)
                                     .GroupBy(x => x.MilestoneName)
@@ -390,6 +394,7 @@ namespace ProjectManagementSystem.Controllers
                                             parent = parentId,
                                             created_date = DateTime.Now.ToLocalTime(),
                                             IsSubtask = subtask,
+                                            main_id = mainIDfordetails
                                         };
 
                                         detailList.Add(addTask);
@@ -397,6 +402,10 @@ namespace ProjectManagementSystem.Controllers
                                 }
 
                                 db.DetailsTbls.AddRange(detailList);
+                                db.SaveChanges();
+
+                                var upd_rgstr = db.RegistrationTbls.Where(x => x.registration_id == projectId).Single();
+                                upd_rgstr.is_file_uploaded = true;
                                 db.SaveChanges();
 
                                 transaction.Commit();
