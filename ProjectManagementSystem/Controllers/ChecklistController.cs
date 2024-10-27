@@ -252,7 +252,7 @@ namespace ProjectManagementSystem.Controllers
             var status = false;
             var attachment = System.Web.HttpContext.Current.Request.Files["pmcsv"];
             var projectId = System.Web.HttpContext.Current.Request.Params.GetValues(0)[0];
-            var project = db.RegistrationTbls.Where(x => x.registration_id.ToString() == projectId).Single();
+            var project = db.RegistrationTbls.Where(x => x.registration_id.ToString() == projectId).Single(); //hotdog
             var UserId = User.Identity.GetUserId();
 
 
