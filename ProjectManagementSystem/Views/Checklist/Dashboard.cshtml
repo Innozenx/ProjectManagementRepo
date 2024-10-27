@@ -27,11 +27,8 @@
     }
 
     .dashboard-container {
-        /*padding: 20px;*/
         max-width: 1200px;
         margin: 0 auto;
-
-        
     }
 
     .row {
@@ -60,7 +57,6 @@
         justify-content: space-between;
         margin: 10px;
         transition: all 0.3s ease;
-        margin-top:-7px;
     }
 
         .top-cards:hover {
@@ -81,13 +77,6 @@
         .top-cards .card-title {
             font-size: 1.5rem;
             font-weight: bold;
-        }
-
-        .top-cards .change-indicator {
-            font-size: 0.8rem;
-            font-weight: 400;
-            color: #888;
-            margin-top: 5px;
         }
 
     .card {
@@ -191,20 +180,43 @@
         max-width: 100%;
     }
 
+    .no-projects-container {
+        text-align: center;
+        padding: 20px;
+    }
+
+        .no-projects-container p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .no-projects-container .btn-primary {
+            background-color: #66399A;
+            color: white;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+            .no-projects-container .btn-primary:hover {
+                background-color: #532c7e;
+            }
+
     .upcoming-deliverables-list {
         list-style: none;
         padding: 0;
         margin: 0;
         display: flex;
         flex-direction: column;
-        gap: 10px; 
+        gap: 10px;
     }
 
         .upcoming-deliverables-list li {
             background-color: #f9f9f9;
             padding: 10px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: relative;
             font-family: 'Poppins', sans-serif;
             font-size: 0.85rem;
@@ -212,7 +224,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            max-width: 200px; 
+            max-width: 200px;
         }
 
             .upcoming-deliverables-list li strong {
@@ -233,12 +245,6 @@
                     color: #666;
                     vertical-align: middle;
                 }
-
-            .upcoming-deliverables-list li:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            }
-
 </style>
 
 <!-- Content Header (Page header) -->
@@ -304,40 +310,52 @@
         <div class="card">
             <div class="card-body">
                 <h5>Project Summary</h5>
-                <div class="table-container">
-                    <table id="milestonesTable" class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Projects</th>
-                                @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                {
-                                    <th>@milestoneName</th>
-                                }
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var projectGroup in Model.ProjectsMilestones.GroupBy(pm => pm.ProjectTitle))
-                            {
+                @if (Model.ProjectsMilestones != null && Model.ProjectsMilestones.Any())
+                {
+                    <!-- if there are any projects -->
+                    <div class="table-container">
+                        <table id="milestonesTable" class="table table-striped">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <a href="javascript:void(0);" onclick="toDetailedView('@projectGroup.First().MainId', '@projectGroup.Key')">
-                                            @projectGroup.Key
-                                        </a>
-                                    </td>
+                                    <th>Projects</th>
                                     @foreach (var milestoneName in Model.UniqueMilestoneNames)
                                     {
-                                        var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName && pm.EndDate.HasValue);
-                                        var latestEndDate = milestoneTasks.Any() ? milestoneTasks.Max(pm => pm.EndDate.Value) : (DateTime?)null;
-                                        var endDateFormatted = latestEndDate.HasValue
-                                            ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
-                                            : "N/A";
-                                        <td class="week-cell">@endDateFormatted</td>
+                                        <th>@milestoneName</th>
                                     }
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                @foreach (var projectGroup in Model.ProjectsMilestones.GroupBy(pm => pm.ProjectTitle))
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="javascript:void(0);" onclick="toDetailedView('@projectGroup.First().MainId', '@projectGroup.Key')">
+                                                @projectGroup.Key
+                                            </a>
+                                        </td>
+                                        @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                        {
+                                            var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName && pm.EndDate.HasValue);
+                                            var latestEndDate = milestoneTasks.Any() ? milestoneTasks.Max(pm => pm.EndDate.Value) : (DateTime?)null;
+                                            var endDateFormatted = latestEndDate.HasValue
+                                                ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                                : "N/A";
+                                            <td class="week-cell">@endDateFormatted</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <!-- no project message and start project button -->
+                    <div class="no-projects-container">
+                        <p>No projects yet</p>
+                        <a href="@Url.Action("AddProject", "Checklist")" class="btn btn-primary mt-3">Start Project Here</a>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -389,7 +407,6 @@
         </div>
     </div>
 
-    <!-- DataTables and Chart.js Setup -->
     @section scripts {
         <script>
         $(document).ready(function () {
