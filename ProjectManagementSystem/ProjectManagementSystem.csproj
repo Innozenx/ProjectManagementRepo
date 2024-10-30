@@ -236,6 +236,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Activity_Log.cs">
+      <DependentUpon>CheckListDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AdminList.cs">
+      <DependentUpon>CheckListDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\AspNetRole.cs">
       <DependentUpon>CMIdentity.tt</DependentUpon>
     </Compile>
@@ -314,6 +320,9 @@
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Report.cs">
+      <DependentUpon>CheckListDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserType.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />

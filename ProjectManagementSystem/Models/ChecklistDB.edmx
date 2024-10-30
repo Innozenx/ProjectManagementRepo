@@ -5,6 +5,28 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="ProjectManagementDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Activity_Log">
+          <Key>
+            <PropertyRef Name="log_id" />
+          </Key>
+          <Property Name="log_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="username" Type="varchar" MaxLength="255" />
+          <Property Name="datetime_performed" Type="datetime" />
+          <Property Name="action_level" Type="int" />
+          <Property Name="action" Type="varchar" MaxLength="255" />
+          <Property Name="description" Type="varchar" MaxLength="255" />
+          <Property Name="department" Type="varchar" MaxLength="255" />
+          <Property Name="division" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="AdminList">
+          <Key>
+            <PropertyRef Name="admin_id" />
+          </Key>
+          <Property Name="admin_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_level" Type="nvarchar" MaxLength="255" />
+          <Property Name="user_email" Type="nvarchar" MaxLength="255" />
+          <Property Name="is_active" Type="bit" />
+        </EntityType>
         <EntityType Name="ChecklistTable">
           <Key>
             <PropertyRef Name="localId" />
@@ -119,6 +141,14 @@
           <Property Name="milestoneActual" Type="nvarchar" MaxLength="250" />
           <Property Name="milestoneTarget" Type="nvarchar" MaxLength="250" />
         </EntityType>
+        <EntityType Name="UserTypes">
+          <Key>
+            <PropertyRef Name="type_id" />
+          </Key>
+          <Property Name="type_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="type_name" Type="nvarchar" MaxLength="255" />
+          <Property Name="type_description" Type="nvarchar" MaxLength="255" />
+        </EntityType>
         <EntityType Name="WeeklyChecklistTable">
           <Key>
             <PropertyRef Name="localId" />
@@ -190,12 +220,15 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="ProjectManagementDBModelStoreContainer">
+          <EntitySet Name="Activity_Log" EntityType="Self.Activity_Log" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AdminList" EntityType="Self.AdminList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChecklistTable" EntityType="Self.ChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DetailsTbl" EntityType="Self.DetailsTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MainTable" EntityType="Self.MainTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MilestoneTbl" EntityType="Self.MilestoneTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RegistrationTbl" EntityType="Self.RegistrationTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Reports" EntityType="Self.Reports" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserTypes" EntityType="Self.UserTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatus" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_DetailsTbl_MilestoneTbl" Association="Self.FK_DetailsTbl_MilestoneTbl">
@@ -216,12 +249,15 @@
     <edmx:ConceptualModels>
       <Schema Namespace="ProjectManagementDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="ProjectManagementDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Activity_Log" EntityType="ProjectManagementDBModel.Activity_Log" />
+          <EntitySet Name="AdminLists" EntityType="ProjectManagementDBModel.AdminList" />
           <EntitySet Name="ChecklistTables" EntityType="ProjectManagementDBModel.ChecklistTable" />
           <EntitySet Name="DetailsTbls" EntityType="ProjectManagementDBModel.DetailsTbl" />
           <EntitySet Name="MainTables" EntityType="ProjectManagementDBModel.MainTable" />
           <EntitySet Name="MilestoneTbls" EntityType="ProjectManagementDBModel.MilestoneTbl" />
           <EntitySet Name="RegistrationTbls" EntityType="ProjectManagementDBModel.RegistrationTbl" />
           <EntitySet Name="Reports" EntityType="ProjectManagementDBModel.Report" />
+          <EntitySet Name="UserTypes" EntityType="ProjectManagementDBModel.UserType" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
           <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
           <AssociationSet Name="FK_DetailsTbl_MilestoneTbl" Association="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl">
@@ -237,6 +273,28 @@
             <End Role="WeeklyStatu" EntitySet="WeeklyStatus" />
           </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Activity_Log">
+          <Key>
+            <PropertyRef Name="log_id" />
+          </Key>
+          <Property Name="log_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="username" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="datetime_performed" Type="DateTime" Precision="3" />
+          <Property Name="action_level" Type="Int32" />
+          <Property Name="action" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="department" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="AdminList">
+          <Key>
+            <PropertyRef Name="admin_id" />
+          </Key>
+          <Property Name="admin_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_level" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="user_email" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="is_active" Type="Boolean" />
+        </EntityType>
         <EntityType Name="ChecklistTable">
           <Key>
             <PropertyRef Name="localId" />
@@ -356,6 +414,14 @@
           <Property Name="milestoneActual" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="milestoneTarget" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="UserType">
+          <Key>
+            <PropertyRef Name="type_id" />
+          </Key>
+          <Property Name="type_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="type_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="type_description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
         <EntityType Name="WeeklyChecklistTable">
           <Key>
             <PropertyRef Name="localId" />
@@ -427,12 +493,36 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="ProjectManagementDBModelStoreContainer" CdmEntityContainer="ProjectManagementDBEntities">
+          <EntitySetMapping Name="Activity_Log">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.Activity_Log">
+              <MappingFragment StoreEntitySet="Activity_Log">
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="department" ColumnName="department" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="action" ColumnName="action" />
+                <ScalarProperty Name="action_level" ColumnName="action_level" />
+                <ScalarProperty Name="datetime_performed" ColumnName="datetime_performed" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="log_id" ColumnName="log_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AdminLists">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.AdminList">
+              <MappingFragment StoreEntitySet="AdminList">
+                <ScalarProperty Name="is_active" ColumnName="is_active" />
+                <ScalarProperty Name="user_email" ColumnName="user_email" />
+                <ScalarProperty Name="user_level" ColumnName="user_level" />
+                <ScalarProperty Name="admin_id" ColumnName="admin_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="ChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistTable">
               <MappingFragment StoreEntitySet="ChecklistTable">
@@ -550,6 +640,15 @@
                 <ScalarProperty Name="year" ColumnName="year" />
                 <ScalarProperty Name="division" ColumnName="division" />
                 <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserTypes">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.UserType">
+              <MappingFragment StoreEntitySet="UserTypes">
+                <ScalarProperty Name="type_description" ColumnName="type_description" />
+                <ScalarProperty Name="type_name" ColumnName="type_name" />
+                <ScalarProperty Name="type_id" ColumnName="type_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -61,15 +61,15 @@
         align-items: center;
     }
 
-        .action-tile:hover {
-            background-color: #552788;
-            transform: translateY(-3px);
-        }
+    .action-tile:hover {
+        background-color: #552788;
+        transform: translateY(-3px);
+    }
 
-        .action-tile i {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
+    .action-tile i {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
 
     .action-tile-title {
         font-size: 0.85rem; 
@@ -79,9 +79,11 @@
     h3 {
         font-weight: bold;
         color: #66399A;
-        text-align: center;
+        text-align: left;
         font-size: 24px;
-        margin-bottom: 20px;
+        margin-bottom:10px;
+        margin-left: 15px;
+        margin-top: 5px;
     }
 
     #projectDetails {
@@ -90,29 +92,29 @@
         border-collapse: collapse;
     }
 
-        #projectDetails th, #projectDetails td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+    #projectDetails th, #projectDetails td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
 
-        #projectDetails th {
-            font-weight: bold;
-            color: #555;
-        }
+    #projectDetails th {
+        font-weight: bold;
+        color: #555;
+    }
 
-        #projectDetails td a {
-            color: #66339A;
-            text-decoration: none;
-        }
+    #projectDetails td a {
+        color: #66339A;
+        text-decoration: none;
+    }
 
-            #projectDetails td a:hover {
-                text-decoration: underline;
-            }
+    #projectDetails td a:hover {
+        text-decoration: underline;
+    }
 
-        #projectDetails td {
-            color: #333;
-        }
+    #projectDetails td {
+        color: #333;
+    }
 
     .gantt-header {
         display: flex;
@@ -132,10 +134,10 @@
         transition: background-color 0.3s ease;
     }
 
-        .gantt-view-btn:hover,
-        .gantt-view-btn.active {
-            background-color: #552788;
-        }
+    .gantt-view-btn:hover,
+    .gantt-view-btn.active {
+        background-color: #552788;
+    }
 
     .gantt-nav-btn,
     .gantt-today-btn {
@@ -149,10 +151,22 @@
         margin-right: 5px;
     }
 
-        .gantt-nav-btn:hover,
-        .gantt-today-btn:hover {
-            background-color: #eaeaea;
-        }
+    .gantt-nav-btn:hover,
+    .gantt-today-btn:hover {
+        background-color: #eaeaea;
+    }
+
+    .btn-primary {
+        background-color: #66339A;
+        border: none;
+        padding: 10px 20px;
+        color: #fff;
+        /*font-weight: bold;*/
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        margin-top: 15px;
+    }
 
 </style>
 
@@ -244,28 +258,32 @@
                 @using (Html.BeginForm("UpdateStatus", "Checklist", FormMethod.Post, new { enctype = "multipart/form-data" }))
                 {
                     <div class="form-group mb-4">
-                        <label for="milestone" class="text-muted">Select Milestone</label>
+                        <label for="milestone" class="milestone-text">Select Milestone</label>
                         @Html.DropDownListFor(m => m.SelectedMilestone, Model.Milestones, "Choose a Milestone", new { @class = "form-control rounded border-light" })
                     </div>
 
                     <div class="form-group mb-4">
-                        <label for="statusUpdate" class="text-muted">Status Update</label>
+                        <label for="statusUpdate" class="status-update">Status Update</label>
                         @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3 })
                     </div>
 
                     <div class="form-group mb-4">
-                        <label for="fileUpload" class="text-muted">Attachment</label>
+                        <label for="fileUpload" class="select-attach">Attachment</label>
                         <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
                     </div>
 
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2">Submit</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 }
             </div>
         </div>
     </div>
 </div>
+
+
+<!--Activity logs-->
+
 
 
 <!-- Gantt Chart Section -->
@@ -302,10 +320,14 @@
                 { name: "end_date", label: "Finish", align: "center", width: 90 }
             ];
 
-            gantt.config.scale_unit = "week";
-            gantt.config.date_scale = "%d %M";
-            gantt.config.subscales = [{ unit: "month", step: 1, date: "%F" }];
-            gantt.config.scale_height = 50;
+
+            gantt.config.scales = [{ unit: "week", date: "%d %M" }]
+            gantt.config.scales = [{ unit: "month", date: "%F" }]
+
+            //gantt.config.scale_unit = "week";
+            //gantt.config.date_scale = "%d %M";
+            //gantt.config.subscales = [{ unit: "month", step: 1, date: "%F" }];
+            //gantt.config.scale_height = 50;
 
             gantt.init("gantt_here");
 
@@ -342,19 +364,19 @@
 
             const setDayView = () => {
                 gantt.config.scale_unit = "day";
-                gantt.config.subscales = [{ unit: "day", step: 1, date: "%d" }];
+                //gantt.config.subscales = [{ unit: "day", step: 1, date: "%d" }];
                 gantt.render();
             };
 
             const setWeekView = () => {
                 gantt.config.scale_unit = "week";
-                gantt.config.subscales = [{ unit: "week", step: 1, date: "Week %W" }];
+                //gantt.config.subscales = [{ unit: "week", step: 1, date: "Week %W" }];
                 gantt.render();
             };
 
             const setMonthView = () => {
                 gantt.config.scale_unit = "month";
-                gantt.config.subscales = [{ unit: "month", step: 1, date: "%F" }];
+                //gantt.config.subscales = [{ unit: "month", step: 1, date: "%F" }];
                 gantt.render();
             };
 

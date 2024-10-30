@@ -4,107 +4,124 @@
     ViewBag.Title = "Log in";
     Layout = null;  // No layout for a clean login page
 }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
-<head>
-    <!-- Import Poppins font from Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+<style>
+    .form-container {
+        max-width: 500px;
+        width: 100%;
+        padding: 50px 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
 
-        .form-container {
-            max-width: 500px;
-            width: 100%;
-            padding: 50px 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
+    .form-container img {
+        width: 100px;
+        margin-bottom: 20px;
+    }
 
-            .form-container img {
-                width: 100px; 
-                margin-bottom: 20px;
-            }
+    .form-container h1 {
+        color: #66339A;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
 
-            .form-container h1 {
-                color: #66339A;
-                margin-bottom: 10px;
-                font-weight: 600;
-            }
+    .form-container p {
+        color: #888;
+        margin-bottom: 20px;
+        margin-top:-15px;
+    }
 
-            .form-container p {
-                color: #888;
-                margin-bottom: 20px;
-            }
+    .form-group label {
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: #333;
+        display: block;
+        text-align: left;
+        margin-bottom: 5px;
+    }
 
-        .form-group label {
-            font-weight: bold;
-            color: #333;
-            display: block;
-            text-align: left;
-            margin-bottom: 5px;
-        }
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, .12);
+    }
 
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .12);
-        }
+    .btn-primary {
+        font-family: 'Poppins', sans-serif;
+        background-color: #66339A;
+        border: none;
+        padding: 10px 20px;
+        color: #fff;
+        /*font-weight: bold;*/
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        font-size: 16px;
+    }
 
-        .btn-primary {
-            background-color: #66339A;
-            border: none;
-            padding: 10px 20px;
-            color: #fff;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            width: 100%;
-        }
+    .btn-primary:hover {
+        background-color: #532c7e;
+    }
 
-            .btn-primary:hover {
-                background-color: #532c7e;
-            }
+    .checkbox {
+        text-align: left;
+        margin-bottom: 15px;
+    }
 
-        .checkbox {
-            text-align: left;
-            margin-bottom: 15px;
-        }
+    .form-footer {
+        text-align: center;
+        padding-top: 20px;
+    }
 
-        .form-footer {
-            text-align: center;
-            padding-top: 20px;
-        }
+    .text-danger {
+        color: red;
+    }
 
-        .text-danger {
-            color: red;
-        }
+    .form-footer a {
+        display: block;
+        margin-top: 10px;
+        text-decoration: none;
+        color: #66339A;
+    }
 
-        .form-footer a {
-            display: block;
-            margin-top: 10px;
-            text-decoration: none;
-            color: #66339A;
-        }
+    .form-footer a:hover {
+        text-decoration: underline;
+    }
 
-            .form-footer a:hover {
-                text-decoration: underline;
-            }
-    </style>
-</head>
+    .form-container h3 {
+        font-weight: 500;
+    }
 
-<body>
+    .toggle-password {
+        cursor: pointer;
+        position: absolute;
+        right: 10px; 
+        top: 50%;
+        transform: translateY(-50%);
+        margin-top:-7px;
+    }
+
+    .login-body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f6f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+</style>
+
+
+
+<div class="login-body">
     <div class="form-container">
         @*<img src="/path-to-your-logo.png" alt="PMS Logo">*@
 
@@ -129,7 +146,10 @@
                 <!-- Password Input -->
                 <div class="form-group">
                     @Html.LabelFor(m => m.Password, "Password")
-                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                    <div class="input-group" style="position: relative;">
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "password-field" })
+                        <span class="toggle-password fa fa-fw fa-eye"></span>
+                    </div>
                     @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                 </div>
 
@@ -148,8 +168,21 @@
             }
         </section>
     </div>
-</body>
+</div>
+<script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+<script>
+    $(document).ready(function () {
+        $(".toggle-password").click(function () {
+            $(this).toggleClass("fa-eye fa-eye-slash");
+            var input = $(this).closest(".input-group").find("input");
+            if (input.attr("type") === "password") {
+                input.attr("type", "text");
+            } else {
+                input.attr("type", "password");
+            }
+        });
+    });
+
+</script>
+
