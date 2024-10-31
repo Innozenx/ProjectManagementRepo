@@ -290,6 +290,13 @@ namespace ProjectManagementSystem.Models
             public DateTime DateUpdated { get; set; }
         }
     }
+
+    public class UserTypes
+    {
+        public int type_id { get; set; }
+        public string type_name { get; set; }
+        public string type_description { get; set; }
+    }
 }
 
 

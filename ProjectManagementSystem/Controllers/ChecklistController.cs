@@ -11,6 +11,7 @@ using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using System.Diagnostics;
 using Microsoft.AspNet.Identity;
+using ProjectManagementSystem.CustomAttributes;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -239,6 +240,7 @@ namespace ProjectManagementSystem.Controllers
                 return "red"; // overdue task
         }
 
+        [CustomAuthorize(Roles = "PMS_Developer")]
         public ActionResult AddProject()
         {
             List<RegistrationTbl> listProjects = db.RegistrationTbls.Where(x => x.is_file_uploaded == false).ToList();
@@ -403,6 +405,20 @@ namespace ProjectManagementSystem.Controllers
 
                                 var upd_rgstr = db.RegistrationTbls.Where(x => x.registration_id == projectId).Single();
                                 upd_rgstr.is_file_uploaded = true;
+                                db.SaveChanges();
+
+                                Activity_Log logs = new Activity_Log
+                                {
+                                    username = User.Identity.Name,
+                                    datetime_performed = DateTime.Now,
+                                    action_level = 5,
+                                    action = "Project Upload",
+                                    description = getProject.ProjectTitle + " Project Uploaded by: " + getProject.projectOwner + " For Year: " + getProject.ProjectYear,
+                                    department = "ITS",
+                                    division = "SDD"
+                                };
+
+                                db.Activity_Log.Add(logs);
                                 db.SaveChanges();
 
                                 transaction.Commit();

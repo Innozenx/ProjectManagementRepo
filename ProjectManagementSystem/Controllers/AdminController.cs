@@ -5,12 +5,15 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
+using ProjectManagementSystem.CustomAttributes;
 
 namespace ProjectManagementSystem.Controllers
 {
     public class AdminController : Controller
     {
         ProjectManagementDBEntities db = new ProjectManagementDBEntities();
+        CMIdentityDBEntities cmdb = new CMIdentityDBEntities();
 
         // GET: Admin
         public ActionResult Index()
@@ -18,11 +21,11 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "PMS_Developer")]
         public ActionResult Register()
         {
             return View();
         }
-
 
         public JsonResult Register_Project(string name)
         {
@@ -62,6 +65,20 @@ namespace ProjectManagementSystem.Controllers
                 };
 
                 db.RegistrationTbls.Add(insDeets);
+
+                Activity_Log logs = new Activity_Log
+                {
+                    username = User.Identity.Name,
+                    datetime_performed = DateTime.Now,
+                    action_level = 5,
+                    action = "Project Registration",
+                    description = details.ProjectName + " Project Registered by: " + details.RegisteredBy + " For Year: " + details.Year,
+                    department = "ITS",
+                    division = "SDD"
+                };
+
+                db.Activity_Log.Add(logs);
+
                 db.SaveChanges();
 
                 message = "Project name has been successfully registered!";
@@ -73,6 +90,58 @@ namespace ProjectManagementSystem.Controllers
                 status = false;
                 Debug.WriteLine(e.Message);
             }
+
+            return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
+        }
+
+        [CustomAuthorize(Roles = "PMS_Developer")]
+        public ActionResult RegisterUserView()
+        {
+            List<UserType> listTypes = db.UserTypes.ToList();
+            return View(listTypes);
+        }
+
+        public JsonResult RegisterUser(string email, string type)
+        {
+            var message = "";
+            var status = false;
+
+            try
+            {
+                AdminList admin = new AdminList()
+                {
+                    user_level = type,
+                    user_email = email,
+                    is_active = true
+                };
+
+                db.AdminLists.Add(admin);
+
+                Activity_Log logs = new Activity_Log
+                {
+                    username = User.Identity.Name,
+                    datetime_performed = DateTime.Now,
+                    action_level = 5,
+                    action = "User Registration",
+                    description = "User: " + email + "-" + type + " Registered by: " + User.Identity.Name,
+                    department = "ITS",
+                    division = "SDD"
+                };
+
+                db.Activity_Log.Add(logs);
+
+                db.SaveChanges();
+
+                message = "User Registration Successful";
+                status = true;
+            }
+            catch (Exception e)
+            {
+                message = "User Registration Failed";
+                status = false;
+            }
+
+
 
             return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
         }

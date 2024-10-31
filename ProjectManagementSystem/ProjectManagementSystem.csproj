@@ -229,9 +229,11 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\ChecklistController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\PMReportsController.cs" />
+    <Compile Include="CustomAttributes\CustomAuth.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -5059,6 +5061,8 @@
     <Content Include="Views\Shared\_DefaultPage.cshtml" />
     <Content Include="Views\Admin\Register.cshtml" />
     <Content Include="Views\Shared\NoSidebar.cshtml" />
+    <Content Include="Views\Error\AccessDenied.cshtml" />
+    <Content Include="Views\Admin\RegisterUserView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

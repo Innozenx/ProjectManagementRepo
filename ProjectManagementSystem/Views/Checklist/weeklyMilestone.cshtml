@@ -363,20 +363,23 @@
             document.getElementById("today-btn").addEventListener("click", () => gantt.showDate(new Date()) & updateDateRangeDisplay());
 
             const setDayView = () => {
-                gantt.config.scale_unit = "day";
+                //gantt.config.scale_unit = "day";
                 //gantt.config.subscales = [{ unit: "day", step: 1, date: "%d" }];
+                gantt.config.scales = [{unit: "day"}]
                 gantt.render();
             };
 
             const setWeekView = () => {
-                gantt.config.scale_unit = "week";
+                //gantt.config.scale_unit = "week";
                 //gantt.config.subscales = [{ unit: "week", step: 1, date: "Week %W" }];
+                gantt.config.scales = [{ unit: "week" }]
                 gantt.render();
             };
 
             const setMonthView = () => {
-                gantt.config.scale_unit = "month";
+                //gantt.config.scale_unit = "month";
                 //gantt.config.subscales = [{ unit: "month", step: 1, date: "%F" }];
+                gantt.config.scales = [{ unit: "month" }]
                 gantt.render();
             };
 
