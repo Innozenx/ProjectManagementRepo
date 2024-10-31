@@ -70,7 +70,7 @@ namespace ProjectManagementSystem.Models
         public IEnumerable<string> UniqueMilestoneNames { get; set; }
         public IEnumerable<ProjectMilestoneViewModel> ProjectsMilestones { get; set; }
         public List<string> MilestoneOrder { get; set; }
-    
+
     }
 
     public class TaskDetail
@@ -105,11 +105,13 @@ namespace ProjectManagementSystem.Models
         public string ProjectOwner { get; set; }
         public DateTime ProjectStart { get; set; }
         public DateTime ProjectEnd { get; set; }
-        public IEnumerable<SelectListItem> Milestones { get; set; }  
+        public IEnumerable<SelectListItem> Milestones { get; set; }
         public List<ProjectDetailViewModel> ProjectDetails { get; set; } = new List<ProjectDetailViewModel>();
         public string SelectedMilestone { get; set; }
         public string StatusUpdate { get; set; }
         public HttpPostedFileBase FileUpload { get; set; }
+
+        public List<ActivityLogViewModel> ActivityLogs { get; set; } = new List<ActivityLogViewModel>();
     }
 
 
@@ -135,6 +137,19 @@ namespace ProjectManagementSystem.Models
         public DateTime? TaskStart { get; set; }
         public int Duration { get; set; }
         public bool IsCompleted { get; set; }
+    }
+
+
+    public class ActivityLogViewModel
+    {
+        public int LogId { get; set; }
+        public string Username { get; set; }
+        public DateTime? DatetimePerformed { get; set; }
+        public string ActionLevel { get; set; }
+        public string Action { get; set; }
+        public string Description { get; set; }
+        public string Department { get; set; }
+        public string Division { get; set; }
     }
 
 

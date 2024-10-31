@@ -168,6 +168,67 @@
         margin-top: 15px;
     }
 
+    .activity-log-container {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    .timeline {
+        position: relative;
+        padding: 0;
+        list-style: none;
+    }
+
+    .timeline-item {
+        display: flex;
+        padding: 15px 0;
+        position: relative;
+        align-items: center;
+    }
+
+    .timeline-icon {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        background-color: #66399A;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        margin-right: 15px;
+    }
+
+    .timeline-content {
+        flex-grow: 1;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        padding: 10px 15px;
+    }
+
+    .timeline-time {
+        font-weight: bold;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .timeline-details strong {
+        display: block;
+        color: #66399A;
+        font-size: 16px;
+    }
+
+    .timeline-details p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .timeline-details small {
+        color: #888;
+    }
+
+
 </style>
 
 
@@ -238,7 +299,7 @@
         <i class="fas fa-edit"></i>
         <div class="action-tile-title">Update Status</div>
     </div>
-    <div class="action-tile" data-toggle="modal" data-target="#activityLog">
+    <div class="action-tile" data-toggle="modal" data-target="#activityLogModal">
         <i class="fas fa-history"></i>
         <div class="action-tile-title">Activity</div>
     </div>
@@ -281,8 +342,50 @@
     </div>
 </div>
 
-
-<!--Activity logs-->
+<!-- Activity Logs -->
+<div class="modal fade" id="activityLogModal" tabindex="-1" role="dialog" aria-labelledby="activityLogLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content shadow-lg rounded">
+            <div class="modal-header bg-white">
+                <h5 class="modal-title" id="activityLogLabel">Activity Log</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body bg-white p-4">
+                <div class="activity-log-container">
+                    @if (Model.ActivityLogs != null && Model.ActivityLogs.Any())
+                    {
+                        <div class="timeline">
+                            @foreach (var log in Model.ActivityLogs)
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">
+                                        <i class="fas fa-user-circle"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <span class="timeline-time">
+                                            @(log.DatetimePerformed.HasValue ? log.DatetimePerformed.Value.ToString("hh:mm tt") : "No time available")
+                                        </span>
+                                        <div class="timeline-details">
+                                            <strong>@log.Username</strong>
+                                            <p>@log.Action</p>
+                                            <small class="text-muted">@log.Description</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No activity logs available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
