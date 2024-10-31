@@ -167,15 +167,30 @@ namespace ProjectManagementSystem.Controllers
 
             // Fetch milestones for dropdown
             var milestones = db.MilestoneTbls
-                .Where(m => m.milestone_id == id) 
+                .Where(m => m.milestone_id == id)
                 .Select(m => new SelectListItem
                 {
-                    Value = m.milestone_id.ToString(), 
-                    Text = m.milestone_name 
+                    Value = m.milestone_id.ToString(),
+                    Text = m.milestone_name
                 })
                 .ToList();
 
-            // Create the view model
+            // Fetch activity logs for the project
+            var activityLogs = db.Activity_Log
+                .Where(log => log.log_id == id)
+                .Select(log => new ActivityLogViewModel
+                {
+                    LogId = log.log_id,
+                    Username = log.username,
+                    DatetimePerformed = log.datetime_performed,
+                    ActionLevel = log.action_level.ToString(),
+                    Action = log.action,
+                    Description = log.description,
+                    Department = log.department,
+                    Division = log.division
+                })
+                .ToList();
+
             var viewModel = new ProjectMilestoneViewModel
             {
                 MainId = projects.MainId,
@@ -188,11 +203,14 @@ namespace ProjectManagementSystem.Controllers
                 Category = projects.Category,
                 ProjectOwner = projects.ProjectOwner,
                 ProjectDetails = projectDetails,
-                Milestones = milestones 
+                Milestones = milestones,
+                ActivityLogs = activityLogs
             };
 
             return View(viewModel);
         }
+
+
 
         public JsonResult getGanttData(int id)
         {
