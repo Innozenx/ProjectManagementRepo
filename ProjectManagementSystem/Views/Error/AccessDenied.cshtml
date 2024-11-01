@@ -5,49 +5,63 @@
 
 <style>
     .access-denied-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        font-family: 'Poppins', sans-serif;
         text-align: center;
-        margin-top: 50px;
-        color: #333;
     }
 
-    .access-denied-container img {
-        width: 120px; 
+    .icon img {
+        width: 80px;
         margin-bottom: 20px;
     }
 
-    .access-denied-container h1 {
-        font-size: 2em;
-        color: #dd3333;
+    .access-denied-content {
+        max-width: 400px;
     }
 
-    .access-denied-container p {
-        font-size: 1.2em;
+    .access-denied-content h1 {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
+    }
+
+    .access-denied-content p {
+        font-size: 1em;
+        color: #555;
         margin-top: 10px;
     }
 
-    .access-denied-container .btn {
+    .access-denied-content .btn {
         font-family: 'Poppins', sans-serif;
         background-color: #470A67;
         border: none;
-        padding: 10px 20px;
+        padding: 8px 16px;
         color: #fff;
-        /*font-weight: bold;*/
         border-radius: 5px;
         transition: background-color 0.3s ease;
-        /*width: 100%;*/
-        font-size: 16px;
+        font-size: 14px;
+        margin-top: 15px;
+        text-decoration: none;
+        display: inline-block;
     }
 
-    .access-denied-container .btn:hover {
+    .access-denied-content .btn:hover {
         background-color: #0056b3;
     }
 </style>
-<div class="access-denied-body">
-    <div class="access-denied-container">
-        <img src="~/AdminLTE-3.2.0/dist/img/ek.png" alt="Access Denied Icon" />
-        <h1> <i class="fa fa-lock"></i> Access Restricted</h1>
-        <p>You do not have permission to view this page.</p>
-        @*<a href="@Url.Action("Logout", "Account")" class="btn">Return to Log In</a>*@
+
+<div class="access-denied-container">
+    <div class="icon">
+        <img src="~/AdminLTE-3.2.0/dist/img/ek.png" alt="Access Denied Icon">
+    </div>
+    <div class="access-denied-content">
+        <h1><i class="fa fa-lock"></i>  Access Denied</h1>
+        <p>Your account does not have the required access to this page. For assistance, please reach out to your administrator.</p>
         <a href="@Url.Action("Dashboard", "Checklist")" class="btn">Home</a>
     </div>
 </div>

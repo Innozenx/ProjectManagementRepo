@@ -111,9 +111,16 @@ namespace ProjectManagementSystem.Models
         public string StatusUpdate { get; set; }
         public HttpPostedFileBase FileUpload { get; set; }
 
-        public List<ActivityLogViewModel> ActivityLogs { get; set; } = new List<ActivityLogViewModel>();
+        public List<StatusLogsViewModel> StatusLogs { get; set; } = new List<StatusLogsViewModel>();
     }
-
+    public class StatusLogsViewModel
+    {
+        public int StatusId { get; set; }
+        public string ProjectOwner { get; set; }
+        public string Description { get; set; }
+        public string DateUpdated { get; set; }
+        public string Attachment { get; set; }
+    }
 
 
     public class ProjectDetailViewModel

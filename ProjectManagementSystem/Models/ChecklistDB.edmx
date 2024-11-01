@@ -27,6 +27,14 @@
           <Property Name="user_email" Type="nvarchar" MaxLength="255" />
           <Property Name="is_active" Type="bit" />
         </EntityType>
+        <EntityType Name="AttachmentTable">
+          <Key>
+            <PropertyRef Name="attachment_id" />
+          </Key>
+          <Property Name="attachment_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="status_id" Type="int" />
+          <Property Name="path_file" Type="varchar(max)" />
+        </EntityType>
         <EntityType Name="ChecklistTable">
           <Key>
             <PropertyRef Name="localId" />
@@ -182,6 +190,19 @@
           <Property Name="project_owner" Type="nvarchar" MaxLength="255" />
           <Property Name="description" Type="nvarchar" MaxLength="500" />
           <Property Name="date_updated" Type="datetime" />
+          <Property Name="attachment" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="View_1">
+          <Key>
+            <PropertyRef Name="milestone_id" />
+          </Key>
+          <Property Name="milestone_name" Type="nvarchar" MaxLength="255" />
+          <Property Name="project_title" Type="nvarchar" MaxLength="255" />
+          <Property Name="end_date" Type="datetime" />
+          <Property Name="milestone_id" Type="int" Nullable="false" />
+          <Property Name="main_id" Type="int" />
         </EntityType>
         <Association Name="FK_DetailsTbl_MilestoneTbl">
           <End Role="MilestoneTbl" Type="Self.MilestoneTbl" Multiplicity="0..1" />
@@ -207,21 +228,10 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_WeeklyStatus_MilestoneTbl">
-          <End Role="MilestoneTbl" Type="Self.MilestoneTbl" Multiplicity="1" />
-          <End Role="WeeklyStatus" Type="Self.WeeklyStatus" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="MilestoneTbl">
-              <PropertyRef Name="milestone_id" />
-            </Principal>
-            <Dependent Role="WeeklyStatus">
-              <PropertyRef Name="status_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="ProjectManagementDBModelStoreContainer">
           <EntitySet Name="Activity_Log" EntityType="Self.Activity_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AdminList" EntityType="Self.AdminList" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AttachmentTable" EntityType="Self.AttachmentTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChecklistTable" EntityType="Self.ChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DetailsTbl" EntityType="Self.DetailsTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MainTable" EntityType="Self.MainTable" Schema="dbo" store:Type="Tables" />
@@ -231,6 +241,15 @@
           <EntitySet Name="UserTypes" EntityType="Self.UserTypes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatus" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="View_1" EntityType="Self.View_1" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [View_1].[milestone_name] AS [milestone_name], 
+    [View_1].[project_title] AS [project_title], 
+    [View_1].[end_date] AS [end_date], 
+    [View_1].[milestone_id] AS [milestone_id], 
+    [View_1].[main_id] AS [main_id]
+    FROM [dbo].[View_1] AS [View_1]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_DetailsTbl_MilestoneTbl" Association="Self.FK_DetailsTbl_MilestoneTbl">
             <End Role="MilestoneTbl" EntitySet="MilestoneTbl" />
             <End Role="DetailsTbl" EntitySet="DetailsTbl" />
@@ -238,10 +257,6 @@
           <AssociationSet Name="FK_MilestoneTbl_MainTable" Association="Self.FK_MilestoneTbl_MainTable">
             <End Role="MainTable" EntitySet="MainTable" />
             <End Role="MilestoneTbl" EntitySet="MilestoneTbl" />
-          </AssociationSet>
-          <AssociationSet Name="FK_WeeklyStatus_MilestoneTbl" Association="Self.FK_WeeklyStatus_MilestoneTbl">
-            <End Role="MilestoneTbl" EntitySet="MilestoneTbl" />
-            <End Role="WeeklyStatus" EntitySet="WeeklyStatus" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -251,6 +266,7 @@
         <EntityContainer Name="ProjectManagementDBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Activity_Log" EntityType="ProjectManagementDBModel.Activity_Log" />
           <EntitySet Name="AdminLists" EntityType="ProjectManagementDBModel.AdminList" />
+          <EntitySet Name="AttachmentTables" EntityType="ProjectManagementDBModel.AttachmentTable" />
           <EntitySet Name="ChecklistTables" EntityType="ProjectManagementDBModel.ChecklistTable" />
           <EntitySet Name="DetailsTbls" EntityType="ProjectManagementDBModel.DetailsTbl" />
           <EntitySet Name="MainTables" EntityType="ProjectManagementDBModel.MainTable" />
@@ -260,6 +276,7 @@
           <EntitySet Name="UserTypes" EntityType="ProjectManagementDBModel.UserType" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
           <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
+          <EntitySet Name="View_1" EntityType="ProjectManagementDBModel.View_1" />
           <AssociationSet Name="FK_DetailsTbl_MilestoneTbl" Association="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl">
             <End Role="MilestoneTbl" EntitySet="MilestoneTbls" />
             <End Role="DetailsTbl" EntitySet="DetailsTbls" />
@@ -267,10 +284,6 @@
           <AssociationSet Name="FK_MilestoneTbl_MainTable" Association="ProjectManagementDBModel.FK_MilestoneTbl_MainTable">
             <End Role="MainTable" EntitySet="MainTables" />
             <End Role="MilestoneTbl" EntitySet="MilestoneTbls" />
-          </AssociationSet>
-          <AssociationSet Name="FK_WeeklyStatus_MilestoneTbl" Association="ProjectManagementDBModel.FK_WeeklyStatus_MilestoneTbl">
-            <End Role="MilestoneTbl" EntitySet="MilestoneTbls" />
-            <End Role="WeeklyStatu" EntitySet="WeeklyStatus" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Activity_Log">
@@ -294,6 +307,14 @@
           <Property Name="user_level" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="user_email" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="is_active" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="AttachmentTable">
+          <Key>
+            <PropertyRef Name="attachment_id" />
+          </Key>
+          <Property Name="attachment_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="status_id" Type="Int32" />
+          <Property Name="path_file" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="ChecklistTable">
           <Key>
@@ -377,7 +398,6 @@
           <Property Name="status_update" Type="String" MaxLength="550" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DetailsTbls" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="MilestoneTbl" ToRole="DetailsTbl" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
-          <NavigationProperty Name="WeeklyStatu" Relationship="ProjectManagementDBModel.FK_WeeklyStatus_MilestoneTbl" FromRole="MilestoneTbl" ToRole="WeeklyStatu" />
         </EntityType>
         <EntityType Name="RegistrationTbl">
           <Key>
@@ -455,7 +475,17 @@
           <Property Name="project_owner" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="date_updated" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="MilestoneTbl" Relationship="ProjectManagementDBModel.FK_WeeklyStatus_MilestoneTbl" FromRole="WeeklyStatu" ToRole="MilestoneTbl" />
+          <Property Name="attachment" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="View_1">
+          <Key>
+            <PropertyRef Name="milestone_id" />
+          </Key>
+          <Property Name="milestone_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="project_title" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="end_date" Type="DateTime" Precision="3" />
+          <Property Name="milestone_id" Type="Int32" Nullable="false" />
+          <Property Name="main_id" Type="Int32" />
         </EntityType>
         <Association Name="FK_DetailsTbl_MilestoneTbl">
           <End Type="ProjectManagementDBModel.MilestoneTbl" Role="MilestoneTbl" Multiplicity="0..1" />
@@ -478,18 +508,6 @@
             </Principal>
             <Dependent Role="MilestoneTbl">
               <PropertyRef Name="main_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_WeeklyStatus_MilestoneTbl">
-          <End Type="ProjectManagementDBModel.MilestoneTbl" Role="MilestoneTbl" Multiplicity="1" />
-          <End Type="ProjectManagementDBModel.WeeklyStatu" Role="WeeklyStatu" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="MilestoneTbl">
-              <PropertyRef Name="milestone_id" />
-            </Principal>
-            <Dependent Role="WeeklyStatu">
-              <PropertyRef Name="status_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -520,6 +538,15 @@
                 <ScalarProperty Name="user_email" ColumnName="user_email" />
                 <ScalarProperty Name="user_level" ColumnName="user_level" />
                 <ScalarProperty Name="admin_id" ColumnName="admin_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AttachmentTables">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.AttachmentTable">
+              <MappingFragment StoreEntitySet="AttachmentTable">
+                <ScalarProperty Name="path_file" ColumnName="path_file" />
+                <ScalarProperty Name="status_id" ColumnName="status_id" />
+                <ScalarProperty Name="attachment_id" ColumnName="attachment_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -680,11 +707,23 @@
           <EntitySetMapping Name="WeeklyStatus">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.WeeklyStatu">
               <MappingFragment StoreEntitySet="WeeklyStatus">
+                <ScalarProperty Name="attachment" ColumnName="attachment" />
                 <ScalarProperty Name="date_updated" ColumnName="date_updated" />
                 <ScalarProperty Name="description" ColumnName="description" />
                 <ScalarProperty Name="project_owner" ColumnName="project_owner" />
                 <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
                 <ScalarProperty Name="status_id" ColumnName="status_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="View_1">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.View_1">
+              <MappingFragment StoreEntitySet="View_1">
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
+                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
+                <ScalarProperty Name="end_date" ColumnName="end_date" />
+                <ScalarProperty Name="project_title" ColumnName="project_title" />
+                <ScalarProperty Name="milestone_name" ColumnName="milestone_name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

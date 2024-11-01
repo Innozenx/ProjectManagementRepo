@@ -27,6 +27,7 @@ namespace ProjectManagementSystem.Models
     
         public virtual DbSet<Activity_Log> Activity_Log { get; set; }
         public virtual DbSet<AdminList> AdminLists { get; set; }
+        public virtual DbSet<AttachmentTable> AttachmentTables { get; set; }
         public virtual DbSet<ChecklistTable> ChecklistTables { get; set; }
         public virtual DbSet<DetailsTbl> DetailsTbls { get; set; }
         public virtual DbSet<MainTable> MainTables { get; set; }
@@ -36,5 +37,6 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<UserType> UserTypes { get; set; }
         public virtual DbSet<WeeklyChecklistTable> WeeklyChecklistTables { get; set; }
         public virtual DbSet<WeeklyStatu> WeeklyStatus { get; set; }
+        public virtual DbSet<View_1> View_1 { get; set; }
     }
 }

@@ -167,7 +167,7 @@ namespace ProjectManagementSystem.Controllers
 
             // Fetch milestones for dropdown
             var milestones = db.MilestoneTbls
-                .Where(m => m.milestone_id == id)
+                .Where(m => m.main_id == id)
                 .Select(m => new SelectListItem
                 {
                     Value = m.milestone_id.ToString(),
@@ -176,20 +176,28 @@ namespace ProjectManagementSystem.Controllers
                 .ToList();
 
             // Fetch activity logs for the project
-            var activityLogs = db.Activity_Log
-                .Where(log => log.log_id == id)
-                .Select(log => new ActivityLogViewModel
+            var statusLogs = db.WeeklyStatus
+                .Where(log => log.status_id == id)
+                .Select(log => new StatusLogsViewModel
                 {
-                    LogId = log.log_id,
-                    Username = log.username,
-                    DatetimePerformed = log.datetime_performed,
-                    ActionLevel = log.action_level.ToString(),
-                    Action = log.action,
+                    StatusId = log.status_id,
+                    ProjectOwner = log.project_owner,
                     Description = log.description,
-                    Department = log.department,
-                    Division = log.division
+                    DateUpdated = log.date_updated.ToString(),
+                    Attachment = log.attachment
+
+                    //LogId = log.log_id,
+                    //Username = log.username,
+                    //DatetimePerformed = log.datetime_performed,
+                    //ActionLevel = log.action_level.ToString(),
+                    //Action = log.action,
+                    //Description = log.description,
+                    //Department = log.department,
+                    //Division = log.division
                 })
                 .ToList();
+
+
 
             var viewModel = new ProjectMilestoneViewModel
             {
@@ -204,13 +212,11 @@ namespace ProjectManagementSystem.Controllers
                 ProjectOwner = projects.ProjectOwner,
                 ProjectDetails = projectDetails,
                 Milestones = milestones,
-                ActivityLogs = activityLogs
+                StatusLogs = statusLogs
             };
 
             return View(viewModel);
         }
-
-
 
         public JsonResult getGanttData(int id)
         {
@@ -344,7 +350,7 @@ namespace ProjectManagementSystem.Controllers
                                     category = getProject.category,
                                     project_owner = getProject.projectOwner,
                                     user_id = UserId
-                                    
+
                                 };
 
                                 db.MainTables.Add(addWeeklyChecklist);
@@ -510,6 +516,7 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
+
         [HttpPost]
         public ActionResult UpdateStatus(ProjectMilestoneViewModel model)
         {
@@ -518,27 +525,71 @@ namespace ProjectManagementSystem.Controllers
                 var milestone = db.MilestoneTbls.Find(int.Parse(model.SelectedMilestone));
                 if (milestone != null)
                 {
+                    // Save status
                     var statusUpdate = new WeeklyStatu
                     {
                         milestone_id = milestone.milestone_id,
+                        project_owner = model.ProjectOwner,
                         description = model.StatusUpdate,
                         date_updated = DateTime.Now
                     };
-
-                    if (model.FileUpload != null && model.FileUpload.ContentLength > 0)
-                    {
-                        string path = Path.Combine(Server.MapPath("~/Uploads"), Path.GetFileName(model.FileUpload.FileName));
-                        model.FileUpload.SaveAs(path);
-                    }
-
                     db.WeeklyStatus.Add(statusUpdate);
                     db.SaveChanges();
+
+                    // Save file if uploaded
+                    if (model.FileUpload != null && model.FileUpload.ContentLength > 0)
+                    {
+                        string uploadPath = Server.MapPath("~/Uploads");
+                        if (!Directory.Exists(uploadPath))
+                        {
+                            Directory.CreateDirectory(uploadPath);
+                        }
+
+                        string filePath = Path.Combine(uploadPath, Path.GetFileName(model.FileUpload.FileName));
+                        model.FileUpload.SaveAs(filePath);
+
+                        var attachment = new AttachmentTable
+                        {
+                            status_id = statusUpdate.status_id,
+                            path_file = filePath
+                        };
+
+                        db.AttachmentTables.Add(attachment);
+                        db.SaveChanges();
+                    }
+
+                    // Save activity log entry
+                    var activityLog = new Activity_Log
+                    {
+                        log_id = model.MainId,
+                        username = User.Identity.Name,
+                        datetime_performed = DateTime.Now,
+                        action_level = 1,
+                        action = "Status Update",
+                        description = $"Updated status for milestone: {milestone.milestone_name}.",
+                        department = "Project Management",
+                        division = model.Division
+                    };
+
+                    db.Activity_Log.Add(activityLog);
+                    db.SaveChanges();
+
+                    //if (model.MainId == 0)
+                    //{
+                    //    ModelState.AddModelError("", "Invalid project ID for redirection.");
+                    //    return View(model);
+                    //}
+
+                    return RedirectToAction("WeeklyMilestone", new { id = model.MainId });
                 }
 
-                return RedirectToAction("WeeklyMilestone", new { id = model.MainId });
+                ModelState.AddModelError("", "Milestone not found.");
+                return View(model);
             }
-
             return View(model);
         }
+
     }
 }
+
+

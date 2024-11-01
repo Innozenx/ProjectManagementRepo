@@ -12,13 +12,12 @@ namespace ProjectManagementSystem.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class WeeklyStatu
+    public partial class View_1
     {
-        public int status_id { get; set; }
-        public Nullable<int> milestone_id { get; set; }
-        public string project_owner { get; set; }
-        public string description { get; set; }
-        public Nullable<System.DateTime> date_updated { get; set; }
-        public string attachment { get; set; }
+        public string milestone_name { get; set; }
+        public string project_title { get; set; }
+        public Nullable<System.DateTime> end_date { get; set; }
+        public int milestone_id { get; set; }
+        public Nullable<int> main_id { get; set; }
     }
 }

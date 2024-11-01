@@ -12,13 +12,10 @@ namespace ProjectManagementSystem.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class WeeklyStatu
+    public partial class AttachmentTable
     {
-        public int status_id { get; set; }
-        public Nullable<int> milestone_id { get; set; }
-        public string project_owner { get; set; }
-        public string description { get; set; }
-        public Nullable<System.DateTime> date_updated { get; set; }
-        public string attachment { get; set; }
+        public int attachment_id { get; set; }
+        public Nullable<int> status_id { get; set; }
+        public string path_file { get; set; }
     }
 }

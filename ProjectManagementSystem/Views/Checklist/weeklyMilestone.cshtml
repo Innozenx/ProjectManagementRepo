@@ -296,12 +296,10 @@
 <!-- Update Status and Activity Log Tiles -->
 <div class="action-tiles-container">
     <div class="action-tile" data-toggle="modal" data-target="#updateMilestoneModal">
-        <i class="fas fa-edit"></i>
-        <div class="action-tile-title">Update Status</div>
+        <div class="action-tile-title"><i class="fas fa-edit"></i> Update Status</div>
     </div>
     <div class="action-tile" data-toggle="modal" data-target="#activityLogModal">
-        <i class="fas fa-history"></i>
-        <div class="action-tile-title">Activity</div>
+        <div class="action-tile-title"><i class="fas fa-history"></i> Activity</div>
     </div>
 </div>
 
@@ -354,10 +352,10 @@
             </div>
             <div class="modal-body bg-white p-4">
                 <div class="activity-log-container">
-                    @if (Model.ActivityLogs != null && Model.ActivityLogs.Any())
+                    @if (Model.StatusLogs != null && Model.StatusLogs.Any())
                     {
                         <div class="timeline">
-                            @foreach (var log in Model.ActivityLogs)
+                            @foreach (var log in Model.StatusLogs)
                             {
                                 <div class="timeline-item">
                                     <div class="timeline-icon">
@@ -365,7 +363,7 @@
                                     </div>
                                     <div class="timeline-content">
                                         <span class="timeline-time">
-                                            @(log.DatetimePerformed.HasValue ? log.DatetimePerformed.Value.ToString("hh:mm tt") : "No time available")
+                                            @(log.DateUpdated.HasValue ? log.DateUpdated.Value.ToString("hh:mm tt") : "No time available")
                                         </span>
                                         <div class="timeline-details">
                                             <strong>@log.Username</strong>

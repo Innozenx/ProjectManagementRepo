@@ -30,6 +30,5 @@ namespace ProjectManagementSystem.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DetailsTbl> DetailsTbls { get; set; }
         public virtual MainTable MainTable { get; set; }
-        public virtual WeeklyStatu WeeklyStatu { get; set; }
     }
 }
