@@ -116,10 +116,14 @@ namespace ProjectManagementSystem.Models
     public class StatusLogsViewModel
     {
         public int StatusId { get; set; }
+        public int? MilestoneId { get; set; }
         public string ProjectOwner { get; set; }
         public string Description { get; set; }
         public string DateUpdated { get; set; }
         public string Attachment { get; set; }
+        public int MainId { get; set; }
+        public string Username { get; set; }
+        public string MilestoneName { get; set; }
     }
 
 

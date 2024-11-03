@@ -94,57 +94,57 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
         }
 
-        [CustomAuthorize(Roles = "PMS_Developer")]
-        public ActionResult RegisterUserView()
-        {
-            List<UserType> listTypes = db.UserTypes.ToList();
-            return View(listTypes);
-        }
+        //[CustomAuthorize(Roles = "PMS_Developer")]
+        //public ActionResult RegisterUserView()
+        //{
+        //    List<UserType> listTypes = db.UserTypes.ToList();
+        //    return View(listTypes);
+        //}
 
-        public JsonResult RegisterUser(string email, string type)
-        {
-            var message = "";
-            var status = false;
+        //public JsonResult RegisterUser(string email, string type)
+        //{
+        //    var message = "";
+        //    var status = false;
 
-            try
-            {
-                AdminList admin = new AdminList()
-                {
-                    user_level = type,
-                    user_email = email,
-                    is_active = true
-                };
+        //    try
+        //    {
+        //        AdminList admin = new AdminList()
+        //        {
+        //            user_level = type,
+        //            user_email = email,
+        //            is_active = true
+        //        };
 
-                db.AdminLists.Add(admin);
+        //        db.AdminLists.Add(admin);
 
-                Activity_Log logs = new Activity_Log
-                {
-                    username = User.Identity.Name,
-                    datetime_performed = DateTime.Now,
-                    action_level = 5,
-                    action = "User Registration",
-                    description = "User: " + email + "-" + type + " Registered by: " + User.Identity.Name,
-                    department = "ITS",
-                    division = "SDD"
-                };
+        //        Activity_Log logs = new Activity_Log
+        //        {
+        //            username = User.Identity.Name,
+        //            datetime_performed = DateTime.Now,
+        //            action_level = 5,
+        //            action = "User Registration",
+        //            description = "User: " + email + "-" + type + " Registered by: " + User.Identity.Name,
+        //            department = "ITS",
+        //            division = "SDD"
+        //        };
 
-                db.Activity_Log.Add(logs);
+        //        db.Activity_Log.Add(logs);
 
-                db.SaveChanges();
+        //        db.SaveChanges();
 
-                message = "User Registration Successful";
-                status = true;
-            }
-            catch (Exception e)
-            {
-                message = "User Registration Failed";
-                status = false;
-            }
+        //        message = "User Registration Successful";
+        //        status = true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        message = "User Registration Failed";
+        //        status = false;
+        //    }
 
 
 
-            return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
+        //}
 
     }
 }

@@ -14,10 +14,8 @@
         <EntityTypeShape EntityType="ProjectManagementDBModel.MilestoneTbl" Width="1.5" PointX="3" PointY="1.875" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.RegistrationTbl" Width="1.5" PointX="7.75" PointY="0.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.Report" Width="1.5" PointX="8.75" PointY="4.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.UserType" Width="1.5" PointX="9.75" PointY="0.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyChecklistTable" Width="1.5" PointX="0.75" PointY="9.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyStatu" Width="1.5" PointX="2.75" PointY="9.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.View_1" Width="1.5" PointX="8.75" PointY="9.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyStatu" Width="1.5" PointX="9.75" PointY="0.75" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" />
       </Diagram>

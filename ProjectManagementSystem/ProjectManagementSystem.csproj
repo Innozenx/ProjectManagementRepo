@@ -327,13 +327,7 @@
     <Compile Include="Models\Report.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\UserType.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\ViewModel.cs" />
-    <Compile Include="Models\View_1.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\vw_CMInfo.cs">
       <DependentUpon>CMIdentity.tt</DependentUpon>
     </Compile>
