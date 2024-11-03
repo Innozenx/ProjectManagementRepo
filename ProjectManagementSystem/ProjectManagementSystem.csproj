@@ -259,6 +259,9 @@
     <Compile Include="Models\AspNetUserRole.cs">
       <DependentUpon>CMIdentity.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\AttachmentTable.cs">
+      <DependentUpon>CheckListDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\CheckListDB.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -322,9 +325,6 @@
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Report.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\UserType.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />

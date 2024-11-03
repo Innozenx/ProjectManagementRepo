@@ -120,13 +120,116 @@ namespace ProjectManagementSystem.Controllers
             return db.MilestoneTbls.Select(m => m.milestone_name).Distinct().ToList();
         }
 
+        //public ActionResult weeklyMilestone(int id, string title, string projectId)
+        //{
+
+        //    TempData["entry"] = id;
+        //    TempData["title"] = title;
+        //    TempData["project"] = projectId;
+
+        //    // Fetch project data
+        //    var projects = db.MainTables
+        //        .Where(m => m.main_id == id)
+        //        .Select(m => new ProjectMilestoneViewModel
+        //        {
+        //            MainId = m.main_id,
+        //            ProjectTitle = m.project_title,
+        //            StartDate = m.project_start,
+        //            EndDate = m.project_end,
+        //            Duration = m.duration ?? 0,
+        //            ProjectYear = m.year ?? 0,
+        //            Division = m.division,
+        //            Category = m.category,
+        //            ProjectOwner = m.project_owner
+        //        })
+        //        .FirstOrDefault();
+
+        //    if (projects == null)
+        //    {
+        //        return HttpNotFound("No milestones found.");
+        //    }
+
+        //    // Fetch project details
+        //    var projectDetails = db.MainTables
+        //        .Where(p => p.main_id == id)
+        //        .Select(p => new ProjectDetailViewModel
+        //        {
+        //            Id = p.main_id,
+        //            ProjectTitle = p.project_title,
+        //            ProjectStart = p.project_start.ToString(),
+        //            ProjectEnd = p.project_end.ToString(),
+        //            ProjectDuration = p.duration ?? 0,
+        //            ProjectYear = p.year ?? 0,
+        //            Division = p.division,
+        //            Category = p.category,
+        //            ProjectOwner = p.project_owner,
+        //        })
+        //        .ToList();
+
+        //    // Fetch milestones for dropdown
+        //    var milestones = db.MilestoneTbls
+        //        .Where(m => m.main_id == id)
+        //        .Select(m => new SelectListItem
+        //        {
+        //            Value = m.milestone_id.ToString(),
+        //            Text = m.milestone_name
+        //        })
+        //        .ToList();
+
+        //    // fetch status logs 
+        //    var statusLogs = db.WeeklyStatus
+        //        .Where(log => log.milestone_id == id) 
+        //        .Select(log => new StatusLogsViewModel
+        //        {
+        //            StatusId = log.status_id,
+        //            MilestoneId = log.milestone_id,
+        //            ProjectOwner = log.project_owner,
+        //            Description = log.description,
+        //            DateUpdated = log.date_updated.ToString(),
+        //            Attachment = log.attachment
+        //        })
+        //        .OrderByDescending(log => log.DateUpdated)
+        //        .ToList();
+
+        //    var viewModel = new ProjectMilestoneViewModel
+        //    {
+        //        MainId = projects.MainId,
+        //        ProjectTitle = projects.ProjectTitle,
+        //        StartDate = projects.StartDate,
+        //        EndDate = projects.EndDate,
+        //        Duration = projects.Duration,
+        //        ProjectYear = projects.ProjectYear,
+        //        Division = projects.Division,
+        //        Category = projects.Category,
+        //        ProjectOwner = projects.ProjectOwner,
+        //        ProjectDetails = projectDetails,
+        //        Milestones = milestones,
+        //        StatusLogs = statusLogs
+        //    };
+
+        //    return View(viewModel);
+        //}
+
         public ActionResult weeklyMilestone(int id, string title, string projectId)
         {
+           
+            var userId = User.Identity.GetUserId();
+
+            // checker if the project belongs to the user
+            var userProject = db.MainTables
+                .Where(m => m.main_id == id && m.user_id == userId) 
+                .FirstOrDefault();
+
+            // if the project doesn't belong to the user, return unauthorized or an error page
+            if (userProject == null)
+            {
+                return RedirectToAction("AccessDenied", "Error"); 
+            }
+
             TempData["entry"] = id;
             TempData["title"] = title;
             TempData["project"] = projectId;
 
-            // Fetch project data
             var projects = db.MainTables
                 .Where(m => m.main_id == id)
                 .Select(m => new ProjectMilestoneViewModel
@@ -165,9 +268,9 @@ namespace ProjectManagementSystem.Controllers
                 })
                 .ToList();
 
-            // Fetch milestones for dropdown
+            // fetch milestone for dropdown
             var milestones = db.MilestoneTbls
-                .Where(m => m.milestone_id == id)
+                .Where(m => m.main_id == id)
                 .Select(m => new SelectListItem
                 {
                     Value = m.milestone_id.ToString(),
@@ -175,21 +278,27 @@ namespace ProjectManagementSystem.Controllers
                 })
                 .ToList();
 
-            // Fetch activity logs for the project
-            var activityLogs = db.Activity_Log
-                .Where(log => log.log_id == id)
-                .Select(log => new ActivityLogViewModel
-                {
-                    LogId = log.log_id,
-                    Username = log.username,
-                    DatetimePerformed = log.datetime_performed,
-                    ActionLevel = log.action_level.ToString(),
-                    Action = log.action,
-                    Description = log.description,
-                    Department = log.department,
-                    Division = log.division
-                })
-                .ToList();
+            // fetch status
+            var statusLogs = db.WeeklyStatus
+                 .Where(log => log.main_id == id)
+                 .Select(log => new StatusLogsViewModel
+                 {
+                     StatusId = log.status_id,
+                     MilestoneId = log.milestone_id,
+                     ProjectOwner = log.project_owner,
+                     Description = log.description,
+                     DateUpdated = log.date_updated.ToString(),
+                     Username = log.user_id,
+                     MilestoneName = log.milestone_name,
+                     Attachment = db.AttachmentTables
+                        .Where(a => a.status_id == log.status_id)
+                        .Select(a => a.path_file)
+                        .FirstOrDefault()
+
+                 })
+                 .OrderByDescending(log => log.DateUpdated)
+                 .ToList();
+
 
             var viewModel = new ProjectMilestoneViewModel
             {
@@ -204,13 +313,11 @@ namespace ProjectManagementSystem.Controllers
                 ProjectOwner = projects.ProjectOwner,
                 ProjectDetails = projectDetails,
                 Milestones = milestones,
-                ActivityLogs = activityLogs
+                StatusLogs = statusLogs
             };
 
             return View(viewModel);
         }
-
-
 
         public JsonResult getGanttData(int id)
         {
@@ -344,7 +451,7 @@ namespace ProjectManagementSystem.Controllers
                                     category = getProject.category,
                                     project_owner = getProject.projectOwner,
                                     user_id = UserId
-                                    
+
                                 };
 
                                 db.MainTables.Add(addWeeklyChecklist);
@@ -518,27 +625,78 @@ namespace ProjectManagementSystem.Controllers
                 var milestone = db.MilestoneTbls.Find(int.Parse(model.SelectedMilestone));
                 if (milestone != null)
                 {
+                   
+                    int projectId = (int)milestone.main_id;
+                    string userId = User.Identity.GetUserId();
+
                     var statusUpdate = new WeeklyStatu
                     {
                         milestone_id = milestone.milestone_id,
                         description = model.StatusUpdate,
-                        date_updated = DateTime.Now
+                        date_updated = DateTime.Now,
+                        main_id = projectId,
+                        user_id = User.Identity.Name,
+                        milestone_name = milestone.milestone_name
+                      
+
                     };
-
-                    if (model.FileUpload != null && model.FileUpload.ContentLength > 0)
-                    {
-                        string path = Path.Combine(Server.MapPath("~/Uploads"), Path.GetFileName(model.FileUpload.FileName));
-                        model.FileUpload.SaveAs(path);
-                    }
-
                     db.WeeklyStatus.Add(statusUpdate);
                     db.SaveChanges();
+
+                    // Save file if uploaded
+                    if (model.FileUpload != null && model.FileUpload.ContentLength > 0)
+                    {
+                        string uploadPath = Server.MapPath("~/Uploads");
+                        if (!Directory.Exists(uploadPath))
+                        {
+                            Directory.CreateDirectory(uploadPath);
+                        }
+
+                        string filePath = Path.Combine(uploadPath, Path.GetFileName(model.FileUpload.FileName));
+                        model.FileUpload.SaveAs(filePath);
+
+                        var attachment = new AttachmentTable
+                        {
+                            status_id = statusUpdate.status_id,
+                            path_file = filePath
+                        };
+
+                        db.AttachmentTables.Add(attachment);
+                        db.SaveChanges();
+                    }
+
+                    var activityLog = new Activity_Log
+                    {
+                        log_id = projectId, 
+                        username = User.Identity.Name,
+                        datetime_performed = DateTime.Now,
+                        action_level = 1,
+                        action = "Status Update",
+                        description = $"Updated status for milestone: {milestone.milestone_name}.",
+                        department = "ITS", 
+                        division = model.Division
+                        
+                    };
+
+                    db.Activity_Log.Add(activityLog);
+                    db.SaveChanges();
+
+                    TempData["StatusUpdated"] = true;
+
+                    return RedirectToAction("weeklyMilestone", new { id = projectId, title = TempData["title"], projectId = TempData["project"] });
                 }
 
-                return RedirectToAction("WeeklyMilestone", new { id = model.MainId });
+                ModelState.AddModelError("", "Milestone not found.");
+                return View(model);
             }
-
             return View(model);
         }
+
+ 
+
+
+
     }
 }
+
+

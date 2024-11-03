@@ -12,10 +12,10 @@ namespace ProjectManagementSystem.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class UserType
+    public partial class AttachmentTable
     {
-        public int type_id { get; set; }
-        public string type_name { get; set; }
-        public string type_description { get; set; }
+        public int attachment_id { get; set; }
+        public Nullable<int> status_id { get; set; }
+        public string path_file { get; set; }
     }
 }

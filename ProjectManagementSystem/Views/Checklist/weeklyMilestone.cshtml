@@ -6,6 +6,7 @@
 
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
 
 <style>
@@ -32,18 +33,13 @@
         max-width: 1200px;
         margin: 0 auto;
     }
-    .action-tiles-container {
-        display: flex;
-        gap: 10px;
-        margin-right: 40px;
-        margin-top: 20px;
-    }
 
     .action-tiles-container {
         display: flex;
-        justify-content: flex-end; 
-        gap: 10px; 
+        justify-content: flex-end;
+        gap: 10px;
         margin-top: 20px;
+        margin-right: 30px;
     }
 
     .action-tile {
@@ -51,14 +47,13 @@
         color: white;
         border-radius: 8px;
         padding: 10px 15px;
-        width: auto;
-        min-width: 80px;
+        min-width: 100px;
         text-align: center;
         cursor: pointer;
         transition: background-color 0.3s ease, transform 0.3s ease;
         display: flex;
-        flex-direction: column;
         align-items: center;
+        justify-content: center;
     }
 
     .action-tile:hover {
@@ -68,12 +63,27 @@
 
     .action-tile i {
         font-size: 18px;
-        margin-bottom: 5px;
+        margin-right: 5px;
     }
 
     .action-tile-title {
-        font-size: 0.85rem; 
-        white-space: nowrap;
+        font-size: 0.85rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .action-tile button {
+        background-color: transparent;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        font: inherit;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     h3 {
@@ -81,7 +91,7 @@
         color: #66399A;
         text-align: left;
         font-size: 24px;
-        margin-bottom:10px;
+        margin-bottom: 10px;
         margin-left: 15px;
         margin-top: 5px;
     }
@@ -92,7 +102,8 @@
         border-collapse: collapse;
     }
 
-    #projectDetails th, #projectDetails td {
+    #projectDetails th,
+    #projectDetails td {
         padding: 10px;
         text-align: left;
         border-bottom: 1px solid #ddd;
@@ -122,16 +133,20 @@
         margin-bottom: 15px;
     }
 
-    .gantt-view-btn {
-        background-color: #66399A;
+    .gantt-view-btn,
+    .gantt-nav-btn,
+    .gantt-today-btn {
         border: none;
-        color: white;
-        padding: 8px 15px;
-        font-size: 14px;
         border-radius: 5px;
         cursor: pointer;
-        margin-right: 5px;
+        padding: 8px 15px;
+        font-size: 14px;
         transition: background-color 0.3s ease;
+    }
+
+    .gantt-view-btn {
+        background-color: #66399A;
+        color: white;
     }
 
     .gantt-view-btn:hover,
@@ -144,24 +159,19 @@
         background-color: #f9f9f9;
         border: 1px solid #ddd;
         color: #333;
-        padding: 8px 12px;
-        font-size: 14px;
-        border-radius: 5px;
-        cursor: pointer;
         margin-right: 5px;
     }
 
-    .gantt-nav-btn:hover,
-    .gantt-today-btn:hover {
-        background-color: #eaeaea;
-    }
+        .gantt-nav-btn:hover,
+        .gantt-today-btn:hover {
+            background-color: #eaeaea;
+        }
 
     .btn-primary {
         background-color: #470A67;
         border: none;
         padding: 10px 20px;
         color: #fff;
-        /*font-weight: bold;*/
         border-radius: 5px;
         transition: background-color 0.3s ease;
         width: 100%;
@@ -169,21 +179,7 @@
     }
 
     .activity-log-container {
-        max-height: 500px;
-        overflow-y: auto;
-    }
-
-    .timeline {
-        position: relative;
-        padding: 0;
-        list-style: none;
-    }
-
-    .timeline-item {
-        display: flex;
-        padding: 15px 0;
-        position: relative;
-        align-items: center;
+        padding: 10px;
     }
 
     .timeline-icon {
@@ -200,37 +196,159 @@
         margin-right: 15px;
     }
 
-    .timeline-content {
-        flex-grow: 1;
-        background-color: #f9f9f9;
-        border-radius: 5px;
-        padding: 10px 15px;
+    .header {
+        font-size: 18px;
+        font-weight: bold;
+        color: #66399A;
     }
 
-    .timeline-time {
-        font-weight: bold;
+    .description {
         font-size: 14px;
+        color: #333;
+        margin-top: 5px;
+        line-height: 1.4;
+    }
+
+    .content {
+        flex-grow: 1;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 15px;
+        margin-left: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .item {
+        display: flex;
+        align-items: flex-start;
+        padding: 15px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .item:last-child {
+        border-bottom: none;
+    }
+
+    .item:hover .content {
+        background-color: #f0f0f0;
+    }
+
+    .header:hover {
+        text-decoration: underline;
+        color: #552788;
+    }
+
+    .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #eaeaea;
+        padding-bottom: 10px;
+    }
+
+    .modal-title {
+        color: #66399A;
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .attachment-link {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 14px;
+        margin-top: 10px;
+        display: inline-block;
+    }
+
+    .attachment-link:hover {
+        text-decoration: underline;
+    }
+
+    .close {
+        color: #333;
+        opacity: 1;
+        font-size: 20px;
+    }
+
+    .close:hover {
         color: #555;
     }
 
-    .timeline-details strong {
-        display: block;
-        color: #66399A;
-        font-size: 16px;
+    #activityLogModal .modal-dialog {
+        max-width: 90%; 
+        width: 90%;
     }
 
-    .timeline-details p {
+    #activityLogModal .modal-content {
+        background-color: #f8f9fa;
+    }
+
+    #activityLogModal .modal-header {
+        background-color: #66399A;
+        color: white;
+        padding: 15px 20px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    #activityLogModal .modal-body {
+        padding: 20px;
+        max-height: 70vh; 
+        overflow-y: auto; 
+    }
+
+
+    .log-entry {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .log-entry p {
         margin: 5px 0;
-        font-size: 14px;
+        line-height: 1.6;
+        color: #333;
     }
 
-    .timeline-details small {
-        color: #888;
+    .log-entry strong {
+        color: #66399A;
     }
 
+    .log-entry:hover {
+        background-color: #f1f1f1; 
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+    }
 
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #66399A;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+        margin-right: 10px;
+    }
+    .log-details {
+        margin-left: 55px;
+    }
+
+    .attachment-link {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .attachment-link:hover {
+        text-decoration: underline;
+    }
 </style>
-
 
 
 <!-- Project Details Section -->
@@ -295,13 +413,15 @@
 
 <!-- Update Status and Activity Log Tiles -->
 <div class="action-tiles-container">
-    <div class="action-tile" data-toggle="modal" data-target="#updateMilestoneModal">
-        <i class="fas fa-edit"></i>
-        <div class="action-tile-title">Update Status</div>
+    <div class="action-tile">
+        <button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title">
+            <i class="fas fa-edit"></i> Update Status
+        </button>
     </div>
-    <div class="action-tile" data-toggle="modal" data-target="#activityLogModal">
-        <i class="fas fa-history"></i>
-        <div class="action-tile-title">Activity</div>
+    <div class="action-tile">
+        <button type="button" onclick="loadActivityLogs()" class="action-tile-title">
+            <i class="fas fa-history"></i> Activity
+        </button>
     </div>
 </div>
 
@@ -316,33 +436,53 @@
                 </button>
             </div>
             <div class="modal-body bg-white p-4">
-                @using (Html.BeginForm("UpdateStatus", "Checklist", FormMethod.Post, new { enctype = "multipart/form-data" }))
-                {
+                <form id="updateStatusForm" action="@Url.Action("UpdateStatus", "Checklist")" method="post" enctype="multipart/form-data">
                     <div class="form-group mb-4">
                         <label for="milestone" class="milestone-text">Select Milestone</label>
-                        @Html.DropDownListFor(m => m.SelectedMilestone, Model.Milestones, "Choose a Milestone", new { @class = "form-control rounded border-light" })
+                        @Html.DropDownListFor(m => m.SelectedMilestone, Model.Milestones, "Choose a Milestone", new { @class = "form-control rounded border-light", id = "selectedMilestone" })
                     </div>
-
                     <div class="form-group mb-4">
                         <label for="statusUpdate" class="status-update">Status Update</label>
-                        @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3 })
+                        @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3, id = "statusUpdate" })
                     </div>
-
                     <div class="form-group mb-4">
                         <label for="fileUpload" class="select-attach">Attachment</label>
                         <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
                     </div>
-
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                    <!-- Validation message area -->
+                    <div id="validationMessage" class="text-danger" style="display:none; margin-bottom:10px;">
+                        Please fill out all required fields.
                     </div>
-                }
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Submit</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Activity Logs -->
+<!-- Status Successfully Updated Modal -->
+<div class="modal fade" id="statusUpdatedModal" tabindex="-1" role="dialog" aria-labelledby="statusUpdatedLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="statusUpdatedLabel">Success!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Status Updated!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activity Logs Modal -->
 <div class="modal fade" id="activityLogModal" tabindex="-1" role="dialog" aria-labelledby="activityLogLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content shadow-lg rounded">
@@ -353,35 +493,69 @@
                 </button>
             </div>
             <div class="modal-body bg-white p-4">
-                <div class="activity-log-container">
-                    @if (Model.ActivityLogs != null && Model.ActivityLogs.Any())
+                <div id="activity-log-container" class="activity-log-container">
+                    @if (Model.StatusLogs != null && Model.StatusLogs.Any())
                     {
-                        <div class="timeline">
-                            @foreach (var log in Model.ActivityLogs)
-                            {
-                                <div class="timeline-item">
-                                    <div class="timeline-icon">
-                                        <i class="fas fa-user-circle"></i>
-                                    </div>
-                                    <div class="timeline-content">
-                                        <span class="timeline-time">
-                                            @(log.DatetimePerformed.HasValue ? log.DatetimePerformed.Value.ToString("hh:mm tt") : "No time available")
-                                        </span>
-                                        <div class="timeline-details">
-                                            <strong>@log.Username</strong>
-                                            <p>@log.Action</p>
-                                            <small class="text-muted">@log.Description</small>
+                        foreach (var log in Model.StatusLogs)
+                        {
+                            <div class="log-entry">
+                                <!-- Avatar and Username with Date and Time -->
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle">
+                                            @log.Username[0]
                                         </div>
+                                        <p class="mb-0"><strong>@log.Username</strong></p>
                                     </div>
+                                    @if (DateTime.TryParse(log.DateUpdated, out var parsedDate))
+                                    {
+                                        <p class="text-muted mb-0" style="font-size: 0.9em;">
+                                            Updated on @parsedDate.ToString("MMMM dd, yyyy - hh:mm tt")
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted mb-0" style="font-size: 0.9em;">No Date</p>
+                                    }
                                 </div>
-                            }
-                        </div>
+                                <!-- Milestone, Description, and Attachment Link -->
+                                <div class="log-details ml-5">
+                                    <p class="mb-1"><strong>Milestone:</strong> @log.MilestoneName</p>
+                                    <p class="mb-1"><strong>Description:</strong> @log.Description</p>
+                                    @if (!string.IsNullOrEmpty(log.Attachment))
+                                    {
+                                        <p class="mb-0">
+                                            <a href="javascript:void(0);" onclick="viewAttachment('@Url.Content(log.Attachment)')" class="attachment-link">
+                                                <i class="fas fa-paperclip"></i> View Attachment
+                                            </a>
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+                        }
                     }
                     else
                     {
-                        <p class="text-muted">No activity logs available.</p>
+                        <p>No activity logs available.</p>
                     }
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attachment Viewing Modal -->
+<div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attachmentModalLabel">Attachment Preview</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="attachmentFrame" src="" style="width:100%; height:500px;" frameborder="0"></iframe>
             </div>
         </div>
     </div>
@@ -410,30 +584,64 @@
 </div>
 
 @section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
+
     <script>
-        // Gantt chart configuration and initialization
+        $(document).ready(function () {
+ 
+            //$('.action-tile[data-target="#activityLogModal"]').on('click', function () {
+            //    console.log("Activity button clicked");
+            //});
+
+            //$('#activityLogModal').on('show.bs.modal', function () {
+            //    loadActivityLogs();
+            //});
+        });
+
+        function loadActivityLogs() {
+            $('#activityLogModal').modal('show');
+
+        }
+
+        function validateAndSubmit() {
+            const milestone = document.getElementById("selectedMilestone").value;
+            const statusUpdate = document.getElementById("statusUpdate").value;
+            const validationMessage = document.getElementById("validationMessage");
+
+            if (!milestone || !statusUpdate.trim()) {
+                validationMessage.style.display = "block";
+            } else {
+                validationMessage.style.display = "none";
+                document.getElementById("updateStatusForm").submit();
+            }
+        }
+
+        function viewAttachment(path) {
+            console.log("Opening attachment at path:", path); 
+            var iframe = document.getElementById('attachmentFrame');
+            iframe.src = '/Uploads/testfile.pdf';
+            $('#attachmentModal').modal('show');
+        }
+
+
         document.addEventListener("DOMContentLoaded", function () {
             gantt.config.xml_date = "%Y-%m-%d %H:%i";
             gantt.config.readonly = true;
-
             gantt.config.columns = [
                 { name: "text", label: "Milestone", tree: true, width: 200 },
                 { name: "duration", label: "Duration", align: "center", width: 70 },
                 { name: "start_date", label: "Start", align: "center", width: 90 },
                 { name: "end_date", label: "Finish", align: "center", width: 90 }
             ];
-
-
-            gantt.config.scales = [{ unit: "week", date: "%d %M" }]
-            gantt.config.scales = [{ unit: "month", date: "%F" }]
-
-            //gantt.config.scale_unit = "week";
-            //gantt.config.date_scale = "%d %M";
-            //gantt.config.subscales = [{ unit: "month", step: 1, date: "%F" }];
-            //gantt.config.scale_height = 50;
+            gantt.config.scales = [
+                { unit: "day", step: 1, date: "%d %M" },
+                { unit: "week", date: "%F %Y" }
+            ];
 
             gantt.init("gantt_here");
-
             gantt.load(`/Checklist/getGanttData?id=${@TempData["entry"]}`, "json");
 
             const updateDateRangeDisplay = () => {
@@ -461,28 +669,31 @@
                 return gantt.templates.date_to_str("%d %M %Y")(start) + " - " + gantt.templates.date_to_str("%d %M %Y")(end);
             };
 
-            document.getElementById("prev-date").addEventListener("click", () => gantt.navigateLeft() & updateDateRangeDisplay());
-            document.getElementById("next-date").addEventListener("click", () => gantt.navigateRight() & updateDateRangeDisplay());
-            document.getElementById("today-btn").addEventListener("click", () => gantt.showDate(new Date()) & updateDateRangeDisplay());
+            document.getElementById("prev-date").addEventListener("click", () => {
+                gantt.navigateLeft();
+                updateDateRangeDisplay();
+            });
+            document.getElementById("next-date").addEventListener("click", () => {
+                gantt.navigateRight();
+                updateDateRangeDisplay();
+            });
+            document.getElementById("today-btn").addEventListener("click", () => {
+                gantt.showDate(new Date());
+                updateDateRangeDisplay();
+            });
 
             const setDayView = () => {
-                //gantt.config.scale_unit = "day";
-                //gantt.config.subscales = [{ unit: "day", step: 1, date: "%d" }];
-                gantt.config.scales = [{unit: "day"}]
+                gantt.config.scales = [{ unit: "day", step: 1, date: "%d" }];
                 gantt.render();
             };
 
             const setWeekView = () => {
-                //gantt.config.scale_unit = "week";
-                //gantt.config.subscales = [{ unit: "week", step: 1, date: "Week %W" }];
-                gantt.config.scales = [{ unit: "week" }]
+                gantt.config.scales = [{ unit: "week", date: "Week %W" }];
                 gantt.render();
             };
 
             const setMonthView = () => {
-                //gantt.config.scale_unit = "month";
-                //gantt.config.subscales = [{ unit: "month", step: 1, date: "%F" }];
-                gantt.config.scales = [{ unit: "month" }]
+                gantt.config.scales = [{ unit: "month", date: "%F" }];
                 gantt.render();
             };
 

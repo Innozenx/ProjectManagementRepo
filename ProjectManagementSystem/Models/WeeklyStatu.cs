@@ -19,7 +19,9 @@ namespace ProjectManagementSystem.Models
         public string project_owner { get; set; }
         public string description { get; set; }
         public Nullable<System.DateTime> date_updated { get; set; }
-    
-        public virtual MilestoneTbl MilestoneTbl { get; set; }
+        public string attachment { get; set; }
+        public Nullable<int> main_id { get; set; }
+        public string user_id { get; set; }
+        public string milestone_name { get; set; }
     }
 }
