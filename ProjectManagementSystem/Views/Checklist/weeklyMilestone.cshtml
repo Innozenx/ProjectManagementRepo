@@ -364,7 +364,7 @@
                     <td style="vertical-align: top; width: 50%;">
                         <table style="width: 100%;">
                             <tr>
-                                <th>Project Title:</th>
+                                <th>Title:</th>
                                 <td>
                                     <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = data.Id, title = data.ProjectTitle, projectId = data.DetailsID })">
                                         @data.ProjectTitle
@@ -372,11 +372,11 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>Project Start:</th>
+                                <th>Start Date:</th>
                                 <td>@DateTime.Parse(data.ProjectStart).ToString("MMMM dd, yyyy")</td>
                             </tr>
                             <tr>
-                                <th>Project End:</th>
+                                <th>End Date:</th>
                                 <td>@DateTime.Parse(data.ProjectEnd).ToString("MMMM dd, yyyy")</td>
                             </tr>
                             <tr>
@@ -499,7 +499,6 @@
                         foreach (var log in Model.StatusLogs)
                         {
                             <div class="log-entry">
-                                <!-- Avatar and Username with Date and Time -->
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <div class="d-flex align-items-center">
                                         <div class="avatar-circle">

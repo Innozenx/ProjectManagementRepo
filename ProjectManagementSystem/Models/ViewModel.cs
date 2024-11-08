@@ -64,9 +64,6 @@ namespace ProjectManagementSystem.Models
                 return TotalTasks > 0 ? (int)((CompletedTasks / (double)TotalTasks) * 100) : 0;
             }
         }
-
-
-
         public IEnumerable<string> UniqueMilestoneNames { get; set; }
         public IEnumerable<ProjectMilestoneViewModel> ProjectsMilestones { get; set; }
         public List<string> MilestoneOrder { get; set; }
@@ -124,6 +121,7 @@ namespace ProjectManagementSystem.Models
         public int MainId { get; set; }
         public string Username { get; set; }
         public string MilestoneName { get; set; }
+        public List<HttpPostedFileBase> FileUploads { get; set; }
     }
 
 
@@ -245,6 +243,40 @@ namespace ProjectManagementSystem.Models
 
     }
 
+    public class MainTableViewModel
+    {
+        public int MainId { get; set; }
+        public string ProjectTitle { get; set; }
+        public string ProjectStart { get; set; }
+        public string ProjectEnd { get; set; }
+        public string Duration { get; set; }
+        public string Year { get; set; }
+        public string Division { get; set; }
+        public string Category { get; set; }
+        public string ProjectOwner { get; set; }
+        public List<MilestoneViewModel> Milestones { get; set; }
+    }
+
+    public class MilestoneViewModel
+    {
+        public string MilestoneName { get; set; }
+        public DateTime EndDate { get; set; }
+    }
+
+
+    public class DashboardManagementViewModel
+    {
+        public Dictionary<string, List<MainTableViewModel>> ProjectsByDivision { get; set; }
+        public List<string> UniqueMilestoneNames { get; set; }
+
+    }
+    public class ProjectWithMilestonesViewModel
+    {
+        public string Division { get; set; }
+        public List<MainTableViewModel> Projects { get; set; }
+        public List<string> UniqueMilestoneNames { get; set; }
+    }
+
 
     public class exportCSVHeader
     {
@@ -323,6 +355,7 @@ namespace ProjectManagementSystem.Models
         public string type_name { get; set; }
         public string type_description { get; set; }
     }
+
 }
 
 

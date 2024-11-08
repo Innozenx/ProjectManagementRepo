@@ -30,8 +30,57 @@ namespace ProjectManagementSystem.Controllers
             return View(checklist);
         }
 
+        public ActionResult DashboardManagement()
+        {
+            var allProjectsWithMilestones = db.MainTables
+                .GroupBy(p => p.division)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(p => new MainTableViewModel
+                    {
+                        MainId = p.main_id,
+                        ProjectTitle = p.project_title,
+                        ProjectStart = p.project_start.ToString(),
+                        ProjectEnd = p.project_end.ToString(),
+                        Duration = p.duration.ToString(),
+                        Year = p.year.ToString(),
+                        Division = p.division,
+                        Category = p.category,
+                        ProjectOwner = p.project_owner,
+                        Milestones = db.MilestoneTbls
+                            .Where(m => m.main_id == p.main_id)
+                            .Select(m => new MilestoneViewModel
+                            {
+                                MilestoneName = m.milestone_name,
+                        // EndDate = m.end_date
+                    }).OrderBy(m => m.MilestoneName)
+                            .ToList()
+                    }).ToList()
+                );
+            
+            var viewModel = new DashboardManagementViewModel
+            {
+                ProjectsByDivision = allProjectsWithMilestones,
+                UniqueMilestoneNames = allProjectsWithMilestones
+                    .SelectMany(d => d.Value.SelectMany(p => p.Milestones.Select(m => m.MilestoneName)))
+                    .Distinct()
+                    .ToList()
+            };
+
+            return View(viewModel);
+        }
+
+
         public ActionResult Dashboard()
         {
+            var userId = User.Identity.GetUserId();
+
+            if (User.IsInRole("PMS_Management"))
+            {
+                return RedirectToAction("DashboardManagement");
+            }
+
+
             var currentYear = DateTime.Now.Year;
             var calendar = CultureInfo.InvariantCulture.Calendar;
             var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
