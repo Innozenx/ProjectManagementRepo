@@ -31,6 +31,10 @@ namespace ProjectManagementSystem.Controllers
         {
             var message = "";
             var status = false;
+            var division = "";
+            var department = "";
+
+            CMIdentityDBEntities cmdb = new CMIdentityDBEntities();
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -40,12 +44,23 @@ namespace ProjectManagementSystem.Controllers
 
             try
             {
+                var tblJoin = (from netUser in cmdb.AspNetUsers
+                               join jobDesc in cmdb.Identity_JobDescription on netUser.JobId equals jobDesc.Id
+                               join idKey in cmdb.Identity_Keywords on jobDesc.DeptId equals idKey.Id
+                               select new { netUser.UserName, jobDesc.DeptId, jobDesc.DivisionId, idKey.Description }).Where(x => x.UserName == User.Identity.Name).ToList();
+
+                foreach (var item in tblJoin)
+                {
+                    division = cmdb.Identity_Keywords.Where(x => x.Id == item.DivisionId).Select(x => x.Description).Single();
+                    department = cmdb.Identity_Keywords.Where(x => x.Id == item.DeptId).Select(x => x.Description).Single();
+                }
+
                 ProjectRegister details = new ProjectRegister
                 {
                     ProjectName = name,
                     DateRegistered = DateTime.Now,
-                    Division = "ITS",
-                    RegisteredBy = "ME",
+                    Division = division,
+                    RegisteredBy = User.Identity.Name,
                     IsCompleted = false,
                     Unregistered = false, 
                     IsFileUploaded = false,
@@ -73,8 +88,8 @@ namespace ProjectManagementSystem.Controllers
                     action_level = 5,
                     action = "Project Registration",
                     description = details.ProjectName + " Project Registered by: " + details.RegisteredBy + " For Year: " + details.Year,
-                    department = "ITS",
-                    division = "SDD"
+                    department = department,
+                    division = division
                 };
 
                 db.Activity_Log.Add(logs);
@@ -105,9 +120,22 @@ namespace ProjectManagementSystem.Controllers
         //{
         //    var message = "";
         //    var status = false;
+        //    var division = "";
+        //    var department = "";
 
         //    try
         //    {
+        //        var tblJoin = (from netUser in cmdb.AspNetUsers
+        //                       join jobDesc in cmdb.Identity_JobDescription on netUser.JobId equals jobDesc.Id
+        //                       join idKey in cmdb.Identity_Keywords on jobDesc.DeptId equals idKey.Id
+        //                       select new { netUser.UserName, jobDesc.DeptId, jobDesc.DivisionId, idKey.Description }).Where(x => x.UserName == User.Identity.Name).ToList();
+
+        //        foreach (var item in tblJoin)
+        //        {
+        //            division = cmdb.Identity_Keywords.Where(x => x.Id == item.DivisionId).Select(x => x.Description).Single();
+        //            department = cmdb.Identity_Keywords.Where(x => x.Id == item.DeptId).Select(x => x.Description).Single();
+        //        }
+
         //        AdminList admin = new AdminList()
         //        {
         //            user_level = type,
@@ -124,8 +152,8 @@ namespace ProjectManagementSystem.Controllers
         //            action_level = 5,
         //            action = "User Registration",
         //            description = "User: " + email + "-" + type + " Registered by: " + User.Identity.Name,
-        //            department = "ITS",
-        //            division = "SDD"
+        //            department = department,
+        //            division = division
         //        };
 
         //        db.Activity_Log.Add(logs);

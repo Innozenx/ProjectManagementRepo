@@ -87,6 +87,7 @@
           <Property Name="color_status" Type="nvarchar" MaxLength="20" />
           <Property Name="isUnscheduled" Type="bit" />
           <Property Name="isCompleted" Type="bit" />
+          <Property Name="key_person" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -340,6 +341,7 @@
           <Property Name="isUnscheduled" Type="Boolean" />
           <Property Name="isCompleted" Type="Boolean" />
           <NavigationProperty Name="MilestoneTbl" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="DetailsTbl" ToRole="MilestoneTbl" />
+          <Property Name="key_person" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -542,6 +544,7 @@
           <EntitySetMapping Name="DetailsTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.DetailsTbl">
               <MappingFragment StoreEntitySet="DetailsTbl">
+                <ScalarProperty Name="key_person" ColumnName="key_person" />
                 <ScalarProperty Name="isCompleted" ColumnName="isCompleted" />
                 <ScalarProperty Name="isUnscheduled" ColumnName="isUnscheduled" />
                 <ScalarProperty Name="color_status" ColumnName="color_status" />

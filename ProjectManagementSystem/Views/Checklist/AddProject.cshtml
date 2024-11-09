@@ -1,4 +1,4 @@
-﻿@model List<ProjectManagementSystem.Models.RegistrationTbl>
+﻿@model ProjectManagementSystem.Models.Onboarding 
 @using System;
 
 @{
@@ -109,7 +109,7 @@
                 <label for="projectTitle">Project name</label>
                 <select class="form-control" id="projectTitle" name="projectTitle" required>
                     <option value="" disabled selected>Select project name</option>
-                    @foreach (var project in Model)
+                    @foreach (var project in Model.registered_project)
                     {
                         <option value="@project.registration_id">@project.project_name</option>
                     }
@@ -121,6 +121,19 @@
                 <label for="csv-file-input">Upload</label>
                 <input type="file" id="csv-file-input" accept=".csv" class="form-control-file" required />
                 <small class="form-text">Accepted format: .csv</small>
+            </div>
+
+            <!-- Members -->
+            <div class="form-group">
+                <label for="csv-file-input">Members</label>
+                <select>
+                    <option value="" disabled selected>Select Members</option>
+                    @foreach (var projectUsers in Model.users)
+                    {
+                        <option value="@projectUsers.FirstName">@projectUsers.FirstName</option>
+                    }
+                </select>
+                <button>Add</button>
             </div>
 
             <!-- Submit Button -->

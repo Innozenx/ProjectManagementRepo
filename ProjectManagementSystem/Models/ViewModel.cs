@@ -356,6 +356,12 @@ namespace ProjectManagementSystem.Models
         public string type_description { get; set; }
     }
 
+    public class Onboarding
+    {
+        public List<RegistrationTbl> registered_project { get; set; }
+        public List<AspNetUser> users { get; set; }
+    }
+
 }
 
 

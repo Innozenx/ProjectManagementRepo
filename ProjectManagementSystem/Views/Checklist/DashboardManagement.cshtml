@@ -166,7 +166,10 @@
                                     {
                                         <tr>
                                             <td>
-                                                <a href="@Url.Action("ProjectDetails", "Projects", new { id = project.MainId })" class="text-decoration-none text-primary">
+                                                @*<a href="@Url.Action("ProjectDetails", "Projects", new { id = project.MainId })" class="text-decoration-none text-primary">
+            @project.ProjectTitle
+        </a>*@
+                                                <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId })" class="text-decoration-none text-primary">
                                                     @project.ProjectTitle
                                                 </a>
                                             </td>

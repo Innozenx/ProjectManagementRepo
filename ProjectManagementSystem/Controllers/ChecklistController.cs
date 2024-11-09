@@ -18,6 +18,7 @@ namespace ProjectManagementSystem.Controllers
     public class ChecklistController : Controller
     {
         ProjectManagementDBEntities db = new ProjectManagementDBEntities();
+        CMIdentityDBEntities cmdb = new CMIdentityDBEntities();
 
         public ActionResult WeeklyChecklist()
         {
@@ -385,7 +386,8 @@ namespace ProjectManagementSystem.Controllers
                 parent = x.parent,
                 color = GetTaskColor(x),
                 unscheduled = x.isUnscheduled,
-                completed = x.isCompleted
+                completed = x.isCompleted,
+                key_person = x.key_person
             }).ToArray();
 
             var jsonData = new
@@ -417,8 +419,14 @@ namespace ProjectManagementSystem.Controllers
         [CustomAuthorize(Roles = "PMS_Developer")]
         public ActionResult AddProject()
         {
-            List<RegistrationTbl> listProjects = db.RegistrationTbls.Where(x => x.is_file_uploaded == false).ToList();
-            return View(listProjects);
+            var onboardingDetails = new Onboarding()
+            {
+                registered_project = db.RegistrationTbls.Where(x => x.is_file_uploaded == true && x.unregistered == false && x.is_completed == false).ToList(),
+                users = cmdb.AspNetUsers.ToList()
+
+            };
+
+            return View(onboardingDetails);
         }
 
         [HttpPost]
@@ -430,6 +438,8 @@ namespace ProjectManagementSystem.Controllers
             var UserId = User.Identity.GetUserId();
             int projectId = Int32.Parse(System.Web.HttpContext.Current.Request.Params.GetValues(0)[0]);
             var project = db.RegistrationTbls.Where(x => x.registration_id == projectId).Single();
+            var division = "";
+            var department = "";
 
             if (attachment == null || attachment.ContentLength <= 0)
             {
@@ -438,6 +448,17 @@ namespace ProjectManagementSystem.Controllers
 
             try
             {
+                var tblJoin = (from netUser in cmdb.AspNetUsers
+                               join jobDesc in cmdb.Identity_JobDescription on netUser.JobId equals jobDesc.Id
+                               join idKey in cmdb.Identity_Keywords on jobDesc.DeptId equals idKey.Id
+                               select new { netUser.UserName, jobDesc.DeptId, jobDesc.DivisionId, idKey.Description }).Where(x => x.UserName == User.Identity.Name).ToList();
+
+                foreach (var item in tblJoin)
+                {
+                    division = cmdb.Identity_Keywords.Where(x => x.Id == item.DivisionId).Select(x => x.Description).Single();
+                    department = cmdb.Identity_Keywords.Where(x => x.Id == item.DeptId).Select(x => x.Description).Single();
+                }
+
                 using (var reader = new StreamReader(attachment.InputStream))
                 using (var csv = new CsvReader(reader, new CsvHelper.Configuration.CsvConfiguration(CultureInfo.CurrentCulture)))
                 {
@@ -588,8 +609,8 @@ namespace ProjectManagementSystem.Controllers
                                     action_level = 5,
                                     action = "Project Upload",
                                     description = getProject.ProjectTitle + " Project Uploaded by: " + getProject.projectOwner + " For Year: " + getProject.ProjectYear,
-                                    department = "ITS",
-                                    division = "SDD"
+                                    department = department,
+                                    division = division
                                 };
 
                                 db.Activity_Log.Add(logs);

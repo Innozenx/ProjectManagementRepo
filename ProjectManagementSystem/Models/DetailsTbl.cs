@@ -30,6 +30,7 @@ namespace ProjectManagementSystem.Models
         public string color_status { get; set; }
         public Nullable<bool> isUnscheduled { get; set; }
         public Nullable<bool> isCompleted { get; set; }
+        public string key_person { get; set; }
     
         public virtual MilestoneTbl MilestoneTbl { get; set; }
     }
