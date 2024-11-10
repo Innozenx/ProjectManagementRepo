@@ -1,4 +1,4 @@
-﻿@model ProjectManagementSystem.Models.Onboarding 
+﻿@model ProjectManagementSystem.Models.Onboarding
 @using System;
 
 @{
@@ -8,179 +8,439 @@
 
 <head>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <style>
+</head>
+<style>
     body {
         font-family: 'Poppins', sans-serif;
         background-color: #f4f6f9;
         margin: 0;
         padding: 0;
     }
+
     .content {
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
         min-height: 100vh;
         background-color: #f4f6f9;
     }
 
     .form-container {
-        width: 500px; 
-        padding: 60px 30px; 
+        width: 1000px;
+        padding: 40px;
+        margin-top: 50px;
         background-color: white;
         border-radius: 12px;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-header {
         text-align: center;
     }
 
-    .form-container h3 {
-        font-size: 1.5rem;
-        color: #66339A; 
+    .form-header h3 {
+        font-size: 1.8rem;
+        color: #66339A;
         margin-bottom: 10px;
     }
 
-    .form-container p {
+    .form-header p {
+        font-size: 1rem;
         color: #666;
-        margin-bottom: 20px;
-        font-size: 0.9rem;
+    }
+
+    .form-content {
+        display: flex;
+        gap: 20px;
+    }
+
+    .form-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
 
     .form-group label {
-        font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
+        font-weight: 600;
         color: #333;
-        display: block;
-        text-align: left;
-        margin-bottom: 5px;
-    }
-    .form-control {
-        width: 100% !important; 
-        box-sizing: border-box; 
-    }
-    .form-control, .form-control-file {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 1rem;
-        margin-bottom: 15px;
-    }
-    .form-container select.form-control {
-        width: 100% !important; 
-        max-width: 100%; 
-        box-sizing: border-box; 
     }
 
-        .btn-primary {
-            background-color: #470A67;
-            border: none;
-            padding: 10px 20px;
-            color: #fff;
-            /*font-weight: bold;*/
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            width: 100%;
-        }
+    .form-control,
+    .form-control-file,
+    .multi-select-dropdown {
+        width: 100%;
+        height: 42px;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .btn-primary {
+        background-color: #470A67;
+        color: #fff;
+        font-size: 0.9rem;
+        padding: 8px 50px;
+        width: auto;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        text-align: center;
+    }
 
     .btn-primary:hover {
         background-color: #2d5bb8;
     }
 
     .form-text {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         color: #888;
-        margin-top: -10px;
-        margin-bottom: 15px;
     }
-    </style>
-</head>
 
-<!-- Main content -->
+    .multi-select-dropdown {
+        position: relative;
+        background: #fff;
+        cursor: pointer;
+    }
+
+    .multi-select-dropdown .dropdown-header {
+        font-size: 0.9rem;
+        color: #333;
+        margin-top: 0;
+    }
+
+    .multi-select-dropdown .dropdown-options {
+        display: none;
+        position: absolute;
+        z-index: 10;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #ccc;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 0 0 5px 5px;
+    }
+
+    .multi-select-dropdown.open .dropdown-options {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 8px;
+        display: flex;
+        align-items: center;
+    }
+
+    .dropdown-item label {
+        font-size: 0.85rem;
+        font-weight: 400;
+        color: #333;
+        margin-left: 5px;
+    }
+
+    .dropdown-item input {
+        margin-right: 10px;
+    }
+
+    .selected-members-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px;
+        background: #f4f6f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        min-height: 50px;
+        max-height: 150px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #470A67 #f4f6f9;
+    }
+
+    .selected-members-chips::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .selected-members-chips::-webkit-scrollbar-thumb {
+        background-color: #470A67;
+    }
+
+    .selected-members-chips::-webkit-scrollbar-track {
+        background: #f4f6f9;
+    }
+
+    .selected-members-chips .chip {
+        background-color: #66339A;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        font-size: 0.85rem;
+    }
+
+    .selected-members-chips .chip .remove-chip {
+        margin-left: 10px;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .selected-members-chips .chip .remove-chip:hover {
+        color: #e63946;
+    }
+
+    .form-control:hover,
+    .form-control-file:hover,
+    .dropdown-search:hover {
+        border-color: #470A67;
+        background-color: #f0f7ff;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-control-file:focus,
+    .dropdown-search:focus {
+        border-color: #2d5bb8;
+        background-color: #f0f7ff;
+        outline: none;
+    }
+
+    .dropdown-search {
+        width: 100%;
+        height: 42px;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        background-color: #fff;
+        color: #333;
+    }
+
+    .dropdown-search:: placeholder {
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .dropdown-search:hover {
+        border-color: #470A67;
+        background-color: #f9f4ff;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .dropdown-search:focus {
+        outline: none;
+        border-color: #2d5bb8;
+        background-color: #f0f7ff;
+    }
+
+    .multi-select-dropdown .dropdown-options {
+        display: none;
+        position: absolute;
+        z-index: 10;
+        width: 100%;
+        max-height: 250px; 
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #ccc;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 0 0 5px 5px;
+        margin-top: 5px;
+        padding: 10px; 
+    }
+
+    .multi-select-dropdown.open .dropdown-options {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 8px 5px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f4f6f9; 
+        border-radius: 5px;
+    }
+
+    .dropdown-item label {
+        font-size: 0.9rem;
+        font-weight: 400;
+        color: #333;
+        margin-left: 5px;
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .dropdown-item input {
+        margin-right: 10px;
+    }
+    .dropdown-item label {
+        font-size: 0.9rem;
+        font-weight: 400 !important; 
+        color: #333; 
+        margin-left: 5px;
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+    }
+
+</style>
+
 <div class="content">
     <div class="form-container">
-        <h3>Create a new project</h3>
-        <p>Tell us about your project</p>
+        <div class="form-header">
+            <h3>Create a New Project</h3>
+            <p>Fill in the details and select members for the project</p>
+        </div>
 
-        <!-- form start -->
         <form id="onboardingForm" name="onboardingForm" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
-            <!-- project title dropdown -->
-            <div class="form-group">
-                <label for="projectTitle">Project name</label>
-                <select class="form-control" id="projectTitle" name="projectTitle" required>
-                    <option value="" disabled selected>Select project name</option>
-                    @foreach (var project in Model.registered_project)
-                    {
-                        <option value="@project.registration_id">@project.project_name</option>
-                    }
-                </select>
+            <div class="form-content">
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="projectTitle">Project Name</label>
+                        <select class="form-control" id="projectTitle" name="projectTitle" required>
+                            <option value="" disabled selected>Select project name</option>
+                            @foreach (var project in Model.registered_project)
+                            {
+                                <option value="@project.registration_id">@project.project_name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="csv-file-input">Upload Project Schedule</label>
+                        <input type="file" id="csv-file-input" accept=".csv" class="form-control-file" required />
+                        <small class="form-text">Accepted format: .csv</small>
+                    </div>
+                </div>
+
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="multiSelectDropdown">Invite Teammates (Optional)</label>
+                        <div id="multiSelectDropdown" class="multi-select-dropdown">
+                            <div class="dropdown-header" onclick="toggleDropdown()">Select Members</div>
+                            <div class="dropdown-options">
+                                <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" />
+                                @foreach (var user in Model.users)
+                                {
+                                    <div class="dropdown-item">
+                                        <input type="checkbox" id="member_@user.Id" value="@user.Id" />
+                                        <label for="member_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Selected Teammates</label>
+                        <div id="selectedMembersChips" class="selected-members-chips">
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- file upload -->
-            <div class="form-group">
-                <label for="csv-file-input">Upload</label>
-                <input type="file" id="csv-file-input" accept=".csv" class="form-control-file" required />
-                <small class="form-text">Accepted format: .csv</small>
+            <div class="button-container">
+                <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Submit Project</button>
             </div>
-
-            <!-- Members -->
-            <div class="form-group">
-                <label for="csv-file-input">Members</label>
-                <select>
-                    <option value="" disabled selected>Select Members</option>
-                    @foreach (var projectUsers in Model.users)
-                    {
-                        <option value="@projectUsers.FirstName">@projectUsers.FirstName</option>
-                    }
-                </select>
-                <button>Add</button>
-            </div>
-
-            <!-- Submit Button -->
-            <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Upload project schedule</button>
         </form>
     </div>
 </div>
 
-<!-- Add Project Form Script -->
 @section scripts {
-    <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
-
     <script>
-        function AddProject() {
-            var fileUpload = document.getElementById("csv-file-input");
-            var projectTitle = $('#projectTitle').val();
-
-            if (!fileUpload.value) {
-                alert("Please upload a CSV file.");
-                return;
-            }
-
-            var formData = new FormData();
-            var file = $("#csv-file-input").get(0).files;
-
-            if (file.length > 0) {
-                formData.append("pmcsv", file[0]);
-                formData.append("projectTitle", projectTitle);
-
-                $.ajax({
-                    url: "@Url.Action("AddProjectUpload", "Checklist")",
-                    type: "POST",
-                    processData: false,
-                    contentType: false,
-                    data: formData,
-                    success: function (res) {
-                        if (res.status) {
-                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'success' });
-                            $("#csv-file-input").val("");
-                        } else {
-                            $.notify(res.message, { position: "bottom center", showAnimation: 'slideDown', className: 'error' });
-                        }
-                    }
-                });
-            } else {
-                alert("No file selected.");
-            }
+        function toggleDropdown() {
+            const dropdown = document.getElementById('multiSelectDropdown');
+            dropdown.classList.toggle('open');
         }
+
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('multiSelectDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        function filterMembers() {
+            const searchInput = document.getElementById('searchMembers').value.toLowerCase();
+            const items = document.querySelectorAll('.multi-select-dropdown .dropdown-item');
+
+            items.forEach(item => {
+                const text = item.querySelector('label').innerText.toLowerCase();
+                if (text.includes(searchInput)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function updateSelectedChips() {
+            const checkboxes = document.querySelectorAll('.multi-select-dropdown .dropdown-options input[type="checkbox"]');
+            const chipsContainer = document.getElementById('selectedMembersChips');
+
+            chipsContainer.innerHTML = '';
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const memberId = checkbox.value;
+                    const memberName = checkbox.nextElementSibling.textContent;
+
+                    const chip = document.createElement('div');
+                    chip.className = 'chip';
+                    chip.innerHTML = `
+                        ${memberName}
+                        <button class="remove-chip" onclick="removeChip('${memberId}')">&times;</button>
+                    `;
+
+                    chipsContainer.appendChild(chip);
+                }
+            });
+        }
+
+        function removeChip(memberId) {
+            const checkbox = document.querySelector(`#member_${memberId}`);
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+            updateSelectedChips();
+        }
+
+        document.addEventListener('change', function (e) {
+            if (e.target.matches('.multi-select-dropdown .dropdown-options input[type="checkbox"]')) {
+                updateSelectedChips();
+            }
+        });
     </script>
 }
