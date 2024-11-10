@@ -12,6 +12,7 @@ using CsvHelper.TypeConversion;
 using System.Diagnostics;
 using Microsoft.AspNet.Identity;
 using ProjectManagementSystem.CustomAttributes;
+using System.Security.Claims;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -762,7 +763,53 @@ namespace ProjectManagementSystem.Controllers
             return View(model);
         }
 
- 
+        //------------------------Activity Log Viewing----------------------------
+        public ActionResult ActivityView(string user)
+        {
+            var division = "";
+            var department = "";
+            var userClaims = User.Identity as System.Security.Claims.ClaimsIdentity;
+            var role = userClaims.Claims.Where(x => x.Type == ClaimTypes.Role).ToList();
+            List<string> userRole = new List<string>();
+            List<Activity_Log> logList = new List<Activity_Log>();
+
+            var tblJoin = (from netUser in cmdb.AspNetUsers
+                           join jobDesc in cmdb.Identity_JobDescription on netUser.JobId equals jobDesc.Id
+                           join idKey in cmdb.Identity_Keywords on jobDesc.DeptId equals idKey.Id
+                           select new { netUser.UserName, jobDesc.DeptId, jobDesc.DivisionId, idKey.Description }).Where(x => x.UserName == User.Identity.Name).ToList();
+
+            foreach (var item in tblJoin)
+            {
+                division = cmdb.Identity_Keywords.Where(x => x.Id == item.DivisionId).Select(x => x.Description).Single();
+                department = cmdb.Identity_Keywords.Where(x => x.Id == item.DeptId).Select(x => x.Description).Single();
+            }
+
+            foreach (var item in role)
+            {
+                if (item.Value.ToString().Contains("PMS"))
+                {
+                    userRole.Add(item.Value);
+                }
+            };
+            
+
+            logList = db.Activity_Log.Where(x => x.action_level <= 5).ToList();
+
+            ActivityLogViewModel activity_log = new ActivityLogViewModel();
+            foreach(var item in logList)
+            {
+                activity_log.Username = item.username;
+                activity_log.DatetimePerformed = item.datetime_performed;
+                activity_log.ActionLevel = item.action_level;
+                activity_log.ActionLevel = item.action_level;
+                activity_log.Action = item.action;
+                activity_log.Description = item.description;
+                activity_log.Department = item.department;
+                activity_log.Division = item.division;
+            }
+
+            return View(activity_log);
+        }
 
 
 

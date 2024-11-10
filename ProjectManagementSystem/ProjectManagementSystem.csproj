@@ -4993,6 +4993,8 @@
       <DependentUpon>CMIdentity.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\dataTables.dataTables.min.css" />
+    <Content Include="Scripts\dataTables.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -5065,6 +5067,7 @@
     <Content Include="Views\Error\AccessDenied.cshtml" />
     <Content Include="Views\Admin\RegisterUserView.cshtml" />
     <Content Include="Views\Checklist\DashboardManagement.cshtml" />
+    <Content Include="Views\Checklist\ActivityView.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

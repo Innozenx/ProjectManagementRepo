@@ -36,22 +36,29 @@
                     </ul>
                 </li>
 
+                <li class="nav-item">
+                    <a href="@Url.Action("ActivityView", "Checklist", new { user = User.Identity.Name.ToString() })" class="nav-link">
+                        <i class="nav-icon fas fa-list"></i>
+                        <p>Activity Logs</p>
+                    </a>
+                </li>
+
                 <!-- Admin Section -->
                 @*<li class="nav-header">Admin</li>
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-user-tie"></i>
+                <p>Admin <i class="right fas fa-angle-left"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-user-tie"></i>
-                        <p>Admin <i class="right fas fa-angle-left"></i></p>
+                    <a href="@Url.Action("Register", "Admin")" class="nav-link">
+                        <i class="far fa-edit nav-icon"></i>
+                        <p>Project Registration</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="@Url.Action("Register", "Admin")" class="nav-link">
-                                <i class="far fa-edit nav-icon"></i>
-                                <p>Project Registration</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>*@
+                </li>
+            </ul>
+        </li>*@
 
                 <!-- Report Section -->
                 <li class="nav-header">Report</li>
@@ -78,19 +85,19 @@
 
                 <!-- Logout -->
                 @*<li class="nav-item">
-                    <a href="@Url.Action("Logout", "Account")" class="nav-link">
-                        <i class="nav-icon fas fa-power-off"></i>
-                        <p>Log out</p>
-                    </a>
-                </li>*@
+            <a href="@Url.Action("Logout", "Account")" class="nav-link">
+                <i class="nav-icon fas fa-power-off"></i>
+                <p>Log out</p>
+            </a>
+        </li>*@
 
                 <!-- Invite Teammates Section at the Bottom -->
                 @*<li class="nav-item mt-4">
-                    <a href="@Url.Action("Invite", "Teammates")" class="nav-link invite-link">
-                        <i class="nav-icon fas fa-user-plus"></i>
-                        <p>Invite Teammates</p>
-                    </a>
-                </li>*@
+            <a href="@Url.Action("Invite", "Teammates")" class="nav-link invite-link">
+                <i class="nav-icon fas fa-user-plus"></i>
+                <p>Invite Teammates</p>
+            </a>
+        </li>*@
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

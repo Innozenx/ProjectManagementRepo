@@ -154,7 +154,7 @@ namespace ProjectManagementSystem.Models
         public int LogId { get; set; }
         public string Username { get; set; }
         public DateTime? DatetimePerformed { get; set; }
-        public string ActionLevel { get; set; }
+        public int? ActionLevel { get; set; }
         public string Action { get; set; }
         public string Description { get; set; }
         public string Department { get; set; }
