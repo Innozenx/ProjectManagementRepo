@@ -1,0 +1,277 @@
+﻿@model ProjectManagementSystem.Models.Onboarding
+@{
+    ViewBag.Title = "Invite Teammates";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="content">
+    <div class="form-container">
+        <div class="form-header">
+            <h3>Invite your Teammates</h3>
+            <p>Select team members to join your project</p>
+        </div>
+
+        <div class="form-content">
+            <div class="form-column">
+                <div class="form-group">
+                    <label for="multiSelectDropdown">Teammates</label>
+                    <div id="multiSelectDropdown" class="multi-select-dropdown">
+                        <div class="dropdown-header" onclick="toggleDropdown()">Select Members</div>
+                        <div class="dropdown-options">
+                            <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" />
+                            @foreach (var user in Model.Users)
+                            {
+                                <div class="dropdown-item">
+                                    <input type="checkbox" id="member_@user.Id" value="@user.Id" />
+                                    <label for="member_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Selected Teammates</label>
+                    <div id="selectedMembersChips" class="selected-members-chips">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button id="inviteButton" type="button" class="btn-primary" onclick="submitInvitations()">Send Invitations</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f6f9;
+    }
+
+    .content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .form-container {
+        width: 600px;
+        padding: 40px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header {
+        text-align: center;
+    }
+
+        .form-header h3 {
+            font-size: 1.8rem;
+            color: #66339A;
+        }
+
+        .form-header p {
+            font-size: 1rem;
+            color: #666;
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        background-color: #470A67;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #2d5bb8;
+        }
+
+    .multi-select-dropdown {
+        position: relative;
+        background: #fff;
+        cursor: pointer;
+    }
+
+        .multi-select-dropdown .dropdown-header {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .multi-select-dropdown .dropdown-options {
+            display: none;
+            position: absolute;
+            z-index: 10;
+            width: 100%;
+            max-height: 250px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 5px 5px;
+            margin-top: 5px;
+            padding: 10px;
+        }
+
+        .multi-select-dropdown.open .dropdown-options {
+            display: block;
+        }
+
+    .dropdown-item {
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .selected-members-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px;
+        background: #f4f6f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        min-height: 50px;
+        max-height: 150px;
+        overflow-y: auto;
+    }
+
+        .selected-members-chips .chip {
+            background-color: #66339A;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+    .selected-members-chips .chip .remove-chip {
+        margin-left: 10px;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        color: white;
+    }
+
+    .role-dropdown {
+        margin-left: 10px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 0.85rem;
+    }
+
+    .dropdown-search {
+        width: 100%;
+        padding: 8px;
+        font-size: 0.9rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        background-color: #fff;
+        color: #333;
+    }
+
+    .dropdown-search:focus {
+        outline: none;
+        border-color: #470A67;
+        background-color: #f9f4ff;
+    }
+</style>
+
+@section scripts {
+    <script>
+        function toggleDropdown() {
+            const dropdown = document.getElementById('multiSelectDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('multiSelectDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        function filterMembers() {
+            const searchInput = document.getElementById('searchMembers').value.toLowerCase();
+            const items = document.querySelectorAll('.multi-select-dropdown .dropdown-item');
+
+            items.forEach(item => {
+                const text = item.querySelector('label').innerText.toLowerCase();
+                item.style.display = text.includes(searchInput) ? '' : 'none';
+            });
+        }
+
+        function updateSelectedChips() {
+            const checkboxes = document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]');
+            const chipsContainer = document.getElementById('selectedMembersChips');
+            chipsContainer.innerHTML = '';
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const chip = document.createElement('div');
+                    chip.className = 'chip';
+
+                    const roleDropdown = `
+                        <select class="role-dropdown" id="role_${checkbox.value}">
+                            <option value="Viewer">Viewer</option>
+                            <option value="Editor">Editor</option>
+                        </select>
+                    `;
+
+                    chip.innerHTML = `
+                        ${checkbox.nextElementSibling.textContent}
+                        ${roleDropdown}
+                        <button class="remove-chip" onclick="removeChip('${checkbox.id}')">&times;</button>
+                    `;
+
+                    chipsContainer.appendChild(chip);
+                }
+            });
+        }
+
+        function removeChip(memberId) {
+            const checkbox = document.getElementById(memberId);
+            checkbox.checked = false;
+            updateSelectedChips();
+        }
+
+        function submitInvitations() {
+            const selectedMembers = Array.from(document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked'))
+                .map(checkbox => {
+                    const role = document.getElementById(`role_${checkbox.value}`).value;
+                    return {
+                        id: checkbox.value,
+                        role: role
+                    };
+                });
+
+            console.log('Invitations:', selectedMembers);
+            alert('Invitations sent successfully!');
+        }
+
+        document.addEventListener('change', function (event) {
+            if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
+                updateSelectedChips();
+            }
+        });
+    </script>
+}

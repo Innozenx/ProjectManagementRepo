@@ -360,8 +360,16 @@ namespace ProjectManagementSystem.Models
     {
         public List<RegistrationTbl> registered_project { get; set; }
         public List<AspNetUser> users { get; set; }
+        public List<UserModel> Users { get; set; }
     }
 
+    public class UserModel
+    {
+        public string Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+    }
 }
 
 

@@ -6,6 +6,7 @@
 
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.dhtmlx.com/windows/edge/dhtmlxwindows.css">
 
 </head>
 
@@ -348,6 +349,30 @@
     .attachment-link:hover {
         text-decoration: underline;
     }
+    .maximized {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1000;
+        background-color: white;
+        padding: 0;
+    }
+
+    .maximized #gantt_here {
+        height: calc(100vh - 50px); 
+    }
+
+    .fa-maximize {
+        color: #66399A;
+    }
+    .icon img {
+        width: 80px;
+        margin-bottom: 20px;
+    }
+    
+
 </style>
 
 
@@ -415,7 +440,7 @@
 <div class="action-tiles-container">
     <div class="action-tile">
         <button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title">
-            <i class="fas fa-edit"></i> Update Status
+            <i class="fas fa-edit"></i> Status
         </button>
     </div>
     <div class="action-tile">
@@ -425,12 +450,15 @@
     </div>
 </div>
 
+
 <!-- Update Status Modal -->
 <div class="modal fade" id="updateMilestoneModal" tabindex="-1" role="dialog" aria-labelledby="updateMilestoneLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content shadow-lg rounded">
             <div class="modal-header bg-white">
-                <h5 class="modal-title" id="updateMilestoneLabel">Update Status</h5>
+                <h5 class="modal-title" id="updateMilestoneLabel">
+                    Status
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -535,7 +563,10 @@
                     }
                     else
                     {
-                        <p>No activity logs available.</p>
+                        <div class="icon">
+                            <img src="~/AdminLTE-3.2.0/dist/img/ek.png" alt="No Logs">
+                        </div>
+                        <p>There aren't any status updates in this project yet.</p>
                     }
                 </div>
             </div>
@@ -571,78 +602,95 @@
                 <button id="week-view" class="gantt-view-btn">Week</button>
                 <button id="month-view" class="gantt-view-btn">Month</button>
             </div>
-            <div class="gantt-date-controls">
+            @*<div class="gantt-date-controls">
                 <button id="prev-date" class="gantt-nav-btn">«</button>
                 <span id="date-range"></span>
                 <button id="today-btn" class="gantt-today-btn">Today</button>
                 <button id="next-date" class="gantt-nav-btn">»</button>
+            </div>*@
+
+            <div>
+                <button id="maximize-btn" class="gantt-nav-btn"><i class="fa-solid fa-maximize"></i></button>
+                <button id="minimize-btn" class="gantt-nav-btn" style="display: none;">Minimize</button>
             </div>
         </div>
         <div id="gantt_here" style="width:100%; height:60vh;"></div>
     </div>
 </div>
 
+
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
 
     <script>
-        $(document).ready(function () {
- 
-            //$('.action-tile[data-target="#activityLogModal"]').on('click', function () {
-            //    console.log("Activity button clicked");
-            //});
-
-            //$('#activityLogModal').on('show.bs.modal', function () {
-            //    loadActivityLogs();
-            //});
-        });
-
         function loadActivityLogs() {
             $('#activityLogModal').modal('show');
-
         }
-
-        function validateAndSubmit() {
-            const milestone = document.getElementById("selectedMilestone").value;
-            const statusUpdate = document.getElementById("statusUpdate").value;
-            const validationMessage = document.getElementById("validationMessage");
-
-            if (!milestone || !statusUpdate.trim()) {
-                validationMessage.style.display = "block";
-            } else {
-                validationMessage.style.display = "none";
-                document.getElementById("updateStatusForm").submit();
-            }
-        }
-
-        function viewAttachment(path) {
-            console.log("Opening attachment at path:", path); 
-            var iframe = document.getElementById('attachmentFrame');
-            iframe.src = '/Uploads/testfile.pdf';
-            $('#attachmentModal').modal('show');
-        }
-
-
         document.addEventListener("DOMContentLoaded", function () {
             gantt.config.xml_date = "%Y-%m-%d %H:%i";
             gantt.config.readonly = true;
             gantt.config.columns = [
-                { name: "key_person", label: "Key Person", align:"center", width: 90},
+                { name: "key_person", label: "Key Person", align: "center", width: 90 },
                 { name: "text", label: "Milestone", tree: true, width: 200 },
                 { name: "duration", label: "Duration", align: "center", width: 70 },
                 { name: "start_date", label: "Start", align: "center", width: 90 },
                 { name: "end_date", label: "Finish", align: "center", width: 90 }
             ];
             gantt.config.scales = [
-                { unit: "day", step: 1, date: "%d %M" },
-                { unit: "week", date: "%F %Y" }
+                { unit: "week", date: "Week %W" } 
             ];
 
+            gantt.templates.task_text = function () {
+                return ""; // no text inside the task bars
+            };
+
             gantt.init("gantt_here");
-            gantt.load(`/Checklist/getGanttData?id=${@TempData["entry"]}`, "json");
+            gantt.load(`/Checklist/getGanttData?id=${"@TempData["entry"]"}`, "json");
+
+            const maximizeBtn = document.getElementById("maximize-btn");
+            maximizeBtn.addEventListener("click", () => {
+                const ganttDataId = "@TempData["entry"]";
+                const projectTitle = document.querySelector("#projectDetails a").textContent.trim();
+                const currentGanttId = gantt.config.api_id || ganttDataId;
+
+                const newTabUrl = `/Checklist/MaximizedGantt?id=${ganttDataId}&title=${encodeURIComponent(projectTitle)}`;
+                const newTab = window.open(newTabUrl, `_blank`);
+                newTab.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <title>${projectTitle} - Gantt Chart</title>
+                        <link rel="stylesheet" href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css">
+                    </head>
+                    <body style="margin: 0; padding: 0;">
+                        <div id="gantt_here" style="width: 100vw; height: 100vh;"></div>
+                        <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"><\/script>
+                        <script>
+                            gantt.config.xml_date = "%Y-%m-%d %H:%i";
+                            gantt.config.readonly = true;
+                            gantt.config.columns = [
+                                { name: "key_person", label: "Key Person", align: "center", width: 90 },
+                                { name: "text", label: "Milestone", tree: true, width: 200 },
+                                { name: "duration", label: "Duration", align: "center", width: 70 },
+                                { name: "start_date", label: "Start", align: "center", width: 90 },
+                                { name: "end_date", label: "Finish", align: "center", width: 90 }
+                            ];
+                            gantt.config.scales = [
+                                { unit: "day", step: 1, date: "%d %M" },
+                                { unit: "week", date: "Week %W" }
+                            ];
+                            gantt.templates.task_text = function () {
+                                return ""; // No text inside the task bars
+                            };
+                            gantt.init("gantt_here");
+                            gantt.load("/Checklist/getGanttData?id=${currentGanttId}", "json");
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+            });
 
             const updateDateRangeDisplay = () => {
                 const dateRange = gantt.getState().min_date;
@@ -651,53 +699,54 @@
                     gantt.templates.date_range(dateRange, endDate);
             };
 
-            document.querySelectorAll('.gantt-view-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    document.querySelectorAll('.gantt-view-btn').forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-
-                    switch (this.id.split('-')[0]) {
-                        case 'day': setDayView(); break;
-                        case 'week': setWeekView(); break;
-                        case 'month': setMonthView(); break;
-                    }
-                    updateDateRangeDisplay();
-                });
-            });
-
-            gantt.templates.date_range = (start, end) => {
-                return gantt.templates.date_to_str("%d %M %Y")(start) + " - " + gantt.templates.date_to_str("%d %M %Y")(end);
-            };
-
-            document.getElementById("prev-date").addEventListener("click", () => {
-                gantt.navigateLeft();
-                updateDateRangeDisplay();
-            });
-            document.getElementById("next-date").addEventListener("click", () => {
-                gantt.navigateRight();
-                updateDateRangeDisplay();
-            });
-            document.getElementById("today-btn").addEventListener("click", () => {
-                gantt.showDate(new Date());
-                updateDateRangeDisplay();
-            });
-
             const setDayView = () => {
-                gantt.config.scales = [{ unit: "day", step: 1, date: "%d" }];
+                gantt.config.scales = [
+                    { unit: "day", step: 1, date: "%d" },
+                    { unit: "week", date: "Week %W" }
+                ];
                 gantt.render();
             };
 
             const setWeekView = () => {
-                gantt.config.scales = [{ unit: "week", date: "Week %W" }];
+                gantt.config.scales = [
+                    { unit: "week", step: 1, date: "Week %W" },
+                    { unit: "month", step: 1, date: "%F %Y" }
+                ];
                 gantt.render();
             };
 
             const setMonthView = () => {
-                gantt.config.scales = [{ unit: "month", date: "%F" }];
+                gantt.config.scales = [
+                    { unit: "month", step: 1, date: "%F %Y" },
+                    { unit: "year", step: 1, date: "%Y" }
+                ];
                 gantt.render();
             };
 
+            document.querySelector("#day-view").addEventListener("click", () => {
+                setDayView();
+                activateButton("day-view");
+            });
+
+            document.querySelector("#week-view").addEventListener("click", () => {
+                setWeekView();
+                activateButton("week-view");
+            });
+
+            document.querySelector("#month-view").addEventListener("click", () => {
+                setMonthView();
+                activateButton("month-view");
+            });
+
+            const activateButton = (buttonId) => {
+                document.querySelectorAll(".gantt-view-btn").forEach((btn) => {
+                    btn.classList.remove("active");
+                });
+                document.getElementById(buttonId).classList.add("active");
+            };
+
             setWeekView();
+            activateButton("week-view");
             updateDateRangeDisplay();
         });
     </script>
