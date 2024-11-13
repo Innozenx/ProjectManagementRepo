@@ -32,8 +32,10 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<DetailsTbl> DetailsTbls { get; set; }
         public virtual DbSet<MainTable> MainTables { get; set; }
         public virtual DbSet<MilestoneTbl> MilestoneTbls { get; set; }
+        public virtual DbSet<Project_Members> Project_Members { get; set; }
         public virtual DbSet<RegistrationTbl> RegistrationTbls { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<WeeklyChecklistTable> WeeklyChecklistTables { get; set; }
         public virtual DbSet<WeeklyStatu> WeeklyStatus { get; set; }
     }

@@ -115,6 +115,17 @@
           <Property Name="milestone_position" Type="int" />
           <Property Name="status_update" Type="nvarchar" MaxLength="550" />
         </EntityType>
+        <EntityType Name="Project_Members">
+          <Key>
+            <PropertyRef Name="proMem_id" />
+          </Key>
+          <Property Name="proMem_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="250" />
+          <Property Name="project_id" Type="int" />
+          <Property Name="email" Type="nvarchar" MaxLength="250" />
+          <Property Name="division" Type="nvarchar" MaxLength="50" />
+          <Property Name="department" Type="nvarchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="RegistrationTbl">
           <Key>
             <PropertyRef Name="registration_id" />
@@ -150,6 +161,20 @@
           <Property Name="milestoneActual" Type="nvarchar" MaxLength="250" />
           <Property Name="milestoneTarget" Type="nvarchar" MaxLength="250" />
         </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="roles" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="UserRoles">
+          <Property Name="user_id" Type="int" />
+          <Property Name="role_id" Type="int" />
+          <Property Name="id" Type="int" />
+        </EntityType>-->
         <EntityType Name="WeeklyChecklistTable">
           <Key>
             <PropertyRef Name="localId" />
@@ -220,8 +245,10 @@
           <EntitySet Name="DetailsTbl" EntityType="Self.DetailsTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MainTable" EntityType="Self.MainTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MilestoneTbl" EntityType="Self.MilestoneTbl" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Project_Members" EntityType="Self.Project_Members" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RegistrationTbl" EntityType="Self.RegistrationTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Reports" EntityType="Self.Reports" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatus" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_DetailsTbl_MilestoneTbl" Association="Self.FK_DetailsTbl_MilestoneTbl">
@@ -245,8 +272,10 @@
           <EntitySet Name="DetailsTbls" EntityType="ProjectManagementDBModel.DetailsTbl" />
           <EntitySet Name="MainTables" EntityType="ProjectManagementDBModel.MainTable" />
           <EntitySet Name="MilestoneTbls" EntityType="ProjectManagementDBModel.MilestoneTbl" />
+          <EntitySet Name="Project_Members" EntityType="ProjectManagementDBModel.Project_Members" />
           <EntitySet Name="RegistrationTbls" EntityType="ProjectManagementDBModel.RegistrationTbl" />
           <EntitySet Name="Reports" EntityType="ProjectManagementDBModel.Report" />
+          <EntitySet Name="Roles" EntityType="ProjectManagementDBModel.Role" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
           <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
           <AssociationSet Name="FK_DetailsTbl_MilestoneTbl" Association="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl">
@@ -340,8 +369,8 @@
           <Property Name="color_status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="isUnscheduled" Type="Boolean" />
           <Property Name="isCompleted" Type="Boolean" />
-          <NavigationProperty Name="MilestoneTbl" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="DetailsTbl" ToRole="MilestoneTbl" />
           <Property Name="key_person" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="MilestoneTbl" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="DetailsTbl" ToRole="MilestoneTbl" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -371,6 +400,17 @@
           <Property Name="status_update" Type="String" MaxLength="550" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DetailsTbls" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="MilestoneTbl" ToRole="DetailsTbl" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
+        </EntityType>
+        <EntityType Name="Project_Members">
+          <Key>
+            <PropertyRef Name="proMem_id" />
+          </Key>
+          <Property Name="proMem_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="project_id" Type="Int32" />
+          <Property Name="email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="department" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="RegistrationTbl">
           <Key>
@@ -406,6 +446,13 @@
           <Property Name="comments" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="milestoneActual" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="milestoneTarget" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="roles" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="WeeklyChecklistTable">
           <Key>
@@ -592,6 +639,18 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Project_Members">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.Project_Members">
+              <MappingFragment StoreEntitySet="Project_Members">
+                <ScalarProperty Name="department" ColumnName="department" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="project_id" ColumnName="project_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="proMem_id" ColumnName="proMem_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="RegistrationTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.RegistrationTbl">
               <MappingFragment StoreEntitySet="RegistrationTbl">
@@ -625,6 +684,14 @@
                 <ScalarProperty Name="inQuarter" ColumnName="inQuarter" />
                 <ScalarProperty Name="year" ColumnName="year" />
                 <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.Role">
+              <MappingFragment StoreEntitySet="Roles">
+                <ScalarProperty Name="roles" ColumnName="roles" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

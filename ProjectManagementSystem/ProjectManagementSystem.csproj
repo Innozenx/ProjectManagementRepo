@@ -322,10 +322,16 @@
     <Compile Include="Models\MilestoneTbl.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Project_Members.cs">
+      <DependentUpon>CheckListDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\RegistrationTbl.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Report.cs">
+      <DependentUpon>CheckListDB.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Role.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
@@ -5068,6 +5074,7 @@
     <Content Include="Views\Admin\RegisterUserView.cshtml" />
     <Content Include="Views\Checklist\DashboardManagement.cshtml" />
     <Content Include="Views\Checklist\ActivityView.cshtml" />
+    <Content Include="Views\Checklist\InviteTeammates.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

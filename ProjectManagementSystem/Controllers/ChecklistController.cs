@@ -302,7 +302,7 @@ namespace ProjectManagementSystem.Controllers
                 return HttpNotFound("No milestones found.");
             }
 
-            // Fetch project details
+            // fetch project details
             var projectDetails = db.MainTables
                 .Where(p => p.main_id == id)
                 .Select(p => new ProjectDetailViewModel
@@ -422,13 +422,34 @@ namespace ProjectManagementSystem.Controllers
         {
             var onboardingDetails = new Onboarding()
             {
-                registered_project = db.RegistrationTbls.Where(x => x.is_file_uploaded == true && x.unregistered == false && x.is_completed == false).ToList(),
+                registered_project = db.RegistrationTbls.Where(x => x.is_file_uploaded == false && x.unregistered == false && x.is_completed == false).ToList(),
                 users = cmdb.AspNetUsers.ToList()
 
             };
 
             return View(onboardingDetails);
         }
+
+        public ActionResult InviteTeammates()
+        {
+            var users = cmdb.AspNetUsers
+                .Select(u => new UserModel
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName, 
+                    LastName = u.LastName,   
+                    Email = u.Email
+                })
+                .ToList();
+
+            var model = new Onboarding
+            {
+                Users = users
+            };
+
+            return View(model);
+        }
+
 
         [HttpPost]
         public JsonResult AddProjectUpload()
@@ -811,8 +832,7 @@ namespace ProjectManagementSystem.Controllers
             return View(activity_log);
         }
 
-
-
+  
     }
 }
 
