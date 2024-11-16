@@ -1,4 +1,5 @@
 ﻿@model ProjectManagementSystem.Models.Onboarding
+
 @{
     ViewBag.Title = "Invite Teammates";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -8,11 +9,12 @@
     <div class="form-container">
         <div class="form-header">
             <h3>Invite your Teammates</h3>
-            <p>Select team members to join your project</p>
+            <p>Select team members and assign roles to join your project</p>
         </div>
 
         <div class="form-content">
             <div class="form-column">
+                <!-- Teammates Selection -->
                 <div class="form-group">
                     <label for="multiSelectDropdown">Teammates</label>
                     <div id="multiSelectDropdown" class="multi-select-dropdown">
@@ -30,10 +32,10 @@
                     </div>
                 </div>
 
+                <!-- Selected Members and Role Assignment -->
                 <div class="form-group">
-                    <label>Selected Teammates</label>
-                    <div id="selectedMembersChips" class="selected-members-chips">
-                    </div>
+                    <label>Selected Teammates and Roles</label>
+                    <div id="selectedMembersChips" class="selected-members-chips"></div>
                 </div>
             </div>
         </div>
@@ -43,6 +45,7 @@
         </div>
     </div>
 </div>
+
 
 <style>
     body {
@@ -161,13 +164,13 @@
             gap: 10px;
         }
 
-    .selected-members-chips .chip .remove-chip {
-        margin-left: 10px;
-        cursor: pointer;
-        background: transparent;
-        border: none;
-        color: white;
-    }
+            .selected-members-chips .chip .remove-chip {
+                margin-left: 10px;
+                cursor: pointer;
+                background: transparent;
+                border: none;
+                color: white;
+            }
 
     .role-dropdown {
         margin-left: 10px;
@@ -189,89 +192,120 @@
         color: #333;
     }
 
-    .dropdown-search:focus {
-        outline: none;
-        border-color: #470A67;
-        background-color: #f9f4ff;
-    }
+        .dropdown-search:focus {
+            outline: none;
+            border-color: #470A67;
+            background-color: #f9f4ff;
+        }
 </style>
 
-@section scripts {
-    <script>
-        function toggleDropdown() {
-            const dropdown = document.getElementById('multiSelectDropdown');
-            dropdown.classList.toggle('open');
-        }
 
-        document.addEventListener('click', function (event) {
-            const dropdown = document.getElementById('multiSelectDropdown');
-            if (!dropdown.contains(event.target)) {
-                dropdown.classList.remove('open');
+
+<script>
+    let availableRoles = @Html.Raw(Json.Encode(Model.Roles)); // Fetch roles from the model
+
+    // Toggle dropdown visibility
+    function toggleDropdown() {
+        const dropdown = document.getElementById('multiSelectDropdown');
+        dropdown.classList.toggle('open');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (event) {
+        const dropdown = document.getElementById('multiSelectDropdown');
+        if (!dropdown.contains(event.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
+
+    // Filter teammates in the dropdown
+    function filterMembers() {
+        const searchInput = document.getElementById('searchMembers').value.toLowerCase();
+        const items = document.querySelectorAll('.multi-select-dropdown .dropdown-item');
+
+        items.forEach(item => {
+            const text = item.querySelector('label').innerText.toLowerCase();
+            item.style.display = text.includes(searchInput) ? '' : 'none';
+        });
+    }
+
+    // Create role dropdown for each selected member
+    function createRoleDropdown(memberId) {
+        let roleDropdown = `<select class="role-dropdown" id="role_${memberId}">`;
+        availableRoles.forEach(role => {
+            roleDropdown += `<option value="${role.Id}">${role.RoleName}</option>`;
+        });
+        roleDropdown += `</select>`;
+        return roleDropdown;
+    }
+
+    // Update selected teammates with roles
+    function updateSelectedChips() {
+        const checkboxes = document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]');
+        const chipsContainer = document.getElementById('selectedMembersChips');
+        chipsContainer.innerHTML = '';
+
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const chip = document.createElement('div');
+                chip.className = 'chip';
+
+                chip.innerHTML = `
+                    ${checkbox.nextElementSibling.textContent}
+                    ${createRoleDropdown(checkbox.value)}
+                    <button class="remove-chip" onclick="removeChip('${checkbox.id}')">&times;</button>
+                `;
+
+                chipsContainer.appendChild(chip);
             }
         });
+    }
 
-        function filterMembers() {
-            const searchInput = document.getElementById('searchMembers').value.toLowerCase();
-            const items = document.querySelectorAll('.multi-select-dropdown .dropdown-item');
+    // Remove a member from the selected list
+    function removeChip(memberId) {
+        const checkbox = document.getElementById(memberId);
+        checkbox.checked = false;
+        updateSelectedChips();
+    }
 
-            items.forEach(item => {
-                const text = item.querySelector('label').innerText.toLowerCase();
-                item.style.display = text.includes(searchInput) ? '' : 'none';
+    // Submit invitations with assigned roles
+    function submitInvitations() {
+        const selectedMembers = Array.from(document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked'))
+            .map(checkbox => {
+                const role = document.getElementById(`role_${checkbox.value}`).value;
+                return {
+                    id: checkbox.value,
+                    role: role
+                };
             });
+
+        if (selectedMembers.length === 0) {
+            alert("Please select at least one teammate and assign roles.");
+            return;
         }
 
-        function updateSelectedChips() {
-            const checkboxes = document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]');
-            const chipsContainer = document.getElementById('selectedMembersChips');
-            chipsContainer.innerHTML = '';
-
-            checkboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    const chip = document.createElement('div');
-                    chip.className = 'chip';
-
-                    const roleDropdown = `
-                        <select class="role-dropdown" id="role_${checkbox.value}">
-                            <option value="Viewer">Viewer</option>
-                            <option value="Editor">Editor</option>
-                        </select>
-                    `;
-
-                    chip.innerHTML = `
-                        ${checkbox.nextElementSibling.textContent}
-                        ${roleDropdown}
-                        <button class="remove-chip" onclick="removeChip('${checkbox.id}')">&times;</button>
-                    `;
-
-                    chipsContainer.appendChild(chip);
+        // Send data to the server
+        $.ajax({
+            url: '/Checklist/SubmitInvitations',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(selectedMembers),
+            success: function (response) {
+                alert(response.message);
+                if (response.status) {
+                    location.reload();
                 }
-            });
-        }
+            },
+            error: function () {
+                alert('Failed to send invitations.');
+            }
+        });
+    }
 
-        function removeChip(memberId) {
-            const checkbox = document.getElementById(memberId);
-            checkbox.checked = false;
+    // Update chips when members are selected or deselected
+    document.addEventListener('change', function (event) {
+        if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
             updateSelectedChips();
         }
-
-        function submitInvitations() {
-            const selectedMembers = Array.from(document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked'))
-                .map(checkbox => {
-                    const role = document.getElementById(`role_${checkbox.value}`).value;
-                    return {
-                        id: checkbox.value,
-                        role: role
-                    };
-                });
-
-            console.log('Invitations:', selectedMembers);
-            alert('Invitations sent successfully!');
-        }
-
-        document.addEventListener('change', function (event) {
-            if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
-                updateSelectedChips();
-            }
-        });
-    </script>
-}
+    });
+</script>

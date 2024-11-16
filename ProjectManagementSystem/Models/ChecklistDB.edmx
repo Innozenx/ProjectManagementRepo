@@ -125,6 +125,7 @@
           <Property Name="email" Type="nvarchar" MaxLength="250" />
           <Property Name="division" Type="nvarchar" MaxLength="50" />
           <Property Name="department" Type="nvarchar" MaxLength="50" />
+          <Property Name="role" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="RegistrationTbl">
           <Key>
@@ -166,7 +167,7 @@
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="roles" Type="varchar" MaxLength="255" />
+          <Property Name="RoleName" Type="varchar" MaxLength="255" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
@@ -411,6 +412,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="department" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="RegistrationTbl">
           <Key>
@@ -452,7 +454,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="roles" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="RoleName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="WeeklyChecklistTable">
           <Key>
@@ -642,6 +644,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="Project_Members">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.Project_Members">
               <MappingFragment StoreEntitySet="Project_Members">
+                <ScalarProperty Name="role" ColumnName="role" />
                 <ScalarProperty Name="department" ColumnName="department" />
                 <ScalarProperty Name="division" ColumnName="division" />
                 <ScalarProperty Name="email" ColumnName="email" />
@@ -691,7 +694,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="Roles">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.Role">
               <MappingFragment StoreEntitySet="Roles">
-                <ScalarProperty Name="roles" ColumnName="roles" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

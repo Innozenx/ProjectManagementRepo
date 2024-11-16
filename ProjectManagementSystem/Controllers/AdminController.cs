@@ -174,5 +174,62 @@ namespace ProjectManagementSystem.Controllers
         //    return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
         //}
 
+
+        public ActionResult RoleConfiguration()
+        {
+           
+                var viewModel = new RoleViewModel
+                {
+                    ExistingRoles = db.Roles.Select(r => r.RoleName).ToList()
+                };
+
+                return View(viewModel);
+          
+        }
+
+        [HttpPost]
+        public JsonResult AddRole(string roleName)
+        {
+            var message = "";
+            var status = false;
+
+            if (string.IsNullOrWhiteSpace(roleName))
+            {
+                message = "Role name cannot be empty.";
+                return Json(new { message, status }, JsonRequestBehavior.AllowGet);
+            }
+
+            try
+            {
+                // checker if the role already exists
+                var existingRole = db.Roles.FirstOrDefault(r => r.RoleName == roleName);
+                if (existingRole != null)
+                {
+                    message = "Role already exists.";
+                    return Json(new { message, status }, JsonRequestBehavior.AllowGet);
+                }
+
+                var newRole = new Role
+                {
+                    RoleName = roleName
+                };
+                db.Roles.Add(newRole);
+                db.SaveChanges();
+
+                message = "Role added successfully!";
+                status = true;
+            }
+            catch (Exception ex)
+            {
+                message = "Failed to add role. Error: " + ex.Message;
+                Debug.WriteLine(ex.Message);
+            }
+
+            return Json(new { message, status }, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
     }
 }

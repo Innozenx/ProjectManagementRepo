@@ -5075,6 +5075,7 @@
     <Content Include="Views\Checklist\DashboardManagement.cshtml" />
     <Content Include="Views\Checklist\ActivityView.cshtml" />
     <Content Include="Views\Checklist\InviteTeammates.cshtml" />
+    <Content Include="Views\Admin\RoleConfiguration.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

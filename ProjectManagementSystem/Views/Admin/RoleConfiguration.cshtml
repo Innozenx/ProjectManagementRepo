@@ -1,0 +1,246 @@
+﻿@model ProjectManagementSystem.Models.RoleViewModel
+
+@{
+    ViewBag.Title = "Role Configuration";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="content">
+    <div class="content">
+        <div class="form-container">
+            <div class="form-header">
+                <h3>Role Configuration</h3>
+                <p>Add and manage roles for the system.</p>
+            </div>
+
+            <div class="form-content">
+                <form id="addRoleForm" class="role-form">
+                    <div class="form-group">
+                        <div class="input-container">
+                            <label for="roleName" class="form-label">What's their role?</label>
+                            <input type="text" id="roleName" name="roleName" class="form-input" placeholder=" " required />
+                            
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Role</button>
+                </form>
+                <div id="addRoleMessage" class="mt-3"></div>
+            </div>
+
+            <h4 class="mt-4">Roles</h4>
+
+            @if (Model.ExistingRoles != null && Model.ExistingRoles.Any())
+            {
+                <div class="table-container">
+                    <table id="rolesTable" class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Role Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.ExistingRoles.Count; i++)
+                            {
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>@Model.ExistingRoles[i]</td>
+                                    <td>
+                                        <button class="btn-warning btn-sm edit-role" data-id="@i" data-role="@Model.ExistingRoles[i]">Edit</button>
+                                        <button class="btn-danger btn-sm delete-role" data-id="@i" data-role="@Model.ExistingRoles[i]">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No roles have been added yet.</p>
+            }
+        </div>
+    </div>
+
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .content {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; 
+        min-height: 90vh;
+        padding: 10px;
+        margin-top: 50px;
+    }
+
+    .form-container {
+        width: 700px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 15px 20px; 
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .form-header h3 {
+            color: #66339A;
+            margin: 0;
+        }
+
+        .form-header p {
+            color: #666;
+            margin: 0;
+        }
+
+    .form-content .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-label {
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        outline: none;
+    }
+
+        .form-input:focus {
+            border-color: #470A67;
+            box-shadow: 0 0 4px rgba(71, 10, 103, 0.4);
+        }
+
+    .btn-primary {
+        background-color: #470A67;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #66339A;
+        }
+
+    .table-container {
+        margin-top: 20px;
+    }
+
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .styled-table thead tr {
+            background-color: #470A67;
+            color: #fff;
+            text-align: left;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .btn-warning {
+        background-color: #ff9800;
+        color: white;
+        border: none;
+    }
+
+        .btn-warning:hover {
+            background-color: #e68900;
+        }
+
+    .btn-danger {
+        background-color: #f44336;
+        color: white;
+        border: none;
+    }
+
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+</style>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $('#addRoleForm').on('submit', function (e) {
+        e.preventDefault();
+
+        const roleName = $('#roleName').val().trim();
+
+        if (!roleName) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Role name cannot be empty!',
+            });
+            return;
+        }
+
+        $.post('/Admin/RoleConfiguration', { roleName: roleName }, function (response) {
+            if (response.status) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message,
+                });
+                $('#roleName').val(''); 
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message,
+                });
+            }
+        }).fail(function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while saving the role.',
+            });
+        });
+
+        function createActionButtons(roleName) {
+            return `
+                <button class="btn-warning btn-sm edit-role" data-role="${roleName}">Edit</button>
+                <button class="btn-danger btn-sm delete-role" data-role="${roleName}">Delete</button>
+            `;
+        }
+    });
+</script>
