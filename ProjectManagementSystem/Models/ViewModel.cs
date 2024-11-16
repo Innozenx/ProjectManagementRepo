@@ -361,6 +361,7 @@ namespace ProjectManagementSystem.Models
         public List<RegistrationTbl> registered_project { get; set; }
         public List<AspNetUser> users { get; set; }
         public List<UserModel> Users { get; set; }
+        public List<RoleModel> Roles { get; set; }
     }
 
     public class UserModel
@@ -370,6 +371,18 @@ namespace ProjectManagementSystem.Models
         public string LastName { get; set; }
         public string Email { get; set; }
     }
+
+    public class RoleViewModel
+    {
+        public List<string> ExistingRoles { get; set; }
+    }
+
+    public class RoleModel
+    {
+        public int Id { get; set; }
+        public string RoleName { get; set; }
+    }
+
 }
 
 

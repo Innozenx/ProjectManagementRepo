@@ -432,19 +432,24 @@ namespace ProjectManagementSystem.Controllers
 
         public ActionResult InviteTeammates()
         {
-            var users = cmdb.AspNetUsers
-                .Select(u => new UserModel
-                {
-                    Id = u.Id,
-                    FirstName = u.FirstName, 
-                    LastName = u.LastName,   
-                    Email = u.Email
-                })
-                .ToList();
+            var users = cmdb.AspNetUsers.Select(u => new UserModel
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email
+            }).ToList();
+
+            var roles = db.Roles.Select(r => new RoleModel
+            {
+                Id = r.id,
+                RoleName = r.RoleName 
+            }).ToList();
 
             var model = new Onboarding
             {
-                Users = users
+                Users = users,
+                Roles = roles
             };
 
             return View(model);
@@ -466,6 +471,7 @@ namespace ProjectManagementSystem.Controllers
             if (attachment == null || attachment.ContentLength <= 0)
             {
                 return Json(new { message = "File is empty", status = false }, JsonRequestBehavior.AllowGet);
+                
             }
 
             try

@@ -20,5 +20,6 @@ namespace ProjectManagementSystem.Models
         public string email { get; set; }
         public string division { get; set; }
         public string department { get; set; }
+        public string role { get; set; }
     }
 }
