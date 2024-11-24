@@ -5049,7 +5049,7 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Checklist\Checklist.cshtml" />
+    <Content Include="Views\Checklist\ChecklistOld.cshtml" />
     <Content Include="Views\Checklist\WeeklyChecklist.cshtml" />
     <Content Include="Views\Checklist\weeklyMilestone.cshtml" />
     <Content Include="Views\PMReports\Create.cshtml" />
@@ -5076,6 +5076,7 @@
     <Content Include="Views\Checklist\ActivityView.cshtml" />
     <Content Include="Views\Checklist\InviteTeammates.cshtml" />
     <Content Include="Views\Admin\RoleConfiguration.cshtml" />
+    <Content Include="Views\Checklist\ProjectChecklist.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -227,9 +227,77 @@ namespace ProjectManagementSystem.Controllers
 
             return Json(new { message, status }, JsonRequestBehavior.AllowGet);
         }
+        [HttpPost]
+        public JsonResult EditRole(int id, string newRoleName)
+        {
+            var message = "";
+            var status = false;
 
+            if (string.IsNullOrWhiteSpace(newRoleName))
+            {
+                message = "Role name cannot be empty.";
+                return Json(new { message, status }, JsonRequestBehavior.AllowGet);
+            }
 
+            try
+            {
+                var role = db.Roles.FirstOrDefault(r => r.id == id);
+                if (role == null)
+                {
+                    message = "Role not found.";
+                    return Json(new { message, status }, JsonRequestBehavior.AllowGet);
+                }
 
+                // Check if the new role name already exists
+                if (db.Roles.Any(r => r.RoleName == newRoleName && r.id != id))
+                {
+                    message = "Another role with the same name already exists.";
+                    return Json(new { message, status }, JsonRequestBehavior.AllowGet);
+                }
 
+                role.RoleName = newRoleName;
+                db.SaveChanges();
+
+                message = "Role updated successfully!";
+                status = true;
+            }
+            catch (Exception ex)
+            {
+                message = "Failed to edit role. Error: " + ex.Message;
+                Debug.WriteLine(ex.Message);
+            }
+
+            return Json(new { message, status }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult DeleteRole(int id)
+        {
+            var message = "";
+            var status = false;
+
+            try
+            {
+                var role = db.Roles.FirstOrDefault(r => r.id == id);
+                if (role == null)
+                {
+                    message = "Role not found.";
+                    return Json(new { message, status }, JsonRequestBehavior.AllowGet);
+                }
+
+                db.Roles.Remove(role);
+                db.SaveChanges();
+
+                message = "Role deleted successfully!";
+                status = true;
+            }
+            catch (Exception ex)
+            {
+                message = "Failed to delete role. Error: " + ex.Message;
+                Debug.WriteLine(ex.Message);
+            }
+
+            return Json(new { message, status }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

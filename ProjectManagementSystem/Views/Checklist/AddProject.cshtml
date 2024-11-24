@@ -1,446 +1,269 @@
 ﻿@model ProjectManagementSystem.Models.Onboarding
-@using System;
 
 @{
     ViewBag.Title = "Project Onboarding";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<head>
-    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-</head>
-<style>
-    body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f4f6f9;
-        margin: 0;
-        padding: 0;
-    }
-
-    .content {
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        min-height: 100vh;
-        background-color: #f4f6f9;
-    }
-
-    .form-container {
-        width: 1000px;
-        padding: 40px;
-        margin-top: 50px;
-        background-color: white;
-        border-radius: 12px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .form-header {
-        text-align: center;
-    }
-
-    .form-header h3 {
-        font-size: 1.8rem;
-        color: #66339A;
-        margin-bottom: 10px;
-    }
-
-    .form-header p {
-        font-size: 1rem;
-        color: #666;
-    }
-
-    .form-content {
-        display: flex;
-        gap: 20px;
-    }
-
-    .form-column {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .form-group label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .form-control,
-    .form-control-file,
-    .multi-select-dropdown {
-        width: 100%;
-        height: 42px;
-        padding: 10px;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-sizing: border-box;
-    }
-
-    .button-container {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin-top: 20px;
-    }
-
-    .btn-primary {
-        background-color: #470A67;
-        color: #fff;
-        font-size: 0.9rem;
-        padding: 8px 50px;
-        width: auto;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-        text-align: center;
-    }
-
-    .btn-primary:hover {
-        background-color: #2d5bb8;
-    }
-
-    .form-text {
-        font-size: 0.9rem;
-        color: #888;
-    }
-
-    .multi-select-dropdown {
-        position: relative;
-        background: #fff;
-        cursor: pointer;
-    }
-
-    .multi-select-dropdown .dropdown-header {
-        font-size: 0.9rem;
-        color: #333;
-        margin-top: 0;
-    }
-
-    .multi-select-dropdown .dropdown-options {
-        display: none;
-        position: absolute;
-        z-index: 10;
-        width: 100%;
-        max-height: 200px;
-        overflow-y: auto;
-        background: #fff;
-        border: 1px solid #ccc;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-        border-radius: 0 0 5px 5px;
-    }
-
-    .multi-select-dropdown.open .dropdown-options {
-        display: block;
-    }
-
-    .dropdown-item {
-        padding: 8px;
-        display: flex;
-        align-items: center;
-    }
-
-    .dropdown-item label {
-        font-size: 0.85rem;
-        font-weight: 400;
-        color: #333;
-        margin-left: 5px;
-    }
-
-    .dropdown-item input {
-        margin-right: 10px;
-    }
-
-    .selected-members-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 10px;
-        background: #f4f6f9;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        min-height: 50px;
-        max-height: 150px;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: #470A67 #f4f6f9;
-    }
-
-    .selected-members-chips::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .selected-members-chips::-webkit-scrollbar-thumb {
-        background-color: #470A67;
-    }
-
-    .selected-members-chips::-webkit-scrollbar-track {
-        background: #f4f6f9;
-    }
-
-    .selected-members-chips .chip {
-        background-color: #66339A;
-        color: white;
-        padding: 6px 10px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        font-size: 0.85rem;
-    }
-
-    .selected-members-chips .chip .remove-chip {
-        margin-left: 10px;
-        cursor: pointer;
-        background: transparent;
-        border: none;
-        color: white;
-        font-size: 1rem;
-    }
-
-    .selected-members-chips .chip .remove-chip:hover {
-        color: #e63946;
-    }
-
-    .form-control:hover,
-    .form-control-file:hover,
-    .dropdown-search:hover {
-        border-color: #470A67;
-        background-color: #f0f7ff;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
-    }
-
-    .form-control:focus,
-    .form-control-file:focus,
-    .dropdown-search:focus {
-        border-color: #2d5bb8;
-        background-color: #f0f7ff;
-        outline: none;
-    }
-
-    .dropdown-search {
-        width: 100%;
-        height: 42px;
-        padding: 10px;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-sizing: border-box;
-        margin-bottom: 10px;
-        background-color: #fff;
-        color: #333;
-    }
-
-    .dropdown-search:: placeholder {
-        color: #888;
-        font-size: 0.9rem;
-    }
-
-    .dropdown-search:hover {
-        border-color: #470A67;
-        background-color: #f9f4ff;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
-    }
-
-    .dropdown-search:focus {
-        outline: none;
-        border-color: #2d5bb8;
-        background-color: #f0f7ff;
-    }
-
-    .multi-select-dropdown .dropdown-options {
-        display: none;
-        position: absolute;
-        z-index: 10;
-        width: 100%;
-        max-height: 250px; 
-        overflow-y: auto;
-        background: #fff;
-        border: 1px solid #ccc;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-        border-radius: 0 0 5px 5px;
-        margin-top: 5px;
-        padding: 10px; 
-    }
-
-    .multi-select-dropdown.open .dropdown-options {
-        display: block;
-    }
-
-    .dropdown-item {
-        padding: 8px 5px;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-    }
-
-    .dropdown-item:hover {
-        background-color: #f4f6f9; 
-        border-radius: 5px;
-    }
-
-    .dropdown-item label {
-        font-size: 0.9rem;
-        font-weight: 400;
-        color: #333;
-        margin-left: 5px;
-        white-space: nowrap; 
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .dropdown-item input {
-        margin-right: 10px;
-    }
-    .dropdown-item label {
-        font-size: 0.9rem;
-        font-weight: 400 !important; 
-        color: #333; 
-        margin-left: 5px;
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-    }
-
-</style>
-
 <div class="content">
     <div class="form-container">
         <div class="form-header">
-            <h3>Create a New Project</h3>
-            <p>Fill in the details and select members for the project</p>
+            <h3>Create a new project</h3>
+            <p>Provide the necessary details to onboard your project.</p>
         </div>
 
         <form id="onboardingForm" name="onboardingForm" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
-            <div class="form-content">
-                <div class="form-column">
-                    <div class="form-group">
-                        <label for="projectTitle">Project Name</label>
-                        <select class="form-control" id="projectTitle" name="projectTitle" required>
-                            <option value="" disabled selected>Select project name</option>
-                            @foreach (var project in Model.registered_project)
-                            {
-                                <option value="@project.registration_id">@project.project_name</option>
-                            }
-                        </select>
-                    </div>
+            <div class="form-group">
+                <label for="projectDropdown">Project Name</label>
+                <select id="projectDropdown" class="form-select" required>
+                    <option value="" disabled selected>Choose a project...</option>
+                    @foreach (var project in Model.registered_project)
+                    {
+                        <option value="@project.registration_id">@project.project_name</option>
+                    }
+                </select>
+                <span id="projectError" class="error-message">Project name is required.</span>
+            </div>
 
-                    <div class="form-group">
-                        <label for="csv-file-input">Upload Project Schedule</label>
-                        <input type="file" id="csv-file-input" accept=".csv" class="form-control-file" required />
-                        <small class="form-text">Accepted format: .csv</small>
-                    </div>
-                </div>
 
-                <div class="form-column">
-                    <div class="form-group">
-                        <label for="multiSelectDropdown">Invite Teammates (Optional)</label>
-                        <div id="multiSelectDropdown" class="multi-select-dropdown">
-                            <div class="dropdown-header" onclick="toggleDropdown()">Select Members</div>
-                            <div class="dropdown-options">
-                                <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" />
-                                @foreach (var user in Model.users)
-                                {
-                                    <div class="dropdown-item">
-                                        <input type="checkbox" id="member_@user.Id" value="@user.Id" />
-                                        <label for="member_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
+            <div class="form-group">
+                <label for="projectOwner">Project Owner</label>
+                <input type="text" id="projectOwner" name="projectOwner" class="form-control" placeholder="Enter project owner name" required />
+            </div>
 
-                    <div class="form-group">
-                        <label>Selected Teammates</label>
-                        <div id="selectedMembersChips" class="selected-members-chips">
-                        </div>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="csvFileInput">Upload Project Schedule</label>
+                <input type="file" id="csvFileInput" name="csvFileInput" accept=".csv" class="form-control-file" required />
+                <small class="form-text">Accepted format: .csv</small>
             </div>
 
             <div class="button-container">
-                <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Submit Project</button>
+                <button id="addProjButton" type="button" class="btn-primary" onclick="AddProject()">Submit Project</button>
             </div>
         </form>
     </div>
 </div>
-
-@section scripts {
-    <script>
-        function toggleDropdown() {
-            const dropdown = document.getElementById('multiSelectDropdown');
-            dropdown.classList.toggle('open');
+<style>
+        body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 0;
         }
 
-        document.addEventListener('click', function (event) {
-            const dropdown = document.getElementById('multiSelectDropdown');
-            if (!dropdown.contains(event.target)) {
-                dropdown.classList.remove('open');
-            }
-        });
+        .content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        min-height: 100vh;
+        }
 
-        function filterMembers() {
-            const searchInput = document.getElementById('searchMembers').value.toLowerCase();
-            const items = document.querySelectorAll('.multi-select-dropdown .dropdown-item');
+        .form-container {
+        width: 100%;
+        max-width: 700px;
+        padding: 40px;
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.8s ease-in-out;
+        }
 
-            items.forEach(item => {
-                const text = item.querySelector('label').innerText.toLowerCase();
-                if (text.includes(searchInput)) {
-                    item.style.display = '';
+        @@keyframes fadeIn {
+        from {
+        opacity: 0;
+        transform: translateY(10px);
+        }
+        to {
+        opacity: 1;
+        transform: translateY(0);
+        }
+        }
+
+        .form-header {
+        text-align: center;
+        margin-bottom: 20px;
+        }
+
+        .form-header h3 {
+        font-size: 2rem;
+        color: #66339A;
+        margin-bottom: 10px;
+        }
+
+        .form-header p {
+        font-size: 1rem;
+        color: #666;
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: bold;
+            color: gray;
+            margin-bottom: 5px;
+        }
+
+    .form-select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        font-size: 14px;
+        color: #333;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        outline: none;
+    }
+
+        .form-select:focus {
+            border-color: #470A67;
+            box-shadow: 0 0 5px rgba(71, 10, 103, 0.4);
+        }
+
+        .error-message {
+            display: none; /* Initially hidden */
+            color: #d9534f; /* Bootstrap danger color */
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+
+        .form-select,
+        .form-control,
+        .form-control-file {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        font-size: 14px;
+        color: #333;
+        outline: none;
+        transition: all 0.3s ease;
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+        border-color: #470A67;
+        box-shadow: 0 0 5px rgba(71, 10, 103, 0.4);
+        }
+
+        .form-control-file {
+        padding: 10px;
+        }
+
+        .btn-primary {
+        background-color: #470A67;
+        color: #fff;
+        font-size: 1rem;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        display: inline-block;
+        text-align: center;
+        margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+        background-color: #2d5bb8;
+        }
+
+        @@media (max-width: 768px) {
+        .form-container {
+        padding: 20px;
+        }
+
+        .form-header h3 {
+        font-size: 1.5rem;
+        }
+
+        .form-header p {
+        font-size: 0.9rem;
+        }
+
+        .btn-primary {
+        width: 100%;
+        }
+    }
+
+</style>
+<script>
+    function AddProject() {
+        const projectDropdown = document.getElementById("projectDropdown");
+        const projectOwner = document.getElementById("projectOwner");
+        const csvFileInput = document.getElementById("csvFileInput");
+        const csvFile = csvFileInput.files[0];
+        let isValid = true;
+
+        projectDropdown.style.borderColor = "";
+        projectOwner.style.borderColor = "";
+        csvFileInput.style.borderColor = "";
+
+        if (!projectDropdown.value) {
+            projectDropdown.style.borderColor = "#d9534f";
+            displayError("Project name is required.");
+            isValid = false;
+        }
+
+        if (!projectOwner.value.trim()) {
+            projectOwner.style.borderColor = "#d9534f";
+            displayError("Project owner is required.");
+            isValid = false;
+        }
+
+        if (!csvFile) {
+            csvFileInput.style.borderColor = "#d9534f";
+            displayError("A CSV file is required.");
+            isValid = false;
+        }
+
+        if (!isValid) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("projectTitle", projectDropdown.value);
+        formData.append("projectOwner", projectOwner.value);
+        formData.append("csvFile", csvFile);
+
+        $.ajax({
+            url: '/Project/AddProjectUpload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.status) {
+                    alert(response.message);
+                    location.reload();
                 } else {
-                    item.style.display = 'none';
+                    displayError(response.message);
                 }
-            });
-        }
-
-        function updateSelectedChips() {
-            const checkboxes = document.querySelectorAll('.multi-select-dropdown .dropdown-options input[type="checkbox"]');
-            const chipsContainer = document.getElementById('selectedMembersChips');
-
-            chipsContainer.innerHTML = '';
-
-            checkboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    const memberId = checkbox.value;
-                    const memberName = checkbox.nextElementSibling.textContent;
-
-                    const chip = document.createElement('div');
-                    chip.className = 'chip';
-                    chip.innerHTML = `
-                        ${memberName}
-                        <button class="remove-chip" onclick="removeChip('${memberId}')">&times;</button>
-                    `;
-
-                    chipsContainer.appendChild(chip);
-                }
-            });
-        }
-
-        function removeChip(memberId) {
-            const checkbox = document.querySelector(`#member_${memberId}`);
-            if (checkbox) {
-                checkbox.checked = false;
-            }
-            updateSelectedChips();
-        }
-
-        document.addEventListener('change', function (e) {
-            if (e.target.matches('.multi-select-dropdown .dropdown-options input[type="checkbox"]')) {
-                updateSelectedChips();
+            },
+            error: function () {
+                displayError("An error occurred while submitting the project.");
             }
         });
-    </script>
-}
+    }
+
+    function displayError(message) {
+        const errorContainer = document.getElementById("errorContainer");
+        if (!errorContainer) {
+
+            const container = document.createElement("div");
+            container.id = "errorContainer";
+            container.style.color = "#d9534f";
+            container.style.marginTop = "10px";
+            document.body.prepend(container);
+        }
+        document.getElementById("errorContainer").innerText = message;
+    }
+</script>
+
