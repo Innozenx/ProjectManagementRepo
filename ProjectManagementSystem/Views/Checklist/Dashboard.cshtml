@@ -104,8 +104,9 @@
         font-weight: bold;
         color: #66339A;
         margin-bottom: 15px;
-        text-align: left;
+        text-align: center;
         margin-top: 10px;
+
     }
 
     .table-container {
@@ -120,14 +121,14 @@
 
     .table th, .table td {
         padding: 8px;
-        text-align: left;
+        text-align: center;
         border-bottom: 1px solid #ddd;
     }
 
-        .table th {
-            background-color: #470A67;
-            color: #fff;
-        }
+    .table th {
+        background-color: #470A67;
+        color: #fff;
+    }
 
     .sidebar-cards {
         display: flex;
@@ -212,7 +213,7 @@
         display: inline-block;
         transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }
-    
+
     .invite-button:hover {
         background-color: #66339A;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -222,6 +223,154 @@
         background-color: #66339A;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
+
+    @@media (max-width: 768px) {
+        .header-container {
+            padding: 20px 10px;
+        }
+
+            .header-container h3 {
+                font-size: 1.5rem;
+            }
+
+            .header-container p {
+                font-size: 1rem;
+            }
+
+        .top-card-row {
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .top-card {
+            width: 45%;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+
+            .top-card h3 {
+                font-size: 1.2rem;
+            }
+
+        .content-section {
+            margin-top: 20px;
+        }
+
+        .card-container {
+            padding: 15px;
+            width: 95%;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .table th, .table td {
+            font-size: 0.9rem;
+            padding: 6px;
+        }
+
+        .sidebar-cards {
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .sidebar-card {
+            width: 100%;
+            padding: 15px;
+        }
+
+        .invite-button {
+            width: 100%;
+            font-size: 0.9rem;
+            padding: 8px;
+        }
+
+        .chart-container {
+            max-width: 150px;
+        
+        }
+
+        .home-link {
+            font-size: 1rem;
+        }
+    }
+    .project-roles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .add-member {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100px;
+        height: 100px;
+        border: 2px dashed #ccc;
+        border-radius: 50%;
+        color: #66339A;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        text-align: center;
+    }
+
+        .add-member:hover {
+            background-color: #f4f6f9;
+            color: #470A67;
+        }
+
+    .add-member-icon {
+        font-size: 2rem;
+    }
+
+    .member-card {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .avatar-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #470A67;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .member-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .member-info strong {
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .member-info p {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 0;
+        }
+
 
 </style>
 
@@ -312,7 +461,7 @@
             </div>
         }
     </div>
-    <!-- Upcoming Tasks and Overall Progress Cards Side-by-Side -->
+
     <div class="sidebar-cards">
         <!-- Upcoming Tasks Card -->
         <div class="sidebar-card">

@@ -13,6 +13,7 @@ using System.Diagnostics;
 using Microsoft.AspNet.Identity;
 using ProjectManagementSystem.CustomAttributes;
 using System.Security.Claims;
+using System.Web;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -350,6 +351,20 @@ namespace ProjectManagementSystem.Controllers
                  .OrderByDescending(log => log.DateUpdated)
                  .ToList();
 
+            // fetch project members
+            var projectMembers = db.Project_Members
+                .Where(pm => pm.project_id == id)
+                .AsEnumerable() 
+                .Select(pm => new ProjectMemberViewModel
+                {
+                    Name = pm.name,
+                    Role = pm.role,
+                    Initials = !string.IsNullOrEmpty(pm.name)
+                        ? string.Join("", pm.name.Split(' ').Select(n => n[0]))
+                        : "N/A", 
+                    Email = pm.email
+                })
+                .ToList();
 
             var viewModel = new ProjectMilestoneViewModel
             {
@@ -364,7 +379,8 @@ namespace ProjectManagementSystem.Controllers
                 ProjectOwner = projects.ProjectOwner,
                 ProjectDetails = projectDetails,
                 Milestones = milestones,
-                StatusLogs = statusLogs
+                StatusLogs = statusLogs,
+                ProjectMembers = projectMembers
             };
 
             return View(viewModel);
@@ -432,6 +448,7 @@ namespace ProjectManagementSystem.Controllers
 
         public ActionResult InviteTeammates()
         {
+            // Fetch users
             var users = cmdb.AspNetUsers.Select(u => new UserModel
             {
                 Id = u.Id,
@@ -440,21 +457,31 @@ namespace ProjectManagementSystem.Controllers
                 Email = u.Email
             }).ToList();
 
+            // Fetch roles
             var roles = db.Roles.Select(r => new RoleModel
             {
                 Id = r.id,
-                RoleName = r.RoleName 
+                RoleName = r.RoleName
             }).ToList();
 
+            // Fetch projects
+            var projects = db.MainTables.Select(p => new ProjectModel
+            {
+                Id = p.main_id,
+                Title = p.project_title
+            }).ToList();
+
+            // Create the model
             var model = new Onboarding
             {
                 Users = users,
-                Roles = roles
+                Roles = roles,
+                Projects = projects,
+        
             };
 
             return View(model);
         }
-
 
         [HttpPost]
         public JsonResult AddProjectUpload()
@@ -471,7 +498,7 @@ namespace ProjectManagementSystem.Controllers
             if (attachment == null || attachment.ContentLength <= 0)
             {
                 return Json(new { message = "File is empty", status = false }, JsonRequestBehavior.AllowGet);
-                
+
             }
 
             try
@@ -671,6 +698,7 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
         }
 
+
         public JsonResult SaveStatus()
         {
             var message = "";
@@ -710,10 +738,6 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Checklist()
-        {
-            return View();
-        }
 
         [HttpPost]
         public ActionResult UpdateStatus(ProjectMilestoneViewModel model)
@@ -838,7 +862,12 @@ namespace ProjectManagementSystem.Controllers
             return View(activity_log);
         }
 
-  
+        public ActionResult ProjectChecklist()
+        {
+
+           
+            return View();
+        }
     }
 }
 

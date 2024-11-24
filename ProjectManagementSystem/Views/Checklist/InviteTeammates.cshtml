@@ -1,51 +1,58 @@
 ﻿@model ProjectManagementSystem.Models.Onboarding
-
 @{
     ViewBag.Title = "Invite Teammates";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
 <div class="content">
     <div class="form-container">
         <div class="form-header">
+            <div class="icon">
+                <img src="~/AdminLTE-3.2.0/dist/img/giphy.jpg" alt="princesses">
+            </div>
             <h3>Invite your Teammates</h3>
-            <p>Select team members and assign roles to join your project</p>
-        </div>
+            <p>Select a project to assign team members and their roles to join  your project.</p>
 
+        </div>
         <div class="form-content">
-            <div class="form-column">
-                <!-- Teammates Selection -->
-                <div class="form-group">
-                    <label for="multiSelectDropdown">Teammates</label>
-                    <div id="multiSelectDropdown" class="multi-select-dropdown">
-                        <div class="dropdown-header" onclick="toggleDropdown()">Select Members</div>
-                        <div class="dropdown-options">
-                            <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" />
-                            @foreach (var user in Model.Users)
-                            {
-                                <div class="dropdown-item">
-                                    <input type="checkbox" id="member_@user.Id" value="@user.Id" />
-                                    <label for="member_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
-                                </div>
-                            }
-                        </div>
+            <div class="form-group">
+                <label for="projectDropdown">Project title</label>
+                <select id="projectDropdown" class="form-select" required>
+                    <option value="" disabled selected>Choose a project...</option>
+                    @foreach (var project in Model.Projects)
+                    {
+                        <option value="@project.Id">@project.Title</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="multiSelectDropdown">Members</label>
+                <div id="multiSelectDropdown" class="multi-select-dropdown">
+                    <div class="dropdown-header" onclick="toggleDropdown()">Select Members</div>
+                    <div class="dropdown-options">
+                        <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" />
+                        @foreach (var user in Model.Users)
+                        {
+                            <div class="dropdown-item">
+                                <input type="checkbox" id="member_@user.Id" value="@user.Id" />
+                                <label for="member_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
+                            </div>
+                        }
                     </div>
                 </div>
-
-                <!-- Selected Members and Role Assignment -->
-                <div class="form-group">
-                    <label>Selected Teammates and Roles</label>
-                    <div id="selectedMembersChips" class="selected-members-chips"></div>
-                </div>
+            </div>
+            <div class="form-group">
+                <label>People with Access</label>
+                <div id="selectedMembersChips" class="selected-members-chips"></div>
             </div>
         </div>
 
+      
         <div class="button-container">
-            <button id="inviteButton" type="button" class="btn-primary" onclick="submitInvitations()">Send Invitations</button>
+            <button id="inviteButton" type="button" class="btn-primary" onclick="submitInvitations()">Send Invites</button>
         </div>
     </div>
 </div>
-
 
 <style>
     body {
@@ -66,6 +73,8 @@
         background-color: white;
         border-radius: 12px;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        margin-bottom: 20px;
     }
 
     .form-header {
@@ -86,10 +95,17 @@
         margin-bottom: 20px;
     }
 
+    .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
     .btn-primary {
         background-color: #470A67;
         color: #fff;
-        padding: 10px 20px;
+        padding: 8px 50px;
         border: none;
         border-radius: 5px;
         cursor: pointer;
@@ -135,11 +151,28 @@
         }
 
     .dropdown-item {
-        padding: 5px;
+        padding: 8px 0;
         display: flex;
         align-items: center;
         cursor: pointer;
+        font-size: 14px;
+        color: #333;
+        font-weight: normal;
     }
+
+        .dropdown-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .dropdown-item label {
+            margin: 0;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
 
     .selected-members-chips {
         display: flex;
@@ -197,28 +230,69 @@
             border-color: #470A67;
             background-color: #f9f4ff;
         }
+    .icon img {
+        width: 200px;
+        /*margin-bottom: 20px;*/
+    }
+    .form-select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        font-size: 14px;
+        color: #333;
+        outline: none;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .form-select:focus {
+            border-color: #470A67;
+            box-shadow: 0 0 5px rgba(71, 10, 103, 0.4);
+        }
+
+        .form-select option {
+            padding: 10px;
+            background-color: #fff;
+            color: #333;
+            font-size: 14px;
+        }
+
+    .custom-message {
+        margin-top: 5px;
+        font-size: 12px;
+        color: #666;
+        font-style: italic;
+    }
+
+        .custom-message.important {
+            color: #e63946;
+            font-weight: bold;
+        }
+
+        @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+    }
 </style>
 
 
 
 <script>
-    let availableRoles = @Html.Raw(Json.Encode(Model.Roles)); // Fetch roles from the model
+    let availableRoles = @Html.Raw(Json.Encode(Model.Roles));
 
-    // Toggle dropdown visibility
     function toggleDropdown() {
         const dropdown = document.getElementById('multiSelectDropdown');
         dropdown.classList.toggle('open');
     }
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function (event) {
-        const dropdown = document.getElementById('multiSelectDropdown');
-        if (!dropdown.contains(event.target)) {
-            dropdown.classList.remove('open');
-        }
-    });
-
-    // Filter teammates in the dropdown
     function filterMembers() {
         const searchInput = document.getElementById('searchMembers').value.toLowerCase();
         const items = document.querySelectorAll('.multi-select-dropdown .dropdown-item');
@@ -229,7 +303,6 @@
         });
     }
 
-    // Create role dropdown for each selected member
     function createRoleDropdown(memberId) {
         let roleDropdown = `<select class="role-dropdown" id="role_${memberId}">`;
         availableRoles.forEach(role => {
@@ -239,7 +312,6 @@
         return roleDropdown;
     }
 
-    // Update selected teammates with roles
     function updateSelectedChips() {
         const checkboxes = document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]');
         const chipsContainer = document.getElementById('selectedMembersChips');
@@ -261,15 +333,19 @@
         });
     }
 
-    // Remove a member from the selected list
     function removeChip(memberId) {
         const checkbox = document.getElementById(memberId);
         checkbox.checked = false;
         updateSelectedChips();
     }
 
-    // Submit invitations with assigned roles
     function submitInvitations() {
+        const selectedProject = document.getElementById('projectDropdown').value;
+        if (!selectedProject) {
+            alert("Please select a project.");
+            return;
+        }
+
         const selectedMembers = Array.from(document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked'))
             .map(checkbox => {
                 const role = document.getElementById(`role_${checkbox.value}`).value;
@@ -284,12 +360,21 @@
             return;
         }
 
-        // Send data to the server
+        const notify = document.getElementById('notifyCheckbox').checked;
+        const message = document.getElementById('messageBox').value;
+
+        const payload = {
+            projectId: selectedProject,
+            members: selectedMembers,
+            notify: notify,
+            message: message
+        };
+
         $.ajax({
             url: '/Checklist/SubmitInvitations',
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify(selectedMembers),
+            data: JSON.stringify(payload),
             success: function (response) {
                 alert(response.message);
                 if (response.status) {
@@ -302,7 +387,6 @@
         });
     }
 
-    // Update chips when members are selected or deselected
     document.addEventListener('change', function (event) {
         if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
             updateSelectedChips();

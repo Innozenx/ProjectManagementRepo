@@ -109,6 +109,7 @@ namespace ProjectManagementSystem.Models
         public HttpPostedFileBase FileUpload { get; set; }
 
         public List<StatusLogsViewModel> StatusLogs { get; set; } = new List<StatusLogsViewModel>();
+        public List<ProjectMemberViewModel> ProjectMembers { get; set; }
     }
     public class StatusLogsViewModel
     {
@@ -122,6 +123,7 @@ namespace ProjectManagementSystem.Models
         public string Username { get; set; }
         public string MilestoneName { get; set; }
         public List<HttpPostedFileBase> FileUploads { get; set; }
+
     }
 
 
@@ -362,6 +364,8 @@ namespace ProjectManagementSystem.Models
         public List<AspNetUser> users { get; set; }
         public List<UserModel> Users { get; set; }
         public List<RoleModel> Roles { get; set; }
+        public List<ProjectModel> Projects { get; set; }
+        public List<MemberAccess> CurrentMembers { get; set; }
     }
 
     public class UserModel
@@ -381,6 +385,31 @@ namespace ProjectManagementSystem.Models
     {
         public int Id { get; set; }
         public string RoleName { get; set; }
+    }
+    public class ProjectModel
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+    }
+    
+    public class PojectViewModel
+    {
+        public int ProjectId { get; set; }
+        public string Milestones { get; set; }
+    }
+    public class MemberAccess
+    {
+        public int MemberId { get; set; } 
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Role { get; set; } 
+    }
+    public class ProjectMemberViewModel
+    {
+        public string Name { get; set; }
+        public string Role { get; set; } 
+        public string Initials { get; set; } 
+        public string Email { get; set; } 
     }
 
 }

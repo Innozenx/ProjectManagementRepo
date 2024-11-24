@@ -21,26 +21,26 @@
     .card-container {
         display: flex;
         justify-content: center;
-        margin-top: 10px;
-        padding: 20px;
+        padding: 10px;
+        margin: 0; 
     }
 
     .table-container {
         background-color: #fff;
         border-radius: 10px;
-        padding: 20px;
+        padding: 15px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 1200px;
         margin: 0 auto;
+        margin-top: 20px;
     }
 
     .action-tiles-container {
         display: flex;
         justify-content: flex-end;
         gap: 10px;
-        margin-top: 20px;
-        margin-right: 30px;
+        margin: 10px 30px 0 0; 
     }
 
     .action-tile {
@@ -57,15 +57,15 @@
         justify-content: center;
     }
 
-    .action-tile:hover {
-        background-color: #552788;
-        transform: translateY(-3px);
-    }
+        .action-tile:hover {
+            background-color: #552788;
+            transform: translateY(-3px);
+        }
 
-    .action-tile i {
-        font-size: 18px;
-        margin-right: 5px;
-    }
+        .action-tile i {
+            font-size: 18px;
+            margin-right: 5px;
+        }
 
     .action-tile-title {
         font-size: 0.85rem;
@@ -92,9 +92,7 @@
         color: #66399A;
         text-align: left;
         font-size: 24px;
-        margin-bottom: 10px;
-        margin-left: 15px;
-        margin-top: 5px;
+        margin: 5px 15px 10px 15px;
     }
 
     #projectDetails {
@@ -103,30 +101,30 @@
         border-collapse: collapse;
     }
 
-    #projectDetails th,
-    #projectDetails td {
-        padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
+        #projectDetails th,
+        #projectDetails td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
 
-    #projectDetails th {
-        font-weight: bold;
-        color: #555;
-    }
+        #projectDetails th {
+            font-weight: bold;
+            color: #555;
+        }
 
-    #projectDetails td a {
-        color: #66339A;
-        text-decoration: none;
-    }
+        #projectDetails td a {
+            color: #66339A;
+            text-decoration: none;
+        }
 
-    #projectDetails td a:hover {
-        text-decoration: underline;
-    }
+            #projectDetails td a:hover {
+                text-decoration: underline;
+            }
 
-    #projectDetails td {
-        color: #333;
-    }
+        #projectDetails td {
+            color: #333;
+        }
 
     .gantt-header {
         display: flex;
@@ -150,10 +148,10 @@
         color: white;
     }
 
-    .gantt-view-btn:hover,
-    .gantt-view-btn.active {
-        background-color: #552788;
-    }
+        .gantt-view-btn:hover,
+        .gantt-view-btn.active {
+            background-color: #552788;
+        }
 
     .gantt-nav-btn,
     .gantt-today-btn {
@@ -179,64 +177,13 @@
         margin-top: 15px;
     }
 
+    #gantt_here {
+        width: 100%;
+        height: calc(100vh - 200px); 
+    }
+
     .activity-log-container {
         padding: 10px;
-    }
-
-    .timeline-icon {
-        flex-shrink: 0;
-        width: 40px;
-        height: 40px;
-        background-color: #66399A;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 18px;
-        margin-right: 15px;
-    }
-
-    .header {
-        font-size: 18px;
-        font-weight: bold;
-        color: #66399A;
-    }
-
-    .description {
-        font-size: 14px;
-        color: #333;
-        margin-top: 5px;
-        line-height: 1.4;
-    }
-
-    .content {
-        flex-grow: 1;
-        background-color: #f9f9f9;
-        border-radius: 8px;
-        padding: 15px;
-        margin-left: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .item {
-        display: flex;
-        align-items: flex-start;
-        padding: 15px 0;
-        border-bottom: 1px solid #e0e0e0;
-    }
-
-    .item:last-child {
-        border-bottom: none;
-    }
-
-    .item:hover .content {
-        background-color: #f0f0f0;
-    }
-
-    .header:hover {
-        text-decoration: underline;
-        color: #552788;
     }
 
     .modal-content {
@@ -255,100 +202,16 @@
         font-size: 20px;
     }
 
-    .attachment-link {
-        color: #007bff;
-        text-decoration: none;
-        font-size: 14px;
-        margin-top: 10px;
-        display: inline-block;
-    }
-
-    .attachment-link:hover {
-        text-decoration: underline;
-    }
-
     .close {
         color: #333;
         opacity: 1;
         font-size: 20px;
     }
 
-    .close:hover {
-        color: #555;
-    }
+        .close:hover {
+            color: #555;
+        }
 
-    #activityLogModal .modal-dialog {
-        max-width: 90%; 
-        width: 90%;
-    }
-
-    #activityLogModal .modal-content {
-        background-color: #f8f9fa;
-    }
-
-    #activityLogModal .modal-header {
-        background-color: #66399A;
-        color: white;
-        padding: 15px 20px;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-    }
-
-    #activityLogModal .modal-body {
-        padding: 20px;
-        max-height: 70vh; 
-        overflow-y: auto; 
-    }
-
-
-    .log-entry {
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        background-color: #ffffff;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .log-entry p {
-        margin: 5px 0;
-        line-height: 1.6;
-        color: #333;
-    }
-
-    .log-entry strong {
-        color: #66399A;
-    }
-
-    .log-entry:hover {
-        background-color: #f1f1f1; 
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
-    }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #66399A;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: 18px;
-        margin-right: 10px;
-    }
-    .log-details {
-        margin-left: 55px;
-    }
-
-    .attachment-link {
-        color: #007bff;
-        text-decoration: none;
-    }
-
-    .attachment-link:hover {
-        text-decoration: underline;
-    }
     .maximized {
         position: fixed;
         top: 0;
@@ -360,264 +223,390 @@
         padding: 0;
     }
 
-    .maximized #gantt_here {
-        height: calc(100vh - 50px); 
-    }
+        .maximized #gantt_here {
+            height: calc(100vh - 50px);
+        }
 
     .fa-maximize {
         color: #66399A;
     }
-    .icon img {
-        width: 80px;
-        margin-bottom: 20px;
+    .nav-tabs {
+ 
+        padding: 15px 20px;
+        font-size: 14px;
     }
-    
+
+    .nav-tabs .nav-link {
+        padding: 5px 10px;
+        font-size: 14px;
+        color: #66399A; 
+        background-color: transparent; 
+        border: none; 
+        border-bottom: 3px solid transparent; 
+        transition: color 0.3s ease, border-bottom-color 0.3s ease;
+    }
+
+        .nav-tabs .nav-link:hover {
+            color: #552788; 
+        }
+
+        .nav-tabs .nav-link.active {
+            color: #66399A; 
+            border-bottom-color: #66399A; 
+            /*font-weight: bold;*/ 
+        }
+
+    .nav-tabs .nav-item {
+        margin-right: 3px; 
+    }
+
+    .project-header {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+    }
+
+    .project-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .project-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #66399A;
+        color: #fff;
+        border-radius: 8px;
+        font-size: 18px;
+        height: 40px;
+        width: 40px;
+        margin-right: 10px;
+    }
+
+    .project-name {
+        font-size: 20px;
+        font-weight: bold;
+        color: #66399A;
+    }
+
+    .project-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+    }
+
+    .project-actions i {
+        color: #66399A;
+        font-size: 18px;
+        margin-left: 10px;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .project-actions i:hover {
+        color: #552788;
+    }
 
 </style>
 
+<div class="project-header">
+    <div class="project-info">
+        <span class="project-icon">
+            <i class="fas fa-tasks"></i>
+        </span>
+        <span class="project-name">@Model.ProjectTitle</span>
+    </div>
+    </div>
 
-<!-- Project Details Section -->
-<div class="card-container">
+<!-- Navigation Tabs -->
+<ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
+            <i class="fas fa-info-circle"></i> Overview
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="timeline-tab" data-toggle="tab" href="#timeline" role="tab" aria-controls="timeline" aria-selected="false">
+            <i class="fas fa-project-diagram"></i> Timeline
+        </a>
+    </li>
+</ul>
+
+
+
+   <!-- Overview Tab -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+    <!-- Project Details Section -->
+    <div class="pop-container">
+        <div class="table-container">
+            <h3>Project Details</h3>
+            @if (Model.ProjectDetails.Any())
+            {
+                var data = Model.ProjectDetails.FirstOrDefault();
+
+                <table id="projectDetails">
+                    <tr>
+                        <td style="vertical-align: top; width: 50%;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <th>Title:</th>
+                                    <td>
+                                        <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = data.Id, title = data.ProjectTitle, projectId = data.DetailsID })">
+                                            @data.ProjectTitle
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Start Date:</th>
+                                    <td>@DateTime.Parse(data.ProjectStart).ToString("MMMM dd, yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <th>End Date:</th>
+                                    <td>@DateTime.Parse(data.ProjectEnd).ToString("MMMM dd, yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <th>Duration:</th>
+                                    <td>@data.ProjectDuration days</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="vertical-align: top; width: 50%;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <th>Year:</th>
+                                    <td>@data.ProjectYear</td>
+                                </tr>
+                                <tr>
+                                    <th>Division:</th>
+                                    <td>@data.Division</td>
+                                </tr>
+                                <tr>
+                                    <th>Category:</th>
+                                    <td>@data.Category</td>
+                                </tr>
+                                <tr>
+                                    <th>Project Owner:</th>
+                                    <td>@data.ProjectOwner</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            }
+        </div>
+    </div>
+
+    <!-- Update Status and Activity Log Tiles -->
+    <div class="action-tiles-container">
+        <div class="action-tile">
+            <button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title">
+                <i class="fas fa-edit"></i> Status
+            </button>
+        </div>
+        <div class="action-tile">
+            <button type="button" onclick="loadActivityLogs()" class="action-tile-title">
+                <i class="fas fa-history"></i> Activity
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Update Status Modal -->
+    <div class="modal fade" id="updateMilestoneModal" tabindex="-1" role="dialog" aria-labelledby="updateMilestoneLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content shadow-lg rounded">
+                <div class="modal-header bg-white">
+                    <h5 class="modal-title" id="updateMilestoneLabel">
+                        Status
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body bg-white p-4">
+                    <form id="updateStatusForm" action="@Url.Action("UpdateStatus", "Checklist")" method="post" enctype="multipart/form-data">
+                        <div class="form-group mb-4">
+                            <label for="milestone" class="milestone-text">Select Milestone</label>
+                            @Html.DropDownListFor(m => m.SelectedMilestone, Model.Milestones, "Choose a Milestone", new { @class = "form-control rounded border-light", id = "selectedMilestone" })
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="statusUpdate" class="status-update">Status Update</label>
+                            @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3, id = "statusUpdate" })
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="fileUpload" class="select-attach">Attachment</label>
+                            <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
+                        </div>
+                        <!-- Validation message area -->
+                        <div id="validationMessage" class="text-danger" style="display:none; margin-bottom:10px;">
+                            Please fill out all required fields.
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Members Section -->
     <div class="table-container">
-        <h3>Project Details</h3>
-        @if (Model.ProjectDetails.Any())
+        <h3>Project Members</h3>
+        @if (Model.ProjectMembers.Any())
         {
-            var data = Model.ProjectDetails.FirstOrDefault();
-
-            <table id="projectDetails">
-                <tr>
-                    <td style="vertical-align: top; width: 50%;">
-                        <table style="width: 100%;">
-                            <tr>
-                                <th>Title:</th>
-                                <td>
-                                    <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = data.Id, title = data.ProjectTitle, projectId = data.DetailsID })">
-                                        @data.ProjectTitle
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Start Date:</th>
-                                <td>@DateTime.Parse(data.ProjectStart).ToString("MMMM dd, yyyy")</td>
-                            </tr>
-                            <tr>
-                                <th>End Date:</th>
-                                <td>@DateTime.Parse(data.ProjectEnd).ToString("MMMM dd, yyyy")</td>
-                            </tr>
-                            <tr>
-                                <th>Duration:</th>
-                                <td>@data.ProjectDuration days</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td style="vertical-align: top; width: 50%;">
-                        <table style="width: 100%;">
-                            <tr>
-                                <th>Year:</th>
-                                <td>@data.ProjectYear</td>
-                            </tr>
-                            <tr>
-                                <th>Division:</th>
-                                <td>@data.Division</td>
-                            </tr>
-                            <tr>
-                                <th>Category:</th>
-                                <td>@data.Category</td>
-                            </tr>
-                            <tr>
-                                <th>Project Owner:</th>
-                                <td>@data.ProjectOwner</td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
+            <div class="members-grid">
+                @foreach (var member in Model.ProjectMembers)
+                {
+                    <div class="member-card">
+                        <div class="avatar-circle">@member.Initials</div>
+                        <div class="member-details">
+                            <p class="member-name">@member.Name</p>
+                            <p class="member-role">@member.Role</p>
+                            <p class="member-email">@member.Email</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="no-members-text">No members are assigned to this project yet.</p>
         }
     </div>
-</div>
 
-<!-- Update Status and Activity Log Tiles -->
-<div class="action-tiles-container">
-    <div class="action-tile">
-        <button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title">
-            <i class="fas fa-edit"></i> Status
-        </button>
-    </div>
-    <div class="action-tile">
-        <button type="button" onclick="loadActivityLogs()" class="action-tile-title">
-            <i class="fas fa-history"></i> Activity
-        </button>
-    </div>
-</div>
-
-
-<!-- Update Status Modal -->
-<div class="modal fade" id="updateMilestoneModal" tabindex="-1" role="dialog" aria-labelledby="updateMilestoneLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content shadow-lg rounded">
-            <div class="modal-header bg-white">
-                <h5 class="modal-title" id="updateMilestoneLabel">
-                    Status
-                </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body bg-white p-4">
-                <form id="updateStatusForm" action="@Url.Action("UpdateStatus", "Checklist")" method="post" enctype="multipart/form-data">
-                    <div class="form-group mb-4">
-                        <label for="milestone" class="milestone-text">Select Milestone</label>
-                        @Html.DropDownListFor(m => m.SelectedMilestone, Model.Milestones, "Choose a Milestone", new { @class = "form-control rounded border-light", id = "selectedMilestone" })
-                    </div>
-                    <div class="form-group mb-4">
-                        <label for="statusUpdate" class="status-update">Status Update</label>
-                        @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3, id = "statusUpdate" })
-                    </div>
-                    <div class="form-group mb-4">
-                        <label for="fileUpload" class="select-attach">Attachment</label>
-                        <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
-                    </div>
-                    <!-- Validation message area -->
-                    <div id="validationMessage" class="text-danger" style="display:none; margin-bottom:10px;">
-                        Please fill out all required fields.
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Submit</button>
-                    </div>
-                </form>
+    <!-- Status Successfully Updated Modal -->
+    <div class="modal fade" id="statusUpdatedModal" tabindex="-1" role="dialog" aria-labelledby="statusUpdatedLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="statusUpdatedLabel">Success!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Status Updated!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Status Successfully Updated Modal -->
-<div class="modal fade" id="statusUpdatedModal" tabindex="-1" role="dialog" aria-labelledby="statusUpdatedLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="statusUpdatedLabel">Success!</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Status Updated!
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Activity Logs Modal -->
-<div class="modal fade" id="activityLogModal" tabindex="-1" role="dialog" aria-labelledby="activityLogLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content shadow-lg rounded">
-            <div class="modal-header bg-white">
-                <h5 class="modal-title" id="activityLogLabel">Activity Log</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body bg-white p-4">
-                <div id="activity-log-container" class="activity-log-container">
-                    @if (Model.StatusLogs != null && Model.StatusLogs.Any())
-                    {
-                        foreach (var log in Model.StatusLogs)
+    <!-- Activity Logs Modal -->
+    <div class="modal fade" id="activityLogModal" tabindex="-1" role="dialog" aria-labelledby="activityLogLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content shadow-lg rounded">
+                <div class="modal-header bg-white">
+                    <h5 class="modal-title" id="activityLogLabel">Activity Log</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body bg-white p-4">
+                    <div id="activity-log-container" class="activity-log-container">
+                        @if (Model.StatusLogs != null && Model.StatusLogs.Any())
                         {
-                            <div class="log-entry">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-circle">
-                                            @log.Username[0]
+                            foreach (var log in Model.StatusLogs)
+                            {
+                                <div class="log-entry">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle">
+                                                @log.Username[0]
+                                            </div>
+                                            <p class="mb-0"><strong>@log.Username</strong></p>
                                         </div>
-                                        <p class="mb-0"><strong>@log.Username</strong></p>
+                                        @if (DateTime.TryParse(log.DateUpdated, out var parsedDate))
+                                        {
+                                            <p class="text-muted mb-0" style="font-size: 0.9em;">
+                                                Updated on @parsedDate.ToString("MMMM dd, yyyy - hh:mm tt")
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-muted mb-0" style="font-size: 0.9em;">No Date</p>
+                                        }
                                     </div>
-                                    @if (DateTime.TryParse(log.DateUpdated, out var parsedDate))
-                                    {
-                                        <p class="text-muted mb-0" style="font-size: 0.9em;">
-                                            Updated on @parsedDate.ToString("MMMM dd, yyyy - hh:mm tt")
-                                        </p>
-                                    }
-                                    else
-                                    {
-                                        <p class="text-muted mb-0" style="font-size: 0.9em;">No Date</p>
-                                    }
+                                    <!-- Milestone, Description, and Attachment Link -->
+                                    <div class="log-details ml-5">
+                                        <p class="mb-1"><strong>Milestone:</strong> @log.MilestoneName</p>
+                                        <p class="mb-1"><strong>Description:</strong> @log.Description</p>
+                                        @if (!string.IsNullOrEmpty(log.Attachment))
+                                        {
+                                            <p class="mb-0">
+                                                <a href="javascript:void(0);" onclick="viewAttachment('@Url.Content(log.Attachment)')" class="attachment-link">
+                                                    <i class="fas fa-paperclip"></i> View Attachment
+                                                </a>
+                                            </p>
+                                        }
+                                    </div>
                                 </div>
-                                <!-- Milestone, Description, and Attachment Link -->
-                                <div class="log-details ml-5">
-                                    <p class="mb-1"><strong>Milestone:</strong> @log.MilestoneName</p>
-                                    <p class="mb-1"><strong>Description:</strong> @log.Description</p>
-                                    @if (!string.IsNullOrEmpty(log.Attachment))
-                                    {
-                                        <p class="mb-0">
-                                            <a href="javascript:void(0);" onclick="viewAttachment('@Url.Content(log.Attachment)')" class="attachment-link">
-                                                <i class="fas fa-paperclip"></i> View Attachment
-                                            </a>
-                                        </p>
-                                    }
-                                </div>
-                            </div>
+                            }
                         }
-                    }
-                    else
-                    {
-                        <div class="icon">
-                            <img src="~/AdminLTE-3.2.0/dist/img/ek.png" alt="No Logs">
-                        </div>
-                        <p>There aren't any status updates in this project yet.</p>
-                    }
+                        else
+                        {
+                            <div class="icon">
+                                <img src="~/AdminLTE-3.2.0/dist/img/ek.png" alt="No Logs">
+                            </div>
+                            <p>There aren't any status updates in this project yet.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attachment Viewing Modal -->
+    <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="attachmentModalLabel">Attachment Preview</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="attachmentFrame" src="" style="width:100%; height:500px;" frameborder="0"></iframe>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Attachment Viewing Modal -->
-<div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="attachmentModalLabel">Attachment Preview</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+
+
+<!-- Timeline Tab -->
+<div class="tab-pane fade" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
+    <!-- Gantt Chart Section -->
+    <div class="card-container">
+        <div class="table-container">
+            <div class="gantt-header">
+                <div class="gantt-view-controls">
+                    <button id="day-view" class="gantt-view-btn active">Day</button>
+                    <button id="week-view" class="gantt-view-btn">Week</button>
+                    <button id="month-view" class="gantt-view-btn">Month</button>
+                </div>
+                @*<div class="gantt-date-controls">
+                        <button id="prev-date" class="gantt-nav-btn">«</button>
+                        <span id="date-range"></span>
+                        <button id="today-btn" class="gantt-today-btn">Today</button>
+                        <button id="next-date" class="gantt-nav-btn">»</button>
+                    </div>*@
+
+                <div>
+                    <button id="maximize-btn" class="gantt-nav-btn"><i class="fa-solid fa-maximize"></i></button>
+                    <button id="minimize-btn" class="gantt-nav-btn" style="display: none;">Minimize</button>
+                </div>
             </div>
-            <div class="modal-body">
-                <iframe id="attachmentFrame" src="" style="width:100%; height:500px;" frameborder="0"></iframe>
-            </div>
+            <div id="gantt_here" style="width:100%; height:60vh;"></div>
         </div>
     </div>
-</div>
-
-
-
-<!-- Gantt Chart Section -->
-<div class="card-container">
-    <div class="table-container">
-        <div class="gantt-header">
-            <div class="gantt-view-controls">
-                <button id="day-view" class="gantt-view-btn active">Day</button>
-                <button id="week-view" class="gantt-view-btn">Week</button>
-                <button id="month-view" class="gantt-view-btn">Month</button>
-            </div>
-            @*<div class="gantt-date-controls">
-                <button id="prev-date" class="gantt-nav-btn">«</button>
-                <span id="date-range"></span>
-                <button id="today-btn" class="gantt-today-btn">Today</button>
-                <button id="next-date" class="gantt-nav-btn">»</button>
-            </div>*@
-
-            <div>
-                <button id="maximize-btn" class="gantt-nav-btn"><i class="fa-solid fa-maximize"></i></button>
-                <button id="minimize-btn" class="gantt-nav-btn" style="display: none;">Minimize</button>
-            </div>
-        </div>
-        <div id="gantt_here" style="width:100%; height:60vh;"></div>
-    </div>
-</div>
-
+   </div>
 
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -625,9 +614,69 @@
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
 
     <script>
+        // Function to load Activity Logs dynamically
         function loadActivityLogs() {
-            $('#activityLogModal').modal('show');
+            const activityLogContainer = $('#activity-log-container');
+            activityLogContainer.html('<p>Loading activity logs...</p>');
+
+            // Replace '/Checklist/GetActivityLogs' with your server-side endpoint for fetching logs
+            $.ajax({
+                url: '/Checklist/GetActivityLogs', // Ensure this is the correct controller/action
+                type: 'GET',
+                success: function (response) {
+                    // Dynamically update the Activity Logs container with the response
+                    activityLogContainer.html(response);
+                },
+                error: function () {
+                    // Display an error message in case of failure
+                    activityLogContainer.html('<p>Failed to load activity logs. Please try again later.</p>');
+                }
+            });
         }
+
+        // Function to validate and submit the Status Update form
+        function validateAndSubmit() {
+            const milestone = $('#selectedMilestone').val();
+            const statusUpdate = $('#statusUpdate').val();
+            const validationMessage = $('#validationMessage');
+
+            // Clear any previous validation message
+            validationMessage.hide();
+
+            // Basic validation
+            if (!milestone || !statusUpdate.trim()) {
+                validationMessage.text('Please fill out all required fields.').show();
+                return;
+            }
+
+            // Submit the form using AJAX
+            const formData = new FormData($('#updateStatusForm')[0]);
+            $.ajax({
+                url: $('#updateStatusForm').attr('action'),
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function () {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Status Updated!',
+                        text: 'The milestone status has been successfully updated.',
+                    });
+                    // Reload Activity Logs or update the UI
+                    loadActivityLogs();
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: 'An error occurred while updating the milestone status.',
+                    });
+                }
+            });
+        }
+
+        // Initialize Gantt Chart and its configurations
         document.addEventListener("DOMContentLoaded", function () {
             gantt.config.xml_date = "%Y-%m-%d %H:%i";
             gantt.config.readonly = true;
@@ -639,65 +688,15 @@
                 { name: "end_date", label: "Finish", align: "center", width: 90 }
             ];
             gantt.config.scales = [
-                { unit: "week", date: "Week %W" } 
+                { unit: "week", date: "Week %W" }
             ];
 
             gantt.templates.task_text = function () {
-                return ""; // no text inside the task bars
+                return ""; // No text inside the task bars
             };
 
             gantt.init("gantt_here");
             gantt.load(`/Checklist/getGanttData?id=${"@TempData["entry"]"}`, "json");
-
-            const maximizeBtn = document.getElementById("maximize-btn");
-            maximizeBtn.addEventListener("click", () => {
-                const ganttDataId = "@TempData["entry"]";
-                const projectTitle = document.querySelector("#projectDetails a").textContent.trim();
-                const currentGanttId = gantt.config.api_id || ganttDataId;
-
-                const newTabUrl = `/Checklist/MaximizedGantt?id=${ganttDataId}&title=${encodeURIComponent(projectTitle)}`;
-                const newTab = window.open(newTabUrl, `_blank`);
-                newTab.document.write(`
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <title>${projectTitle} - Gantt Chart</title>
-                        <link rel="stylesheet" href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css">
-                    </head>
-                    <body style="margin: 0; padding: 0;">
-                        <div id="gantt_here" style="width: 100vw; height: 100vh;"></div>
-                        <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"><\/script>
-                        <script>
-                            gantt.config.xml_date = "%Y-%m-%d %H:%i";
-                            gantt.config.readonly = true;
-                            gantt.config.columns = [
-                                { name: "key_person", label: "Key Person", align: "center", width: 90 },
-                                { name: "text", label: "Milestone", tree: true, width: 200 },
-                                { name: "duration", label: "Duration", align: "center", width: 70 },
-                                { name: "start_date", label: "Start", align: "center", width: 90 },
-                                { name: "end_date", label: "Finish", align: "center", width: 90 }
-                            ];
-                            gantt.config.scales = [
-                                { unit: "day", step: 1, date: "%d %M" },
-                                { unit: "week", date: "Week %W" }
-                            ];
-                            gantt.templates.task_text = function () {
-                                return ""; // No text inside the task bars
-                            };
-                            gantt.init("gantt_here");
-                            gantt.load("/Checklist/getGanttData?id=${currentGanttId}", "json");
-                        <\/script>
-                    </body>
-                    </html>
-                `);
-            });
-
-            const updateDateRangeDisplay = () => {
-                const dateRange = gantt.getState().min_date;
-                const endDate = gantt.getState().max_date;
-                document.getElementById("date-range").innerText =
-                    gantt.templates.date_range(dateRange, endDate);
-            };
 
             const setDayView = () => {
                 gantt.config.scales = [
@@ -709,7 +708,7 @@
 
             const setWeekView = () => {
                 gantt.config.scales = [
-                    { unit: "week", step: 1, date: "Week %W" },
+                    { unit: "week", step: 1, date: "WW %W" },
                     { unit: "month", step: 1, date: "%F %Y" }
                 ];
                 gantt.render();
@@ -747,7 +746,9 @@
 
             setWeekView();
             activateButton("week-view");
-            updateDateRangeDisplay();
+
+            // Load Activity Logs on page load
+            loadActivityLogs();
         });
     </script>
 }
