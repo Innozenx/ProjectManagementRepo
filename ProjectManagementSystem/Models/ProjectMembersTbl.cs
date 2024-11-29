@@ -12,14 +12,15 @@ namespace ProjectManagementSystem.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Project_Members
+    public partial class ProjectMembersTbl
     {
-        public int proMem_id { get; set; }
+        public int member_id { get; set; }
         public string name { get; set; }
-        public Nullable<int> project_id { get; set; }
         public string email { get; set; }
+        public Nullable<int> project_id { get; set; }
         public string division { get; set; }
         public string department { get; set; }
-        public string role { get; set; }
+        public Nullable<int> role { get; set; }
+        public Nullable<bool> acknowledged { get; set; }
     }
 }

@@ -14,6 +14,8 @@ using Microsoft.AspNet.Identity;
 using ProjectManagementSystem.CustomAttributes;
 using System.Security.Claims;
 using System.Web;
+using MimeKit;
+using MailKit.Net.Smtp;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -352,13 +354,13 @@ namespace ProjectManagementSystem.Controllers
                  .ToList();
 
             // fetch project members
-            var projectMembers = db.Project_Members
+            var projectMembers = db.ProjectMembersTbls
                 .Where(pm => pm.project_id == id)
                 .AsEnumerable() 
                 .Select(pm => new ProjectMemberViewModel
                 {
                     Name = pm.name,
-                    Role = pm.role,
+                    Role = pm.role.Value,
                     Initials = !string.IsNullOrEmpty(pm.name)
                         ? string.Join("", pm.name.Split(' ').Select(n => n[0]))
                         : "N/A", 
@@ -488,7 +490,7 @@ namespace ProjectManagementSystem.Controllers
         {
             var message = "";
             var status = false;
-            var attachment = System.Web.HttpContext.Current.Request.Files["pmcsv"];
+            var attachment = System.Web.HttpContext.Current.Request.Files["csvFile"];
             var UserId = User.Identity.GetUserId();
             int projectId = Int32.Parse(System.Web.HttpContext.Current.Request.Params.GetValues(0)[0]);
             var project = db.RegistrationTbls.Where(x => x.registration_id == projectId).Single();
@@ -568,8 +570,8 @@ namespace ProjectManagementSystem.Controllers
                                 var addWeeklyChecklist = new MainTable
                                 {
                                     project_title = getProject.ProjectTitle,
-                                    project_start = DateTime.ParseExact(getProject.projectStart, dateFormat, CultureInfo.InvariantCulture),
-                                    project_end = DateTime.ParseExact(getProject.projectEnd, dateFormat, CultureInfo.InvariantCulture),
+                                    project_start = DateTime.ParseExact(getProject.projectStart.ToString(), dateFormat, CultureInfo.InvariantCulture),
+                                    project_end = DateTime.ParseExact(getProject.projectEnd.ToString(), dateFormat, CultureInfo.InvariantCulture),
                                     duration = getProject.ProjectDuration,
                                     year = getProject.ProjectYear,
                                     division = getProject.division,
@@ -615,7 +617,7 @@ namespace ProjectManagementSystem.Controllers
 
                                     foreach (var taskGroup in groupedTasks)
                                     {
-                                        DateTime taskStartDate = DateTime.ParseExact(taskGroup.TaskStart, dateFormat, CultureInfo.InvariantCulture);
+                                        DateTime taskStartDate = DateTime.ParseExact(DateTime.Parse(taskGroup.TaskStart).ToString("MM/dd/yyyy"), dateFormat, CultureInfo.InvariantCulture);
                                         int taskDuration = taskGroup.task_duration;
                                         DateTime taskEndDate = taskStartDate.AddDays(taskDuration);
 
@@ -815,10 +817,18 @@ namespace ProjectManagementSystem.Controllers
         }
 
         //------------------------Activity Log Viewing----------------------------
-        public ActionResult ActivityView(string user)
+        public ActionResult ActivityView()
         {
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult ActivityList(JqueryDatatableParam param)
+        {
+            var searchValue = Request.Form.GetValues("search[value]").First();
             var division = "";
             var department = "";
+            var message = "";
             var userClaims = User.Identity as System.Security.Claims.ClaimsIdentity;
             var role = userClaims.Claims.Where(x => x.Type == ClaimTypes.Role).ToList();
             List<string> userRole = new List<string>();
@@ -842,30 +852,137 @@ namespace ProjectManagementSystem.Controllers
                     userRole.Add(item.Value);
                 }
             };
-            
 
-            logList = db.Activity_Log.Where(x => x.action_level <= 5).ToList();
+            var query = db.Activity_Log.OrderByDescending(x => x.datetime_performed).ToList();
 
-            ActivityLogViewModel activity_log = new ActivityLogViewModel();
-            foreach(var item in logList)
+            var data = query.Select(x => new
             {
-                activity_log.Username = item.username;
-                activity_log.DatetimePerformed = item.datetime_performed;
-                activity_log.ActionLevel = item.action_level;
-                activity_log.ActionLevel = item.action_level;
-                activity_log.Action = item.action;
-                activity_log.Description = item.description;
-                activity_log.Department = item.department;
-                activity_log.Division = item.division;
+                log_id = x.log_id,
+                user = x.username,
+                date = DateTime.Parse(x.datetime_performed.ToString()).ToString(),
+                action = x.action,
+                description = x.description,
+                department = x.department,
+                division = x.division
+
+            });
+
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                try
+                {
+                    if (data.Where(x => x.user.ToLower().Contains(searchValue.ToLower()) || x.department.ToLower().Contains(searchValue.ToLower()) || x.division.ToLower().Contains(searchValue.ToLower())).ToList().Count != 0)
+                    {
+                        data = data.Where(x => x.user.ToLower().Contains(searchValue.ToLower()) || x.department.ToLower().Contains(searchValue.ToLower()) || x.division.ToLower().Contains(searchValue.ToLower())).ToList();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("----------------------------------------------------ERROR LOG START-----------------------------------------------------------");
+                    Debug.WriteLine(e);
+                    Debug.WriteLine("----------------------------------------------------ERROR LOG END!!-----------------------------------------------------------");
+                }
+                
             }
 
-            return View(activity_log);
+            var displayResult = data.Skip(param.start).Take(param.length).ToList();
+            var totalRecords = data.Count();
+            return Json(new { param.draw, iTotalRecords = totalRecords, iTotalDisplayRecords = totalRecords, data = displayResult}, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult ProjectChecklist()
         {
+            return View();
+        }
 
-           
+        public JsonResult EmailInvitees(string[] users, int[] roles, string project)
+        {
+            var systemEmail = "e-notify@enchantedkingdom.ph";
+            var systemName = "PM SYSTEM";
+
+            for (var i = 0; i < users.Length; i++)
+            {
+                var userName = users[i].Substring(0, users[i].IndexOf("("));
+                var userEmail = users[i].Substring(users[i].IndexOf("("));
+                userEmail = userEmail.Replace(")", "");
+                userEmail = userEmail.Replace("(", "");
+
+                var userRoleId = roles[i];
+                var userRole = db.Roles.Where(x => x.id == userRoleId).Select(x => x.RoleName).Single();
+
+                var userProjectId = Int32.Parse(project);
+                var userProject = db.MainTables.Where(x => x.main_id == userProjectId).Select(x => x.project_title).Single();
+
+                var email = new MimeMessage();
+
+                email.From.Add(new MailboxAddress(systemName, systemEmail));
+                email.To.Add(new MailboxAddress(userName, userEmail));
+
+                email.Subject = "Project Invitation";
+                email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = "<b>Magical Day " + userName + "!</b></br></br>" +
+                           "You have been included in the list of members for the project: <b><i>" + userProject + "</i></b> </br>" +
+                           "<b>Your role:</b> " + userRole + " </br>" +
+                           "<b>Your assigned task/s are: </b> <insert tasks here></br></br>" +
+                           "<a href='http://localhost:60297/Checklist/AcknowledgeInvite?email=" + userEmail +"'>Click here to acknowledge your inclusion in the project</a></br></br>" + 
+                           "We are looking forward to your cooperation and success with the project!</br></br>" +
+                           "<span display='font-size: 15px;'><i>*NOTE: PLEASE DO NOT REPLY TO THIS EMAIL. THIS IS AN AUTOMATED EMAIL FROM THE PM SYSTEM. FOR ANY CONCERNS, PLEASE CONTACT YOUR IMMEDIATE SUPERVISOR, OR REACH OUT TO ITS <b>LOCAL: 132</b></i></span>"
+                };
+
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Connect("mail.enchantedkingdom.ph", 587, false);
+
+                    // Note: only needed if the SMTP server requires authentication
+                    smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+                }
+
+                ProjectMemberViewModel member = new ProjectMemberViewModel()
+                {
+                    Name = userName,
+                    Email = userEmail,
+                    Project_ID = Int32.Parse(project),
+                    Role = roles[i],
+                    Division = "N/A",
+                    Department = "N/A"
+                };
+
+                ProjectMembersTbl dbMember = new ProjectMembersTbl
+                {
+                    name = member.Name,
+                    email = member.Email,
+                    project_id = member.Project_ID,
+                    role = member.Role,
+                    division = member.Division,
+                    department = member.Department,
+                    acknowledged = false
+                };
+
+                db.ProjectMembersTbls.Add(dbMember);
+                db.SaveChanges();
+            }
+            return Json(new { message = "test" }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult AcknowledgeInvite(string email)
+        {
+            try
+            {
+                var acknowledged = db.ProjectMembersTbls.Where(x => x.email == email).First();
+                acknowledged.acknowledged = true;
+
+                db.SaveChanges();
+            }
+            catch(Exception e)
+            {
+                var message = e.Message;
+            }
+            
+
             return View();
         }
     }

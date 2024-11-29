@@ -115,26 +115,19 @@
           <Property Name="milestone_position" Type="int" />
           <Property Name="status_update" Type="nvarchar" MaxLength="550" />
         </EntityType>
-        <EntityType Name="Project_Members">
+        <EntityType Name="ProjectMembersTbl">
           <Key>
-            <PropertyRef Name="proMem_id" />
+            <PropertyRef Name="member_id" />
           </Key>
-          <Property Name="proMem_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="250" />
+          <Property Name="member_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="100" />
+          <Property Name="email" Type="nvarchar" MaxLength="100" />
           <Property Name="project_id" Type="int" />
-          <Property Name="email" Type="nvarchar" MaxLength="250" />
           <Property Name="division" Type="nvarchar" MaxLength="50" />
           <Property Name="department" Type="nvarchar" MaxLength="50" />
-          <Property Name="role" Type="nvarchar" MaxLength="50" />
+          <Property Name="role" Type="int" />
+          <Property Name="acknowledged" Type="bit" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6013: The table/view 'ProjectManagementDB.dbo.ProjectMembers' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
-        <EntityType Name="ProjectMembers">
-          <Property Name="MemberId" Type="int" />
-          <Property Name="Name" Type="varchar" MaxLength="255" />
-          <Property Name="Email" Type="varchar" MaxLength="255" />
-          <Property Name="Role" Type="varchar" MaxLength="255" />
-        </EntityType>-->
         <EntityType Name="RegistrationTbl">
           <Key>
             <PropertyRef Name="registration_id" />
@@ -254,7 +247,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="DetailsTbl" EntityType="Self.DetailsTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MainTable" EntityType="Self.MainTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MilestoneTbl" EntityType="Self.MilestoneTbl" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Project_Members" EntityType="Self.Project_Members" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProjectMembersTbl" EntityType="Self.ProjectMembersTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RegistrationTbl" EntityType="Self.RegistrationTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Reports" EntityType="Self.Reports" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
@@ -281,7 +274,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="DetailsTbls" EntityType="ProjectManagementDBModel.DetailsTbl" />
           <EntitySet Name="MainTables" EntityType="ProjectManagementDBModel.MainTable" />
           <EntitySet Name="MilestoneTbls" EntityType="ProjectManagementDBModel.MilestoneTbl" />
-          <EntitySet Name="Project_Members" EntityType="ProjectManagementDBModel.Project_Members" />
+          <EntitySet Name="ProjectMembersTbls" EntityType="ProjectManagementDBModel.ProjectMembersTbl" />
           <EntitySet Name="RegistrationTbls" EntityType="ProjectManagementDBModel.RegistrationTbl" />
           <EntitySet Name="Reports" EntityType="ProjectManagementDBModel.Report" />
           <EntitySet Name="Roles" EntityType="ProjectManagementDBModel.Role" />
@@ -410,17 +403,18 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <NavigationProperty Name="DetailsTbls" Relationship="ProjectManagementDBModel.FK_DetailsTbl_MilestoneTbl" FromRole="MilestoneTbl" ToRole="DetailsTbl" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
         </EntityType>
-        <EntityType Name="Project_Members">
+        <EntityType Name="ProjectMembersTbl">
           <Key>
-            <PropertyRef Name="proMem_id" />
+            <PropertyRef Name="member_id" />
           </Key>
-          <Property Name="proMem_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="name" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="member_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="project_id" Type="Int32" />
-          <Property Name="email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="department" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="role" Type="Int32" />
+          <Property Name="acknowledged" Type="Boolean" />
         </EntityType>
         <EntityType Name="RegistrationTbl">
           <Key>
@@ -649,16 +643,17 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Project_Members">
-            <EntityTypeMapping TypeName="ProjectManagementDBModel.Project_Members">
-              <MappingFragment StoreEntitySet="Project_Members">
+          <EntitySetMapping Name="ProjectMembersTbls">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.ProjectMembersTbl">
+              <MappingFragment StoreEntitySet="ProjectMembersTbl">
+                <ScalarProperty Name="acknowledged" ColumnName="acknowledged" />
                 <ScalarProperty Name="role" ColumnName="role" />
                 <ScalarProperty Name="department" ColumnName="department" />
                 <ScalarProperty Name="division" ColumnName="division" />
-                <ScalarProperty Name="email" ColumnName="email" />
                 <ScalarProperty Name="project_id" ColumnName="project_id" />
+                <ScalarProperty Name="email" ColumnName="email" />
                 <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="proMem_id" ColumnName="proMem_id" />
+                <ScalarProperty Name="member_id" ColumnName="member_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

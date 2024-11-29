@@ -407,9 +407,25 @@ namespace ProjectManagementSystem.Models
     public class ProjectMemberViewModel
     {
         public string Name { get; set; }
-        public string Role { get; set; } 
-        public string Initials { get; set; } 
-        public string Email { get; set; } 
+        public int Role { get; set; }
+        public string Initials { get; set; }
+        public string Email { get; set; }
+        public string Division { get; set; }
+        public string Department { get; set; }
+        public int Project_ID { get; set; }
+    }
+
+    public class JqueryDatatableParam
+    {
+        public int draw { get; set; }
+        public string searchvalue { get; set; }
+        public int length { get; set; }
+        public int start { get; set; }
+        public int iColumns { get; set; }
+        public int iSortCol_0 { get; set; }
+        public string sSortDir_0 { get; set; }
+        public int iSortingCols { get; set; }
+        public string sColumns { get; set; }
     }
 
 }

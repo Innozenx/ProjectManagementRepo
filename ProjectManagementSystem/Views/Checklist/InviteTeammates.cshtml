@@ -304,7 +304,8 @@
     }
 
     function createRoleDropdown(memberId) {
-        let roleDropdown = `<select class="role-dropdown" id="role_${memberId}">`;
+        //let roleDropdown = `<select class="role-dropdown" id="role_${memberId}">`;
+        let roleDropdown = `<select class="role-dropdown" id="role">`;
         availableRoles.forEach(role => {
             roleDropdown += `<option value="${role.Id}">${role.RoleName}</option>`;
         });
@@ -329,6 +330,7 @@
                 `;
 
                 chipsContainer.appendChild(chip);
+                chip.setAttribute("data-value", checkbox.nextElementSibling.textContent);
             }
         });
     }
@@ -391,5 +393,31 @@
         if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
             updateSelectedChips();
         }
+    });
+
+    $("#inviteButton").on("click", function () {
+        const chips = document.getElementsByClassName("chip");
+        const roles = document.querySelectorAll("#role");
+        let userArr = [];
+        let roleArr = [];
+        let project = document.getElementById("projectDropdown").value;
+
+        for (i = 0; i < chips.length; i++) {
+            //alert(chips.item(i).getAttribute("data-value"));
+            //alert(chips.item(i).getAttribute("data-value") + "with role: " + roles[i].value);
+            userArr[i] = chips.item(i).getAttribute("data-value");
+            roleArr[i] = roles[i].value
+        };
+
+        $.ajax({
+            url: "@Url.Action("EmailInvitees", "Checklist")",
+            type: "POST",
+            data: {"users": userArr, "roles": roleArr, "project": project},
+            success: function (res) {
+                if (res.message == "test") {
+                    alert("SUCCESS");
+                }
+            }
+        });
     });
 </script>
