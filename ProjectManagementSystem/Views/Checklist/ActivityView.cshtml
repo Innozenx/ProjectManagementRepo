@@ -1,10 +1,76 @@
 ﻿@using ProjectManagementSystem.Models
 @{
-    ViewBag.Title = "ActivityView";
+    ViewBag.Title = "Activity View";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>ActivityView</h2>
+
+
+<style>
+    .container {
+        max-width: 95%; /* Adjusted container width to fit like your other views */
+        margin: 20px auto; /* Center align with spacing on top */
+    }
+
+    h2 {
+        text-align: center; /* Center-align the title */
+        font-size: 24px; /* Match the heading size with your other views */
+        font-weight: bold; /* Ensure the title is bold */
+        color: #4A4A4A; /* Neutral dark color for text */
+        margin-bottom: 20px; /* Add spacing below the title */
+    }
+
+    #activityGrid {
+        width: 100%; /* Full width for responsiveness */
+        border-collapse: collapse; /* Clean table layout */
+        margin-top: 20px; /* Add spacing above the table */
+    }
+
+        #activityGrid thead th {
+            background-color: #00B233; /* Match with your primary theme color */
+            color: #FFF; /* White text for contrast */
+            text-align: center; /* Center-align table headers */
+            padding: 12px; /* Add padding for spacing */
+            font-size: 12px; /* Match font size for tables */
+            text-transform: uppercase; /* Uppercase headers for consistency */
+        }
+
+        #activityGrid tbody td {
+            text-align: center; /* Center-align table data */
+            padding: 10px; /* Add padding for readability */
+            font-size: 12px; /* Standard font size for tables */
+            color: #4A4A4A; /* Neutral dark color for text */
+            word-wrap: break-word; /* Prevent overflow and wrap text */
+        }
+
+        #activityGrid tbody tr:nth-child(even) {
+            background-color: #F9F9F9; /* Alternate row color for readability */
+        }
+
+        #activityGrid tbody tr:hover {
+            background-color: #e9f5e9; /* Highlight row on hover with a subtle color */
+        }
+
+    /* Add responsiveness for smaller screens */
+    @@media (max-width: 768px) {
+        #activityGrid {
+            font-size: 10px; /* Reduce font size for smaller screens */
+        }
+
+            #activityGrid thead th, #activityGrid tbody td {
+                padding: 8px; /* Adjust padding for smaller screens */
+            }
+
+        h2 {
+            font-size: 20px; /* Adjust heading size for mobile */
+        }
+    }
+
+</style>
+
+
+
+<h2>Activity Logs</h2>
 <link href="~/Scripts/dataTables.dataTables.min.css" rel="stylesheet" />
 
 <div class="container">

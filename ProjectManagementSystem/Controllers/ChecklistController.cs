@@ -918,17 +918,45 @@ namespace ProjectManagementSystem.Controllers
                 email.From.Add(new MailboxAddress(systemName, systemEmail));
                 email.To.Add(new MailboxAddress(userName, userEmail));
 
-                email.Subject = "Project Invitation";
+                email.Subject = userName + "invited you to a project: " + userProject;
                 email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                 {
-                    Text = "<b>Magical Day " + userName + "!</b></br></br>" +
-                           "You have been included in the list of members for the project: <b><i>" + userProject + "</i></b> </br>" +
-                           "<b>Your role:</b> " + userRole + " </br>" +
-                           "<b>Your assigned task/s are: </b> <insert tasks here></br></br>" +
-                           "<a href='http://localhost:60297/Checklist/AcknowledgeInvite?email=" + userEmail +"'>Click here to acknowledge your inclusion in the project</a></br></br>" + 
-                           "We are looking forward to your cooperation and success with the project!</br></br>" +
-                           "<span display='font-size: 15px;'><i>*NOTE: PLEASE DO NOT REPLY TO THIS EMAIL. THIS IS AN AUTOMATED EMAIL FROM THE PM SYSTEM. FOR ANY CONCERNS, PLEASE CONTACT YOUR IMMEDIATE SUPERVISOR, OR REACH OUT TO ITS <b>LOCAL: 132</b></i></span>"
+                    Text = @"
+                    <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
+                        <div style='text-align: center; margin-bottom: 20px;'>
+                            <img src='~/AdminLTE-3.2.0/dist/img/ekk.jpg' alt='Eldar Logo' style='max-width: 80px; border-radius: 50%; margin-bottom: 20px;'>
+                            <h1 style='font-size: 24px; color: #66339A; margin: 0;'>You have been added to the project </h1> <span style='font-size: 16px; font-weight: bold; color: #66339A;'><i>" + userProject + @"</i></span>
+                            <p style='font-size: 14px; color: #666; margin-top: 10px;'>Get started on your new assignment with just one click.</p>
+                        </div>
+                        <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);'>
+                            <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Magical Day, " + userName + @"!</p>
+               
+                            <p style='font-size: 14px; color: #555;'>
+                                <b>Your Role:</b> <span style='color: #333;'>" + userRole + @"</span><br>
+                                <b>Assigned Task(s):</b> <span style='color: #333;'> <insert tasks here> </span>
+                            </p>
+                            <p style='font-size: 14px; color: #555; margin-top: 20px;'>
+                               Please click the button to get started:
+                            </p>
+                            <div style='text-align: center; margin: 30px 0;'>
+                                <a href='http://localhost:60297/Checklist/Dashboard" + userEmail + @"'
+                                   style='display: inline-block; padding: 12px 30px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 14px;'>
+                                   View Project
+                                </a>
+                            </div>
+                            <p style='font-size: 14px; color: #555; text-align: center;'>
+                                Need assistance? Please don’t hesitate to reach out.
+                            </p>
+                        </div>
+                        <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
+                            <i>*This is an automated email from the Project Management System. Please do not reply. For any concerns, kindly contact your immediate supervisor or reach out to ITS at <b>LOCAL: 132</b>.</i>
+                        </div>
+                    </div>"
                 };
+
+
+
+
 
                 using (var smtp = new SmtpClient())
                 {
