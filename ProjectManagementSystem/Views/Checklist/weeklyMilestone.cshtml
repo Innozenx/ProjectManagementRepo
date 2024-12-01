@@ -463,7 +463,21 @@
                         <div class="avatar-circle">@member.Initials</div>
                         <div class="member-details">
                             <p class="member-name">@member.Name</p>
-                            <p class="member-role">@member.Role</p>
+                            <p class="member-role">
+                                @{
+                                    switch (member.Role){
+                                        case 1:
+                                            <p>Tester</p>;
+                                            break;
+                                        case 2:
+                                            <p>Editor</p>
+                                            break;
+                                        case 3:
+                                            <p>Viewer</p>
+                                            break;
+                                    }
+                                 }
+                            </p>
                             <p class="member-email">@member.Email</p>
                         </div>
                     </div>
@@ -509,9 +523,9 @@
                 <div class="modal-body bg-white p-4">
                     <div id="activity-log-container" class="activity-log-container">
                         @if (Model.StatusLogs != null && Model.StatusLogs.Any())
-                        {
-                            foreach (var log in Model.StatusLogs)
-                            {
+                                {
+                                    foreach (var log in Model.StatusLogs)
+                                    {
                                 <div class="log-entry">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <div class="d-flex align-items-center">

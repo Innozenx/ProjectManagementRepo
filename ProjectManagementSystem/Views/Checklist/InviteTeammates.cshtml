@@ -414,8 +414,12 @@
             type: "POST",
             data: {"users": userArr, "roles": roleArr, "project": project},
             success: function (res) {
-                if (res.message == "test") {
+                if (res.message == "Success") {
                     alert("SUCCESS");
+                }
+
+                else {
+                    alert(res.message);
                 }
             }
         });

@@ -356,14 +356,15 @@ namespace ProjectManagementSystem.Controllers
             // fetch project members
             var projectMembers = db.ProjectMembersTbls
                 .Where(pm => pm.project_id == id)
-                .AsEnumerable() 
+                .AsEnumerable()
                 .Select(pm => new ProjectMemberViewModel
                 {
                     Name = pm.name,
                     Role = pm.role.Value,
-                    Initials = !string.IsNullOrEmpty(pm.name)
-                        ? string.Join("", pm.name.Split(' ').Select(n => n[0]))
+                    Initials = !string.IsNullOrEmpty(pm.name) && pm.name.Split(' ').Length > 2
+                        ? pm.name.Split(' ')[0].Substring(0, 1) + pm.name.Split(' ')[1].Substring(0, 1)
                         : "N/A", 
+                    //Initials = pm.name,
                     Email = pm.email
                 })
                 .ToList();
@@ -899,24 +900,31 @@ namespace ProjectManagementSystem.Controllers
         {
             var systemEmail = "e-notify@enchantedkingdom.ph";
             var systemName = "PM SYSTEM";
+            var message = "";
 
-            for (var i = 0; i < users.Length; i++)
+            using(var transaction = db.Database.BeginTransaction())
             {
-                var userName = users[i].Substring(0, users[i].IndexOf("("));
-                var userEmail = users[i].Substring(users[i].IndexOf("("));
-                userEmail = userEmail.Replace(")", "");
-                userEmail = userEmail.Replace("(", "");
+                for (var i = 0; i < users.Length; i++)
+                {
+                    var userName = users[i].Substring(0, users[i].IndexOf("("));
+                    var userEmail = users[i].Substring(users[i].IndexOf("("));
+                    userEmail = userEmail.Replace(")", "");
+                    userEmail = userEmail.Replace("(", "");
 
-                var userRoleId = roles[i];
-                var userRole = db.Roles.Where(x => x.id == userRoleId).Select(x => x.RoleName).Single();
+                    var userProjectId = Int32.Parse(project);
 
-                var userProjectId = Int32.Parse(project);
-                var userProject = db.MainTables.Where(x => x.main_id == userProjectId).Select(x => x.project_title).Single();
+                    if (db.ProjectMembersTbls.Where(x => x.email == userEmail && x.project_id == userProjectId).Count() < 1)
+                    {
+                        var userRoleId = roles[i];
+                        var userRole = db.Roles.Where(x => x.id == userRoleId).Select(x => x.RoleName).Single();
 
-                var email = new MimeMessage();
 
-                email.From.Add(new MailboxAddress(systemName, systemEmail));
-                email.To.Add(new MailboxAddress(userName, userEmail));
+                        var userProject = db.MainTables.Where(x => x.main_id == userProjectId).Select(x => x.project_title).Single();
+
+                        var email = new MimeMessage();
+
+                        email.From.Add(new MailboxAddress(systemName, systemEmail));
+                        email.To.Add(new MailboxAddress(userName, userEmail));
 
                 email.Subject = userName + "invited you to a project: " + userProject;
                 email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
@@ -962,38 +970,52 @@ namespace ProjectManagementSystem.Controllers
                 {
                     smtp.Connect("mail.enchantedkingdom.ph", 587, false);
 
-                    // Note: only needed if the SMTP server requires authentication
-                    smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
+                            // Note: only needed if the SMTP server requires authentication
+                            smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
 
-                    smtp.Send(email);
-                    smtp.Disconnect(true);
+                            smtp.Send(email);
+                            smtp.Disconnect(true);
+                        }
+
+                        ProjectMemberViewModel member = new ProjectMemberViewModel()
+                        {
+                            Name = userName,
+                            Email = userEmail,
+                            Project_ID = Int32.Parse(project),
+                            Role = roles[i],
+                            Division = "N/A",
+                            Department = "N/A"
+                        };
+
+                        ProjectMembersTbl dbMember = new ProjectMembersTbl
+                        {
+                            name = member.Name,
+                            email = member.Email,
+                            project_id = member.Project_ID,
+                            role = member.Role,
+                            division = member.Division,
+                            department = member.Department,
+                            acknowledged = false
+                        };
+
+                        db.ProjectMembersTbls.Add(dbMember);
+                        db.SaveChanges();
+
+                        message = "Success";
+                        transaction.Commit();
+                    }
+
+                    else
+                    {
+                        message = "User/s are already invited, please check your list of invitees";
+                        transaction.Rollback();
+                        break;
+                    }
+
                 }
-
-                ProjectMemberViewModel member = new ProjectMemberViewModel()
-                {
-                    Name = userName,
-                    Email = userEmail,
-                    Project_ID = Int32.Parse(project),
-                    Role = roles[i],
-                    Division = "N/A",
-                    Department = "N/A"
-                };
-
-                ProjectMembersTbl dbMember = new ProjectMembersTbl
-                {
-                    name = member.Name,
-                    email = member.Email,
-                    project_id = member.Project_ID,
-                    role = member.Role,
-                    division = member.Division,
-                    department = member.Department,
-                    acknowledged = false
-                };
-
-                db.ProjectMembersTbls.Add(dbMember);
-                db.SaveChanges();
             }
-            return Json(new { message = "test" }, JsonRequestBehavior.AllowGet);
+            
+            return Json(new { message = message }, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult AcknowledgeInvite(string email)
