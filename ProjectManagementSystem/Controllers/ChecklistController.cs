@@ -57,12 +57,12 @@ namespace ProjectManagementSystem.Controllers
                             .Select(m => new MilestoneViewModel
                             {
                                 MilestoneName = m.milestone_name,
-                        // EndDate = m.end_date
-                    }).OrderBy(m => m.MilestoneName)
+                                // EndDate = m.end_date
+                            }).OrderBy(m => m.MilestoneName)
                             .ToList()
                     }).ToList()
                 );
-            
+
             var viewModel = new DashboardManagementViewModel
             {
                 ProjectsByDivision = allProjectsWithMilestones,
@@ -266,18 +266,18 @@ namespace ProjectManagementSystem.Controllers
 
         public ActionResult weeklyMilestone(int id, string title, string projectId)
         {
-           
+
             var userId = User.Identity.GetUserId();
 
             // checker if the project belongs to the user
             var userProject = db.MainTables
-                .Where(m => m.main_id == id && m.user_id == userId) 
+                .Where(m => m.main_id == id && m.user_id == userId)
                 .FirstOrDefault();
 
             // if the project doesn't belong to the user, return unauthorized or an error page
             if (userProject == null)
             {
-                return RedirectToAction("AccessDenied", "Error"); 
+                return RedirectToAction("AccessDenied", "Error");
             }
 
             TempData["entry"] = id;
@@ -363,7 +363,7 @@ namespace ProjectManagementSystem.Controllers
                     Role = pm.role.Value,
                     Initials = !string.IsNullOrEmpty(pm.name) && pm.name.Split(' ').Length > 2
                         ? pm.name.Split(' ')[0].Substring(0, 1) + pm.name.Split(' ')[1].Substring(0, 1)
-                        : "N/A", 
+                        : "N/A",
                     //Initials = pm.name,
                     Email = pm.email
                 })
@@ -480,7 +480,7 @@ namespace ProjectManagementSystem.Controllers
                 Users = users,
                 Roles = roles,
                 Projects = projects,
-        
+
             };
 
             return View(model);
@@ -750,7 +750,7 @@ namespace ProjectManagementSystem.Controllers
                 var milestone = db.MilestoneTbls.Find(int.Parse(model.SelectedMilestone));
                 if (milestone != null)
                 {
-                   
+
                     int projectId = (int)milestone.main_id;
                     string userId = User.Identity.GetUserId();
 
@@ -762,7 +762,7 @@ namespace ProjectManagementSystem.Controllers
                         main_id = projectId,
                         user_id = User.Identity.Name,
                         milestone_name = milestone.milestone_name
-                      
+
 
                     };
                     db.WeeklyStatus.Add(statusUpdate);
@@ -792,15 +792,15 @@ namespace ProjectManagementSystem.Controllers
 
                     var activityLog = new Activity_Log
                     {
-                        log_id = projectId, 
+                        log_id = projectId,
                         username = User.Identity.Name,
                         datetime_performed = DateTime.Now,
                         action_level = 1,
                         action = "Status Update",
                         description = $"Updated status for milestone: {milestone.milestone_name}.",
-                        department = "ITS", 
+                        department = "ITS",
                         division = model.Division
-                        
+
                     };
 
                     db.Activity_Log.Add(activityLog);
@@ -883,12 +883,12 @@ namespace ProjectManagementSystem.Controllers
                     Debug.WriteLine(e);
                     Debug.WriteLine("----------------------------------------------------ERROR LOG END!!-----------------------------------------------------------");
                 }
-                
+
             }
 
             var displayResult = data.Skip(param.start).Take(param.length).ToList();
             var totalRecords = data.Count();
-            return Json(new { param.draw, iTotalRecords = totalRecords, iTotalDisplayRecords = totalRecords, data = displayResult}, JsonRequestBehavior.AllowGet);
+            return Json(new { param.draw, iTotalRecords = totalRecords, iTotalDisplayRecords = totalRecords, data = displayResult }, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult ProjectChecklist()
@@ -902,34 +902,36 @@ namespace ProjectManagementSystem.Controllers
             var systemName = "PM SYSTEM";
             var message = "";
 
-            using(var transaction = db.Database.BeginTransaction())
+            using (var transaction = db.Database.BeginTransaction())
             {
-                for (var i = 0; i < users.Length; i++)
+                try
                 {
-                    var userName = users[i].Substring(0, users[i].IndexOf("("));
-                    var userEmail = users[i].Substring(users[i].IndexOf("("));
-                    userEmail = userEmail.Replace(")", "");
-                    userEmail = userEmail.Replace("(", "");
-
-                    var userProjectId = Int32.Parse(project);
-
-                    if (db.ProjectMembersTbls.Where(x => x.email == userEmail && x.project_id == userProjectId).Count() < 1)
+                    for (var i = 0; i < users.Length; i++)
                     {
-                        var userRoleId = roles[i];
-                        var userRole = db.Roles.Where(x => x.id == userRoleId).Select(x => x.RoleName).Single();
+                        var userName = users[i].Substring(0, users[i].IndexOf("("));
+                        var userEmail = users[i].Substring(users[i].IndexOf("("));
+                        userEmail = userEmail.Replace(")", "");
+                        userEmail = userEmail.Replace("(", "");
+
+                        var userProjectId = Int32.Parse(project);
+
+                        if (db.ProjectMembersTbls.Where(x => x.email == userEmail && x.project_id == userProjectId).Count() < 1)
+                        {
+                            var userRoleId = roles[i];
+                            var userRole = db.Roles.Where(x => x.id == userRoleId).Select(x => x.RoleName).Single();
 
 
-                        var userProject = db.MainTables.Where(x => x.main_id == userProjectId).Select(x => x.project_title).Single();
+                            var userProject = db.MainTables.Where(x => x.main_id == userProjectId).Select(x => x.project_title).Single();
 
-                        var email = new MimeMessage();
+                            var email = new MimeMessage();
 
-                        email.From.Add(new MailboxAddress(systemName, systemEmail));
-                        email.To.Add(new MailboxAddress(userName, userEmail));
+                            email.From.Add(new MailboxAddress(systemName, systemEmail));
+                            email.To.Add(new MailboxAddress(userName, userEmail));
 
-                email.Subject = userName + "invited you to a project: " + userProject;
-                email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                {
-                    Text = @"
+                            email.Subject = userName + "invited you to a project: " + userProject;
+                            email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                            {
+                                Text = @"
                     <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
                         <div style='text-align: center; margin-bottom: 20px;'>
                             <img src='~/AdminLTE-3.2.0/dist/img/ekk.jpg' alt='Eldar Logo' style='max-width: 80px; border-radius: 50%; margin-bottom: 20px;'>
@@ -960,61 +962,69 @@ namespace ProjectManagementSystem.Controllers
                             <i>*This is an automated email from the Project Management System. Please do not reply. For any concerns, kindly contact your immediate supervisor or reach out to ITS at <b>LOCAL: 132</b>.</i>
                         </div>
                     </div>"
-                };
+                            };
 
 
 
 
 
-                using (var smtp = new SmtpClient())
-                {
-                    smtp.Connect("mail.enchantedkingdom.ph", 587, false);
+                            using (var smtp = new SmtpClient())
+                            {
+                                smtp.Connect("mail.enchantedkingdom.ph", 587, false);
 
-                            // Note: only needed if the SMTP server requires authentication
-                            smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
+                                // Note: only needed if the SMTP server requires authentication
+                                smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
 
-                            smtp.Send(email);
-                            smtp.Disconnect(true);
+                                smtp.Send(email);
+                                smtp.Disconnect(true);
+                            }
+
+                            ProjectMemberViewModel member = new ProjectMemberViewModel()
+                            {
+                                Name = userName,
+                                Email = userEmail,
+                                Project_ID = Int32.Parse(project),
+                                Role = roles[i],
+                                Division = "N/A",
+                                Department = "N/A"
+                            };
+
+                            ProjectMembersTbl dbMember = new ProjectMembersTbl
+                            {
+                                name = member.Name,
+                                email = member.Email,
+                                project_id = member.Project_ID,
+                                role = member.Role,
+                                division = member.Division,
+                                department = member.Department,
+                                acknowledged = false
+                            };
+
+                            db.ProjectMembersTbls.Add(dbMember);
+                            db.SaveChanges();
+
+                            message = "Success";
+                            transaction.Commit();
                         }
 
-                        ProjectMemberViewModel member = new ProjectMemberViewModel()
+                        else
                         {
-                            Name = userName,
-                            Email = userEmail,
-                            Project_ID = Int32.Parse(project),
-                            Role = roles[i],
-                            Division = "N/A",
-                            Department = "N/A"
-                        };
+                            message = "User/s are already invited, please check your list of invitees";
+                            transaction.Rollback();
+                            break;
+                        }
 
-                        ProjectMembersTbl dbMember = new ProjectMembersTbl
-                        {
-                            name = member.Name,
-                            email = member.Email,
-                            project_id = member.Project_ID,
-                            role = member.Role,
-                            division = member.Division,
-                            department = member.Department,
-                            acknowledged = false
-                        };
-
-                        db.ProjectMembersTbls.Add(dbMember);
-                        db.SaveChanges();
-
-                        message = "Success";
-                        transaction.Commit();
                     }
-
-                    else
-                    {
-                        message = "User/s are already invited, please check your list of invitees";
-                        transaction.Rollback();
-                        break;
-                    }
-
                 }
+
+                catch (Exception e)
+                {
+                    message = "An error occured. Please refresh your browser and re-check your entries. If error persists, please contact ITS Local: 132";
+                    transaction.Rollback();
+                }
+
             }
-            
+
             return Json(new { message = message }, JsonRequestBehavior.AllowGet);
         }
 
@@ -1027,11 +1037,11 @@ namespace ProjectManagementSystem.Controllers
 
                 db.SaveChanges();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 var message = e.Message;
             }
-            
+
 
             return View();
         }
