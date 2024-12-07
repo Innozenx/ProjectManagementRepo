@@ -5,21 +5,21 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="ec1dd17353b34b5aab58bc501605625f" Name="Diagram1" ZoomLevel="70">
-        <EntityTypeShape EntityType="CMIdentityDBModel.C__MigrationHistory" Width="1.5" PointX="5.75" PointY="1.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetRole" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserClaim" Width="1.5" PointX="3" PointY="3.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserLogin" Width="1.5" PointX="3" PointY="6" IsExpanded="true" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserRole" Width="1.5" PointX="6" PointY="4.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUser" Width="1.5" PointX="0.75" PointY="2.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.CM_EmailUpdate" Width="1.5" PointX="5.75" PointY="7.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.CM_WifiAccess" Width="1.5" PointX="7.75" PointY="7.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.Identity_JobDescription" Width="1.5" PointX="8.75" PointY="1.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.Identity_Keywords" Width="1.5" PointX="0.75" PointY="9.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.vw_CMInfo" Width="1.5" PointX="2.75" PointY="9.5" IsExpanded="true" />
-        <AssociationConnector Association="CMIdentityDBModel.FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId" ManuallyRouted="false" />
-        <AssociationConnector Association="CMIdentityDBModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
-        <AssociationConnector Association="CMIdentityDBModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
-        <AssociationConnector Association="CMIdentityDBModel.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.C__MigrationHistory" Width="1.5" PointX="5.75" PointY="1.5" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetRole" Width="1.5" PointX="3.75" PointY="0.75" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserClaim" Width="1.5" PointX="3" PointY="8.5" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserLogin" Width="1.5" PointX="3" PointY="3.25" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserRole" Width="1.5" PointX="6" PointY="4.5" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUser" Width="1.5" PointX="0.75" PointY="2.75" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.CM_EmailUpdate" Width="1.5" PointX="5.75" PointY="7.5" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.CM_WifiAccess" Width="1.5" PointX="7.75" PointY="7.5" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.Identity_JobDescription" Width="1.5" PointX="8.75" PointY="1.5" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.Identity_Keywords" Width="1.5" PointX="9.75" PointY="5.5" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.vw_CMInfo" Width="1.5" PointX="9.75" PointY="8.5" />
+        <AssociationConnector Association="CMIdentityDBModel.FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId" />
+        <AssociationConnector Association="CMIdentityDBModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="CMIdentityDBModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="CMIdentityDBModel.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

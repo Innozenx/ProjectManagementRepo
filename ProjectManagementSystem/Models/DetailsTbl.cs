@@ -31,7 +31,6 @@ namespace ProjectManagementSystem.Models
         public Nullable<bool> isUnscheduled { get; set; }
         public Nullable<bool> isCompleted { get; set; }
         public string key_person { get; set; }
-    
-        public virtual MilestoneTbl MilestoneTbl { get; set; }
+        public Nullable<bool> IsApproved { get; set; }
     }
 }

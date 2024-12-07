@@ -757,6 +757,15 @@
                 });
                 document.getElementById(buttonId).classList.add("active");
             };
+            $("#timeline-tab").on("click", function () {
+                $("#detailsContainer").css("display", "none");
+                $("#overview").css("display", "none");
+            });
+
+            $("#overview-tab").on("click", function () {
+                $("#detailsContainer").css("display", "block");
+                $("#overview").css("display", "block");
+            });
 
             setWeekView();
             activateButton("week-view");

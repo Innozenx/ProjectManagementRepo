@@ -22,5 +22,6 @@ namespace ProjectManagementSystem.Models
         public string department { get; set; }
         public Nullable<int> role { get; set; }
         public Nullable<bool> acknowledged { get; set; }
+        public Nullable<bool> is_removed { get; set; }
     }
 }

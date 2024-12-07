@@ -12,11 +12,12 @@ namespace ProjectManagementSystem.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class AttachmentTable
+    public partial class ApproversTbl
     {
-        public int attachment_id { get; set; }
-        public Nullable<int> status_id { get; set; }
-        public string path_file { get; set; }
-        public Nullable<int> details_id { get; set; }
+        public int Approver_Id { get; set; }
+        public Nullable<int> Milestone_Id { get; set; }
+        public string Approver_Name { get; set; }
+        public Nullable<bool> Status { get; set; }
+        public Nullable<int> Details_Id { get; set; }
     }
 }
