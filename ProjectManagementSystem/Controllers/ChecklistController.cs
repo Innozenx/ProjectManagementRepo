@@ -1045,6 +1045,24 @@ namespace ProjectManagementSystem.Controllers
 
             return View();
         }
+
+        //public JsonResult GetStatusUpdates()
+        //{
+        //    var message = "";
+        //    var data = db.WeeklyStatus.ToList();
+
+        //    return Json(new { data = data, message = message }, JsonRequestBehavior.AllowGet);
+        //}
+
+        public JsonResult GetStatusUpdates()
+        {
+            var message = "";
+            var data = db.WeeklyStatus.ToList();
+
+            return Json(new { data = data, message = message }, JsonRequestBehavior.AllowGet);
+        }
+    }
+}
         [HttpGet]
         public ActionResult ProjectChecklist()
         {

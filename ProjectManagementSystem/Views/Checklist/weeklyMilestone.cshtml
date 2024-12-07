@@ -22,7 +22,7 @@
         display: flex;
         justify-content: center;
         padding: 10px;
-        margin: 0; 
+        margin: 0;
     }
 
     .table-container {
@@ -40,7 +40,7 @@
         display: flex;
         justify-content: flex-end;
         gap: 10px;
-        margin: 10px 30px 0 0; 
+        margin: 10px 30px 0 0;
     }
 
     .action-tile {
@@ -179,7 +179,7 @@
 
     #gantt_here {
         width: 100%;
-        height: calc(100vh - 200px); 
+        height: calc(100vh - 200px);
     }
 
     .activity-log-container {
@@ -230,35 +230,35 @@
     .fa-maximize {
         color: #66399A;
     }
+
     .nav-tabs {
- 
         padding: 15px 20px;
         font-size: 14px;
     }
 
-    .nav-tabs .nav-link {
-        padding: 5px 10px;
-        font-size: 14px;
-        color: #66399A; 
-        background-color: transparent; 
-        border: none; 
-        border-bottom: 3px solid transparent; 
-        transition: color 0.3s ease, border-bottom-color 0.3s ease;
-    }
-
-        .nav-tabs .nav-link:hover {
-            color: #552788; 
+        .nav-tabs .nav-link {
+            padding: 5px 10px;
+            font-size: 14px;
+            color: #66399A;
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
         }
 
-        .nav-tabs .nav-link.active {
-            color: #66399A; 
-            border-bottom-color: #66399A; 
-            /*font-weight: bold;*/ 
-        }
+            .nav-tabs .nav-link:hover {
+                color: #552788;
+            }
 
-    .nav-tabs .nav-item {
-        margin-right: 3px; 
-    }
+            .nav-tabs .nav-link.active {
+                color: #66399A;
+                border-bottom-color: #66399A;
+                /*font-weight: bold;*/
+            }
+
+        .nav-tabs .nav-item {
+            margin-right: 3px;
+        }
 
     .project-header {
         display: flex;
@@ -296,18 +296,17 @@
         align-items: center;
     }
 
-    .project-actions i {
-        color: #66399A;
-        font-size: 18px;
-        margin-left: 10px;
-        cursor: pointer;
-        transition: color 0.3s;
-    }
+        .project-actions i {
+            color: #66399A;
+            font-size: 18px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
 
-    .project-actions i:hover {
-        color: #552788;
-    }
-
+            .project-actions i:hover {
+                color: #552788;
+            }
 </style>
 
 <div class="project-header">
@@ -317,7 +316,7 @@
         </span>
         <span class="project-name">@Model.ProjectTitle</span>
     </div>
-    </div>
+</div>
 
 <!-- Navigation Tabs -->
 <ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
@@ -335,8 +334,8 @@
 
 
 
-   <!-- Overview Tab -->
-    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+<!-- Overview Tab -->
+<div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
     <!-- Project Details Section -->
     <div class="pop-container">
         <div class="table-container">
@@ -405,7 +404,7 @@
             </button>
         </div>
         <div class="action-tile">
-            <button type="button" onclick="loadActivityLogs()" class="action-tile-title">
+            <button type="button" data-toggle="modal" data-target="#activityLogModal" onclick="loadActivityLogs()" class="action-tile-title">
                 <i class="fas fa-history"></i> Activity
             </button>
         </div>
@@ -435,9 +434,20 @@
                             @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3, id = "statusUpdate" })
                         </div>
                         <div class="form-group mb-4">
-                            <label for="fileUpload" class="select-attach">Attachment</label>
-                            <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
-                        </div>
+                                <label for="fileUpload" class="select-attach">Attachment</label>
+                                <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
+                            </div>
+                        @*@using (Html.BeginForm("UploadFile", "Upload", FormMethod.Post, new
+                        {
+                            enctype = "multipart/form-data"
+                        }))
+                        {
+                            <div>
+                                @Html.TextBox("file", "", new { type = "file" }) <br />
+                                <input type="submit" value="Upload" />
+                                @ViewBag.Message
+                            </div>
+                        }*@
                         <!-- Validation message area -->
                         <div id="validationMessage" class="text-danger" style="display:none; margin-bottom:10px;">
                             Please fill out all required fields.
@@ -452,7 +462,7 @@
     </div>
 
     <!-- Project Members Section -->
-    <div class="table-container">
+    <div class="table-container" id="detailsContainer">
         <h3>Project Members</h3>
         @if (Model.ProjectMembers.Any())
         {
@@ -465,23 +475,24 @@
                             <p class="member-name">@member.Name</p>
                             <p class="member-role">
                                 @{
-                                    switch (member.Role){
+                                    switch (member.Role)
+                                    {
                                         case 1:
-                                            <p>Tester</p>;
-                                            break;
-                                        case 2:
-                                            <p>Editor</p>
-                                            break;
-                                        case 3:
-                                            <p>Viewer</p>
-                                            break;
-                                    }
-                                 }
-                            </p>
-                            <p class="member-email">@member.Email</p>
+                                        <p>Tester</p>;
+                                        break;
+                                    case 2:
+                                        <p>Editor</p>
+                                        break;
+                                    case 3:
+                                        <p>Viewer</p>
+                                        break;
+                                }
+                                }
+                                </p>
+                                <p class="member-email">@member.Email</p>
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
             </div>
         }
         else
@@ -517,15 +528,16 @@
                 <div class="modal-header bg-white">
                     <h5 class="modal-title" id="activityLogLabel">Activity Log</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="false">&times;</span>
                     </button>
                 </div>
+                <div id="activity-log-container" class="activity-log-container"></div>
                 <div class="modal-body bg-white p-4">
-                    <div id="activity-log-container" class="activity-log-container">
+                    
                         @if (Model.StatusLogs != null && Model.StatusLogs.Any())
-                                {
-                                    foreach (var log in Model.StatusLogs)
-                                    {
+                        {
+                            foreach (var log in Model.StatusLogs)
+                            {
                                 <div class="log-entry">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <div class="d-flex align-items-center">
@@ -552,9 +564,10 @@
                                         @if (!string.IsNullOrEmpty(log.Attachment))
                                         {
                                             <p class="mb-0">
-                                                <a href="javascript:void(0);" onclick="viewAttachment('@Url.Content(log.Attachment)')" class="attachment-link">
+                                                <a href="javascript:void(0);" onclick="@Url.Content(log.Attachment)" class="attachment-link">
                                                     <i class="fas fa-paperclip"></i> View Attachment
                                                 </a>
+                                                <img runat="server" src="@log.Attachment" width="150px" height="150px"/>
                                             </p>
                                         }
                                     </div>
@@ -568,7 +581,6 @@
                             </div>
                             <p>There aren't any status updates in this project yet.</p>
                         }
-                    </div>
                 </div>
             </div>
         </div>
@@ -620,7 +632,7 @@
             <div id="gantt_here" style="width:100%; height:60vh;"></div>
         </div>
     </div>
-   </div>
+</div>
 
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -635,11 +647,11 @@
 
             // Replace '/Checklist/GetActivityLogs' with your server-side endpoint for fetching logs
             $.ajax({
-                url: '/Checklist/GetActivityLogs', // Ensure this is the correct controller/action
+                url: '/Checklist/GetStatusUpdates', // Ensure this is the correct controller/action
                 type: 'GET',
                 success: function (response) {
                     // Dynamically update the Activity Logs container with the response
-                    activityLogContainer.html(response);
+                    activityLogContainer.html(response.data);
                 },
                 error: function () {
                     // Display an error message in case of failure
@@ -647,7 +659,8 @@
                 }
             });
         }
-
+    </script>
+    <script>
         // Function to validate and submit the Status Update form
         function validateAndSubmit() {
             const milestone = $('#selectedMilestone').val();
@@ -665,12 +678,15 @@
 
             // Submit the form using AJAX
             const formData = new FormData($('#updateStatusForm')[0]);
+
             $.ajax({
-                url: $('#updateStatusForm').attr('action'),
+                //url: $('#updateStatusForm').attr('action'),\
+                url: "@Url.Action("UploadFile", "FileUpload")",
                 type: 'POST',
-                data: formData,
-                contentType: false,
                 processData: false,
+                contentType: false,
+                cache: false,
+                data: formData,
                 success: function () {
                     Swal.fire({
                         icon: 'success',
@@ -689,7 +705,9 @@
                 }
             });
         }
+    </script>
 
+    <script>
         // Initialize Gantt Chart and its configurations
         document.addEventListener("DOMContentLoaded", function () {
             gantt.config.xml_date = "%Y-%m-%d %H:%i";
@@ -772,6 +790,16 @@
 
             // Load Activity Logs on page load
             loadActivityLogs();
+        });
+
+        $("#timeline-tab").on("click", function () {
+            $("#detailsContainer").css("display", "none");
+            $("#overview").css("display", "none");
+        });
+
+        $("#overview-tab").on("click", function () {
+            $("#detailsContainer").css("display", "block");
+            $("#overview").css("display", "block");
         });
     </script>
 }
