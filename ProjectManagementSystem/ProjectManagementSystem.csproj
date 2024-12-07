@@ -276,6 +276,9 @@
     <Compile Include="Models\AdminList.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ApproversTbl.cs">
+      <DependentUpon>CheckListDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\AspNetRole.cs">
       <DependentUpon>CMIdentity.tt</DependentUpon>
     </Compile>

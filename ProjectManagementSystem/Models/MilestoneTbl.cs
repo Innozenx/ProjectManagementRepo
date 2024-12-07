@@ -14,12 +14,6 @@ namespace ProjectManagementSystem.Models
     
     public partial class MilestoneTbl
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public MilestoneTbl()
-        {
-            this.DetailsTbls = new HashSet<DetailsTbl>();
-        }
-    
         public int milestone_id { get; set; }
         public Nullable<int> main_id { get; set; }
         public string milestone_name { get; set; }
@@ -27,8 +21,6 @@ namespace ProjectManagementSystem.Models
         public Nullable<int> milestone_position { get; set; }
         public string status_update { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<DetailsTbl> DetailsTbls { get; set; }
         public virtual MainTable MainTable { get; set; }
     }
 }

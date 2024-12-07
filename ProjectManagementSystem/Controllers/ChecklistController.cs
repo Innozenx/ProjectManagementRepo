@@ -16,6 +16,7 @@ using System.Security.Claims;
 using System.Web;
 using MimeKit;
 using MailKit.Net.Smtp;
+using System.Net;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -388,6 +389,9 @@ namespace ProjectManagementSystem.Controllers
 
             return View(viewModel);
         }
+
+
+
 
         public JsonResult getGanttData(int id)
         {
@@ -891,10 +895,10 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { param.draw, iTotalRecords = totalRecords, iTotalDisplayRecords = totalRecords, data = displayResult }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult ProjectChecklist()
-        {
-            return View();
-        }
+        //public ActionResult ProjectChecklist()
+        //{
+        //    return View();
+        //}
 
         public JsonResult EmailInvitees(string[] users, int[] roles, string project)
         {
@@ -963,10 +967,6 @@ namespace ProjectManagementSystem.Controllers
                         </div>
                     </div>"
                             };
-
-
-
-
 
                             using (var smtp = new SmtpClient())
                             {
@@ -1045,7 +1045,59 @@ namespace ProjectManagementSystem.Controllers
 
             return View();
         }
+        [HttpGet]
+        public ActionResult ProjectChecklist()
+        {
+            var groupedMilestones = db.MainTables
+                .Select(project => new ProjectChecklistGroupViewModel
+                {
+                    MainId = project.main_id,
+                    ProjectName = project.project_title,
+                    Milestones = db.MilestoneTbls
+                        .Where(m => m.main_id == project.main_id)
+                        .OrderBy(m => m.milestone_position)
+                        .Select(milestone => new MilestoneViewModel
+                        {
+                            Id = milestone.milestone_id,
+                            MilestoneName = milestone.milestone_name,
+                            MilestonePosition = milestone.milestone_position ?? 0, 
+                    IsCompleted = db.DetailsTbls
+                                .Where(t => t.milestone_id == milestone.milestone_id)
+                                .All(t => t.IsApproved.HasValue && t.IsApproved.Value),
+                            StatusUpdate = db.DetailsTbls
+                                .Where(t => t.milestone_id == milestone.milestone_id)
+                                .All(t => t.IsApproved.HasValue && t.IsApproved.Value)
+                                    ? "Completed"
+                                    : "In Progress",
+                            Tasks = db.DetailsTbls
+                                .Where(task => task.milestone_id == milestone.milestone_id)
+                                .Select(task => new TaskViewModel
+                                {
+                                    Id = task.details_id,
+                                    TaskName = task.process_title,
+                                    IsApproved = task.IsApproved.HasValue && task.IsApproved.Value,
+                                    Attachments = db.AttachmentTables
+                                        .Where(a => a.details_id == task.details_id)
+                                        .Select(a => a.path_file)
+                                        .ToList(),
+                                    Approvers = db.ApproversTbls
+                                        .Where(a => a.Details_Id == task.details_id)
+                                        .Select(a => new ApproverViewModel
+                                        {
+                                            ApproverName = a.Approver_Name,
+                                            Status = a.Status ?? false
+                                        })
+                                        .ToList()
+                                })
+                                .ToList()
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            return View(groupedMilestones);
+        }
+
+
     }
 }
-
-

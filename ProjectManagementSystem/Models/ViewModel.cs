@@ -110,6 +110,7 @@ namespace ProjectManagementSystem.Models
 
         public List<StatusLogsViewModel> StatusLogs { get; set; } = new List<StatusLogsViewModel>();
         public List<ProjectMemberViewModel> ProjectMembers { get; set; }
+        public List<ApproverViewModel> Approvers { get; set; }
     }
     public class StatusLogsViewModel
     {
@@ -125,8 +126,6 @@ namespace ProjectManagementSystem.Models
         public List<HttpPostedFileBase> FileUploads { get; set; }
 
     }
-
-
     public class ProjectDetailViewModel
     {
         public int Id { get; set; }
@@ -139,15 +138,40 @@ namespace ProjectManagementSystem.Models
         public string Category { get; set; }
         public string ProjectOwner { get; set; }
         public int DetailsID { get; set; }
+        public string MilestoneName { get; set; }
+        public string StatusUpdate { get; set; }
+        public bool IsCompleted { get; set; }  
+        public bool CanProceed { get; set; }
+        public int MilestonePosition { get; set; }
+        public List<ApproverViewModel> Approvers { get; set; }
+        public List<string> Attachments { get; set; }     
 
+    }
+
+    public class ProjectChecklistGroupViewModel
+    {
+        public int MainId { get; set; }
+        public List<MilestoneViewModel> Milestones { get; set; }
+        public string ProjectName { get; set; }
+    }
+
+    public class ApproverViewModel
+    {
+        public string ApproverName { get; set; }
+        public bool Status { get; set; } 
     }
 
 
     public class TaskViewModel
     {
+        public int Id { get; set; }
+        public string TaskName { get; set; }
         public DateTime? TaskStart { get; set; }
         public int Duration { get; set; }
         public bool IsCompleted { get; set; }
+        public bool? IsApproved { get; set; }
+        public List<string> Attachments { get; set; }
+        public List<ApproverViewModel> Approvers { get; set; }
     }
 
 
@@ -162,8 +186,6 @@ namespace ProjectManagementSystem.Models
         public string Department { get; set; }
         public string Division { get; set; }
     }
-
-
 
     public class TaskGantt
     {
@@ -261,8 +283,15 @@ namespace ProjectManagementSystem.Models
 
     public class MilestoneViewModel
     {
+        public int Id { get; set; }
         public string MilestoneName { get; set; }
         public DateTime EndDate { get; set; }
+        public bool IsCompleted { get; set; }
+        public string StatusUpdate { get; set; }
+        public List<TaskViewModel> Tasks { get; set; }
+        //public List<ApproverViewModel> Approvers { get; set; }
+        public int MilestonePosition { get; set; }
+        public List<ApproverViewModel> Approvers { get; set; } = new List<ApproverViewModel>();
     }
 
 
@@ -427,6 +456,7 @@ namespace ProjectManagementSystem.Models
         public int iSortingCols { get; set; }
         public string sColumns { get; set; }
     }
+ 
 
 }
 

@@ -1,6 +1,199 @@
-﻿
+﻿@model List<ProjectManagementSystem.Models.ProjectChecklistGroupViewModel>
+
 @{
     ViewBag.Title = "Project Checklist";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
+
+<h2 style="text-align: center; font-family: 'Poppins', sans-serif; color: #66339A; font-weight: bold; margin-top: 20px;">
+    Project Checklists
+</h2>
+
+<div class="container" style="max-width: 90%; margin: auto;">
+    @foreach (var group in Model)
+    {
+        <div class="card shadow-sm mb-5">
+            <div class="card-header" style="background-color: #4C2A85; color: white; padding: 15px;">
+                <h4 class="mb-0" style="font-family: 'Poppins', sans-serif;">Project name: @group.ProjectName</h4>
+            </div>
+            <div class="card-body" style="background-color: #f9f9f9;">
+                @if (group.Milestones == null || !group.Milestones.Any())
+                {
+                    <div class="alert alert-warning text-center">No milestones available for this project.</div>
+                }
+                else
+                {
+                    bool canProceed = true;
+
+                    foreach (var milestone in group.Milestones)
+                    {
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header position-relative" style="background-color: #66339A; color: white; padding: 10px; font-family: 'Poppins', sans-serif;">
+                                <h5 class="mb-0" style="display: inline;">Milestone: @milestone.MilestoneName</h5>
+                                <span class="badge badge-@(milestone.IsCompleted ? "success" : (canProceed ? "warning" : "danger")) position-absolute"
+                                      style="right: 10px; top: 10px; padding: 5px 10px; font-size: 0.9rem;">
+                                    @(milestone.IsCompleted ? "Completed" : (canProceed ? "In Progress" : "Locked"))
+                                </span>
+                            </div>
+
+
+                            <div class="card-body">
+                                <table class="table table-hover table-striped">
+                                    <thead style="background-color: #f0f0f0;">
+                                        <tr>
+                                            <th>Task Name</th>
+                                            <th>Status</th>
+                                            <th>Approvers</th>
+                                            <th>Attachments</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (milestone.Tasks == null || !milestone.Tasks.Any())
+                                        {
+                                            <tr>
+                                                <td colspan="5" class="text-center">No tasks available</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            foreach (var task in milestone.Tasks)
+                                            {
+                                                <tr>
+                                                    <td>@task.TaskName</td>
+                                                    <td>
+                                                        <span class="badge badge-@(task.IsApproved.HasValue && task.IsApproved.Value ? "success" : "danger")">
+                                                            @(task.IsApproved.HasValue && task.IsApproved.Value ? "Approved" : "Pending")
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <ul style="list-style: none; padding: 0; margin: 0;">
+                                                            @if (task.Approvers != null && task.Approvers.Any())
+                                                            {
+                                                                foreach (var approver in task.Approvers)
+                                                                {
+                                                                    <li>@approver.ApproverName - @(approver.Status ? "Approved" : "Pending")</li>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <li>No approvers assigned</li>
+                                                            }
+                                                        </ul>
+                                                    </td>
+                                                    <td>
+                                                        <ul style="list-style: none; padding: 0; margin: 0;">
+                                                            @if (task.Attachments != null && task.Attachments.Any())
+                                                            {
+                                                                foreach (var attachment in task.Attachments)
+                                                                {
+                                                                    <li><a href="@attachment" target="_blank" class="btn btn-link p-0">View</a></li>
+                                                                }
+                                                            }
+                                                            <li>
+                                                                <button class="btn btn-sm btn-outline-success mt-1" onclick="openFileUploadModal(@task.Id)" @(canProceed ? "" : "disabled")>
+                                                                    Upload
+                                                                </button>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary mt-1" onclick="approveTask(@task.Id)" @(canProceed ? "" : "disabled")>
+                                                            Approve Task
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        
+                        canProceed = milestone.IsCompleted;
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<!-- File Upload Modal -->
+<div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="fileUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fileUploadModalLabel">Upload Attachment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="fileUploadForm" action="/Checklist/UploadTaskFile" method="post" enctype="multipart/form-data">
+                    <input type="hidden" id="taskId" name="taskId" />
+                    <div class="form-group">
+                        <label for="file">Select File</label>
+                        <input type="file" id="file" name="file" class="form-control" required />
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function approveTask(taskId) {
+        $.ajax({
+            url: `/Checklist/ApproveTask/${taskId}`,
+            type: "POST",
+            success: function () {
+                alert("Task approved successfully!");
+                location.reload();
+            },
+            error: function () {
+                alert("Failed to approve task.");
+            }
+        });
+    }
+
+    function openFileUploadModal(taskId) {
+        $('#taskId').val(taskId);
+        $('#fileUploadModal').modal('show');
+    }
+</script>
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-outline-success, .btn-outline-primary {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .badge-warning {
+        background-color: #ffc107;
+        color: white;
+    }
+
+    .btn[disabled] {
+        background-color: #ccc !important;
+        cursor: not-allowed !important;
+    }
+</style>
 

@@ -42,6 +42,16 @@
                         <p>Activity Logs</p>
                     </a>
                 </li>
+
+
+                <!-- Checklist Section -->
+                <li class="nav-item">
+                    <a href="@Url.Action("ProjectChecklist", "Checklist")" class="nav-link">
+                        <i class="nav-icon fas fa-check-square"></i>
+                        <p>Project Checklist</p>
+                    </a>
+                </li>
+
                 <!-- Admin Section -->
                 @*<li class="nav-header">Admin</li>
         <li class="nav-item">
@@ -149,6 +159,13 @@
 
     .sidebar .nav-item a.nav-link.invite-link:hover {
         background-color: #532c7e;
+    }
+    .nav-icon.fas.fa-check-square {
+        color: #66339A; /* Matches the theme color */
+    }
+
+    .nav-sidebar .nav-link:hover i.fa-check-square {
+        color: #532c7e; /* Darker hover effect */
     }
 
 
