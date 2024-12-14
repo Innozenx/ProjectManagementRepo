@@ -86,11 +86,19 @@ namespace ProjectManagementSystem.Controllers
                 return RedirectToAction("DashboardManagement");
             }
 
-
             var currentYear = DateTime.Now.Year;
             var calendar = CultureInfo.InvariantCulture.Calendar;
             var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-            var UserId = User.Identity.GetUserId();
+
+            // fetch project for the sidebar (overview details, timeline view)
+            var projects = db.MainTables
+               .Where(p => p.user_id == userId)
+               .Select(p => new ProjectChecklistGroupViewModel
+               {
+                   MainId = p.main_id,
+                   ProjectName = p.project_title
+               })
+               .ToList();
 
             var rawProjectsAndMilestones = (from m in db.MilestoneTbls
                                             join p in db.MainTables on m.main_id equals p.main_id
@@ -114,7 +122,7 @@ namespace ProjectManagementSystem.Controllers
                                             }).ToList();
 
             var projectsAndMilestones = rawProjectsAndMilestones
-                .Where(g => g.UserId == UserId)
+                .Where(g => g.UserId == userId)
                 .OrderBy(g => g.MilestonePosition)
                 .Select(g => new ProjectMilestoneViewModel
                 {
@@ -164,9 +172,9 @@ namespace ProjectManagementSystem.Controllers
                 ProjectsMilestones = projectsAndMilestones,
                 UniqueMilestoneNames = projectsAndMilestones.Select(m => m.MilestoneName).Distinct().ToList(),
                 ProjectTitles = projectsAndMilestones.Select(pm => pm.ProjectTitle).Distinct().ToList(),
+                Projects = projects,
                 UpcomingDeliverables = upcomingDeliverables
             };
-
             return View(viewModel);
         }
 
@@ -936,36 +944,36 @@ namespace ProjectManagementSystem.Controllers
                             email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                             {
                                 Text = @"
-                    <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
-                        <div style='text-align: center; margin-bottom: 20px;'>
-                            <img src='~/AdminLTE-3.2.0/dist/img/ekk.jpg' alt='Eldar Logo' style='max-width: 80px; border-radius: 50%; margin-bottom: 20px;'>
-                            <h1 style='font-size: 24px; color: #66339A; margin: 0;'>You have been added to the project </h1> <span style='font-size: 16px; font-weight: bold; color: #66339A;'><i>" + userProject + @"</i></span>
-                            <p style='font-size: 14px; color: #666; margin-top: 10px;'>Get started on your new assignment with just one click.</p>
-                        </div>
-                        <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);'>
-                            <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Magical Day, " + userName + @"!</p>
+                            <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
+                                <div style='text-align: center; margin-bottom: 20px;'>
+                                    <img src='~/AdminLTE-3.2.0/dist/img/ekk.jpg' alt='Eldar Logo' style='max-width: 80px; border-radius: 50%; margin-bottom: 20px;'>
+                                    <h1 style='font-size: 24px; color: #66339A; margin: 0;'>You have been added to the project </h1> <span style='font-size: 16px; font-weight: bold; color: #66339A;'><i>" + userProject + @"</i></span>
+                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>Get started on your new assignment with just one click.</p>
+                                </div>
+                                <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);'>
+                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Magical Day, " + userName + @"!</p>
                
-                            <p style='font-size: 14px; color: #555;'>
-                                <b>Your Role:</b> <span style='color: #333;'>" + userRole + @"</span><br>
-                                <b>Assigned Task(s):</b> <span style='color: #333;'> <insert tasks here> </span>
-                            </p>
-                            <p style='font-size: 14px; color: #555; margin-top: 20px;'>
-                               Please click the button to get started:
-                            </p>
-                            <div style='text-align: center; margin: 30px 0;'>
-                                <a href='http://localhost:60297/Checklist/Dashboard" + userEmail + @"'
-                                   style='display: inline-block; padding: 12px 30px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 14px;'>
-                                   View Project
-                                </a>
-                            </div>
-                            <p style='font-size: 14px; color: #555; text-align: center;'>
-                                Need assistance? Please don’t hesitate to reach out.
-                            </p>
-                        </div>
-                        <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
-                            <i>*This is an automated email from the Project Management System. Please do not reply. For any concerns, kindly contact your immediate supervisor or reach out to ITS at <b>LOCAL: 132</b>.</i>
-                        </div>
-                    </div>"
+                                    <p style='font-size: 14px; color: #555;'>
+                                        <b>Your Role:</b> <span style='color: #333;'>" + userRole + @"</span><br>
+                                        <b>Assigned Task(s):</b> <span style='color: #333;'> <insert tasks here> </span>
+                                    </p>
+                                    <p style='font-size: 14px; color: #555; margin-top: 20px;'>
+                                       Please click the button to get started:
+                                    </p>
+                                    <div style='text-align: center; margin: 30px 0;'>
+                                        <a href='http://localhost:60297/Checklist/Dashboard" + userEmail + @"'
+                                           style='display: inline-block; padding: 12px 30px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 14px;'>
+                                           View Project
+                                        </a>
+                                    </div>
+                                    <p style='font-size: 14px; color: #555; text-align: center;'>
+                                        Need assistance? Please don’t hesitate to reach out.
+                                    </p>
+                                </div>
+                                <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
+                                    <i>*This is an automated email from the Project Management System. Please do not reply. For any concerns, kindly contact your immediate supervisor or reach out to ITS at <b>LOCAL: 132</b>.</i>
+                                </div>
+                            </div>"
                             };
 
                             using (var smtp = new SmtpClient())
@@ -1061,61 +1069,126 @@ namespace ProjectManagementSystem.Controllers
 
             return Json(new { data = data, message = message }, JsonRequestBehavior.AllowGet);
         }
+
+        //[HttpGet]
+        //public ActionResult ProjectChecklist()
+        //{
+        //    var groupedMilestones = db.MainTables
+        //        .Select(project => new ProjectChecklistGroupViewModel
+        //        {
+        //            MainId = project.main_id,
+        //            ProjectName = project.project_title,
+        //            Milestones = db.MilestoneTbls
+        //                .Where(m => m.main_id == project.main_id)
+        //                .OrderBy(m => m.milestone_position)
+        //                .Select(milestone => new MilestoneViewModel
+        //                {
+        //                    Id = milestone.milestone_id,
+        //                    MilestoneName = milestone.milestone_name,
+        //                    MilestonePosition = milestone.milestone_position ?? 0, 
+        //            IsCompleted = db.DetailsTbls
+        //                        .Where(t => t.milestone_id == milestone.milestone_id)
+        //                        .All(t => t.IsApproved.HasValue && t.IsApproved.Value),
+        //                    StatusUpdate = db.DetailsTbls
+        //                        .Where(t => t.milestone_id == milestone.milestone_id)
+        //                        .All(t => t.IsApproved.HasValue && t.IsApproved.Value)
+        //                            ? "Completed" // approved tasks
+        //                            : "In Progress", // not yet done
+        //                    Tasks = db.DetailsTbls
+        //                        .Where(task => task.milestone_id == milestone.milestone_id)
+        //                        .Select(task => new TaskViewModel
+        //                        {
+        //                            Id = task.details_id,
+        //                            TaskName = task.process_title,
+        //                            IsApproved = task.IsApproved.HasValue && task.IsApproved.Value,
+        //                            Attachments = db.AttachmentTables
+        //                                .Where(a => a.details_id == task.details_id)
+        //                                .Select(a => a.path_file)
+        //                                .ToList(),
+        //                            Approvers = db.ApproversTbls
+        //                                .Where(a => a.Details_Id == task.details_id)
+        //                                .Select(a => new ApproverViewModel
+        //                                {
+        //                                    ApproverName = a.Approver_Name,
+        //                                    Status = a.Status ?? false
+        //                                })
+        //                                .ToList()
+        //                        })
+        //                        .ToList()
+        //                })
+        //                .ToList()
+        //        })
+        //        .ToList();
+
+        //    return View(groupedMilestones);
+        //}
+
+        //[HttpGet]
+        //public ActionResult ProjectChecklist(int? projectId)
+        //{
+        //    // fetch all projects
+        //    var groupedMilestones = db.MainTables
+        //        .Select(project => new ProjectChecklistGroupViewModel
+        //        {
+        //            MainId = project.main_id,
+        //            ProjectName = project.project_title,
+        //            Milestones = db.MilestoneTbls
+        //                .Where(m => m.main_id == project.main_id)
+        //                .OrderBy(m => m.milestone_position)
+        //                .Select(milestone => new MilestoneViewModel
+        //                {
+        //                    Id = milestone.milestone_id,
+        //                    MilestoneName = milestone.milestone_name,
+        //                    MilestonePosition = milestone.milestone_position ?? 0,
+
+        //                    IsCompleted = db.DetailsTbls
+        //                        .Where(t => t.milestone_id == milestone.milestone_id)
+        //                        .All(t => t.IsApproved.HasValue && t.IsApproved.Value),
+
+        //                    StatusUpdate = db.DetailsTbls
+        //                        .Where(t => t.milestone_id == milestone.milestone_id)
+        //                        .All(t => t.IsApproved.HasValue && t.IsApproved.Value)
+        //                            ? "Completed" : "In Progress",
+
+        //                    Tasks = db.DetailsTbls
+        //                        .Where(task => task.milestone_id == milestone.milestone_id)
+        //                        .Select(task => new TaskViewModel
+        //                        {
+        //                            Id = task.details_id,
+        //                            TaskName = task.process_title,
+        //                            IsApproved = task.IsApproved.HasValue && task.IsApproved.Value,
+
+        //                            Attachments = db.AttachmentTables
+        //                                .Where(a => a.details_id == task.details_id)
+        //                                .Select(a => a.path_file)
+        //                                .ToList(),
+
+        //                            Approvers = db.ApproversTbls
+        //                                .Where(a => a.Details_Id == task.details_id)
+        //                                .Select(a => new ApproverViewModel
+        //                                {
+        //                                    ApproverName = a.Approver_Name,
+        //                                    Status = a.Status ?? false
+        //                                })
+        //                                .ToList()
+        //                        })
+        //                        .ToList()
+        //                })
+        //                .ToList()
+        //        })
+        //        .ToList();
+
+        //    // filter by project id 
+        //    if (projectId.HasValue)
+        //    {
+        //        groupedMilestones = groupedMilestones
+        //            .Where(g => g.MainId == projectId.Value)
+        //            .ToList();
+        //    }
+
+        //    ViewBag.ProjectList = groupedMilestones.Select(p => new { p.MainId, p.ProjectName }).ToList();
+
+        //    return View(groupedMilestones);
     }
-}
-        [HttpGet]
-        public ActionResult ProjectChecklist()
-        {
-            var groupedMilestones = db.MainTables
-                .Select(project => new ProjectChecklistGroupViewModel
-                {
-                    MainId = project.main_id,
-                    ProjectName = project.project_title,
-                    Milestones = db.MilestoneTbls
-                        .Where(m => m.main_id == project.main_id)
-                        .OrderBy(m => m.milestone_position)
-                        .Select(milestone => new MilestoneViewModel
-                        {
-                            Id = milestone.milestone_id,
-                            MilestoneName = milestone.milestone_name,
-                            MilestonePosition = milestone.milestone_position ?? 0, 
-                    IsCompleted = db.DetailsTbls
-                                .Where(t => t.milestone_id == milestone.milestone_id)
-                                .All(t => t.IsApproved.HasValue && t.IsApproved.Value),
-                            StatusUpdate = db.DetailsTbls
-                                .Where(t => t.milestone_id == milestone.milestone_id)
-                                .All(t => t.IsApproved.HasValue && t.IsApproved.Value)
-                                    ? "Completed"
-                                    : "In Progress",
-                            Tasks = db.DetailsTbls
-                                .Where(task => task.milestone_id == milestone.milestone_id)
-                                .Select(task => new TaskViewModel
-                                {
-                                    Id = task.details_id,
-                                    TaskName = task.process_title,
-                                    IsApproved = task.IsApproved.HasValue && task.IsApproved.Value,
-                                    Attachments = db.AttachmentTables
-                                        .Where(a => a.details_id == task.details_id)
-                                        .Select(a => a.path_file)
-                                        .ToList(),
-                                    Approvers = db.ApproversTbls
-                                        .Where(a => a.Details_Id == task.details_id)
-                                        .Select(a => new ApproverViewModel
-                                        {
-                                            ApproverName = a.Approver_Name,
-                                            Status = a.Status ?? false
-                                        })
-                                        .ToList()
-                                })
-                                .ToList()
-                        })
-                        .ToList()
-                })
-                .ToList();
 
-            return View(groupedMilestones);
-        }
-
-
-    }
 }

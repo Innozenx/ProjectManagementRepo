@@ -39,17 +39,23 @@
                 <a href="@Url.Action("InviteTeammates", "Checklist")" class="dropdown-item">
                     <i class="fas fa-user-plus mr-2"></i> Invite Teammates
                 </a>
+
                 <div class="dropdown-divider"></div>
-                <a href="@Url.Action("Register", "Admin")" class="dropdown-item">
-                    <i class="fas fa-cogs mr-2"></i> Admin Console
-                </a>
-                <a href="@Url.Action("RoleConfiguration", "Admin")" class="dropdown-item">
-                    <i class="fas fa-user mr-2"></i> Role Configuration
-                </a>
-                @*<a href="@Url.Action("RegisterUserView", "Admin")" class="dropdown-item">
-                    <i class="fas fa-pen-square mr-2"></i> Register User
-                </a>*@
-                <div class="dropdown-divider"></div>
+                    @if (User.IsInRole("PMS_Developer"))
+                    {
+                        <a href="@Url.Action("Register", "Admin")" class="dropdown-item">
+                            <i class="fas fa-cogs mr-2"></i> Admin Console
+                        </a>
+                        <a href="@Url.Action("RoleConfiguration", "Admin")" class="dropdown-item">
+                            <i class="fas fa-user mr-2"></i> Role Configuration
+                        </a>
+                        <a href="@Url.Action("ChecklistSettings", "Admin")" class="dropdown-item">
+                            <i class="fas fa-pen-square mr-2"></i> Checklist Settings
+                        </a>                            
+                        <div class="dropdown-divider"></div>
+                    }
+
+             
                 <a href="@Url.Action("Logout", "Account")" class="dropdown-item">
                     <i class="fas fa-sign-out-alt mr-2"></i> Log out
                 </a>

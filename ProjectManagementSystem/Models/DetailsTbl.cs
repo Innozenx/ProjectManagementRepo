@@ -32,5 +32,6 @@ namespace ProjectManagementSystem.Models
         public Nullable<bool> isCompleted { get; set; }
         public string key_person { get; set; }
         public Nullable<bool> IsApproved { get; set; }
+        public Nullable<bool> RequiresApproval { get; set; }
     }
 }

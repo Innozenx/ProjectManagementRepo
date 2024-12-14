@@ -1,0 +1,426 @@
+﻿@model IEnumerable<ProjectManagementSystem.Models.ChecklistSettingsViewModel>
+@{
+    ViewBag.Title = "Checklist Settings";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container mt-5">
+    <div class="card shadow-sm p-4">
+        <h2 class="text-center">Checklist Settings</h2>
+        <p class="text-center text-muted">Manage approval settings for tasks within your projects and milestones.</p>
+    </div>
+
+    <div class="row mt-4 justify-content-center align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <label class="input-group-text bg-purple text-white" for="projectDropdown">
+                    <i class="fas fa-folder-open"></i>
+                </label>
+                <select id="projectDropdown" class="form-select shadow-sm project-dropdown">
+                    <option value="">Select a Project</option>
+                    @foreach (var project in Model)
+                    {
+                        <option value="@project.MainId">@project.ProjectName</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="projectContent" style="display: none;" class="mt-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-bordered table-hover align-middle" id="projectTable">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th>Project Name</th>
+                            <th>Milestone</th>
+                            <th>Task</th>
+                            <th>Requires Approval</th>
+                            <th>Approvers</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var project in Model)
+                        {
+                            foreach (var milestone in project.Milestones)
+                            {
+                                foreach (var task in milestone.Tasks)
+                                {
+                                    <tr>
+                                        <td>@project.ProjectName</td>
+                                        <td>@milestone.MilestoneName</td>
+                                        <td>@task.TaskName</td>
+                                        <td class="text-center">
+                                            <label class="toggle-label">
+                                                <input type="checkbox" class="requires-approval" data-task-id="@task.Id" @(task.RequiresApproval ? "checked" : "")>
+                                                <span class="toggle-slider">
+                                                    <span class="toggle-label-on">Yes</span>
+                                                    <span class="toggle-label-off">No</span>
+                                                </span>
+                                            </label>
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="assignApproverModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-purple text-white">
+                    <h5 class="modal-title">Assign Approvers</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="approverMultiSelect">Select Approvers</label>
+                        <div id="approverMultiSelect" class="multi-select-dropdown">
+                            <input type="text" class="form-control dropdown-search" placeholder="Search approvers..." oninput="filterApprovers()" />
+                            <div class="dropdown-options">
+                                @if (Model?.FirstOrDefault()?.Onboarding?.Users != null)
+                                {
+                                    foreach (var user in Model.FirstOrDefault().Onboarding.Users)
+                                    {
+                                        <div class="dropdown-item">
+                                            <input type="checkbox" id="approver_@user.Id" value="@user.Id" class="approver-checkbox" />
+                                            <label for="approver_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label>Selected Approvers</label>
+                        <div id="selectedApproversChips" class="selected-members-chips"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="saveApprovers">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="assignApproverModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-purple text-white">
+                <h5 class="modal-title">Assign Approvers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="approverMultiSelect">Select Approvers</label>
+                    <div id="approverMultiSelect" class="multi-select-dropdown">
+                        <input type="text" class="form-control dropdown-search" placeholder="Search approvers..." oninput="filterApprovers()" />
+                        <div class="dropdown-options">
+                            @if (Model?.FirstOrDefault()?.Onboarding?.Users != null)
+                            {
+                                foreach (var user in Model.FirstOrDefault().Onboarding.Users)
+                                {
+                                    <div class="dropdown-item">
+                                        <input type="checkbox" id="approver_@user.Id" value="@user.Id" class="approver-checkbox" />
+                                        <label for="approver_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <label>Selected Approvers</label>
+                    <div id="selectedApproversChips" class="selected-members-chips"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveApprovers">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    let currentTaskId;
+
+    // Update the selected approvers chips
+    function updateSelectedChips() {
+        const checkboxes = document.querySelectorAll('.approver-checkbox');
+        const chipsContainer = document.getElementById('selectedApproversChips');
+        chipsContainer.innerHTML = '';
+
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                const chip = document.createElement('div');
+                chip.className = 'chip d-inline-block bg-light border rounded p-2 m-1';
+                chip.innerHTML = `
+                    ${checkbox.nextElementSibling.textContent}
+                    <button class="btn-close remove-chip" data-id="${checkbox.id}" aria-label="Remove"></button>
+                `;
+                chipsContainer.appendChild(chip);
+            }
+        });
+    }
+
+    // Remove chip and uncheck corresponding checkbox
+    $(document).on("click", ".remove-chip", function () {
+        const memberId = $(this).data("id");
+        $(`#${memberId}`).prop("checked", false).trigger("change");
+    });
+
+    $(document).ready(function () {
+        const projectDropdown = $("#projectDropdown");
+        const projectContent = $("#projectContent");
+        const projectTableBody = $("#projectTable tbody");
+
+        projectDropdown.on("change", function () {
+            const projectId = $(this).val();
+
+            if (projectId) {
+                projectContent.show();
+                $.get('/Admin/GetProjectTasks', { projectId: projectId }, function (data) {
+                    projectTableBody.empty();
+                    if (data && data.length > 0) {
+                        data.forEach(project => {
+                            project.Milestones.forEach(milestone => {
+                                milestone.Tasks.forEach(task => {
+                                    const row = `
+                                        <tr>
+                                            <td class="text-center">${project.ProjectName}</td>
+                                            <td class="text-center">${milestone.MilestoneName}</td>
+                                            <td class="text-center">${task.TaskName}</td>
+                                            <td class="text-center">
+                                                <label class="toggle-label">
+                                                    <input type="checkbox" class="requires-approval" data-task-id="${task.Id}" ${task.RequiresApproval ? "checked" : ""}>
+                                                    <span class="toggle-slider"></span>
+                                                </label>
+                                            </td>
+                                            <td class="text-center">
+                                                ${task.RequiresApproval
+                                            ? `<button class="btn btn-sm btn-secondary assign-approver" data-task-id="${task.Id}">Set Approvers</button>`
+                                            : ""}
+                                            </td>
+                                        </tr>`;
+                                    projectTableBody.append(row);
+                                });
+                            });
+                        });
+                    } else {
+                        projectTableBody.append('<tr><td colspan="5" class="text-center">No tasks available for this project.</td></tr>');
+                    }
+                });
+            } else {
+                projectContent.hide();
+                projectTableBody.empty();
+            }
+        });
+
+        $(document).on("change", ".requires-approval", function () {
+            const taskId = $(this).data("task-id");
+            const requiresApproval = $(this).is(":checked");
+            const approverButtonContainer = $(this).closest("tr").find("td:last-child");
+
+            $.post('/Admin/UpdateTaskApproval', { taskId: taskId, requiresApproval: requiresApproval }, function (response) {
+                if (response.success) {
+                    if (requiresApproval) {
+                        approverButtonContainer.html(`<button class="btn btn-sm btn-secondary assign-approver" data-task-id="${taskId}">Set Approvers</button>`);
+                    } else {
+                        approverButtonContainer.empty();
+                    }
+                } else {
+                    alert("Error: " + response.message);
+                }
+            });
+        });
+
+        $(document).on("click", ".assign-approver", function () {
+            currentTaskId = $(this).data("task-id");
+            $("#assignApproverModal").modal("show");
+        });
+
+        $("#saveApprovers").on("click", function () {
+            const selectedApprovers = [];
+            $(".approver-checkbox:checked").each(function () {
+                selectedApprovers.push($(this).val());
+            });
+
+            if (selectedApprovers.length === 0) {
+                alert("No approvers selected. Please select at least one approver.");
+                return;
+            }
+
+            $.post('/Admin/AssignApprovers', { taskId: currentTaskId, approvers: selectedApprovers }, function (response) {
+                if (response.success) {
+                    alert("Approvers assigned successfully!");
+                    $("#assignApproverModal").modal("hide");
+                } else {
+                    alert("Error: " + response.message);
+                }
+            });
+        });
+
+        $(document).on("change", ".approver-checkbox", function () {
+            updateSelectedChips();
+        });
+    });
+</script>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    h2 {
+        color: #470A67;
+    }
+
+    .form-select {
+        border: 1px solid #ced4da;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+
+    .table {
+        margin-top: 20px;
+        font-size: 14px;
+        background-color: white;
+        border-radius: 5px;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        font-size: 14px;
+        border-radius: 5px;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+    .toggle-label {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+
+        .toggle-label input {
+            display: none;
+        }
+
+    .toggle-slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #dc3545;
+        border-radius: 12px;
+        transition: 0.4s;
+    }
+
+    .toggle-label input:checked + .toggle-slider {
+        background-color: #28a745;
+    }
+
+    .toggle-slider::before {
+        content: "";
+        position: absolute;
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.4s;
+    }
+
+    .toggle-label input:checked + .toggle-slider::before {
+        transform: translateX(26px);
+    }
+    .modal-lg {
+        max-width: 50%;
+    }
+
+    .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+    }
+
+    .modal-header {
+        border-bottom: none; 
+    }
+
+    .modal-body {
+        font-size: 16px; 
+    }
+    .multi-select-dropdown {
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        padding: 10px;
+        background-color: #fff;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .dropdown-search {
+        margin-bottom: 10px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    .dropdown-options .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 5px;
+        border-bottom: 1px solid #eee;
+    }
+
+        .dropdown-options .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        background-color: #e0e0e0;
+        border-radius: 25px;
+        padding: 5px 10px;
+        font-size: 14px;
+        margin: 5px;
+    }
+
+        .chip .btn-close {
+            margin-left: 10px;
+            font-size: 10px;
+            color: #333;
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+        }
+
+</style>
