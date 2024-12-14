@@ -62,7 +62,7 @@ namespace ProjectManagementSystem.Controllers
                     Division = division,
                     RegisteredBy = User.Identity.Name,
                     IsCompleted = false,
-                    Unregistered = false, 
+                    Unregistered = false,
                     IsFileUploaded = false,
                     Year = DateTime.Now.Year
                 };
@@ -177,14 +177,14 @@ namespace ProjectManagementSystem.Controllers
 
         public ActionResult RoleConfiguration()
         {
-           
-                var viewModel = new RoleViewModel
-                {
-                    ExistingRoles = db.Roles.Select(r => r.RoleName).ToList()
-                };
 
-                return View(viewModel);
-          
+            var viewModel = new RoleViewModel
+            {
+                ExistingRoles = db.Roles.Select(r => r.RoleName).ToList()
+            };
+
+            return View(viewModel);
+
         }
 
         [HttpPost]
@@ -201,7 +201,6 @@ namespace ProjectManagementSystem.Controllers
 
             try
             {
-                // checker if the role already exists
                 var existingRole = db.Roles.FirstOrDefault(r => r.RoleName == roleName);
                 if (existingRole != null)
                 {
@@ -248,7 +247,6 @@ namespace ProjectManagementSystem.Controllers
                     return Json(new { message, status }, JsonRequestBehavior.AllowGet);
                 }
 
-                // Check if the new role name already exists
                 if (db.Roles.Any(r => r.RoleName == newRoleName && r.id != id))
                 {
                     message = "Another role with the same name already exists.";
@@ -298,6 +296,156 @@ namespace ProjectManagementSystem.Controllers
             }
 
             return Json(new { message, status }, JsonRequestBehavior.AllowGet);
+        }
+        [CustomAuthorize(Roles = "PMS_Developer")]
+        [HttpGet]
+        public ActionResult ChecklistSettings()
+        {
+            var onboarding = new Onboarding
+            {
+                Users = cmdb.AspNetUsers.Select(user => new UserModel
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email
+                }).ToList()
+            };
+
+            var projects = db.MainTables
+                .Select(project => new
+                {
+                    MainId = project.main_id,
+                    ProjectName = project.project_title,
+                    Milestones = db.MilestoneTbls
+                        .Where(m => m.main_id == project.main_id)
+                        .Select(m => new
+                        {
+                            Id = m.milestone_id,
+                            MilestoneName = m.milestone_name,
+                            Tasks = db.DetailsTbls
+                                .Where(d => d.milestone_id == m.milestone_id)
+                                .Select(d => new
+                                {
+                                    Id = d.details_id,
+                                    TaskName = d.process_title,
+                                    RequiresApproval = d.RequiresApproval ?? false
+                                }).ToList()
+                        }).ToList()
+                }).ToList();
+
+            var checklistSettings = projects.Select(p => new ChecklistSettingsViewModel
+            {
+                MainId = p.MainId,
+                ProjectName = p.ProjectName,
+                Milestones = p.Milestones.Select(m => new MilestoneViewModel
+                {
+                    Id = m.Id,
+                    MilestoneName = m.MilestoneName,
+                    Tasks = m.Tasks.Select(t => new TaskViewModel
+                    {
+                        Id = t.Id,
+                        TaskName = t.TaskName,
+                        RequiresApproval = t.RequiresApproval
+                    }).ToList()
+                }).ToList(),
+                Onboarding = onboarding 
+            }).ToList();
+
+            return View(checklistSettings);
+        }
+
+        [HttpPost]
+        public JsonResult UpdateTaskApproval(int taskId, bool requiresApproval)
+        {
+            var message = "";
+            var status = false;
+
+            try
+            {
+                var task = db.DetailsTbls.FirstOrDefault(t => t.details_id == taskId);
+                if (task != null)
+                {
+                    task.RequiresApproval = requiresApproval;
+                    db.SaveChanges();
+
+                    message = "Requires approval.";
+                    status = true;
+                }
+                else
+                {
+                    message = "Task not found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                message = "Error updating task approval status: " + ex.Message;
+                Debug.WriteLine(ex.Message); 
+            }
+
+            return Json(new { success = status, message = message }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
+        public JsonResult GetProjectTasks(int projectId)
+        {
+            var projectTasks = db.MainTables
+                .Where(p => p.main_id == projectId)
+                .Select(p => new
+                {
+                    ProjectName = p.project_title,
+                    Milestones = db.MilestoneTbls
+                        .Where(m => m.main_id == p.main_id)
+                        .Select(m => new
+                        {
+                            MilestoneName = m.milestone_name,
+                            Tasks = db.DetailsTbls
+                                .Where(d => d.milestone_id == m.milestone_id)
+                                .Select(d => new
+                                {
+                                    Id = d.details_id,
+                                    TaskName = d.process_title,
+                                    RequiresApproval = d.RequiresApproval ?? false
+                                }).ToList()
+                        }).ToList()
+                }).ToList();
+
+            return Json(projectTasks, JsonRequestBehavior.AllowGet);
+
+        }
+
+        [HttpPost]
+        public JsonResult AssignApprovers(int taskId, List<int> approvers)
+        {
+            try
+            {
+                if (approvers != null && approvers.Count > 0)
+                {
+                    var existingApprovers = db.ApproversTbls.Where(a => a.Details_Id == taskId).ToList();
+                    db.ApproversTbls.RemoveRange(existingApprovers);
+
+                    foreach (var userId in approvers)
+                    {
+                        var newApprover = new ApproversTbl
+                        {
+                            Details_Id = taskId,      
+                            User_Id = userId,    
+                            ApprovalDate = DateTime.Now
+                        };
+                        db.ApproversTbls.Add(newApprover);
+                    }
+
+                    db.SaveChanges();
+                    return Json(new { success = true, message = "Approvers assigned successfully." });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "No approvers selected." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error assigning approvers: " + ex.Message });
+            }
         }
     }
 }

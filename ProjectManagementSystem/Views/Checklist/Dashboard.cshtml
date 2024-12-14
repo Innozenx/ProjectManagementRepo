@@ -1,4 +1,5 @@
 ﻿@model ProjectManagementSystem.Models.DashboardViewModel
+
 @using System.Globalization;
 
 @{
@@ -110,25 +111,70 @@
     }
 
     .table-container {
-        overflow-x: auto;
+        margin-top: 20px;
+        overflow-x: auto; /* Add horizontal scroll for smaller screens */
+        border-radius: 10px;
+        background-color: #fff;
+        padding: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     .table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 10px;
+        margin: 10px 0;
     }
 
-    .table th, .table td {
-        padding: 8px;
-        text-align: center;
-        border-bottom: 1px solid #ddd;
+        .table th,
+        .table td {
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        .table th {
+            background-color: #4C2A85;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .table tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+    .table-hover tbody tr:hover {
+        background-color: #e7dff3;
     }
 
-    .table th {
-        background-color: #470A67;
-        color: #fff;
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
     }
+
+    .dataTables_length select {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 5px;
+        font-size: 14px;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .dataTables_filter input {
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        padding: 5px 10px;
+        font-size: 14px;
+        width: 250px;
+        outline: none;
+        font-family: 'Poppins', sans-serif;
+    }
+
 
     .sidebar-cards {
         display: flex;
@@ -597,7 +643,7 @@
                     lengthMenu: "Show _MENU_ entries",
                     info: "Showing _START_ to _END_ of _TOTAL_ entries"
                 },
-                dom: '<"top"lfr>t<"bottom"ip><"clear">', // 'l' = entries dropdown, 'f' = search box, 'r' = processing
+                dom: '<"top"lfr>t<"bottom"ip><"clear">', 
                 initComplete: function () {
                     $('.dataTables_filter input').addClass('form-control').css('font-size', '14px');
                 }

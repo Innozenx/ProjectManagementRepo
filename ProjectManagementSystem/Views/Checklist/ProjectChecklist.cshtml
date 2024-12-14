@@ -5,18 +5,36 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2 style="text-align: center; font-family: 'Poppins', sans-serif; color: #66339A; font-weight: bold; margin-top: 20px;">
-    Project Checklists
+<h2 class="text-center" style="font-family: 'Poppins', sans-serif; color: #4C2A85; font-weight: bold; margin-top: 20px;">
+    Project Checklist
 </h2>
 
-<div class="container" style="max-width: 90%; margin: auto;">
+<div class="container mb-4" style="max-width: 90%; margin: auto;">
+    <div class="form-group">
+        <label for="projectSelector" style="font-family: 'Poppins', sans-serif; font-size: 16px; color: #4C2A85;">Select project name:</label>
+        <select id="projectSelector" class="form-control" style="font-family: 'Poppins', sans-serif; font-size: 14px;" onchange="filterProjectChecklists()">
+            <option value="all">Show All Projects</option>
+            @foreach (var group in Model)
+            {
+                <option value="@group.MainId">@group.ProjectName</option>
+            }
+        </select>
+    </div>
+</div>
+
+<!-- Project Checklists Container -->
+<div id="checklistsContainer" class="container" style="max-width: 90%; margin: auto;">
     @foreach (var group in Model)
     {
-        <div class="card shadow-sm mb-5">
-            <div class="card-header" style="background-color: #4C2A85; color: white; padding: 15px;">
-                <h4 class="mb-0" style="font-family: 'Poppins', sans-serif;">Project name: @group.ProjectName</h4>
+        <div class="project-checklist" data-project-id="@group.MainId" style="margin-bottom: 20px;">
+            <div class="project-header d-flex align-items-center justify-content-between" style="padding: 15px; background-color: #4C2A85; color: white; border-radius: 8px;">
+                <h4 style="margin: 0; font-family: 'Poppins', sans-serif;">@group.ProjectName</h4>
+                @*<span style="background-color: #FFC107; color: #4C2A85; padding: 8px 12px; border-radius: 4px; font-size: 12px;">
+                        Project ID: @group.MainId
+                    </span>*@
             </div>
-            <div class="card-body" style="background-color: #f9f9f9;">
+
+            <div class="milestones-container mt-3">
                 @if (group.Milestones == null || !group.Milestones.Any())
                 {
                     <div class="alert alert-warning text-center">No milestones available for this project.</div>
@@ -27,25 +45,24 @@
 
                     foreach (var milestone in group.Milestones)
                     {
-                        <div class="card shadow-sm mb-4">
-                            <div class="card-header position-relative" style="background-color: #66339A; color: white; padding: 10px; font-family: 'Poppins', sans-serif;">
-                                <h5 class="mb-0" style="display: inline;">Milestone: @milestone.MilestoneName</h5>
-                                <span class="badge badge-@(milestone.IsCompleted ? "success" : (canProceed ? "warning" : "danger")) position-absolute"
-                                      style="right: 10px; top: 10px; padding: 5px 10px; font-size: 0.9rem;">
+                        <div class="milestone-item p-3 mb-3" style="background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                            <div class="milestone-header d-flex align-items-center justify-content-between" style="margin-bottom: 15px;">
+                                <h5 style="font-family: 'Poppins', sans-serif; font-size: 18px; margin: 0;">Milestone: @milestone.MilestoneName</h5>
+                                <span class="badge badge-@(milestone.IsCompleted ? "success" : (canProceed ? "warning" : "danger"))"
+                                      style="padding: 5px 10px; font-size: 12px;">
                                     @(milestone.IsCompleted ? "Completed" : (canProceed ? "In Progress" : "Locked"))
                                 </span>
                             </div>
 
-
-                            <div class="card-body">
-                                <table class="table table-hover table-striped">
-                                    <thead style="background-color: #f0f0f0;">
+                            <div class="tasks-table">
+                                <table class="table table-borderless">
+                                    <thead style="font-family: 'Poppins', sans-serif; font-size: 14px; background-color: #F1F3F4;">
                                         <tr>
-                                            <th>Task Name</th>
-                                            <th>Status</th>
-                                            <th>Approvers</th>
-                                            <th>Attachments</th>
-                                            <th>Actions</th>
+                                            <th style="width: 35%;">Task</th>
+                                            <th style="width: 15%;">Status</th>
+                                            <th style="width: 25%;">Approvers</th>
+                                            <th style="width: 15%;">Attachments</th>
+                                            @*<th style="width: 10%;">Actions</th>*@
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -97,11 +114,11 @@
                                                             </li>
                                                         </ul>
                                                     </td>
-                                                    <td>
+                                                    @*<td>
                                                         <button class="btn btn-sm btn-outline-primary mt-1" onclick="approveTask(@task.Id)" @(canProceed ? "" : "disabled")>
-                                                            Approve Task
+                                                            Approve
                                                         </button>
-                                                    </td>
+                                                    </td>*@
                                                 </tr>
                                             }
                                         }
@@ -109,8 +126,6 @@
                                 </table>
                             </div>
                         </div>
-
-                        
                         canProceed = milestone.IsCompleted;
                     }
                 }
@@ -118,51 +133,45 @@
         </div>
     }
 </div>
-
-<!-- File Upload Modal -->
-<div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="fileUploadModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="fileUploadModalLabel">Upload Attachment</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="fileUploadForm" action="/Checklist/UploadTaskFile" method="post" enctype="multipart/form-data">
-                    <input type="hidden" id="taskId" name="taskId" />
-                    <div class="form-group">
-                        <label for="file">Select File</label>
-                        <input type="file" id="file" name="file" class="form-control" required />
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">Upload</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-    function approveTask(taskId) {
-        $.ajax({
-            url: `/Checklist/ApproveTask/${taskId}`,
-            type: "POST",
-            success: function () {
-                alert("Task approved successfully!");
-                location.reload();
-            },
-            error: function () {
-                alert("Failed to approve task.");
+    function filterProjectChecklists() {
+        var selectedProject = document.getElementById("projectSelector").value;
+        var checklists = document.querySelectorAll(".project-checklist");
+
+        checklists.forEach(function (checklist) {
+            if (selectedProject === "all" || checklist.dataset.projectId === selectedProject) {
+                checklist.style.display = "block";
+            } else {
+                checklist.style.display = "none";
             }
         });
     }
 
-    function openFileUploadModal(taskId) {
-        $('#taskId').val(taskId);
-        $('#fileUploadModal').modal('show');
+    function approveTask(taskId) {
+        alert("Approved.")
+    }
+
+
+    function openFileUpload(taskId) {
+        document.getElementById("taskIdInput").value = taskId;
+        $("#fileUploadModal").modal("show");
+    }
+    function uploadFile() {
+        var formData = new FormData(document.getElementById("fileUploadForm"));
+        $.ajax({
+            url: '/FileUpload/UploadFile',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                alert(response.message);
+                $("#fileUploadModal").modal("hide");
+            },
+            error: function () {
+                alert("File upload failed!");
+            }
+        });
     }
 </script>
 
@@ -196,4 +205,3 @@
         cursor: not-allowed !important;
     }
 </style>
-

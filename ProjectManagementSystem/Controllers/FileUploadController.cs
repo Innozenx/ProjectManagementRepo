@@ -37,7 +37,7 @@ namespace ProjectManagementSystem.Controllers
             {
                 ViewBag.Message = "File upload failed!!";
                 Debug.WriteLine(e);
-                message = "FAILED";
+                message = "Sorry, file is required.";
                 return Json(new { message = message }, JsonRequestBehavior.AllowGet);
             }
         }

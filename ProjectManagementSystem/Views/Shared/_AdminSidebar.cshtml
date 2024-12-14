@@ -1,17 +1,17 @@
-﻿
-<!-- Main Sidebar Container -->
-<aside class="main-sidebar elevation-4 sidebar-light-purple">
+﻿<!-- Main Sidebar Container -->
+<aside class="main-sidebar elevation-4 sidebar-light-white">
     <!-- Brand Logo -->
-    <a href="@Url.Action("Dashboard", "Checklist")" class="brand-link">
-        <img src="~/AdminLTE-3.2.0/dist/img/29th-Logo.png" alt="29th-Logo" class="brand-image img-circle elevation-3" style="opacity: .9">
-        <span class="brand-text font-weight-light">EK-PMS</span>
+    <a href="@Url.Action("Dashboard", "Checklist")" class="brand-link d-flex align-items-center">
+        <img src="~/AdminLTE-3.2.0/dist/img/29th-Logo.png" alt="EK-PMS Logo" class="brand-image img-circle elevation-3" style="opacity: 1; height: 40px; width: 40px; object-fit: cover; margin-right: 10px;">
+        <span class="brand-text font-weight-bold" style="font-size: 1rem; color: #333;">PM System</span>
     </a>
+
     <!-- Sidebar -->
     <div class="sidebar">
         <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column small-font" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- sidebar panel -->
+                <!-- Existing Panels -->
                 <li class="nav-header">Panels</li>
                 <li class="nav-item">
                     <a href="@Url.Action("Dashboard", "Checklist")" class="nav-link">
@@ -19,32 +19,18 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
-
-                <!-- Project Onboarding Section -->
                 <li class="nav-item">
                     <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
                         <i class="nav-icon fas fa-plus-circle"></i>
-                        <p>Project Onboarding <i class="right fas fa-angle-left"></i></p>
+                        <p>Project Onboarding</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
-                                <i class="nav-icon fas fa-plus-circle"></i>
-                                <p>Project Onboarding Form</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
-
                 <li class="nav-item">
                     <a href="@Url.Action("ActivityView", "Checklist", new { user = User.Identity.Name.ToString() })" class="nav-link">
                         <i class="nav-icon fas fa-list"></i>
                         <p>Activity Logs</p>
                     </a>
                 </li>
-
-
-                <!-- Checklist Section -->
                 <li class="nav-item">
                     <a href="@Url.Action("ProjectChecklist", "Checklist")" class="nav-link">
                         <i class="nav-icon fas fa-check-square"></i>
@@ -52,122 +38,97 @@
                     </a>
                 </li>
 
-                <!-- Admin Section -->
-                @*<li class="nav-header">Admin</li>
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-user-tie"></i>
-                <p>Admin <i class="right fas fa-angle-left"></i></p>
-            </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a href="@Url.Action("Register", "Admin")" class="nav-link">
-                        <i class="far fa-edit nav-icon"></i>
-                        <p>Project Registration</p>
-                    </a>
-                </li>
-            </ul>
-        </li>*@
-
+                <li class="nav-header">Projects</li>
+                @*@if (Model.Projects != null && Model.Projects.Count > 0)
+                {
+                    foreach (var project in Model.Projects)
+                    {
+                        <li class="nav-item">
+                            <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId, title = project.ProjectName })" class="nav-link">
+                                <i class="nav-icon fas fa-folder"></i>
+                                <p>@project.ProjectName</p>
+                            </a>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <p class="nav-link text-muted">No projects available</p>
+                    </li>
+                }*@
+                
                 <!-- Report Section -->
                 <li class="nav-header">Report</li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="@Url.Action("Index", "PMReports")" class="nav-link">
                         <i class="nav-icon fas fa-chart-pie"></i>
-                        <p>Reports <i class="right fas fa-angle-left"></i></p>
+                        <p>Reports</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="@Url.Action("Index", "PMReports")" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Report 1</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="@Url.Action("Index", "PMReports")" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Report 2</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
-
-                <!-- Logout -->
-                @*<li class="nav-item">
-            <a href="@Url.Action("Logout", "Account")" class="nav-link">
-                <i class="nav-icon fas fa-power-off"></i>
-                <p>Log out</p>
-            </a>
-        </li>*@
-
-                <!-- Invite Teammates Section at the Bottom -->
-                @*<li class="nav-item mt-4">
-            <a href="@Url.Action("Invite", "Teammates")" class="nav-link invite-link">
-                <i class="nav-icon fas fa-user-plus"></i>
-                <p>Invite Teammates</p>
-            </a>
-        </li>*@
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->
 </aside>
+
+<!-- Sidebar Styling -->
 <style>
     .main-sidebar {
         background-color: #ffffff !important;
     }
 
     .sidebar {
-        background-color: #ffffff; 
+        background-color: #ffffff;
     }
 
-    .small-font .nav-link, .small-font .nav-header {
-        font-size: 0.85rem;
+    .brand-link {
+        background-color: #f5f5f5;
         color: #333;
     }
 
+    .brand-text {
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
     .nav-sidebar .nav-link {
-        padding: 8px 15px;
+        padding: 8px 10px; 
+        font-size: 0.85rem;
         color: #4a4a4a;
         border-left: 4px solid transparent;
-        display: flex;
-        align-items: center;
         transition: all 0.3s;
     }
 
-    .nav-sidebar .nav-icon {
-        font-size: 1.2rem;
-        color: #666;
-        margin-right: 10px;
+        .nav-sidebar .nav-link .nav-icon {
+            margin-right: 8px;
+            color: #666;
+            font-size: 1rem; 
+        }
+
+        .nav-sidebar .nav-link:hover {
+            color: #66339A;
+            background-color: #f9f9f9;
+        }
+
+    .nav-header {
+        color: #888;
+        font-size: 0.8rem; 
+        margin: 8px 0;
+        text-transform: uppercase;
+        font-weight: bold;
     }
 
-    .nav-sidebar .nav-link:hover {
-        color: #66339A;
-        border-left: 4px solid #66339A;
-        background-color: #f9f9f9;
+    .dot {
+        height: 8px; 
+        width: 8px;
+        display: inline-block;
+        border-radius: 50%;
+        margin-right: 8px;
     }
 
-    .sidebar .nav-item a.nav-link.invite-link {
-        color: #ffffff;
-        background-color: #66339A;
-        border-radius: 5px;
-        margin-top: 10px;
-        padding: 10px;
-        text-align: center;
+    .nav-header + .nav-item {
+        margin-top: 8px;
     }
-
-    .sidebar .nav-item a.nav-link.invite-link:hover {
-        background-color: #532c7e;
-    }
-    .nav-icon.fas.fa-check-square {
-        color: #66339A; /* Matches the theme color */
-    }
-
-    .nav-sidebar .nav-link:hover i.fa-check-square {
-        color: #532c7e; /* Darker hover effect */
-    }
-
-
 </style>
-

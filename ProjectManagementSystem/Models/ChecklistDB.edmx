@@ -36,6 +36,8 @@
           <Property Name="Approver_Name" Type="varchar" MaxLength="255" />
           <Property Name="Status" Type="bit" />
           <Property Name="Details_Id" Type="int" />
+          <Property Name="User_Id" Type="int" />
+          <Property Name="ApprovalDate" Type="datetime" />
         </EntityType>
         <EntityType Name="AttachmentTable">
           <Key>
@@ -100,6 +102,7 @@
           <Property Name="isCompleted" Type="bit" />
           <Property Name="key_person" Type="nvarchar" MaxLength="250" />
           <Property Name="IsApproved" Type="bit" />
+          <Property Name="RequiresApproval" Type="bit" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -126,6 +129,7 @@
           <Property Name="created_date" Type="datetime" />
           <Property Name="milestone_position" Type="int" />
           <Property Name="status_update" Type="nvarchar" MaxLength="550" />
+          <Property Name="IsCompleted" Type="bit" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
           <Key>
@@ -315,6 +319,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="Approver_Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Status" Type="Boolean" />
           <Property Name="Details_Id" Type="Int32" />
+          <Property Name="User_Id" Type="Int32" />
+          <Property Name="ApprovalDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="AttachmentTable">
           <Key>
@@ -379,6 +385,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="isCompleted" Type="Boolean" />
           <Property Name="key_person" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="IsApproved" Type="Boolean" />
+          <Property Name="RequiresApproval" Type="Boolean" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -406,6 +413,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="created_date" Type="DateTime" Precision="3" />
           <Property Name="milestone_position" Type="Int32" />
           <Property Name="status_update" Type="String" MaxLength="550" FixedLength="false" Unicode="true" />
+          <Property Name="IsCompleted" Type="Boolean" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
@@ -547,6 +555,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="ApproversTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ApproversTbl">
               <MappingFragment StoreEntitySet="ApproversTbl">
+                <ScalarProperty Name="ApprovalDate" ColumnName="ApprovalDate" />
+                <ScalarProperty Name="User_Id" ColumnName="User_Id" />
                 <ScalarProperty Name="Details_Id" ColumnName="Details_Id" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="Approver_Name" ColumnName="Approver_Name" />
@@ -601,6 +611,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="DetailsTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.DetailsTbl">
               <MappingFragment StoreEntitySet="DetailsTbl">
+                <ScalarProperty Name="RequiresApproval" ColumnName="RequiresApproval" />
                 <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
                 <ScalarProperty Name="key_person" ColumnName="key_person" />
                 <ScalarProperty Name="isCompleted" ColumnName="isCompleted" />
@@ -641,6 +652,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="MilestoneTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.MilestoneTbl">
               <MappingFragment StoreEntitySet="MilestoneTbl">
+                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
                 <ScalarProperty Name="status_update" ColumnName="status_update" />
                 <ScalarProperty Name="milestone_position" ColumnName="milestone_position" />
                 <ScalarProperty Name="created_date" ColumnName="created_date" />

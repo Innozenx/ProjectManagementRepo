@@ -20,6 +20,7 @@ namespace ProjectManagementSystem.Models
         public Nullable<System.DateTime> created_date { get; set; }
         public Nullable<int> milestone_position { get; set; }
         public string status_update { get; set; }
+        public Nullable<bool> IsCompleted { get; set; }
     
         public virtual MainTable MainTable { get; set; }
     }

@@ -43,7 +43,6 @@ namespace ProjectManagementSystem.Models
 
     }
 
-
     public class DashboardViewModel
     {
         public int CompletedTasks { get; set; }
@@ -56,19 +55,20 @@ namespace ProjectManagementSystem.Models
         public List<exportCSV> ExportProjects { get; set; }
         public List<Deliverable> UpcomingDeliverables { get; set; } = new List<Deliverable>();
         public DbSet<TaskDetail> DetailsTbl { get; set; }
-
-        public int OverallProgress
-        {
-            get
-            {
-                return TotalTasks > 0 ? (int)((CompletedTasks / (double)TotalTasks) * 100) : 0;
-            }
-        }
+        public int OverallProgress => TotalTasks > 0 ? (int)((CompletedTasks / (double)TotalTasks) * 100) : 0;
         public IEnumerable<string> UniqueMilestoneNames { get; set; }
         public IEnumerable<ProjectMilestoneViewModel> ProjectsMilestones { get; set; }
         public List<string> MilestoneOrder { get; set; }
-
+        public List<ProjectChecklistGroupViewModel> Projects { get; set; }
     }
+
+
+    public class ProjectViewModel
+    {
+        public int MainId { get; set; }
+        public string ProjectTitle { get; set; }
+    }
+
 
     public class TaskDetail
     {
@@ -111,6 +111,7 @@ namespace ProjectManagementSystem.Models
         public List<StatusLogsViewModel> StatusLogs { get; set; } = new List<StatusLogsViewModel>();
         public List<ProjectMemberViewModel> ProjectMembers { get; set; }
         public List<ApproverViewModel> Approvers { get; set; }
+        public List<ProjectMilestoneViewModel> ProjectList { get; set; }
     }
     public class StatusLogsViewModel
     {
@@ -140,11 +141,11 @@ namespace ProjectManagementSystem.Models
         public int DetailsID { get; set; }
         public string MilestoneName { get; set; }
         public string StatusUpdate { get; set; }
-        public bool IsCompleted { get; set; }  
+        public bool IsCompleted { get; set; }
         public bool CanProceed { get; set; }
         public int MilestonePosition { get; set; }
         public List<ApproverViewModel> Approvers { get; set; }
-        public List<string> Attachments { get; set; }     
+        public List<string> Attachments { get; set; }
 
     }
 
@@ -153,12 +154,20 @@ namespace ProjectManagementSystem.Models
         public int MainId { get; set; }
         public List<MilestoneViewModel> Milestones { get; set; }
         public string ProjectName { get; set; }
+        public string Projects { get; set; }
+
     }
 
     public class ApproverViewModel
     {
+        public int ApproverId { get; set; }
         public string ApproverName { get; set; }
-        public bool Status { get; set; } 
+        public bool Status { get; set; }
+        public int TaskId { get; set; }
+        public int MilestoneId { get; set; }
+        public int UserId { get; set; }
+        public bool IsAssigned { get; set; }
+
     }
 
 
@@ -171,7 +180,9 @@ namespace ProjectManagementSystem.Models
         public bool IsCompleted { get; set; }
         public bool? IsApproved { get; set; }
         public List<string> Attachments { get; set; }
-        public List<ApproverViewModel> Approvers { get; set; }
+
+        public List<ApproverViewModel> AssignedApprovers { get; set; }
+        public bool RequiresApproval { get; set; }
     }
 
 
@@ -420,7 +431,7 @@ namespace ProjectManagementSystem.Models
         public int Id { get; set; }
         public string Title { get; set; }
     }
-    
+
     public class PojectViewModel
     {
         public int ProjectId { get; set; }
@@ -428,10 +439,10 @@ namespace ProjectManagementSystem.Models
     }
     public class MemberAccess
     {
-        public int MemberId { get; set; } 
+        public int MemberId { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public string Role { get; set; } 
+        public string Role { get; set; }
     }
     public class ProjectMemberViewModel
     {
@@ -456,15 +467,11 @@ namespace ProjectManagementSystem.Models
         public int iSortingCols { get; set; }
         public string sColumns { get; set; }
     }
- 
-
+    public class ChecklistSettingsViewModel
+    {
+        public int MainId { get; set; }
+        public string ProjectName { get; set; }
+        public List<MilestoneViewModel> Milestones { get; set; }
+        public Onboarding Onboarding { get; set; }
+    }
 }
-
-
-
-
-
-
-
-
-
