@@ -378,6 +378,8 @@ namespace ProjectManagementSystem.Controllers
                 })
                 .ToList();
 
+            var taskDetails = db.DetailsTbls.Where(x => x.main_id == id).Select(x => x.process_title).ToList();
+
             var viewModel = new ProjectMilestoneViewModel
             {
                 MainId = projects.MainId,
@@ -392,7 +394,8 @@ namespace ProjectManagementSystem.Controllers
                 ProjectDetails = projectDetails,
                 Milestones = milestones,
                 StatusLogs = statusLogs,
-                ProjectMembers = projectMembers
+                ProjectMembers = projectMembers,
+                TaskTitle = taskDetails
             };
 
             return View(viewModel);

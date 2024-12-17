@@ -431,27 +431,44 @@
                     <form id="updateStatusForm" action="@Url.Action("UpdateStatus", "Checklist")" method="post" enctype="multipart/form-data">
                         <div class="form-group mb-4">
                             <label for="milestone" class="milestone-text">Select Milestone</label>
-                            @Html.DropDownListFor(m => m.SelectedMilestone, Model.Milestones, "Choose a Milestone", new { @class = "form-control rounded border-light", id = "selectedMilestone" })
+                            @Html.DropDownListFor(m => m.TaskTitle, Model.Milestones, "Choose a Task", new { @class = "form-control rounded border-light", id = "selectedMilestone" })
                         </div>
                         <div class="form-group mb-4">
                             <label for="statusUpdate" class="status-update">Status Update</label>
                             @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3, id = "statusUpdate" })
                         </div>
                         <div class="form-group mb-4">
-                                <label for="fileUpload" class="select-attach">Attachment</label>
-                                <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
-                            </div>
+                            <label for="statusUpdate" class="status-update">Delayed?</label>
+
+                            <input type="radio" id="delayed_no" name="is_delayed" value="no" checked />
+                            <label for="statusUpdate" class="status-update">No</label>
+
+                            <input type="radio" id="delayed_yes" name="is_delayed" value="yes" />
+                            <label for="statusUpdate" class="status-update">Yes</label>
+
+                        </div>
+
+                        <div div class="form-group mb-4 d-none" id="delay_div">
+                            <label for="weeks_delayed" class="status-update">By: </label>
+                            <input class="w-auto" id="weeks_delayed" type="number"  min="0" />
+                            <span class="text-bold"> Week/s </span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="fileUpload" class="select-attach">Attachment</label>
+                            <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
+                        </div>
                         @*@using (Html.BeginForm("UploadFile", "Upload", FormMethod.Post, new
-                        {
-                            enctype = "multipart/form-data"
-                        }))
-                        {
-                            <div>
-                                @Html.TextBox("file", "", new { type = "file" }) <br />
-                                <input type="submit" value="Upload" />
-                                @ViewBag.Message
-                            </div>
-                        }*@
+        {
+            enctype = "multipart/form-data"
+        }))
+        {
+            <div>
+                @Html.TextBox("file", "", new { type = "file" }) <br />
+                <input type="submit" value="Upload" />
+                @ViewBag.Message
+            </div>
+        }*@
                         <!-- Validation message area -->
                         <div id="validationMessage" class="text-danger" style="display:none; margin-bottom:10px;">
                             Please fill out all required fields.
@@ -710,6 +727,7 @@
 
         <script>
         document.addEventListener("DOMContentLoaded", function () {
+
             gantt.config.xml_date = "%Y-%m-%d %H:%i";
             gantt.config.readonly = true;
             gantt.config.columns = [
@@ -800,5 +818,14 @@
             $("#detailsContainer").css("display", "block");
             $("#overview").css("display", "block");
         });
-        </script>
-    }
+
+        $("#delayed_yes").on("click", function () {
+            $("#delay_div").removeClass("d-none");
+            $("#delay_div").prop("class", "form-group mb-4");
+        });
+
+        $("#delayed_no").on("click", function () {
+            $("#delay_div").prop("class", "d-none");
+        });
+    </script>
+}

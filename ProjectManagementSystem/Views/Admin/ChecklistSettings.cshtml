@@ -52,7 +52,7 @@
                                         <td>@task.TaskName</td>
                                         <td class="text-center">
                                             <label class="toggle-label">
-                                                <input type="checkbox" class="requires-approval" data-task-id="@task.Id" @(task.RequiresApproval ? "checked" : "")>
+                                                <input type="checkbox" class="requires-approval" data-task-id="@task.Id" data-milestone-id="@milestone.Id" @(task.RequiresApproval ? "checked" : "")>
                                                 <span class="toggle-slider">
                                                     <span class="toggle-label-on">Yes</span>
                                                     <span class="toggle-label-off">No</span>
@@ -152,6 +152,7 @@
 
 <script>
     let currentTaskId;
+    let currentTaskMilestoneId;
 
     function updateSelectedChips() {
         const chipsContainer = document.getElementById('selectedApproversChips');
@@ -211,13 +212,13 @@
                                             <td class="text-center">${task.TaskName}</td>
                                             <td class="text-center">
                                                 <label class="toggle-label">
-                                                    <input type="checkbox" class="requires-approval" data-task-id="${task.Id}" ${task.RequiresApproval ? "checked" : ""}>
+                                                    <input type="checkbox" class="requires-approval" data-task-id="${task.Id}" data-milestone-id="${milestone.MilestoneId}" ${task.RequiresApproval ? "checked" : ""}>
                                                     <span class="toggle-slider"></span>
                                                 </label>
                                             </td>
                                             <td class="text-center">
                                                 ${task.RequiresApproval
-                                            ? `<button class="btn btn-sm btn-primary assign-approver" data-task-id="${task.Id}">Set Approvers</button>`
+                                            ? `<button class="btn btn-sm btn-primary assign-approver" data-task-id="${task.Id}" data-milestone-id="${milestone.MilestoneId}">Set Approvers</button>`
                                             : ""}
                                             </td>
                                         </tr>`;
@@ -243,7 +244,7 @@
             $.post('/Admin/UpdateTaskApproval', { taskId: taskId, requiresApproval: requiresApproval }, function (response) {
                 if (response.success) {
                     if (requiresApproval) {
-                        approverButtonContainer.html(`<button class="btn btn-sm btn-secondary assign-approver" data-task-id="${taskId}">Set Approvers</button>`);
+                        approverButtonContainer.html(`<button class="btn btn-sm btn-secondary assign-approver" data-task-id="${taskId}" data-milestone-id="${milestone.MilestoneId}">Set Approvers</button>`);
                     } else {
                         approverButtonContainer.empty();
                     }
@@ -255,6 +256,7 @@
 
         $(document).on("click", ".assign-approver", function () {
             currentTaskId = $(this).data("task-id");
+            currentTaskMilestoneId = $(this).data("milestone-id");
             $("#assignApproverModal").modal("show");
         });
 
@@ -265,6 +267,7 @@
             });
 
             console.log("Task ID:", currentTaskId);
+            console.log("Milestone ID:", currentTaskMilestoneId);
             console.log("Selected Approvers:", selectedApprovers);
 
             if (selectedApprovers.length === 0) {
@@ -272,7 +275,7 @@
                 return;
             }
 
-            $.post('/Admin/AssignApprovers', { taskId: currentTaskId, approvers: selectedApprovers }, function (response) {
+            $.post('/Admin/AssignApprovers', { taskId: currentTaskId, approvers: selectedApprovers, milestoneId: currentTaskMilestoneId }, function (response) {
                 if (response.success) {
                     alert("Approvers assigned successfully!");
                     $("#assignApproverModal").modal("hide");

@@ -19,7 +19,7 @@ namespace ProjectManagementSystem.Models
         public string Approver_Name { get; set; }
         public Nullable<bool> Status { get; set; }
         public Nullable<int> Details_Id { get; set; }
-        public Nullable<int> User_Id { get; set; }
+        public string User_Id { get; set; }
         public Nullable<System.DateTime> ApprovalDate { get; set; }
     }
 }

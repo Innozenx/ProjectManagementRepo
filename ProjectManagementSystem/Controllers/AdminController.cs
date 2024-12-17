@@ -398,6 +398,7 @@ namespace ProjectManagementSystem.Controllers
                         .Select(m => new
                         {
                             MilestoneName = m.milestone_name,
+                            MilestoneId = m.milestone_id,
                             Tasks = db.DetailsTbls
                                 .Where(d => d.milestone_id == m.milestone_id)
                                 .Select(d => new
@@ -427,7 +428,7 @@ namespace ProjectManagementSystem.Controllers
 
 
         [HttpPost]
-        public JsonResult AssignApprovers(int taskId, List<int> approvers)
+        public JsonResult AssignApprovers(int taskId, List<string> approvers, int milestoneId)
         {
             try
             {
@@ -441,11 +442,16 @@ namespace ProjectManagementSystem.Controllers
 
                     foreach (var approverId in approvers)
                     {
+                        var fullname = new { firstname = "", lastname= "" };
+                        fullname = new { firstname = cmdb.AspNetUsers.Where(x => x.Id == approverId).Select(x => x.FirstName).FirstOrDefault(), lastname = cmdb.AspNetUsers.Where(x => x.Id == approverId).Select(x => x.LastName).FirstOrDefault() };
                         var newApprover = new ApproversTbl
                         {
                             Details_Id = taskId,
                             User_Id = approverId,
-                            ApprovalDate = DateTime.Now
+                            ApprovalDate = DateTime.Now,
+                            Approver_Name = fullname.firstname + fullname.lastname,
+                            Milestone_Id = milestoneId
+
                         };
                         db.ApproversTbls.Add(newApprover);
                     }

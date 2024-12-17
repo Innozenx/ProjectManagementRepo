@@ -36,7 +36,7 @@
           <Property Name="Approver_Name" Type="varchar" MaxLength="255" />
           <Property Name="Status" Type="bit" />
           <Property Name="Details_Id" Type="int" />
-          <Property Name="User_Id" Type="int" />
+          <Property Name="User_Id" Type="nvarchar" MaxLength="128" />
           <Property Name="ApprovalDate" Type="datetime" />
         </EntityType>
         <EntityType Name="AttachmentTable">
@@ -319,7 +319,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="Approver_Name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Status" Type="Boolean" />
           <Property Name="Details_Id" Type="Int32" />
-          <Property Name="User_Id" Type="Int32" />
+          <Property Name="User_Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ApprovalDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="AttachmentTable">

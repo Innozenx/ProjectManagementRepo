@@ -7,7 +7,7 @@ using System.Linq;
 using System.Web;
 using CsvHelper.Configuration.Attributes;
 using System.Web.Mvc;
-
+using ProjectManagementSystem.Models;
 
 namespace ProjectManagementSystem.Models
 {
@@ -112,6 +112,7 @@ namespace ProjectManagementSystem.Models
         public List<ProjectMemberViewModel> ProjectMembers { get; set; }
         public List<ApproverViewModel> Approvers { get; set; }
         public List<ProjectMilestoneViewModel> ProjectList { get; set; }
+        public List<string> TaskTitle { get; set; }
     }
     public class StatusLogsViewModel
     {
@@ -467,6 +468,30 @@ namespace ProjectManagementSystem.Models
         public int iSortingCols { get; set; }
         public string sColumns { get; set; }
     }
+
+    public class DetailsTblVM
+    {
+        public int details_id { get; set; }
+        public int milestone_id { get; set; }
+        public int main_id { get; set; }
+        public string process_title { get; set; }
+        public bool isSubtask { get; set; }
+        public DateTime task_start { get; set; }
+        public DateTime task_end { get; set; }
+        public int task_duration { get; set; }
+        public int source { get; set; }
+        public int target { get; set; }
+        public int parent { get; set; }
+        public DateTime created_date { get; set; }
+        public string task_status { get; set; }
+        public string color_status { get; set; }
+        public bool isUnscheduled { get; set; }
+        public bool isCompleted { get; set; }
+        public string key_person { get; set; }
+        public bool isApproved { get; set; }
+        public int delay { get; set; }
+    }
+
     public class ChecklistSettingsViewModel
     {
         public int MainId { get; set; }
@@ -474,4 +499,7 @@ namespace ProjectManagementSystem.Models
         public List<MilestoneViewModel> Milestones { get; set; }
         public Onboarding Onboarding { get; set; }
     }
+
 }
+
+    
