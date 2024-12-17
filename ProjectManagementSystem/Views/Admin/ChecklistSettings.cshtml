@@ -84,7 +84,7 @@
                             <input type="text" class="form-control dropdown-search" placeholder="Search approvers..." oninput="filterApprovers()" />
                             <div class="dropdown-options">
                                 @if (Model?.FirstOrDefault()?.Onboarding?.Users != null)
-                                {
+                                 {
                                     foreach (var user in Model.FirstOrDefault().Onboarding.Users)
                                     {
                                         <div class="dropdown-item">
@@ -92,7 +92,7 @@
                                             <label for="approver_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
                                         </div>
                                     }
-                                }
+                                 }
                             </div>
                         </div>
                     </div>
@@ -104,7 +104,6 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="saveApprovers">Save</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -145,36 +144,45 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="saveApprovers">Save</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                @*<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>*@
             </div>
         </div>
     </div>
 </div>
 
-
 <script>
     let currentTaskId;
 
-    // Update the selected approvers chips
     function updateSelectedChips() {
-        const checkboxes = document.querySelectorAll('.approver-checkbox');
         const chipsContainer = document.getElementById('selectedApproversChips');
         chipsContainer.innerHTML = '';
 
-        checkboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                const chip = document.createElement('div');
-                chip.className = 'chip d-inline-block bg-light border rounded p-2 m-1';
-                chip.innerHTML = `
-                    ${checkbox.nextElementSibling.textContent}
-                    <button class="btn-close remove-chip" data-id="${checkbox.id}" aria-label="Remove"></button>
-                `;
-                chipsContainer.appendChild(chip);
+        $(".approver-checkbox:checked").each(function () {
+            const chip = `
+            <div class="chip d-inline-block bg-light border rounded p-2 m-1">
+                ${$(this).next('label').text()}
+                <button class="btn-close remove-chip" data-id="${$(this).attr('id')}" aria-label="Remove"></button>
+            </div>`;
+            chipsContainer.insertAdjacentHTML('beforeend', chip);
+        });
+    }
+
+
+    function filterApprovers() {
+        const searchValue = document.querySelector('.dropdown-search').value.toLowerCase();
+        const dropdownItems = document.querySelectorAll('.dropdown-options .dropdown-item');
+
+        dropdownItems.forEach(item => {
+            const label = item.querySelector('label').textContent.toLowerCase();
+            if (label.includes(searchValue)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
             }
         });
     }
 
-    // Remove chip and uncheck corresponding checkbox
+
     $(document).on("click", ".remove-chip", function () {
         const memberId = $(this).data("id");
         $(`#${memberId}`).prop("checked", false).trigger("change");
@@ -209,7 +217,7 @@
                                             </td>
                                             <td class="text-center">
                                                 ${task.RequiresApproval
-                                            ? `<button class="btn btn-sm btn-secondary assign-approver" data-task-id="${task.Id}">Set Approvers</button>`
+                                            ? `<button class="btn btn-sm btn-primary assign-approver" data-task-id="${task.Id}">Set Approvers</button>`
                                             : ""}
                                             </td>
                                         </tr>`;
@@ -256,6 +264,9 @@
                 selectedApprovers.push($(this).val());
             });
 
+            console.log("Task ID:", currentTaskId);
+            console.log("Selected Approvers:", selectedApprovers);
+
             if (selectedApprovers.length === 0) {
                 alert("No approvers selected. Please select at least one approver.");
                 return;
@@ -270,6 +281,7 @@
                 }
             });
         });
+
 
         $(document).on("change", ".approver-checkbox", function () {
             updateSelectedChips();
@@ -325,9 +337,9 @@
         height: 24px;
     }
 
-        .toggle-label input {
-            display: none;
-        }
+    .toggle-label input {
+        display: none;
+    }
 
     .toggle-slider {
         position: absolute;
@@ -399,9 +411,9 @@
         border-bottom: 1px solid #eee;
     }
 
-        .dropdown-options .dropdown-item:last-child {
-            border-bottom: none;
-        }
+    .dropdown-options .dropdown-item:last-child {
+        border-bottom: none;
+    }
 
     .chip {
         display: inline-flex;
@@ -413,14 +425,14 @@
         margin: 5px;
     }
 
-        .chip .btn-close {
-            margin-left: 10px;
-            font-size: 10px;
-            color: #333;
-            cursor: pointer;
-            background: none;
-            border: none;
-            outline: none;
-        }
+    .chip .btn-close {
+        margin-left: 10px;
+        font-size: 10px;
+        color: #333;
+        cursor: pointer;
+        background: none;
+        border: none;
+        outline: none;
+    }
 
 </style>
