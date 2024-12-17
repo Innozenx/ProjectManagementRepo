@@ -463,7 +463,7 @@ namespace ProjectManagementSystem.Controllers
 
         public ActionResult InviteTeammates()
         {
-            // Fetch users
+            // fetch users
             var users = cmdb.AspNetUsers.Select(u => new UserModel
             {
                 Id = u.Id,
@@ -472,21 +472,21 @@ namespace ProjectManagementSystem.Controllers
                 Email = u.Email
             }).ToList();
 
-            // Fetch roles
+            // fetch roles
             var roles = db.Roles.Select(r => new RoleModel
             {
                 Id = r.id,
                 RoleName = r.RoleName
             }).ToList();
 
-            // Fetch projects
+            // fetch projects
             var projects = db.MainTables.Select(p => new ProjectModel
             {
                 Id = p.main_id,
                 Title = p.project_title
             }).ToList();
 
-            // Create the model
+           
             var model = new Onboarding
             {
                 Users = users,
@@ -1190,5 +1190,4 @@ namespace ProjectManagementSystem.Controllers
 
         //    return View(groupedMilestones);
     }
-
 }

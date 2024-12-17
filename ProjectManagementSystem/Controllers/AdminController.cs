@@ -413,22 +413,38 @@ namespace ProjectManagementSystem.Controllers
 
         }
 
+
+        //[HttpPost]
+        //public JsonResult AssigApprovers(int taskId, List<int> approvers)
+        //{
+        //    try
+        //    {
+        //        Console.WriteLine("Task ID: " + taskId);
+        //        Console.WriteLine("Approvers: ")
+        //    }
+        //    return View();
+        //}
+
+
         [HttpPost]
         public JsonResult AssignApprovers(int taskId, List<int> approvers)
         {
             try
             {
+                Console.WriteLine("Task ID: " + taskId);
+                Console.WriteLine("Approvers: " + string.Join(", ", approvers));
+
                 if (approvers != null && approvers.Count > 0)
                 {
                     var existingApprovers = db.ApproversTbls.Where(a => a.Details_Id == taskId).ToList();
                     db.ApproversTbls.RemoveRange(existingApprovers);
 
-                    foreach (var userId in approvers)
+                    foreach (var approverId in approvers)
                     {
                         var newApprover = new ApproversTbl
                         {
-                            Details_Id = taskId,      
-                            User_Id = userId,    
+                            Details_Id = taskId,
+                            User_Id = approverId,
                             ApprovalDate = DateTime.Now
                         };
                         db.ApproversTbls.Add(newApprover);
@@ -447,5 +463,6 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Error assigning approvers: " + ex.Message });
             }
         }
+
     }
 }
