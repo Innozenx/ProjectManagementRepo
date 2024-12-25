@@ -113,6 +113,7 @@ namespace ProjectManagementSystem.Models
         public List<ApproverViewModel> Approvers { get; set; }
         public List<ProjectMilestoneViewModel> ProjectList { get; set; }
         public List<string> TaskTitle { get; set; }
+        public List<ApproverViewModel> Checklist { get; set; }
     }
     public class StatusLogsViewModel
     {
@@ -166,8 +167,12 @@ namespace ProjectManagementSystem.Models
         public bool Status { get; set; }
         public int TaskId { get; set; }
         public int MilestoneId { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public bool IsAssigned { get; set; }
+        public int DetailsId { get; set; }
+        public int Id { get; set; }
+        public string TaskName { get; set; }
+        public bool IsRemoved { get; set; }
 
     }
 
@@ -499,7 +504,12 @@ namespace ProjectManagementSystem.Models
         public List<MilestoneViewModel> Milestones { get; set; }
         public Onboarding Onboarding { get; set; }
     }
-
+    public class TaskApproverViewModel
+    {
+        public int TaskId { get; set; } // ID of the task
+        public string TaskName { get; set; } // Name of the task
+        public List<ApproverViewModel> Approvers { get; set; } // List of approvers
+    }
 }
 
     

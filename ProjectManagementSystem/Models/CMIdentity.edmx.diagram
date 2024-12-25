@@ -7,8 +7,8 @@
       <Diagram DiagramId="ec1dd17353b34b5aab58bc501605625f" Name="Diagram1" ZoomLevel="70">
         <EntityTypeShape EntityType="CMIdentityDBModel.C__MigrationHistory" Width="1.5" PointX="5.75" PointY="1.5" />
         <EntityTypeShape EntityType="CMIdentityDBModel.AspNetRole" Width="1.5" PointX="3.75" PointY="0.75" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserClaim" Width="1.5" PointX="3" PointY="8.5" />
-        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserLogin" Width="1.5" PointX="3" PointY="3.25" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserClaim" Width="1.5" PointX="3" PointY="3.25" />
+        <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserLogin" Width="1.5" PointX="3" PointY="8.75" />
         <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUserRole" Width="1.5" PointX="6" PointY="4.5" />
         <EntityTypeShape EntityType="CMIdentityDBModel.AspNetUser" Width="1.5" PointX="0.75" PointY="2.75" />
         <EntityTypeShape EntityType="CMIdentityDBModel.CM_EmailUpdate" Width="1.5" PointX="5.75" PointY="7.5" />

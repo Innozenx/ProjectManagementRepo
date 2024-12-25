@@ -656,14 +656,52 @@
 </div>
 
 <!--Checklist Tab-->
-<div class="tab-pane fade" id="checklist" role="tabpanel" aria-labelledby="timeline-tab">
+<div class="tab-pane fade" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">
     <div class="card-container">
-
+        <div class="table-container">
+            <h3>Checklist</h3>
+            @if (Model.Checklist != null && Model.Checklist.Any())
+            {
+                <table class="table table-bordered table-hover text-center align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Milestone</th>
+                            <th>Task</th>
+                            <th>Approver</th>
+                            <th>Attachment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Checklist)
+                        {
+                            <tr>
+                                <td>@item.MilestoneId</td>
+                                <td>@item.TaskName</td>
+                                <td>@item.ApproverName</td>                        
+                                <td>
+                                    <input type="file" id="fileUpload_@item.DetailsId" class="form-control-file" />
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-success" onclick="submitApproval(@item.DetailsId)">Submit</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-center">No tasks require approval at the moment.</p>
+            }
+        </div>
     </div>
 </div>
 
+
+
     @section scripts {
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
 
@@ -722,77 +760,90 @@
                     });
                 }
             });
-        }
-        </script>
 
-        <script>
-        document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", function () {
 
-            gantt.config.xml_date = "%Y-%m-%d %H:%i";
-            gantt.config.readonly = true;
-            gantt.config.columns = [
-                { name: "key_person", label: "Key Person", align: "center", width: 90 },
-                { name: "text", label: "Milestone", tree: true, width: 200 },
-                { name: "duration", label: "Duration", align: "center", width: 70 },
-                { name: "start_date", label: "Start", align: "center", width: 90 },
-                { name: "end_date", label: "Finish", align: "center", width: 90 }
-            ];
-            gantt.config.scales = [
-                { unit: "week", date: "Week %W" }
-            ];
-
-            gantt.templates.task_text = function () {
-                return "";
-            };
-
-            gantt.init("gantt_here");
-            gantt.load(`/Checklist/getGanttData?id=${"@TempData["entry"]"}`, "json");
-
-            const setDayView = () => {
+                gantt.config.xml_date = "%Y-%m-%d %H:%i";
+                gantt.config.readonly = true;
+                gantt.config.columns = [
+                    { name: "key_person", label: "Key Person", align: "center", width: 90 },
+                    { name: "text", label: "Milestone", tree: true, width: 200 },
+                    { name: "duration", label: "Duration", align: "center", width: 70 },
+                    { name: "start_date", label: "Start", align: "center", width: 90 },
+                    { name: "end_date", label: "Finish", align: "center", width: 90 }
+                ];
                 gantt.config.scales = [
-                    { unit: "day", step: 1, date: "%d" },
                     { unit: "week", date: "Week %W" }
                 ];
-                gantt.render();
-            };
 
-            const setWeekView = () => {
-                gantt.config.scales = [
-                    { unit: "week", step: 1, date: "WW %W" },
-                    { unit: "month", step: 1, date: "%F %Y" }
-                ];
-                gantt.render();
-            };
+                gantt.templates.task_text = function () {
+                    return "";
+                };
 
-            const setMonthView = () => {
-                gantt.config.scales = [
-                    { unit: "month", step: 1, date: "%F %Y" },
-                    { unit: "year", step: 1, date: "%Y" }
-                ];
-                gantt.render();
-            };
+                gantt.init("gantt_here");
+                gantt.load(`/Checklist/getGanttData?id=${"@TempData["entry"]"}`, "json");
 
-            document.querySelector("#day-view").addEventListener("click", () => {
-                setDayView();
-                activateButton("day-view");
-            });
+                const setDayView = () => {
+                    gantt.config.scales = [
+                        { unit: "day", step: 1, date: "%d" },
+                        { unit: "week", date: "Week %W" }
+                    ];
+                    gantt.render();
+                };
 
-            document.querySelector("#week-view").addEventListener("click", () => {
+                const setWeekView = () => {
+                    gantt.config.scales = [
+                        { unit: "week", step: 1, date: "WW %W" },
+                        { unit: "month", step: 1, date: "%F %Y" }
+                    ];
+                    gantt.render();
+                };
+
+                const setMonthView = () => {
+                    gantt.config.scales = [
+                        { unit: "month", step: 1, date: "%F %Y" },
+                        { unit: "year", step: 1, date: "%Y" }
+                    ];
+                    gantt.render();
+                };
+
+                document.querySelector("#day-view").addEventListener("click", () => {
+                    setDayView();
+                    activateButton("day-view");
+                });
+
+                document.querySelector("#week-view").addEventListener("click", () => {
+                    setWeekView();
+                    activateButton("week-view");
+                });
+
+                document.querySelector("#month-view").addEventListener("click", () => {
+                    setMonthView();
+                    activateButton("month-view");
+                });
+
+                const activateButton = (buttonId) => {
+                    document.querySelectorAll(".gantt-view-btn").forEach((btn) => {
+                        btn.classList.remove("active");
+                    });
+                    document.getElementById(buttonId).classList.add("active");
+                };
+                $("#timeline-tab").on("click", function () {
+                    $("#detailsContainer").css("display", "none");
+                    $("#overview").css("display", "none");
+                });
+
+                $("#overview-tab").on("click", function () {
+                    $("#detailsContainer").css("display", "block");
+                    $("#overview").css("display", "block");
+                });
+
                 setWeekView();
                 activateButton("week-view");
+
+                loadActivityLogs();
             });
 
-            document.querySelector("#month-view").addEventListener("click", () => {
-                setMonthView();
-                activateButton("month-view");
-            });
-
-            const activateButton = (buttonId) => {
-                document.querySelectorAll(".gantt-view-btn").forEach((btn) => {
-                    btn.classList.remove("active");
-                });
-                document.getElementById(buttonId).classList.add("active");
-            };
             $("#timeline-tab").on("click", function () {
                 $("#detailsContainer").css("display", "none");
                 $("#overview").css("display", "none");
@@ -803,29 +854,14 @@
                 $("#overview").css("display", "block");
             });
 
-            setWeekView();
-            activateButton("week-view");
+            $("#delayed_yes").on("click", function () {
+                $("#delay_div").removeClass("d-none");
+                $("#delay_div").prop("class", "form-group mb-4");
+            });
 
-            loadActivityLogs();
-        });
-
-        $("#timeline-tab").on("click", function () {
-            $("#detailsContainer").css("display", "none");
-            $("#overview").css("display", "none");
-        });
-
-        $("#overview-tab").on("click", function () {
-            $("#detailsContainer").css("display", "block");
-            $("#overview").css("display", "block");
-        });
-
-        $("#delayed_yes").on("click", function () {
-            $("#delay_div").removeClass("d-none");
-            $("#delay_div").prop("class", "form-group mb-4");
-        });
-
-        $("#delayed_no").on("click", function () {
-            $("#delay_div").prop("class", "d-none");
-        });
+            $("#delayed_no").on("click", function () {
+                $("#delay_div").prop("class", "d-none");
+            });
+        }
     </script>
 }
