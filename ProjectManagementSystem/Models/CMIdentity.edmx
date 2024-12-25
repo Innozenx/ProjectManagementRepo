@@ -485,7 +485,7 @@ warning 6002: The table/view 'CMIdentityDB.dbo.vw_CMInfo' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>

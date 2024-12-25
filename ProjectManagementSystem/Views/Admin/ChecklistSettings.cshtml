@@ -59,7 +59,7 @@
                                                 </span>
                                             </label>
                                         </td>
-
+                                        
                                     </tr>
                                 }
                             }
@@ -150,12 +150,18 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     let currentTaskId;
     let currentTaskMilestoneId;
 
     function updateSelectedChips() {
         const chipsContainer = document.getElementById('selectedApproversChips');
+        if (!chipsContainer) {
+            console.error("Selected Approvers Chips container not found.");
+            return;
+        }
         chipsContainer.innerHTML = '';
 
         $(".approver-checkbox:checked").each(function () {
@@ -168,32 +174,27 @@
         });
     }
 
-
     function filterApprovers() {
-        const searchValue = document.querySelector('.dropdown-search').value.toLowerCase();
+        const searchValue = document.querySelector('.dropdown-search') ?.value.toLowerCase() || '';
         const dropdownItems = document.querySelectorAll('.dropdown-options .dropdown-item');
 
         dropdownItems.forEach(item => {
             const label = item.querySelector('label').textContent.toLowerCase();
-            if (label.includes(searchValue)) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
-            }
+            item.style.display = label.includes(searchValue) ? '' : 'none';
         });
     }
-
 
     $(document).on("click", ".remove-chip", function () {
         const memberId = $(this).data("id");
         $(`#${memberId}`).prop("checked", false).trigger("change");
     });
-
+    
     $(document).ready(function () {
         const projectDropdown = $("#projectDropdown");
         const projectContent = $("#projectContent");
         const projectTableBody = $("#projectTable tbody");
 
+        
         projectDropdown.on("change", function () {
             const projectId = $(this).val();
 
@@ -216,7 +217,7 @@
                                                     <span class="toggle-slider"></span>
                                                 </label>
                                             </td>
-                                            <td class="text-center">
+                                            <td class="text-center approver-button-container">
                                                 ${task.RequiresApproval
                                             ? `<button class="btn btn-sm btn-primary assign-approver" data-task-id="${task.Id}" data-milestone-id="${milestone.MilestoneId}">Set Approvers</button>`
                                             : ""}
@@ -229,6 +230,8 @@
                     } else {
                         projectTableBody.append('<tr><td colspan="5" class="text-center">No tasks available for this project.</td></tr>');
                     }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    console.error("Error fetching project tasks:", textStatus, errorThrown);
                 });
             } else {
                 projectContent.hide();
@@ -238,20 +241,15 @@
 
         $(document).on("change", ".requires-approval", function () {
             const taskId = $(this).data("task-id");
+            const milestoneId = $(this).data("milestone-id");
             const requiresApproval = $(this).is(":checked");
-            const approverButtonContainer = $(this).closest("tr").find("td:last-child");
+            const approverButtonContainer = $(this).closest("tr").find(".approver-button-container");
 
-            $.post('/Admin/UpdateTaskApproval', { taskId: taskId, requiresApproval: requiresApproval }, function (response) {
-                if (response.success) {
-                    if (requiresApproval) {
-                        approverButtonContainer.html(`<button class="btn btn-sm btn-secondary assign-approver" data-task-id="${taskId}" data-milestone-id="${milestone.MilestoneId}">Set Approvers</button>`);
-                    } else {
-                        approverButtonContainer.empty();
-                    }
-                } else {
-                    alert("Error: " + response.message);
-                }
-            });
+            if (requiresApproval) {
+                addApprovalButton(taskId, milestoneId, approverButtonContainer);
+            } else {
+                markApproversAsRemoved(taskId, milestoneId, approverButtonContainer);
+            }
         });
 
         $(document).on("click", ".assign-approver", function () {
@@ -266,29 +264,52 @@
                 selectedApprovers.push($(this).val());
             });
 
-            console.log("Task ID:", currentTaskId);
-            console.log("Milestone ID:", currentTaskMilestoneId);
-            console.log("Selected Approvers:", selectedApprovers);
-
             if (selectedApprovers.length === 0) {
-                alert("No approvers selected. Please select at least one approver.");
+                Swal.fire("Error", "Please select at least one approver.", "error");
                 return;
             }
 
             $.post('/Admin/AssignApprovers', { taskId: currentTaskId, approvers: selectedApprovers, milestoneId: currentTaskMilestoneId }, function (response) {
                 if (response.success) {
-                    alert("Approvers assigned successfully!");
+                    Swal.fire("Success", response.message, "success");
                     $("#assignApproverModal").modal("hide");
                 } else {
-                    alert("Error: " + response.message);
+                    Swal.fire("Error", response.message, "error");
                 }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                console.error("Error assigning approvers:", textStatus, errorThrown);
             });
         });
-
 
         $(document).on("change", ".approver-checkbox", function () {
             updateSelectedChips();
         });
+
+        function markApproversAsRemoved(taskId, milestoneId, approverButtonContainer) {
+            $.post("/Admin/UpdateTaskApproval", { taskId: taskId, milestoneId: milestoneId, requiresApproval: false }, function (response) {
+                if (response.success) {
+                    approverButtonContainer.empty();
+                } else {
+                    Swal.fire("Error", response.message, "error");
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                console.error("Error marking approvers as removed:", textStatus, errorThrown);
+            });
+        }
+
+        function addApprovalButton(taskId, milestoneId, approverButtonContainer) {
+            $.post('/Admin/UpdateTaskApproval', { taskId: taskId, milestoneId: milestoneId, requiresApproval: true }, function (response) {
+                if (response.success) {
+                    approverButtonContainer.html(
+                        `<button class="btn btn-sm btn-primary assign-approver" data-task-id="${taskId}" data-milestone-id="${milestoneId}">Set Approvers</button>`
+                    );
+                } else {
+                    Swal.fire("Error", response.message, "error");
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                console.error("Error adding approval button:", textStatus, errorThrown);
+            });
+        }
     });
 </script>
 

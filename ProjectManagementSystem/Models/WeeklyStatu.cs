@@ -23,5 +23,6 @@ namespace ProjectManagementSystem.Models
         public Nullable<int> main_id { get; set; }
         public string user_id { get; set; }
         public string milestone_name { get; set; }
+        public Nullable<int> delay { get; set; }
     }
 }

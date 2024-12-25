@@ -501,6 +501,10 @@
         font-family: 'Poppins', sans-serif;
     }
 
+    .duedate-colors{
+        background-color:green;
+    }
+
 </style>
 
 <!-- Header Section -->
@@ -573,7 +577,7 @@
                                     var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName && pm.EndDate.HasValue);
                                     var latestEndDate = milestoneTasks.Any() ? milestoneTasks.Max(pm => pm.EndDate.Value) : (DateTime?)null;
                                     var endDateFormatted = latestEndDate.HasValue ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}" : "N/A";
-                                    <td>@endDateFormatted</td>
+                                    <td class="duedate-colors">@endDateFormatted</td>
                                 }
                             </tr>
                         }

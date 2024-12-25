@@ -378,7 +378,18 @@ namespace ProjectManagementSystem.Controllers
                 })
                 .ToList();
 
-            var taskDetails = db.DetailsTbls.Where(x => x.main_id == id).Select(x => x.process_title).ToList();
+            // fetch tasks that requires approval
+            var projChecklist = db.ApproversTbls
+                .Where(a => a.Main_Id == id)
+                .Select(a => new ApproverViewModel
+                {
+                    DetailsId = (int)a.Details_Id, 
+                    MilestoneId = (int)a.Milestone_Id, 
+                    TaskName = db.DetailsTbls.Where(d => d.details_id == a.Details_Id).Select(d => d.process_title).FirstOrDefault(),
+                    ApproverName = a.Approver_Name,
+                    IsRemoved = a.IsRemoved_ ?? false
+                })
+                .ToList();
 
             var viewModel = new ProjectMilestoneViewModel
             {
@@ -395,12 +406,13 @@ namespace ProjectManagementSystem.Controllers
                 Milestones = milestones,
                 StatusLogs = statusLogs,
                 ProjectMembers = projectMembers,
-                TaskTitle = taskDetails
+                //TaskTitle = taskDetails,
+                Checklist = projChecklist
+                
             };
 
             return View(viewModel);
         }
-
 
 
 
@@ -1065,13 +1077,51 @@ namespace ProjectManagementSystem.Controllers
         //    return Json(new { data = data, message = message }, JsonRequestBehavior.AllowGet);
         //}
 
-        public JsonResult GetStatusUpdates()
-        {
-            var message = "";
-            var data = db.WeeklyStatus.ToList();
+        //public JsonResult GetStatusUpdates()
+        //{
+        //    var message = "";
+        //    var data = db.WeeklyStatus.ToList();
 
-            return Json(new { data = data, message = message }, JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(new { data = data, message = message }, JsonRequestBehavior.AllowGet);
+        //}
+
+        //public ActionResult ApproverView(int taskId)
+        //{
+        //    try
+        //    {
+        //        // Fetch task details
+        //        var task = db.DetailsTbls.FirstOrDefault(t => t.details_id == taskId);
+        //        if (task == null)
+        //        {
+        //            return HttpNotFound("Task not found.");
+        //        }
+
+        //        // Fetch approvers for the task
+        //        var approvers = db.ApproversTbls
+        //            .Where(a => a.Details_Id == taskId)
+        //            .Select(a => new ApproverViewModel
+        //            {
+        //                UserId = a.User_Id,
+        //                ApproverName = a.Approver_Name,
+        //                IsRemoved = a.IsRemoved_ ?? false
+        //            }).ToList();
+
+        //        // Pass data to the view model
+        //        var model = new TaskApproverViewModel
+        //        {
+        //            TaskId = taskId,
+        //            //TaskName = task.details_id,
+        //            Approvers = approvers
+        //        };
+
+        //        return View(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error: {ex}");
+        //        return View("Error", new HandleErrorInfo(ex, "Admin", "ApproverView"));
+        //    }
+        //}
 
         //[HttpGet]
         //public ActionResult ProjectChecklist()
@@ -1193,4 +1243,5 @@ namespace ProjectManagementSystem.Controllers
 
         //    return View(groupedMilestones);
     }
+
 }
