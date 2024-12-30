@@ -105,7 +105,8 @@
           <Property Name="key_person" Type="nvarchar" MaxLength="250" />
           <Property Name="IsApproved" Type="bit" />
           <Property Name="RequiresApproval" Type="bit" />
-          <Property Name="delay" Type="int" />
+          <Property Name="task_delay" Type="int" />
+          <Property Name="excel_id" Type="int" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -133,6 +134,11 @@
           <Property Name="milestone_position" Type="int" />
           <Property Name="status_update" Type="nvarchar" MaxLength="550" />
           <Property Name="IsCompleted" Type="bit" />
+          <Property Name="unscheduled" Type="bit" />
+          <Property Name="parent" Type="int" />
+          <Property Name="excel_id" Type="int" />
+          <Property Name="source" Type="int" />
+          <Property Name="target" Type="int" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
           <Key>
@@ -392,7 +398,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="key_person" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="IsApproved" Type="Boolean" />
           <Property Name="RequiresApproval" Type="Boolean" />
-          <Property Name="delay" Type="Int32" />
+          <Property Name="task_delay" Type="Int32" />
+          <Property Name="excel_id" Type="Int32" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -421,6 +428,11 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="milestone_position" Type="Int32" />
           <Property Name="status_update" Type="String" MaxLength="550" FixedLength="false" Unicode="true" />
           <Property Name="IsCompleted" Type="Boolean" />
+          <Property Name="unscheduled" Type="Boolean" />
+          <Property Name="parent" Type="Int32" />
+          <Property Name="excel_id" Type="Int32" />
+          <Property Name="source" Type="Int32" />
+          <Property Name="target" Type="Int32" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
@@ -621,7 +633,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="DetailsTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.DetailsTbl">
               <MappingFragment StoreEntitySet="DetailsTbl">
-                <ScalarProperty Name="delay" ColumnName="delay" />
+                <ScalarProperty Name="excel_id" ColumnName="excel_id" />
+                <ScalarProperty Name="task_delay" ColumnName="task_delay" />
                 <ScalarProperty Name="RequiresApproval" ColumnName="RequiresApproval" />
                 <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
                 <ScalarProperty Name="key_person" ColumnName="key_person" />
@@ -663,6 +676,11 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="MilestoneTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.MilestoneTbl">
               <MappingFragment StoreEntitySet="MilestoneTbl">
+                <ScalarProperty Name="target" ColumnName="target" />
+                <ScalarProperty Name="source" ColumnName="source" />
+                <ScalarProperty Name="excel_id" ColumnName="excel_id" />
+                <ScalarProperty Name="parent" ColumnName="parent" />
+                <ScalarProperty Name="unscheduled" ColumnName="unscheduled" />
                 <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
                 <ScalarProperty Name="status_update" ColumnName="status_update" />
                 <ScalarProperty Name="milestone_position" ColumnName="milestone_position" />
