@@ -393,8 +393,8 @@ namespace ProjectManagementSystem.Controllers
                 .Where(a => a.Main_Id == id)
                 .Select(a => new ApproverViewModel
                 {
-                    DetailsId = (int)a.Details_Id, 
-                    MilestoneId = (int)a.Milestone_Id, 
+                    DetailsId = (int)a.Details_Id,
+                    MilestoneId = (int)a.Milestone_Id,
                     TaskName = db.DetailsTbls.Where(d => d.details_id == a.Details_Id).Select(d => d.process_title).FirstOrDefault(),
                     ApproverName = a.Approver_Name,
                     IsRemoved = a.IsRemoved_ ?? false
@@ -417,8 +417,8 @@ namespace ProjectManagementSystem.Controllers
                 StatusLogs = statusLogs,
                 ProjectMembers = projectMembers,
                 //TaskTitle = taskDetails,
-                Checklist = projChecklist
-                
+                Checklist = projChecklist,
+
                 TaskTitle = tasks
             };
 
@@ -665,7 +665,7 @@ namespace ProjectManagementSystem.Controllers
                                         created_date = DateTime.Now,
                                         milestone_position = content.Sequence,
                                         IsCompleted = false,
-                                        unscheduled = true
+                                        unscheduled = false
                                     };
                                     milestoneList.Add(addMilestone);
                                 }
@@ -903,36 +903,69 @@ namespace ProjectManagementSystem.Controllers
 
                     if (model.isDelayed == true)
                     {
-                        var deetsDB = db.DetailsTbls.Where(x => x.details_id == taskId).ToList().SingleOrDefault();
+                        var deetsDB = db.DetailsTbls.Where(x => x.details_id == taskId && x.details_id == taskId).ToList().SingleOrDefault();
+                        var mainId = deetsDB.main_id;
+                        var excelId = deetsDB.excel_id;
                         deetsDB.task_delay = model.delay;
 
-                        if (deetsDB.target != null)
-                        {
-                            var deetsTarget = db.DetailsTbls.Where(x => x.excel_id == deetsDB.target).ToList().SingleOrDefault();
-                            while (deetsTarget != null)
-                            {
-                                deetsTarget.task_delay = model.delay;
 
-                                if (deetsTarget.target != null)
+                        if (deetsDB.parent != null)
+                        {
+                            var deetsParent = db.DetailsTbls.Where(x => x.excel_id == deetsDB.parent && x.main_id == mainId).ToList().SingleOrDefault();
+                            while (deetsParent != null)
+                            {
+                                deetsParent.task_delay = model.delay;
+
+                                if (deetsParent.parent != null)
                                 {
-                                    deetsTarget = db.DetailsTbls.Where(x => x.excel_id == deetsTarget.target).ToList().SingleOrDefault();
+                                    deetsParent = db.DetailsTbls.Where(x => x.excel_id == deetsParent.parent && x.main_id == mainId).ToList().SingleOrDefault();
                                 }
+
+                                db.SaveChanges();
                             }
                         }
 
-                        if (deetsDB.source != null)
-                        {
-                            var deetsSource= db.DetailsTbls.Where(x => x.excel_id == deetsDB.source).ToList().SingleOrDefault();
-                            while (deetsSource != null)
-                            {
-                                deetsSource.task_delay = model.delay;
+                        var targetList = db.DetailsTbls.Where(x => x.source == excelId && x.main_id == mainId).ToList();
+                        var tempList = db.DetailsTbls.Where(x => x.source == excelId && x.main_id == mainId).ToList();
+                        var ctr = targetList.Count;
 
-                                if (deetsSource.source != null)
+                        tempList.Clear();
+                        tempList.TrimExcess();
+
+                        while(ctr > 0)
+                        {
+                            foreach (var item in targetList)
+                            {
+                                item.task_delay = model.delay;
+
+                                if (db.DetailsTbls.Where(x => x.source == item.excel_id && x.main_id == mainId).SingleOrDefault() != null)
                                 {
-                                    deetsSource = db.DetailsTbls.Where(x => x.excel_id == deetsSource.source).ToList().SingleOrDefault();
+                                    tempList.Add(db.DetailsTbls.Where(x => x.source == item.excel_id && x.main_id == mainId).SingleOrDefault());
                                 }
+
+                                db.SaveChanges();
                             }
+
+                            ctr = tempList.Count;
+                            targetList = tempList.ToList();
+
+                            tempList.Clear();
+                            tempList.TrimExcess();
                         }
+
+                        //if (deetsDB.source != null)
+                        //{
+                        //    var deetsSource= db.DetailsTbls.Where(x => x.excel_id == deetsDB.source && x.main_id == mainId).ToList().SingleOrDefault();
+                        //    while (deetsSource != null)
+                        //    {
+                        //        deetsSource.task_delay = model.delay;
+
+                        //        if (deetsSource.source != null)
+                        //        {
+                        //            deetsSource = db.DetailsTbls.Where(x => x.excel_id == deetsSource.source && x.main_id == mainId).ToList().SingleOrDefault();
+                        //        }
+                        //    }
+                        //}
                     }
 
                     var statusUpdate = new WeeklyStatu
