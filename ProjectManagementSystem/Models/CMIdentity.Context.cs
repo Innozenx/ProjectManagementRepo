@@ -35,6 +35,5 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<CM_WifiAccess> CM_WifiAccess { get; set; }
         public virtual DbSet<Identity_JobDescription> Identity_JobDescription { get; set; }
         public virtual DbSet<Identity_Keywords> Identity_Keywords { get; set; }
-        public virtual DbSet<vw_CMInfo> vw_CMInfo { get; set; }
     }
 }

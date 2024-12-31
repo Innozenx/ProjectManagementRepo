@@ -24,8 +24,6 @@ namespace ProjectManagementSystem.Models
         public Nullable<bool> unscheduled { get; set; }
         public Nullable<int> parent { get; set; }
         public Nullable<int> excel_id { get; set; }
-        public Nullable<int> source { get; set; }
-        public Nullable<int> target { get; set; }
     
         public virtual MainTable MainTable { get; set; }
     }

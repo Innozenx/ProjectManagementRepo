@@ -369,9 +369,6 @@
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
-    <Compile Include="Models\vw_CMInfo.cs">
-      <DependentUpon>CMIdentity.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\WeeklyChecklistTable.cs">
       <DependentUpon>CheckListDB.tt</DependentUpon>
     </Compile>

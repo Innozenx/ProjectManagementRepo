@@ -341,6 +341,16 @@ namespace ProjectManagementSystem.Controllers
                 })
                 .ToList();
 
+            // fetch tasks for dropdown
+            var tasks = db.DetailsTbls
+                .Where(t => t.main_id == id)
+                .Select(t => new SelectListItem
+                {
+                    Value = t.details_id.ToString(),
+                    Text = t.process_title
+                })
+                .ToList();
+
             // fetch status
             var statusLogs = db.WeeklyStatus
                  .Where(log => log.main_id == id)
@@ -409,6 +419,7 @@ namespace ProjectManagementSystem.Controllers
                 //TaskTitle = taskDetails,
                 Checklist = projChecklist
                 
+                TaskTitle = tasks
             };
 
             return View(viewModel);
@@ -424,23 +435,46 @@ namespace ProjectManagementSystem.Controllers
                 .OrderBy(x => x.milestone_id)
                 .ToList();
 
+            var milestones = db.MilestoneTbls.Where(x => x.main_id == id).OrderBy(x => x.milestone_id).ToList();
+
+            var milestoneData = milestones.Select(x => new
+            {
+                id = x.excel_id,
+                start_date = "",
+                duration = 0,
+                text = x.milestone_name,
+                parent = x.parent,
+                color = "",
+                unscheduled = x.unscheduled,
+                completed = x.IsCompleted,
+                key_person = "",
+            }).ToArray();
+
             var data = tasks.Select(x => new
             {
-                id = x.details_id,
+                id = x.excel_id,
                 start_date = x.task_start.HasValue ? x.task_start.Value.ToString("yyyy/MM/dd") : DateTime.Now.ToString("yyyy/MM/dd"),
-                duration = x.task_duration ?? 0,
+                duration = x.task_duration + (x.task_delay.Value * 7) ?? 0,
                 text = x.process_title,
-                parent = x.parent,
+                parent = x.IsSubtask == false ? x.milestone_id : x.parent,
                 color = GetTaskColor(x),
                 unscheduled = x.isUnscheduled,
                 completed = x.isCompleted,
-                key_person = x.key_person
+                key_person = x.key_person,
+            }).ToArray();
+
+            var linkData = tasks.Select(x => new
+            {
+                id = x.excel_id,
+                source = x.source,
+                target = x.target,
+                type = "0"
             }).ToArray();
 
             var jsonData = new
             {
-                tasks = data,
-                links = new object[] { }
+                tasks = milestoneData.Concat(data).ToArray(),
+                links = linkData
             };
 
             return Json(jsonData, JsonRequestBehavior.AllowGet);
@@ -501,7 +535,7 @@ namespace ProjectManagementSystem.Controllers
                 Title = p.project_title
             }).ToList();
 
-           
+
             var model = new Onboarding
             {
                 Users = users,
@@ -629,12 +663,16 @@ namespace ProjectManagementSystem.Controllers
                                         milestone_name = content.MilestoneName,
                                         main_id = addWeeklyChecklist.main_id,
                                         created_date = DateTime.Now,
-                                        milestone_position = content.Sequence
+                                        milestone_position = content.Sequence,
+                                        IsCompleted = false,
+                                        unscheduled = true
                                     };
                                     milestoneList.Add(addMilestone);
                                 }
-                                db.MilestoneTbls.AddRange(milestoneList);
+                                var newlyAdded = db.MilestoneTbls.AddRange(milestoneList);
                                 db.SaveChanges();
+
+                                newlyAdded.ToList();
 
                                 List<DetailsTbl> detailList = new List<DetailsTbl>();
                                 foreach (var milestone in milestoneList)
@@ -670,10 +708,12 @@ namespace ProjectManagementSystem.Controllers
                                             task_duration = taskGroup.task_duration,
                                             source = taskGroup.Source,
                                             target = taskGroup.Target,
-                                            parent = parentId,
+                                            parent = taskGroup.Parent,
                                             created_date = DateTime.Now.ToLocalTime(),
                                             IsSubtask = subtask,
-                                            main_id = mainIDfordetails
+                                            main_id = mainIDfordetails,
+                                            excel_id = taskGroup.id
+
                                         };
 
                                         detailList.Add(addTask);
@@ -769,53 +809,166 @@ namespace ProjectManagementSystem.Controllers
         }
 
 
+        //[HttpPost]
+        //public ActionResult UpdateStatus(ProjectMilestoneViewModel model)
+        //{
+        //    var err = ModelState.Values.SelectMany(v => v.Errors);
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        var milestone = db.MilestoneTbls.Find(int.Parse(model.SelectedMilestone));
+        //        if (milestone != null)
+        //        {
+
+        //            int projectId = (int)milestone.main_id;
+        //            string userId = User.Identity.GetUserId();
+
+        //            var statusUpdate = new WeeklyStatu
+        //            {
+        //                milestone_id = milestone.milestone_id,
+        //                description = model.StatusUpdate,
+        //                date_updated = DateTime.Now,
+        //                main_id = projectId,
+        //                user_id = User.Identity.Name,
+        //                milestone_name = milestone.milestone_name
+
+
+        //            };
+        //            db.WeeklyStatus.Add(statusUpdate);
+        //            db.SaveChanges();
+
+        //             Save file if uploaded
+        //            if (model.FileUpload != null && model.FileUpload.ContentLength > 0)
+        //            {
+        //                string uploadPath = Server.MapPath("~/Uploads");
+        //                if (!Directory.Exists(uploadPath))
+        //                {
+        //                    Directory.CreateDirectory(uploadPath);
+        //                }
+
+        //                string filePath = Path.Combine(uploadPath, Path.GetFileName(model.FileUpload.FileName));
+        //                model.FileUpload.SaveAs(filePath);
+
+        //                var attachment = new AttachmentTable
+        //                {
+        //                    status_id = statusUpdate.status_id,
+        //                    path_file = filePath
+        //                };
+
+        //                db.AttachmentTables.Add(attachment);
+        //                db.SaveChanges();
+        //            }
+
+        //            var activityLog = new Activity_Log
+        //            {
+        //                log_id = projectId,
+        //                username = User.Identity.Name,
+        //                datetime_performed = DateTime.Now,
+        //                action_level = 1,
+        //                action = "Status Update",
+        //                description = $"Updated status for milestone: {milestone.milestone_name}.",
+        //                department = "ITS",
+        //                division = model.Division
+
+        //            };
+
+        //            db.Activity_Log.Add(activityLog);
+        //            db.SaveChanges();
+
+        //            TempData["StatusUpdated"] = true;
+
+        //            return RedirectToAction("weeklyMilestone", new { id = projectId, title = TempData["title"], projectId = TempData["project"] });
+        //        }
+
+        //        ModelState.AddModelError("", "Milestone not found.");
+        //        return View(model);
+        //    }
+        //    return View(model);
+        //}
+
+        //------------------------Activity Log Viewing----------------------------
+
         [HttpPost]
         public ActionResult UpdateStatus(ProjectMilestoneViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var milestone = db.MilestoneTbls.Find(int.Parse(model.SelectedMilestone));
-                if (milestone != null)
+                var taskId = Int32.Parse(model.SelectedMilestone);
+                var task = db.DetailsTbls.Find(taskId);
+                if (task != null)
                 {
 
-                    int projectId = (int)milestone.main_id;
+                    int projectId = (int)task.main_id;
                     string userId = User.Identity.GetUserId();
+
+                    if (model.isDelayed == true)
+                    {
+                        var deetsDB = db.DetailsTbls.Where(x => x.details_id == taskId).ToList().SingleOrDefault();
+                        deetsDB.task_delay = model.delay;
+
+                        if (deetsDB.target != null)
+                        {
+                            var deetsTarget = db.DetailsTbls.Where(x => x.excel_id == deetsDB.target).ToList().SingleOrDefault();
+                            while (deetsTarget != null)
+                            {
+                                deetsTarget.task_delay = model.delay;
+
+                                if (deetsTarget.target != null)
+                                {
+                                    deetsTarget = db.DetailsTbls.Where(x => x.excel_id == deetsTarget.target).ToList().SingleOrDefault();
+                                }
+                            }
+                        }
+
+                        if (deetsDB.source != null)
+                        {
+                            var deetsSource= db.DetailsTbls.Where(x => x.excel_id == deetsDB.source).ToList().SingleOrDefault();
+                            while (deetsSource != null)
+                            {
+                                deetsSource.task_delay = model.delay;
+
+                                if (deetsSource.source != null)
+                                {
+                                    deetsSource = db.DetailsTbls.Where(x => x.excel_id == deetsSource.source).ToList().SingleOrDefault();
+                                }
+                            }
+                        }
+                    }
 
                     var statusUpdate = new WeeklyStatu
                     {
-                        milestone_id = milestone.milestone_id,
+                        milestone_id = taskId,
                         description = model.StatusUpdate,
                         date_updated = DateTime.Now,
                         main_id = projectId,
                         user_id = User.Identity.Name,
-                        milestone_name = milestone.milestone_name
-
+                        milestone_name = task.process_title
 
                     };
                     db.WeeklyStatus.Add(statusUpdate);
                     db.SaveChanges();
 
                     // Save file if uploaded
-                    if (model.FileUpload != null && model.FileUpload.ContentLength > 0)
-                    {
-                        string uploadPath = Server.MapPath("~/Uploads");
-                        if (!Directory.Exists(uploadPath))
-                        {
-                            Directory.CreateDirectory(uploadPath);
-                        }
+                    //if (model.attachment != null && model.attachment.Length > 0)
+                    //{
+                    //    string uploadPath = Server.MapPath("~/Uploads");
+                    //    if (!Directory.Exists(uploadPath))
+                    //    {
+                    //        Directory.CreateDirectory(uploadPath);
+                    //    }
 
-                        string filePath = Path.Combine(uploadPath, Path.GetFileName(model.FileUpload.FileName));
-                        model.FileUpload.SaveAs(filePath);
+                    //    string filePath = Path.Combine(uploadPath, Path.GetFileName(model.attachment.FileName));
+                    //    model.attachment.SaveAs(filePath);
 
-                        var attachment = new AttachmentTable
-                        {
-                            status_id = statusUpdate.status_id,
-                            path_file = filePath
-                        };
+                    //    var attachment = new AttachmentTable
+                    //    {
+                    //        status_id = statusUpdate.status_id,
+                    //        path_file = filePath
+                    //    };
 
-                        db.AttachmentTables.Add(attachment);
-                        db.SaveChanges();
-                    }
+                    //    db.AttachmentTables.Add(attachment);
+                    //    db.SaveChanges();
+                    //}
 
                     var activityLog = new Activity_Log
                     {
@@ -824,9 +977,9 @@ namespace ProjectManagementSystem.Controllers
                         datetime_performed = DateTime.Now,
                         action_level = 1,
                         action = "Status Update",
-                        description = $"Updated status for milestone: {milestone.milestone_name}.",
+                        description = $"Updated status for milestone: {task.process_title}.",
                         department = "ITS",
-                        division = model.Division
+                        division = "TEST"
 
                     };
 
@@ -843,8 +996,6 @@ namespace ProjectManagementSystem.Controllers
             }
             return View(model);
         }
-
-        //------------------------Activity Log Viewing----------------------------
         public ActionResult ActivityView()
         {
             return View();
