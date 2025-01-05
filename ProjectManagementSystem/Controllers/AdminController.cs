@@ -304,6 +304,7 @@ namespace ProjectManagementSystem.Controllers
         [HttpGet]
         public ActionResult ChecklistSettings()
         {
+  
             var onboarding = new Onboarding
             {
                 Users = cmdb.AspNetUsers.Select(user => new UserModel
@@ -337,6 +338,7 @@ namespace ProjectManagementSystem.Controllers
                         }).ToList()
                 }).ToList();
 
+         
             var checklistSettings = projects.Select(p => new ChecklistSettingsViewModel
             {
                 MainId = p.MainId,
@@ -352,42 +354,14 @@ namespace ProjectManagementSystem.Controllers
                         RequiresApproval = t.RequiresApproval
                     }).ToList()
                 }).ToList(),
-                Onboarding = onboarding
+                Onboarding = onboarding 
             }).ToList();
 
             return View(checklistSettings);
         }
 
-        [HttpPost]
-        public JsonResult UpdateTaskApproval(int taskId, bool requiresApproval)
-        {
-            var message = "";
-            var status = false;
 
-            try
-            {
-                var task = db.DetailsTbls.FirstOrDefault(t => t.details_id == taskId);
-                if (task != null)
-                {
-                    task.RequiresApproval = requiresApproval;
-                    db.SaveChanges();
 
-                    message = "Requires approval.";
-                    status = true;
-                }
-                else
-                {
-                    message = "Task not found.";
-                }
-            }
-            catch (Exception ex)
-            {
-                message = "Error updating task approval status: " + ex.Message;
-                Debug.WriteLine(ex.Message);
-            }
-
-            return Json(new { success = status, message = message }, JsonRequestBehavior.AllowGet);
-        } 
         [HttpGet]
         public JsonResult GetProjectTasks(int projectId)
         {
@@ -416,24 +390,22 @@ namespace ProjectManagementSystem.Controllers
             return Json(projectTasks, JsonRequestBehavior.AllowGet);
 
         }
-
-        //[HttpPost]
-        //public JsonResult AssigApprovers(int taskId, List<int> approvers)
-        //{
-        //    try
-        //    {
-        //        Console.WriteLine("Task ID: " + taskId);
-        //        Console.WriteLine("Approvers: ")
-        //    }
-        //    return View();
-        //}
-
         [HttpPost]
-        public JsonResult AssignApprovers(int taskId, List<string> approvers, int milestoneId)
+        public JsonResult AssignApprovers(int taskId, List<string> approvers, int milestoneId, int mainId)
         {
             try
             {
-                if (approvers != null && approvers.Count > 0)
+                Console.WriteLine("Task ID: " + taskId);
+                Console.WriteLine("Approvers: " + string.Join(", ", approvers ?? new List<string>()));
+                Console.WriteLine("Milestone ID: " + milestoneId);
+                Console.WriteLine("Main ID: " + mainId);
+
+                if (taskId <= 0 || milestoneId <= 0 || mainId <= 0)
+                {
+                    return Json(new { success = false, message = "Invalid task, milestone, or project ID." });
+                }
+
+                if (approvers != null && approvers.Any())
                 {
                     var existingApprovers = db.ApproversTbls
                         .Where(a => a.Details_Id == taskId)
@@ -441,17 +413,15 @@ namespace ProjectManagementSystem.Controllers
 
                     foreach (var approver in existingApprovers)
                     {
-                        if (!approvers.Contains(approver.User_Id))
+                        if (approvers.Contains(approver.User_Id))
                         {
-                            approver.IsRemoved_ = true;
-                            db.Entry(approver).State = EntityState.Modified;
+                            approver.IsRemoved_ = false;
                         }
                         else
                         {
-                           
-                            approver.IsRemoved_ = false;
-                            db.Entry(approver).State = EntityState.Modified;
+                            approver.IsRemoved_ = true;
                         }
+                        db.Entry(approver).State = EntityState.Modified;
                     }
 
                     foreach (var approverId in approvers)
@@ -471,6 +441,8 @@ namespace ProjectManagementSystem.Controllers
                                     User_Id = approverId,
                                     Approver_Name = $"{user.FirstName} {user.LastName}",
                                     Milestone_Id = milestoneId,
+                                    Main_Id = mainId, 
+                                    ApprovalDate = DateTime.Now,
                                     IsRemoved_ = false
                                 };
 
@@ -484,9 +456,8 @@ namespace ProjectManagementSystem.Controllers
                 }
                 else
                 {
-                    
                     var existingApprovers = db.ApproversTbls
-                        .Where(a => a.Details_Id == taskId && a.IsRemoved_ == false)
+                        .Where(a => a.Details_Id == taskId)
                         .ToList();
 
                     foreach (var approver in existingApprovers)
@@ -506,71 +477,49 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
+
+
+
+
         [HttpPost]
-        public JsonResult CheckApprovers(int taskId)
+        public JsonResult UpdateTaskApproval(int taskId, bool requiresApproval)
         {
             try
             {
-                
-                var hasApprovers = db.ApproversTbls.Any(a => a.Details_Id == taskId && a.IsRemoved_ == false);
-                return Json(new { hasApprovers });
+                var task = db.DetailsTbls.FirstOrDefault(t => t.details_id == taskId);
+                if (task == null)
+                {
+                    return Json(new { success = false, message = "Task not found." });
+                }
+
+                task.RequiresApproval = requiresApproval;
+
+                if (!requiresApproval)
+                {
+
+                    var approvers = db.ApproversTbls
+                        .Where(a => a.Details_Id == taskId && (a.IsRemoved_ == false || a.IsRemoved_ == null))
+                        .ToList();
+                    approvers.ForEach(a => a.IsRemoved_ = true);
+                }
+
+                db.SaveChanges();
+                return Json(new { success = true, message = "Task approval updated successfully." });
+
             }
             catch (Exception ex)
             {
-                return Json(new { hasApprovers = false, error = ex.Message });
+                return Json(new { success = false, message = "Error: " + ex.Message });
             }
         }
 
         [HttpPost]
-        public JsonResult UpdateTaskApproval(int taskId, int milestoneId, bool requiresApproval)
+        public JsonResult CheckApprovers(int taskId)
         {
-            using (var transaction = db.Database.BeginTransaction())
-            {
-                try
-                {
-                    
-                    if (taskId <= 0 || milestoneId <= 0)
-                    {
-                        return Json(new { success = false, message = "Invalid task or milestone ID." });
-                    }
-
-                    
-                    var task = db.DetailsTbls.FirstOrDefault(t => t.details_id == taskId && t.milestone_id == milestoneId);
-                    if (task == null)
-                    {
-                        return Json(new { success = false, message = "Task not found." });
-                    }
-
-                   
-                    task.RequiresApproval = requiresApproval;
-                    db.Entry(task).State = EntityState.Modified;
-
-                    if (!requiresApproval)
-                    {
-                        
-                        db.Database.ExecuteSqlCommand(
-                            "UPDATE ApproversTbls SET IsRemoved_ = 1 WHERE Details_Id = @taskId AND IsRemoved_ = 0",
-                            new SqlParameter("@taskId", taskId)
-                        );
-                    }
-
-                    db.SaveChanges();
-                    transaction.Commit();
-
-                    return Json(new { success = true, message = "Task approval status updated successfully." });
-                }
-
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-
-                    
-                    Console.WriteLine($"Error updating task approval status: {ex}");
-                    return Json(new { success = false, message = $"Error updating task approval status: {ex.InnerException?.Message ?? ex.Message}" });
-                }
-            }
+            var hasApprovers = db.ApproversTbls
+                .Any(a => a.Details_Id == taskId && (a.IsRemoved_ == false || a.IsRemoved_ == null));
+            return Json(new { hasApprovers });
         }
-
 
     }
 }

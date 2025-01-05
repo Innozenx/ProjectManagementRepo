@@ -33,6 +33,7 @@ namespace ProjectManagementSystem.Models
         public string key_person { get; set; }
         public Nullable<bool> IsApproved { get; set; }
         public Nullable<bool> RequiresApproval { get; set; }
-        public Nullable<int> delay { get; set; }
+        public Nullable<int> task_delay { get; set; }
+        public Nullable<int> excel_id { get; set; }
     }
 }

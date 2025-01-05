@@ -79,23 +79,32 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="approverMultiSelect">Select Approvers</label>
-                        <div id="approverMultiSelect" class="multi-select-dropdown">
-                            <input type="text" class="form-control dropdown-search" placeholder="Search approvers..." oninput="filterApprovers()" />
-                            <div class="dropdown-options">
-                                @if (Model?.FirstOrDefault()?.Onboarding?.Users != null)
-                                 {
-                                    foreach (var user in Model.FirstOrDefault().Onboarding.Users)
-                                    {
-                                        <div class="dropdown-item">
-                                            <input type="checkbox" id="approver_@user.Id" value="@user.Id" class="approver-checkbox" />
-                                            <label for="approver_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
-                                        </div>
-                                    }
-                                 }
-                            </div>
+                        <label for="searchApprovers">Search Approvers</label>
+
+                        <input type="text"
+                               id="searchApprovers"
+                               class="form-control dropdown-search"
+                               placeholder="Search approvers..."
+                               oninput="filterApprovers()" />
+
+                        <div class="dropdown-options mt-2">
+                            @if (Model?.FirstOrDefault()?.Onboarding?.Users != null)
+                            {
+                                foreach (var user in Model.FirstOrDefault().Onboarding.Users)
+                                {
+                                    <div class="dropdown-item approver-item">
+                                        <input type="checkbox" id="approver_@user.Id" value="@user.Id" class="approver-checkbox" />
+                                        <label for="approver_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div>No approvers available</div>
+                            }
                         </div>
                     </div>
+
 
                     <div class="form-group mt-3">
                         <label>Selected Approvers</label>
@@ -149,52 +158,73 @@
         </div>
     </div>
 </div>
-
+ 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     let currentTaskId;
     let currentTaskMilestoneId;
 
+    function filterApprovers() {
+        const searchInput = document.querySelector('.dropdown-search');
+        if (!searchInput) {
+            console.error("Search input field not found!");
+            return;
+        }
+
+        const approverItems = document.querySelectorAll('.dropdown-item');
+        if (!approverItems || approverItems.length === 0) {
+            console.warn("No approver items found!");
+            return;
+        }
+
+        const searchValue = searchInput.value.trim().toLowerCase();
+
+        approverItems.forEach(item => {
+            const approverLabel = item.querySelector('label');
+            if (!approverLabel) {
+                return;
+            }
+
+            const approverName = approverLabel.textContent.trim().toLowerCase();
+            item.style.display = approverName.includes(searchValue) ? '' : 'none';
+        });
+    }
+
     function updateSelectedChips() {
         const chipsContainer = document.getElementById('selectedApproversChips');
         if (!chipsContainer) {
-            console.error("Selected Approvers Chips container not found.");
+            console.error("Chips container not found!");
             return;
         }
+
         chipsContainer.innerHTML = '';
 
-        $(".approver-checkbox:checked").each(function () {
+        const selectedApprovers = document.querySelectorAll('.approver-checkbox:checked');
+        selectedApprovers.forEach(checkbox => {
+            const approverName = checkbox.nextElementSibling.textContent;
             const chip = `
             <div class="chip d-inline-block bg-light border rounded p-2 m-1">
-                ${$(this).next('label').text()}
-                <button class="btn-close remove-chip" data-id="${$(this).attr('id')}" aria-label="Remove"></button>
+                ${approverName}
+                <button class="btn-close remove-chip" data-id="${checkbox.id}" aria-label="Remove"></button>
             </div>`;
             chipsContainer.insertAdjacentHTML('beforeend', chip);
         });
     }
 
-    function filterApprovers() {
-        const searchValue = document.querySelector('.dropdown-search') ?.value.toLowerCase() || '';
-        const dropdownItems = document.querySelectorAll('.dropdown-options .dropdown-item');
-
-        dropdownItems.forEach(item => {
-            const label = item.querySelector('label').textContent.toLowerCase();
-            item.style.display = label.includes(searchValue) ? '' : 'none';
-        });
-    }
-
-    $(document).on("click", ".remove-chip", function () {
-        const memberId = $(this).data("id");
-        $(`#${memberId}`).prop("checked", false).trigger("change");
+    document.addEventListener('click', event => {
+        if (event.target.classList.contains('remove-chip')) {
+            const approverId = event.target.dataset.id;
+            document.getElementById(approverId).checked = false;
+            updateSelectedChips();
+        }
     });
-    
+
     $(document).ready(function () {
         const projectDropdown = $("#projectDropdown");
         const projectContent = $("#projectContent");
         const projectTableBody = $("#projectTable tbody");
 
-        
         projectDropdown.on("change", function () {
             const projectId = $(this).val();
 
@@ -241,77 +271,114 @@
 
         $(document).on("change", ".requires-approval", function () {
             const taskId = $(this).data("task-id");
-            const milestoneId = $(this).data("milestone-id");
             const requiresApproval = $(this).is(":checked");
             const approverButtonContainer = $(this).closest("tr").find(".approver-button-container");
 
             if (requiresApproval) {
-                addApprovalButton(taskId, milestoneId, approverButtonContainer);
+                approverButtonContainer.html(
+                    `<button class="btn btn-sm btn-primary assign-approver" data-task-id="${taskId}" data-milestone-id="${$(this).data("milestone-id")}">Set Approvers</button>`
+                );
             } else {
-                markApproversAsRemoved(taskId, milestoneId, approverButtonContainer);
+                $.post('/Admin/CheckApprovers', { taskId: taskId }, function (response) {
+                    if (response.success && response.hasApprovers) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: 'This task has approvers. Disabling this will remove the current approvers.',
+                            showCancelButton: true,
+                            confirmButtonText: 'Continue',
+                            cancelButtonText: 'Cancel',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                approverButtonContainer.empty();
+                            } else {
+                                $(`input[data-task-id="${taskId}"]`).prop("checked", true);
+                            }
+                        });
+                    } else if (!response.hasApprovers) {
+                        approverButtonContainer.empty();
+                    } else {
+                        Swal.fire("Error", response.message, "error");
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    console.error("Error checking approvers:", jqXHR.responseText);
+                    Swal.fire("Error", "Failed to check approvers. Please try again.", "error");
+                });
             }
         });
 
         $(document).on("click", ".assign-approver", function () {
             currentTaskId = $(this).data("task-id");
             currentTaskMilestoneId = $(this).data("milestone-id");
-            $("#assignApproverModal").modal("show");
-        });
+            console.log("Task ID:", currentTaskId);
+            console.log("Milestone ID:", currentTaskMilestoneId);
 
+            if (!currentTaskMilestoneId) {
+                console.error("Milestone ID is missing!");
+                Swal.fire("Error", "Milestone ID is not defined. Cannot proceed.", "error");
+                return;
+            }
+
+            $("#assignApproverModal").modal("show");
+
+            const approverContainer = document.getElementById('approverList');
+            if (approverContainer) {
+                approverContainer.innerHTML = '<p>Loading approvers...</p>';
+                $.get(`/Admin/GetApproversForTask?taskId=${currentTaskId}`, function (response) {
+                    if (response.success) {
+                        approverContainer.innerHTML = response.data.map(approver => `
+                            <div class="approver-item">
+                                <input type="checkbox" id="approver-${approver.id}" class="approver-checkbox" value="${approver.id}" ${approver.isSelected ? 'checked' : ''}>
+                                <label for="approver-${approver.id}">${approver.name}</label>
+                            </div>`).join('');
+                    } else {
+                        approverContainer.innerHTML = '<p>Failed to load approvers.</p>';
+                    }
+                }).fail(function () {
+                    approverContainer.innerHTML = '<p>Error loading approvers.</p>';
+                });
+            }
+        });
         $("#saveApprovers").on("click", function () {
-            const selectedApprovers = [];
-            $(".approver-checkbox:checked").each(function () {
-                selectedApprovers.push($(this).val());
-            });
+            const selectedApprovers = Array.from(document.querySelectorAll('.approver-checkbox:checked')).map(
+                (checkbox) => checkbox.value
+            );
 
             if (selectedApprovers.length === 0) {
                 Swal.fire("Error", "Please select at least one approver.", "error");
                 return;
             }
 
-            $.post('/Admin/AssignApprovers', { taskId: currentTaskId, approvers: selectedApprovers, milestoneId: currentTaskMilestoneId }, function (response) {
+            const mainId = $("#projectDropdown").val();
+
+            console.log("Task ID:", currentTaskId);
+            console.log("Selected Approvers:", selectedApprovers);
+            console.log("Milestone ID:", currentTaskMilestoneId);
+            console.log("Main ID:", mainId);
+
+            $.post('/Admin/AssignApprovers', {
+                taskId: currentTaskId,
+                approvers: selectedApprovers,
+                milestoneId: currentTaskMilestoneId,
+                mainId: mainId 
+            }, function (response) {
                 if (response.success) {
-                    Swal.fire("Success", response.message, "success");
-                    $("#assignApproverModal").modal("hide");
+                    Swal.fire("Success", response.message, "success").then(() => {
+                        $("#assignApproverModal").modal("hide");
+                        $("#projectDropdown").trigger("change");
+                    });
                 } else {
                     Swal.fire("Error", response.message, "error");
                 }
             }).fail(function (jqXHR, textStatus, errorThrown) {
-                console.error("Error assigning approvers:", textStatus, errorThrown);
+                console.error("Error assigning approvers:", jqXHR.responseText);
+                Swal.fire("Error", "Failed to assign approvers. Please try again.", "error");
             });
         });
 
-        $(document).on("change", ".approver-checkbox", function () {
-            updateSelectedChips();
-        });
-
-        function markApproversAsRemoved(taskId, milestoneId, approverButtonContainer) {
-            $.post("/Admin/UpdateTaskApproval", { taskId: taskId, milestoneId: milestoneId, requiresApproval: false }, function (response) {
-                if (response.success) {
-                    approverButtonContainer.empty();
-                } else {
-                    Swal.fire("Error", response.message, "error");
-                }
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                console.error("Error marking approvers as removed:", textStatus, errorThrown);
-            });
-        }
-
-        function addApprovalButton(taskId, milestoneId, approverButtonContainer) {
-            $.post('/Admin/UpdateTaskApproval', { taskId: taskId, milestoneId: milestoneId, requiresApproval: true }, function (response) {
-                if (response.success) {
-                    approverButtonContainer.html(
-                        `<button class="btn btn-sm btn-primary assign-approver" data-task-id="${taskId}" data-milestone-id="${milestoneId}">Set Approvers</button>`
-                    );
-                } else {
-                    Swal.fire("Error", response.message, "error");
-                }
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                console.error("Error adding approval button:", textStatus, errorThrown);
-            });
-        }
     });
 </script>
+
 
 <style>
     body {
@@ -460,3 +527,4 @@
     }
 
 </style>
+
