@@ -122,31 +122,6 @@
           <Property Name="UpdatedAt" Type="datetime" Nullable="false" />
           <Property Name="isActive" Type="bit" Nullable="false" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'CMIdentityDB.dbo.vw_CMInfo' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="vw_CMInfo">
-          <Key>
-            <PropertyRef Name="Id" />
-            <PropertyRef Name="Division" />
-            <PropertyRef Name="Department" />
-            <PropertyRef Name="PositionDescription" />
-            <PropertyRef Name="Type" />
-            <PropertyRef Name="EmpType" />
-          </Key>
-          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="CMId" Type="nvarchar(max)" />
-          <Property Name="FirstName" Type="nvarchar(max)" />
-          <Property Name="LastName" Type="nvarchar(max)" />
-          <Property Name="Division" Type="varchar" MaxLength="500" Nullable="false" />
-          <Property Name="Department" Type="varchar" MaxLength="500" Nullable="false" />
-          <Property Name="PositionDescription" Type="varchar" MaxLength="500" Nullable="false" />
-          <Property Name="Type" Type="varchar" MaxLength="250" Nullable="false" />
-          <Property Name="CM_status" Type="bit" />
-          <Property Name="Email" Type="nvarchar" MaxLength="256" />
-          <Property Name="PasswordHash" Type="nvarchar(max)" />
-          <Property Name="EmpType" Type="int" Nullable="false" />
-          <Property Name="JobLevel" Type="int" />
-        </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -214,23 +189,6 @@ warning 6002: The table/view 'CMIdentityDB.dbo.vw_CMInfo' does not have a primar
           <EntitySet Name="CM_WifiAccess" EntityType="Self.CM_WifiAccess" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Identity_JobDescription" EntityType="Self.Identity_JobDescription" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Identity_Keywords" EntityType="Self.Identity_Keywords" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="vw_CMInfo" EntityType="Self.vw_CMInfo" store:Type="Views" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [vw_CMInfo].[Id] AS [Id], 
-    [vw_CMInfo].[CMId] AS [CMId], 
-    [vw_CMInfo].[FirstName] AS [FirstName], 
-    [vw_CMInfo].[LastName] AS [LastName], 
-    [vw_CMInfo].[Division] AS [Division], 
-    [vw_CMInfo].[Department] AS [Department], 
-    [vw_CMInfo].[PositionDescription] AS [PositionDescription], 
-    [vw_CMInfo].[Type] AS [Type], 
-    [vw_CMInfo].[CM_status] AS [CM_status], 
-    [vw_CMInfo].[Email] AS [Email], 
-    [vw_CMInfo].[PasswordHash] AS [PasswordHash], 
-    [vw_CMInfo].[EmpType] AS [EmpType], 
-    [vw_CMInfo].[JobLevel] AS [JobLevel]
-    FROM [dbo].[vw_CMInfo] AS [vw_CMInfo]</DefiningQuery>
-          </EntitySet>
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
@@ -263,7 +221,6 @@ warning 6002: The table/view 'CMIdentityDB.dbo.vw_CMInfo' does not have a primar
           <EntitySet Name="CM_WifiAccess" EntityType="CMIdentityDBModel.CM_WifiAccess" />
           <EntitySet Name="Identity_JobDescription" EntityType="CMIdentityDBModel.Identity_JobDescription" />
           <EntitySet Name="Identity_Keywords" EntityType="CMIdentityDBModel.Identity_Keywords" />
-          <EntitySet Name="vw_CMInfo" EntityType="CMIdentityDBModel.vw_CMInfo" />
           <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId" Association="CMIdentityDBModel.FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
             <End Role="AspNetRole" EntitySet="AspNetRoles" />
             <End Role="AspNetUserRole" EntitySet="AspNetUserRoles" />
@@ -405,29 +362,6 @@ warning 6002: The table/view 'CMIdentityDB.dbo.vw_CMInfo' does not have a primar
           <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="UpdatedAt" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="isActive" Type="Boolean" Nullable="false" />
-        </EntityType>
-        <EntityType Name="vw_CMInfo">
-          <Key>
-            <PropertyRef Name="Id" />
-            <PropertyRef Name="Division" />
-            <PropertyRef Name="Department" />
-            <PropertyRef Name="PositionDescription" />
-            <PropertyRef Name="Type" />
-            <PropertyRef Name="EmpType" />
-          </Key>
-          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="CMId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="FirstName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="LastName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Division" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="Department" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="PositionDescription" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="Type" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="CM_status" Type="Boolean" />
-          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="EmpType" Type="Int32" Nullable="false" />
-          <Property Name="JobLevel" Type="Int32" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
           <End Type="CMIdentityDBModel.AspNetRole" Role="AspNetRole" Multiplicity="1">
@@ -611,25 +545,6 @@ warning 6002: The table/view 'CMIdentityDB.dbo.vw_CMInfo' does not have a primar
                 <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="vw_CMInfo">
-            <EntityTypeMapping TypeName="CMIdentityDBModel.vw_CMInfo">
-              <MappingFragment StoreEntitySet="vw_CMInfo">
-                <ScalarProperty Name="JobLevel" ColumnName="JobLevel" />
-                <ScalarProperty Name="EmpType" ColumnName="EmpType" />
-                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="CM_status" ColumnName="CM_status" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="PositionDescription" ColumnName="PositionDescription" />
-                <ScalarProperty Name="Department" ColumnName="Department" />
-                <ScalarProperty Name="Division" ColumnName="Division" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="CMId" ColumnName="CMId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

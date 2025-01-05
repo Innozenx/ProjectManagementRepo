@@ -112,7 +112,12 @@ namespace ProjectManagementSystem.Models
         public List<ProjectMemberViewModel> ProjectMembers { get; set; }
         public List<ApproverViewModel> Approvers { get; set; }
         public List<ProjectMilestoneViewModel> ProjectList { get; set; }
-        public List<string> TaskTitle { get; set; }
+        public IEnumerable<SelectListItem> TaskTitle { get; set; }
+
+        public bool isDelayed { get; set; }
+        public int delay { get; set; }
+
+
         public List<ApproverViewModel> Checklist { get; set; }
     }
     public class StatusLogsViewModel
@@ -394,6 +399,11 @@ namespace ProjectManagementSystem.Models
             public string Description { get; set; }
             public int MilestoneId { get; set; }
             public DateTime DateUpdated { get; set; }
+            public string Attachment { get; set; }
+            public int MainId { get; set; }
+            public string UserId { get; set; }
+            public string MilestoneName { get; set; }
+            
         }
     }
 
