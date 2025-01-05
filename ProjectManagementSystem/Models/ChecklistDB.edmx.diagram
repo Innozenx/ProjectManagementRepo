@@ -4,7 +4,11 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
+
+      <Diagram DiagramId="cc57a6e23ad7486da6e24038f04d9b5d" Name="Diagram1" ZoomLevel="85">
+
       <Diagram DiagramId="cc57a6e23ad7486da6e24038f04d9b5d" Name="Diagram1" ZoomLevel="74">
+
         <EntityTypeShape EntityType="ProjectManagementDBModel.Activity_Log" Width="1.5" PointX="5.75" PointY="0.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.AdminList" Width="1.5" PointX="0.75" PointY="5.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.ApproversTbl" Width="1.5" PointX="2.75" PointY="5.75" />

@@ -90,7 +90,8 @@ namespace ProjectManagementSystem.Controllers
             var calendar = CultureInfo.InvariantCulture.Calendar;
             var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
 
-            // fetch project for the sidebar (overview details, timeline view)
+            db.Database.CommandTimeout = 120;
+
             var projects = db.MainTables
                .Where(p => p.user_id == userId)
                .Select(p => new ProjectChecklistGroupViewModel
@@ -278,12 +279,10 @@ namespace ProjectManagementSystem.Controllers
 
             var userId = User.Identity.GetUserId();
 
-            // checker if the project belongs to the user
             var userProject = db.MainTables
                 .Where(m => m.main_id == id && m.user_id == userId)
                 .FirstOrDefault();
 
-            // if the project doesn't belong to the user, return unauthorized or an error page
             if (userProject == null)
             {
                 return RedirectToAction("AccessDenied", "Error");
@@ -1029,6 +1028,9 @@ namespace ProjectManagementSystem.Controllers
             }
             return View(model);
         }
+
+
+        //------------------------Activity Log Viewing----------------------------//
         public ActionResult ActivityView()
         {
             return View();
@@ -1249,9 +1251,39 @@ namespace ProjectManagementSystem.Controllers
                 var message = e.Message;
             }
 
-
             return View();
         }
+        public JsonResult GetMilestonesWithApprovalTasks(int mainId)
+        {
+            try
+            {
+                var milestones = db.MilestoneTbls
+                    .Where(m => m.main_id == mainId && db.DetailsTbls.Any(t => t.target == m.milestone_id && t.RequiresApproval == true))
+                    .Select(m => new
+                    {
+                        MilestoneId = m.milestone_id,
+                        MilestoneName = m.milestone_name,
+                        Tasks = db.DetailsTbls
+                            .Where(t => t.target == m.milestone_id && t.RequiresApproval == true)
+                            .Select(t => new
+                            {
+                                TaskId = t.details_id,
+                                TaskName = t.process_title,
+                                RequiresApproval = t.RequiresApproval,
+                                IsApproved = t.IsApproved,
+                                Approver = t.key_person
+                            }).ToList()
+                    }).ToList();
+
+                return Json(new { success = true, data = milestones }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
 
         //public JsonResult GetStatusUpdates()
         //{

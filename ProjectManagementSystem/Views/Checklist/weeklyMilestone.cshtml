@@ -664,46 +664,72 @@
 
 <!--Checklist Tab-->
 <div class="tab-pane fade" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">
-    <div class="card-container">
-        <div class="table-container">
-            <h3>Checklist</h3>
-            @if (Model.Checklist != null && Model.Checklist.Any())
-            {
-                <table class="table table-bordered table-hover text-center align-middle">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Milestone</th>
-                            <th>Task</th>
-                            <th>Approver</th>
-                            <th>Attachment</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Checklist)
-                        {
-                            <tr>
-                                <td>@item.MilestoneId</td>
-                                <td>@item.TaskName</td>
-                                <td>@item.ApproverName</td>                        
-                                <td>
-                                    <input type="file" id="fileUpload_@item.DetailsId" class="form-control-file" />
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-success" onclick="submitApproval(@item.DetailsId)">Submit</button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p class="text-center">No tasks require approval at the moment.</p>
-            }
+    <div class="card shadow-sm p-4">
+        <h3 class="text-center text-purple">Checklist</h3>
+        <p class="text-center text-muted">Manage checklist for each milestone.</p>
+
+        <!-- Milestone Dropdown -->
+        <div class="row mt-4 justify-content-center align-items-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <label class="input-group-text bg-purple text-white" for="milestoneDropdown">
+                        <i class="fas fa-tasks"></i>
+                    </label>
+                    <select id="milestoneDropdown" class="form-select shadow-sm">
+                        <option value="">Select a Milestone</option>
+                        <!-- Options will be dynamically loaded -->
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist Table -->
+        <div class="table-responsive mt-4">
+            <table class="table table-bordered table-hover text-center align-middle">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Task</th>
+                        <th>Status</th>
+                        <th>Attachment</th>
+                        <th>Approver</th>
+                        @*<th>Actions</th>*@
+                    </tr>
+                </thead>
+                <tbody id="checklistTableBody">
+                    <tr>
+                        <td colspan="5" class="text-center">Select a milestone to view tasks.</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+
+
+
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
+
+<script>
+        function loadActivityLogs() {
+            const activityLogContainer = $('#activity-log-container');
+            activityLogContainer.html('<p>Loading activity logs...</p>');
+
+            $.ajax({
+                url: '/Checklist/GetActivityLogs',
+                type: 'GET',
+                success: function (response) {
+                    activityLogContainer.html(response.data);
+                },
+                error: function () {
+                    activityLogContainer.html('<p>Failed to load activity logs. Please try again later.</p>');
+                }
+            });
+        }
 
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -726,6 +752,7 @@
         //        }
         //    });
         //}
+
         function validateAndSubmit() {
             const milestone = $('#selectedMilestone').val();
             const statusUpdate = $('#statusUpdate').val();
@@ -742,7 +769,11 @@
 
             $.ajax({
 
+                url: "@Url.Action("UploadFile", "FileUpload")",
+
+
                 url: "@Url.Action("UpdateStatus", "Checklist")",
+
                 type: 'POST',
                 processData: false,
                 contentType: false,
@@ -766,6 +797,8 @@
                 }
             });
         }
+
+
     </script>
 
     <script>
@@ -784,92 +817,181 @@
                     { unit: "week", date: "Week %W" }
                 ];
 
-                gantt.templates.task_text = function () {
-                    return "";
-                };
 
-                gantt.init("gantt_here");
-                gantt.load(`/Checklist/getGanttData?id=${"@TempData["entry"]"}`, "json");
+        document.addEventListener("DOMContentLoaded", function () {
+            gantt.config.xml_date = "%Y-%m-%d %H:%i";
+            gantt.config.readonly = true;
+            gantt.config.columns = [
+                { name: "key_person", label: "Key Person", align: "center", width: 90 },
+                { name: "text", label: "Milestone", tree: true, width: 200 },
+                { name: "duration", label: "Duration", align: "center", width: 70 },
+                { name: "start_date", label: "Start", align: "center", width: 90 },
+                { name: "end_date", label: "Finish", align: "center", width: 90 }
+            ];
+            gantt.config.scales = [
+                { unit: "week", date: "Week %W" }
+            ];
 
-                const setDayView = () => {
-                    gantt.config.scales = [
-                        { unit: "day", step: 1, date: "%d" },
-                        { unit: "week", date: "Week %W" }
-                    ];
-                    gantt.render();
-                };
+            gantt.templates.task_text = function () {
+                return "";
+            };
 
-                const setWeekView = () => {
-                    gantt.config.scales = [
-                        { unit: "week", step: 1, date: "WW %W" },
-                        { unit: "month", step: 1, date: "%F %Y" }
-                    ];
-                    gantt.render();
-                };
+             gantt.init("gantt_here");
+            gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json");
 
-                const setMonthView = () => {
-                    gantt.config.scales = [
-                        { unit: "month", step: 1, date: "%F %Y" },
-                        { unit: "year", step: 1, date: "%Y" }
-                    ];
-                    gantt.render();
-                };
 
-                document.querySelector("#day-view").addEventListener("click", () => {
-                    setDayView();
-                    activateButton("day-view");
-                });
 
-                document.querySelector("#week-view").addEventListener("click", () => {
-                    setWeekView();
-                    activateButton("week-view");
-                });
 
-                document.querySelector("#month-view").addEventListener("click", () => {
-                    setMonthView();
-                    activateButton("month-view");
-                });
-
-                const activateButton = (buttonId) => {
-                    document.querySelectorAll(".gantt-view-btn").forEach((btn) => {
-                        btn.classList.remove("active");
-                    });
-                    document.getElementById(buttonId).classList.add("active");
-                };
-                $("#timeline-tab").on("click", function () {
-                    $("#detailsContainer").css("display", "none");
-                    $("#overview").css("display", "none");
-                });
-
-                $("#overview-tab").on("click", function () {
-                    $("#detailsContainer").css("display", "block");
-                    $("#overview").css("display", "block");
-                });
+        const setDayView = () => {
+            gantt.config.scales = [
+                    { unit: "day", step: 1, date: "%d" },
+                    { unit: "week", date: "Week %W" }
+                ];
+            gantt.render();
+        };
 
             setWeekView();
             activateButton("week-view");
 
-                loadActivityLogs();
+
+        const setWeekView = () => {
+            gantt.config.scales = [
+                    { unit: "week", step: 1, date: "WW %W" },
+                    { unit: "month", step: 1, date: "%F %Y" }
+                ];
+            gantt.render();
+        };
+
+        const setMonthView = () => {
+            gantt.config.scales = [
+                    { unit: "month", step: 1, date: "%F %Y" },
+                    { unit: "year", step: 1, date: "%Y" }
+                ];
+            gantt.render();
+        };
+
+        document.querySelector("#day-view").addEventListener("click", () => {
+            setDayView();
+            activateButton("day-view");
+        });
+
+        document.querySelector("#week-view").addEventListener("click", () => {
+            setWeekView();
+            activateButton("week-view");
+        });
+
+        document.querySelector("#month-view").addEventListener("click", () => {
+            setMonthView();
+            activateButton("month-view");
+        });
+
+        const activateButton = (buttonId) => {
+            document.querySelectorAll(".gantt-view-btn").forEach((btn) => {
+                btn.classList.remove("active");
             });
+            document.getElementById(buttonId).classList.add("active");
+        };
 
             $("#timeline-tab").on("click", function () {
                 $("#detailsContainer").css("display", "none");
                 $("#overview").css("display", "none");
-            });
+        });
 
             $("#overview-tab").on("click", function () {
                 $("#detailsContainer").css("display", "block");
                 $("#overview").css("display", "block");
-            });
+        });
 
-            $("#delayed_yes").on("click", function () {
-                $("#delay_div").removeClass("d-none");
-                $("#delay_div").prop("class", "form-group mb-4");
-            });
+            setWeekView();
+            activateButton("week-view");
 
-            $("#delayed_no").on("click", function () {
-                $("#delay_div").prop("class", "d-none");
-            });
+            loadActivityLogs();
+        });
 
-    </script>
+        $(document).ready(function () {
+        const milestoneDropdown = $("#milestoneDropdown");
+        const checklistTableBody = $("#checklistTableBody");
+        const mainId = '@(TempData["main_id"] ?? "null")';
+
+        if (mainId === "null") {
+            console.error("mainId is not set. Please check your TempData.");
+            return;
+        }
+
+
+        function loadMilestones(mainId) {
+                $.ajax({
+                url: "/Checklist/GetMilestonesWithApprovalTasks",
+                    type: "GET",
+                    data: { mainId },
+                    success: function (response) {
+                    if (response.success) {
+                        milestoneDropdown.empty().append('<option value="">Select a Milestone</option>');
+                        response.data.forEach(milestone => {
+                        milestoneDropdown.append(`<option value="${milestone.MilestoneId}">${milestone.MilestoneName}</option>`);
+                            });
+                        } else {
+                            Swal.fire("Error", "Failed to load milestones.", "error");
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Error fetching milestones:", xhr.responseText);
+                    }
+                });
+            }
+            
+            function loadTasksForMilestone(milestoneId) {
+                if (!milestoneId) {
+                    checklistTableBody.html('<tr><td colspan="5" class="text-center">Select a milestone to view tasks.</td></tr>');
+                    return;
+                }
+
+                $.ajax({
+                    url: "/Checklist/GetTasksForMilestone",
+                    type: "GET",
+                    data: { milestoneId },
+                    success: function (response) {
+                        checklistTableBody.empty();
+                        if (response.success && response.data.length > 0) {
+                            response.data.forEach(task => {
+                                checklistTableBody.append(`
+                                    <tr>
+                                        <td>${task.TaskName}</td>
+                                        <td>${task.IsApproved ? "Approved" : "Pending"}</td>
+                                        <td><input type="file" class="form-control-file" /></td>
+                                        <td>${task.Approvers.join(", ") || "N/A"}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success" onclick="submitApproval(${task.TaskId})">Submit</button>
+                                        </td>
+                                    </tr>
+                                `);
+                            });
+                        } else {
+                            checklistTableBody.html('<tr><td colspan="5" class="text-center">No tasks found for this milestone.</td></tr>');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Error fetching tasks:", xhr.responseText);
+                    }
+                });
+            }
+
+            loadMilestones(mainId);
+
+            milestoneDropdown.on("change", function () {
+                const milestoneId = $(this).val();
+                loadTasksForMilestone(milestoneId);
+            });
+        });
+
+        $("#delayed_yes").on("click", function () {
+            $("#delay_div").removeClass("d-none");
+            $("#delay_div").prop("class", "form-group mb-4");
+        });
+
+        $("#delayed_no").on("click", function () {
+            $("#delay_div").prop("class", "d-none");
+        });
+</script>
+
 }

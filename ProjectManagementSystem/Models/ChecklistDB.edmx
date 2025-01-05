@@ -137,6 +137,10 @@
           <Property Name="unscheduled" Type="bit" />
           <Property Name="parent" Type="int" />
           <Property Name="excel_id" Type="int" />
+
+          <Property Name="source" Type="int" />
+          <Property Name="target" Type="int" />
+
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
           <Key>
@@ -429,6 +433,10 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="unscheduled" Type="Boolean" />
           <Property Name="parent" Type="Int32" />
           <Property Name="excel_id" Type="Int32" />
+
+          <Property Name="source" Type="Int32" />
+          <Property Name="target" Type="Int32" />
+
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
@@ -672,6 +680,11 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="MilestoneTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.MilestoneTbl">
               <MappingFragment StoreEntitySet="MilestoneTbl">
+
+                <ScalarProperty Name="target" ColumnName="target" />
+                <ScalarProperty Name="source" ColumnName="source" />
+
+
                 <ScalarProperty Name="excel_id" ColumnName="excel_id" />
                 <ScalarProperty Name="parent" ColumnName="parent" />
                 <ScalarProperty Name="unscheduled" ColumnName="unscheduled" />
