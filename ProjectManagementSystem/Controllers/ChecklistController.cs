@@ -957,11 +957,7 @@ namespace ProjectManagementSystem.Controllers
                                 }
 
                                 else
-                                {
-                                    var milestoneParent = db.MilestoneTbls.Where(x => x.milestone_id == deetsParent.milestone_id).Single();
-
-                                    milestoneParent.current_completion_date = db.DetailsTbls.Where(x => x.milestone_id == milestoneParent.milestone_id).OrderBy(x => x.current_task_end).Select(x => x.current_task_end).First();
-
+                                { 
                                     break;
                                 }
 
@@ -1026,19 +1022,21 @@ namespace ProjectManagementSystem.Controllers
                         }
                         /* ------------------------------------------------------------------------- */
 
-                        //if (deetsDB.source != null)
-                        //{
-                        //    var deetsSource= db.DetailsTbls.Where(x => x.excel_id == deetsDB.source && x.main_id == mainId).ToList().SingleOrDefault();
-                        //    while (deetsSource != null)
-                        //    {
-                        //        deetsSource.task_delay = model.delay;
+                        var milestoneParent = db.MilestoneTbls.Where(x => x.milestone_id == deetsParent.milestone_id).Single();
+                        
+                        milestoneParent.current_completion_date = db.DetailsTbls.Where(x => x.milestone_id == milestoneParent.milestone_id).OrderByDescending(x => x.current_task_end).Select(x => x.current_task_end).First();
 
-                        //        if (deetsSource.source != null)
-                        //        {
-                        //            deetsSource = db.DetailsTbls.Where(x => x.excel_id == deetsSource.source && x.main_id == mainId).ToList().SingleOrDefault();
-                        //        }
-                        //    }
-                        //}
+                        var milestoneChild = db.MilestoneTbls.Where(x => x.main_id == milestoneParent.main_id && x.milestone_id != milestoneParent.milestone_id).ToList();
+
+                        foreach(var item in milestoneChild)
+                        {
+                            item.current_completion_date = item.completion_date.Value.AddDays(model.delay);
+
+                            foreach(var milestoneTasks in db.DetailsTbls.Where(x => x.milestone_id == item.milestone_id))
+                            {
+                                milestoneTasks.task_delay = model.delay;
+                            }
+                        }
                     }
 
                     var statusUpdate = new WeeklyStatu
