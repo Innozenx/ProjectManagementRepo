@@ -107,6 +107,7 @@
           <Property Name="RequiresApproval" Type="bit" />
           <Property Name="task_delay" Type="int" />
           <Property Name="excel_id" Type="int" />
+          <Property Name="current_task_end" Type="datetime" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -137,10 +138,10 @@
           <Property Name="unscheduled" Type="bit" />
           <Property Name="parent" Type="int" />
           <Property Name="excel_id" Type="int" />
-
           <Property Name="source" Type="int" />
           <Property Name="target" Type="int" />
-
+          <Property Name="completion_date" Type="datetime" />
+          <Property Name="current_completion_date" Type="datetime" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
           <Key>
@@ -402,6 +403,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="RequiresApproval" Type="Boolean" />
           <Property Name="task_delay" Type="Int32" />
           <Property Name="excel_id" Type="Int32" />
+          <Property Name="current_task_end" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="MainTable">
           <Key>
@@ -433,10 +435,10 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="unscheduled" Type="Boolean" />
           <Property Name="parent" Type="Int32" />
           <Property Name="excel_id" Type="Int32" />
-
           <Property Name="source" Type="Int32" />
           <Property Name="target" Type="Int32" />
-
+          <Property Name="completion_date" Type="DateTime" Precision="3" />
+          <Property Name="current_completion_date" Type="DateTime" Precision="3" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
@@ -637,6 +639,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="DetailsTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.DetailsTbl">
               <MappingFragment StoreEntitySet="DetailsTbl">
+                <ScalarProperty Name="current_task_end" ColumnName="current_task_end" />
                 <ScalarProperty Name="excel_id" ColumnName="excel_id" />
                 <ScalarProperty Name="task_delay" ColumnName="task_delay" />
                 <ScalarProperty Name="RequiresApproval" ColumnName="RequiresApproval" />
@@ -680,11 +683,10 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="MilestoneTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.MilestoneTbl">
               <MappingFragment StoreEntitySet="MilestoneTbl">
-
+                <ScalarProperty Name="current_completion_date" ColumnName="current_completion_date" />
+                <ScalarProperty Name="completion_date" ColumnName="completion_date" />
                 <ScalarProperty Name="target" ColumnName="target" />
                 <ScalarProperty Name="source" ColumnName="source" />
-
-
                 <ScalarProperty Name="excel_id" ColumnName="excel_id" />
                 <ScalarProperty Name="parent" ColumnName="parent" />
                 <ScalarProperty Name="unscheduled" ColumnName="unscheduled" />

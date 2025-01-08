@@ -446,7 +446,7 @@ namespace ProjectManagementSystem.Controllers
                 color = "",
                 unscheduled = x.unscheduled,
                 completed = x.IsCompleted,
-                key_person = "",
+                key_person = ""
             }).ToArray();
 
             var data = tasks.Select(x => new
@@ -462,6 +462,14 @@ namespace ProjectManagementSystem.Controllers
                 key_person = x.key_person,
             }).ToArray();
 
+            var milestoneLink = milestones.Select(x => new
+            {
+                id = x.excel_id,
+                source = x.source,
+                target = x.target,
+                type = "0"
+            });
+
             var linkData = tasks.Select(x => new
             {
                 id = x.excel_id,
@@ -473,7 +481,7 @@ namespace ProjectManagementSystem.Controllers
             var jsonData = new
             {
                 tasks = milestoneData.Concat(data).ToArray(),
-                links = linkData
+                links = milestoneLink.Concat(linkData).ToArray()
             };
 
             return Json(jsonData, JsonRequestBehavior.AllowGet);
@@ -704,6 +712,7 @@ namespace ProjectManagementSystem.Controllers
                                             milestone_id = milestone.milestone_id,
                                             process_title = taskGroup.ProcessTitle,
                                             task_start = taskStartDate,
+                                            task_end = taskStartDate.AddDays(taskDuration),
                                             task_duration = taskGroup.task_duration,
                                             source = taskGroup.Source,
                                             target = taskGroup.Target,
@@ -711,7 +720,8 @@ namespace ProjectManagementSystem.Controllers
                                             created_date = DateTime.Now.ToLocalTime(),
                                             IsSubtask = subtask,
                                             main_id = mainIDfordetails,
-                                            excel_id = taskGroup.id
+                                            excel_id = taskGroup.id,
+                                            task_delay = 0
 
                                         };
 
@@ -722,27 +732,50 @@ namespace ProjectManagementSystem.Controllers
                                 db.DetailsTbls.AddRange(detailList);
                                 db.SaveChanges();
 
-                                var upd_rgstr = db.RegistrationTbls.Where(x => x.registration_id == projectId).Single();
-                                upd_rgstr.is_file_uploaded = true;
-                                db.SaveChanges();
+                                var completionColumn = db.MilestoneTbls.Where(x => x.main_id == mainIDfordetails).ToList();
+                                var latestTask = db.DetailsTbls
+                                    .Where(x => x.main_id == mainIDfordetails)
+                                    .GroupBy(x => x.milestone_id)
+                                    .Select(x => x.OrderByDescending(y => y.task_end).FirstOrDefault())
+                                    .ToList();
 
-                                Activity_Log logs = new Activity_Log
+                                if (completionColumn.Count() == latestTask.Count())
                                 {
-                                    username = User.Identity.Name,
-                                    datetime_performed = DateTime.Now,
-                                    action_level = 5,
-                                    action = "Project Upload",
-                                    description = getProject.ProjectTitle + " Project Uploaded by: " + getProject.projectOwner + " For Year: " + getProject.ProjectYear,
-                                    department = department,
-                                    division = division
-                                };
+                                    for (var i = 0; i < completionColumn.Count(); i++)
+                                    {
+                                        completionColumn[i].completion_date = latestTask[i].task_end;
+                                        db.SaveChanges();
+                                    }
 
-                                db.Activity_Log.Add(logs);
-                                db.SaveChanges();
+                                    var upd_rgstr = db.RegistrationTbls.Where(x => x.registration_id == projectId).Single();
+                                    upd_rgstr.is_file_uploaded = true;
+                                    db.SaveChanges();
 
-                                transaction.Commit();
-                                message = "Project schedule added successfully!";
-                                status = true;
+                                    Activity_Log logs = new Activity_Log
+                                    {
+                                        username = User.Identity.Name,
+                                        datetime_performed = DateTime.Now,
+                                        action_level = 5,
+                                        action = "Project Upload",
+                                        description = getProject.ProjectTitle + " Project Uploaded by: " + getProject.projectOwner + " For Year: " + getProject.ProjectYear,
+                                        department = department,
+                                        division = division
+                                    };
+
+                                    db.Activity_Log.Add(logs);
+                                    db.SaveChanges();
+
+                                    transaction.Commit();
+                                    message = "Project schedule added successfully!";
+                                    status = true;
+
+                                }
+
+                                else
+                                {
+                                    transaction.Rollback();
+                                    message = "Completion date column error.";
+                                }
                             }
                             else
                             {
@@ -907,10 +940,11 @@ namespace ProjectManagementSystem.Controllers
                         var excelId = deetsDB.excel_id;
                         deetsDB.task_delay = model.delay;
 
+                        var deetsParent = db.DetailsTbls.Where(x => x.excel_id == deetsDB.parent && x.main_id == mainId).ToList().SingleOrDefault();
 
                         if (deetsDB.parent != null)
                         {
-                            var deetsParent = db.DetailsTbls.Where(x => x.excel_id == deetsDB.parent && x.main_id == mainId).ToList().SingleOrDefault();
+                            //var deetsParent = db.DetailsTbls.Where(x => x.excel_id == deetsDB.parent && x.main_id == mainId).ToList().SingleOrDefault();
                             while (deetsParent != null)
                             {
                                 deetsParent.task_delay = model.delay;
@@ -918,39 +952,78 @@ namespace ProjectManagementSystem.Controllers
                                 if (deetsParent.parent != null)
                                 {
                                     deetsParent = db.DetailsTbls.Where(x => x.excel_id == deetsParent.parent && x.main_id == mainId).ToList().SingleOrDefault();
+                                    db.SaveChanges();
                                 }
 
-                                db.SaveChanges();
-                            }
-                        }
-
-                        var targetList = db.DetailsTbls.Where(x => x.source == excelId && x.main_id == mainId).ToList();
-                        var tempList = db.DetailsTbls.Where(x => x.source == excelId && x.main_id == mainId).ToList();
-                        var ctr = targetList.Count;
-
-                        tempList.Clear();
-                        tempList.TrimExcess();
-
-                        while(ctr > 0)
-                        {
-                            foreach (var item in targetList)
-                            {
-                                item.task_delay = model.delay;
-
-                                if (db.DetailsTbls.Where(x => x.source == item.excel_id && x.main_id == mainId).SingleOrDefault() != null)
+                                else
                                 {
-                                    tempList.Add(db.DetailsTbls.Where(x => x.source == item.excel_id && x.main_id == mainId).SingleOrDefault());
+                                    var milestoneParent = db.MilestoneTbls.Where(x => x.milestone_id == deetsParent.milestone_id).Single();
+
+                                    milestoneParent.current_completion_date = db.DetailsTbls.Where(x => x.milestone_id == milestoneParent.milestone_id).OrderBy(x => x.current_task_end).Select(x => x.current_task_end).First();
+
+                                    break;
+                                }
+
+                            }
+                        }
+
+                        //var targetList = db.DetailsTbls.Where(x => x.source == excelId && x.main_id == mainId).ToList();
+                        //var tempList = db.DetailsTbls.Where(x => x.source == excelId && x.main_id == mainId).ToList();
+                        //var ctr = targetList.Count;
+
+                        //tempList.Clear();
+                        //tempList.TrimExcess();
+
+                        //while(ctr > 0)
+                        //{
+                        //    foreach (var item in targetList)
+                        //    {
+                        //        item.task_delay = model.delay;
+
+                        //        if (db.DetailsTbls.Where(x => x.source == item.excel_id && x.main_id == mainId).SingleOrDefault() != null)
+                        //        {
+                        //            tempList.Add(db.DetailsTbls.Where(x => x.source == item.excel_id && x.main_id == mainId).SingleOrDefault());
+                        //        }
+
+                        //        db.SaveChanges();
+                        //    }
+
+                        //    ctr = tempList.Count;
+                        //    targetList = tempList.ToList();
+
+                        //    tempList.Clear();
+                        //    tempList.TrimExcess();
+                        //}
+
+                        /* ------------------------------------------------------------------------- */
+                        var childTasks = db.DetailsTbls.Where(x => x.source == deetsParent.excel_id && x.main_id == mainId).ToList();
+                        var tempChild = db.DetailsTbls.Where(x => x.parent == null && x.main_id == mainId).ToList();
+                        var ctr = childTasks.Count;
+
+                        tempChild.Clear();
+                        tempChild.TrimExcess();
+
+                        while (ctr > 0)
+                        {
+                            foreach (var item in childTasks)
+                            {
+                                item.task_delay = deetsParent.task_delay;
+
+                                if (db.DetailsTbls.Where(x => x.source == item.excel_id).Count() > 0)
+                                {
+                                    tempChild.AddRange(db.DetailsTbls.Where(x => x.source == item.excel_id).ToList());
                                 }
 
                                 db.SaveChanges();
                             }
 
-                            ctr = tempList.Count;
-                            targetList = tempList.ToList();
+                            ctr = tempChild.Count;
+                            childTasks = tempChild.ToList();
 
-                            tempList.Clear();
-                            tempList.TrimExcess();
+                            tempChild.Clear();
+                            tempChild.TrimExcess();
                         }
+                        /* ------------------------------------------------------------------------- */
 
                         //if (deetsDB.source != null)
                         //{

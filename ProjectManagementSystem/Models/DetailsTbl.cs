@@ -35,5 +35,6 @@ namespace ProjectManagementSystem.Models
         public Nullable<bool> RequiresApproval { get; set; }
         public Nullable<int> task_delay { get; set; }
         public Nullable<int> excel_id { get; set; }
+        public Nullable<System.DateTime> current_task_end { get; set; }
     }
 }
