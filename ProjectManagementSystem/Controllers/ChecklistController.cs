@@ -625,7 +625,7 @@ namespace ProjectManagementSystem.Controllers
 
                             if (getProject.ProjectTitle == project.project_name)
                             {
-                                string dateFormat = "MM/dd/yyyy";
+                                string dateFormat = "MM/dd/yyyy"; // date format to be followed
 
                                 if (string.IsNullOrWhiteSpace(getProject.projectStart) ||
                                      string.IsNullOrWhiteSpace(getProject.projectEnd) ||
@@ -690,8 +690,9 @@ namespace ProjectManagementSystem.Controllers
 
                                     foreach (var taskGroup in groupedTasks)
                                     {
-                                        DateTime taskStartDate = DateTime.ParseExact(DateTime.Parse(taskGroup.TaskStart).ToString("MM/dd/yyyy"), dateFormat, CultureInfo.InvariantCulture);
-                                        int taskDuration = taskGroup.task_duration;
+                                        
+                                        DateTime taskStartDate = DateTime.ParseExact(getProject.projectStart.ToString(), dateFormat, CultureInfo.InvariantCulture);
+                                        int taskDuration = taskGroup.task_duration;                                                                                                             
                                         DateTime taskEndDate = taskStartDate.AddDays(taskDuration);
 
                                         var subtask = false;

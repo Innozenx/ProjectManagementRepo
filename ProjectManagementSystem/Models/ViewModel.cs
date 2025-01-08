@@ -274,7 +274,7 @@ namespace ProjectManagementSystem.Models
         public string category { get; set; }
         public string projectOwner { get; set; }
         public string MilestoneName { get; set; }
-        public string TaskStart { get; set; }
+        public string TaskStart { get; set; } // converted to string
         public string TaskEnd { get; set; }
         public int? Source { get; set; }
         public int? Target { get; set; }
@@ -513,6 +513,7 @@ namespace ProjectManagementSystem.Models
         public string ProjectName { get; set; }
         public List<MilestoneViewModel> Milestones { get; set; }
         public Onboarding Onboarding { get; set; }
+     
     }
     public class TaskApproverViewModel
     {
