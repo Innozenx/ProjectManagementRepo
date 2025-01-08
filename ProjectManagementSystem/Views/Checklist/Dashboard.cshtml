@@ -6,8 +6,29 @@
     ViewBag.Title = " Dashboard - Project Management System";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
+    // old 
+    // var calendar = CultureInfo.InvariantCulture.Calendar;
+    //var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Sunday);
+
+
     var calendar = CultureInfo.InvariantCulture.Calendar;
-    var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+    var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Sunday);
+
+
+    //int GetCustomWeekOfYear(DateTime date)
+    //{
+    //    var dayOfYear = date.DayOfYear;
+    //    var startOfYear = new DateTime(date.Year, 1, 1);
+    //    var startDayOfWeek = (int)startOfYear.DayOfWeek;
+
+    //    var daysToAlign = (7 - startDayOfWeek) % 7;
+    //    var adjustedDayOfYear = dayOfYear + daysToAlign;
+
+
+    //    return (int)Math.Ceiling(adjustedDayOfYear / 7.0);
+    //}
+
+
 
     var totalTasks = Model.TotalTasks > 0 ? Model.TotalTasks : 1;
     var completedPercentage = (double)Model.CompletedTasks / totalTasks * 100;
@@ -417,94 +438,68 @@
         margin: 0;
     }
 
-    .dataTables-wrapper-custom {
+    .wide-card-container {
+        width: 95%; 
+        margin: 0 auto; 
+    }
+
+    .wide-table-container {
+        width: 100%;
+        overflow-x: auto; 
+    }
+
+    .table {
+        table-layout: auto; 
+        white-space: nowrap; 
+    }
+
+    .duedate-colors {
+        text-align: center;
+        /*font-weight: bold;*/
+    }
+
+    .dataTables_wrapper .dataTables_filter {
+        text-align: right;
+        margin-bottom: 10px;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        margin-bottom: 10px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
         display: flex;
         justify-content: flex-end;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-
-    .dataTables_length {
-        display: inline-flex;
-        align-items: center;
-    }
-
-        .dataTables_length select {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 5px;
-            font-size: 14px;
-            outline: none;
-            font-family: 'Poppins', sans-serif;
-        }
-
-    .dataTables_filter {
-        display: inline-flex;
-        align-items: center;
-    }
-
-        .dataTables_filter input {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 5px 10px;
-            font-size: 14px;
-            width: 300px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-            .dataTables_filter input:focus {
-                border-color: #470A67;
-                box-shadow: 0 0 5px rgba(71, 10, 103, 0.5);
-            }
-
-    .dataTables_paginate {
         margin-top: 10px;
-        text-align: center;
     }
 
-    .dataTables_paginate .paginate_button {
-        display: inline-block;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 5px 15px;
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 5px 10px;
         margin: 0 2px;
-        font-size: 14px;
-        color: #66339A;
-        background-color: #fff;
-        cursor: pointer;
-        transition: background-color 0.3s, color 0.3s;
-    }
-
-    .dataTables_paginate .paginate_button:hover {
-        background-color: #66339A;
-        color: #fff;
-    }
-
-    .dataTables_paginate .paginate_button.current {
-        background-color: #66339A;
-        color: #fff;
-        font-weight: bold;
-    }
-
-    .dataTables_paginate .paginate_button.disabled {
-        color: #ccc;
-        cursor: not-allowed;
-    }
-    .dataTables_length select {
         border: 1px solid #ddd;
-        border-radius: 20px;
-        padding: 5px;
-        font-size: 14px;
-        outline: none;
-        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        cursor: pointer;
     }
 
-    /*.duedate-colors{
-        background-color:green;
-    }*/
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background-color: #e2e6ea;
+        }
 
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+    .dataTables_wrapper .dataTables_info {
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    #milestonesTable tbody tr:hover {
+        background-color: #f1f1f1;
+    }
 </style>
 
 <!-- Header Section -->
@@ -544,22 +539,21 @@
         
     </div>
 </div>
-
+ 
 <!-- Content Section -->
 <div class="content-section">
-    <div class="card-container">
+    <div class="card-container wide-card-container">
         @if (Model.ProjectsMilestones != null && Model.ProjectsMilestones.Any())
         {
-            <div class="table-container">
+            <div class="table-container wide-table-container">
                 <h5 class="card-title">Project Summary</h5>
                 <table id="milestonesTable" class="table">
                     <thead>
                         <tr>
-
                             <th>Project Name</th>
                             @foreach (var milestoneName in Model.UniqueMilestoneNames)
                             {
-                                <th>@milestoneName</th>
+                                <th>@milestoneName <br />(OS/CS)</th>
                             }
                         </tr>
                     </thead>
@@ -574,10 +568,30 @@
                                 </td>
                                 @foreach (var milestoneName in Model.UniqueMilestoneNames)
                                 {
-                                    var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName && pm.EndDate.HasValue);
-                                    var latestEndDate = milestoneTasks.Any() ? milestoneTasks.Max(pm => pm.EndDate.Value) : (DateTime?)null;
-                                    var endDateFormatted = latestEndDate.HasValue ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}" : "N/A";
-                                    <td class="duedate-colors">@endDateFormatted</td>
+                                    var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName);
+
+                                    // original schedule (OS)
+                                    var latestEndDate = milestoneTasks.Any(pm => pm.EndDate.HasValue)
+                                        ? milestoneTasks.Max(pm => pm.EndDate.Value)
+                                        : (DateTime?)null;
+                                    var osFormatted = latestEndDate.HasValue
+                                        ? $"WW {latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
+                                        : "";
+
+                                    // current schedule (CS)
+                                    var currentEndDate = milestoneTasks.Any(pm => pm.CurrentTaskEnd.HasValue)
+                                        ? (DateTime?)milestoneTasks.Max(pm => pm.CurrentTaskEnd.Value)
+                                        : null;
+                                    var csFormatted = currentEndDate.HasValue
+                                        ? $"WW {currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
+                                        : "";
+
+                                    // combine OS and CS
+                                    var combinedFormatted = !string.IsNullOrEmpty(csFormatted)
+                                        ? $"{osFormatted} / {csFormatted}"
+                                        : osFormatted;
+
+                                    <td class="duedate-colors">@combinedFormatted</td>
                                 }
                             </tr>
                         }
@@ -615,7 +629,6 @@
                     <li>No upcoming tasks.</li>
                 }
             </ul>
-
         </div>
 
         <!-- Overall Progress Card -->
@@ -630,49 +643,69 @@
 </div>
 
 @section scripts {
-    <script>
+<script>
         $(document).ready(function () {
-            $('#milestonesTable').DataTable({
-                responsive: true,
-                pagingType: 'full_numbers',
-                language: {
-                    search: "_INPUT_",
-                    searchPlaceholder: "Search project name...",
-                    paginate: {
-                        first: '<<',
-                        last: '>>',
-                        next: '>',
-                        previous: '<'
-                    },
-                    lengthMenu: "Show _MENU_ entries",
-                    info: "Showing _START_ to _END_ of _TOTAL_ entries"
+        $('#milestonesTable').DataTable({
+            responsive: true,
+            pagingType: 'full_numbers',
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search project name...",
+                paginate: {
+                    first: '<<',
+                    last: '>>',
+                    next: '>',
+                    previous: '<'
                 },
-                dom: '<"top"lfr>t<"bottom"ip><"clear">', 
-                initComplete: function () {
-                    $('.dataTables_filter input').addClass('form-control').css('font-size', '14px');
-                }
-            });
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries"
+            },
+            dom: '<"top d-flex justify-content-between align-items-center"lfr>t<"bottom d-flex justify-content-between align-items-center"ip><"clear">',
+            initComplete: function () {
+                $('.dataTables_filter input').addClass('form-control').css({
+                    'font-size': '14px',
+                    'width': '300px',
+                    'margin-left': '10px',
+                    'margin-right': '10px',
+                    'border-radius': '5px',
+                    'padding': '5px 10px'
+                });
 
-            var ctx = document.getElementById('progressChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Completed Tasks', 'Pending Tasks'],
-                    datasets: [{
-                        data: [@Model.CompletedTasks, @Model.PendingTasks],
-                        backgroundColor: ['#4CAF50', '#FFC107'],
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    cutout: '70%',
-                }
-            });
+                $('.dataTables_length select').addClass('form-select').css({
+                    'font-size': '14px',
+                    'width': 'auto',
+                    'margin-left': '5px',
+                    'margin-right': '5px',
+                    'padding': '5px 10px'
+                });
+
+                $('.dataTables_paginate').css({
+                    'margin-top': '10px'
+                });
+
+                $('.dataTables_info').css({
+                    'margin-top': '10px',
+                    'font-size': '14px',
+                    'color': '#666'
+                });
+
+                $('#milestonesTable').css({
+                    'border-collapse': 'separate',
+                    'border-spacing': '0 10px'
+                });
+
+                $('#milestonesTable tbody tr').hover(function () {
+                    $(this).css('background-color', '#f9f9f9');
+                }, function () {
+                    $(this).css('background-color', '');
+                });
+            }
         });
+    });
 
-        function toDetailedView(mainId, projectTitle) {
-            window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${projectTitle}`;
-        }
+    function toDetailedView(mainId, projectTitle) {
+        window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${projectTitle}`;
+    }
     </script>
 }
 

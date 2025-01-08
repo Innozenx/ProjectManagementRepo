@@ -130,6 +130,7 @@ namespace ProjectManagementSystem.Controllers
                     MainId = g.MainId,
                     ProjectTitle = g.ProjectTitle,
                     MilestoneName = g.MilestoneName,
+                   // CurrentTaskEnd = g.CurrentTaskEnd,
                     Tasks = g.Tasks.Select(t => new TaskViewModel
                     {
                         TaskStart = t.task_start,

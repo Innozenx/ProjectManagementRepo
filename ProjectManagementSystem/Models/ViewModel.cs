@@ -116,6 +116,8 @@ namespace ProjectManagementSystem.Models
 
         public bool isDelayed { get; set; }
         public int delay { get; set; }
+        public DateTime? CurrentTaskEnd { get; set; }
+
 
 
         public List<ApproverViewModel> Checklist { get; set; }

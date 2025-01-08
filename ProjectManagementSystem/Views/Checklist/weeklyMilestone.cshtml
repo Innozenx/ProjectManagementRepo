@@ -438,43 +438,42 @@
                             <label for="milestone" class="milestone-text">Select Task</label>
                             @Html.DropDownListFor(m => m.SelectedMilestone, Model.TaskTitle, "Choose a Task", new { @class = "form-control rounded border-light", id = "selectedMilestone" })
                         </div>
+
+                        <!-- Delay -->
+                        <div class="form-group mb-4">
+                            <label for="statusUpdate" class="status-update">Is your task delayed?</label>
+                            <br />
+                            @Html.RadioButtonFor(x => x.isDelayed, false, new { id = "delayed_no" })
+                            <label for="delayed_no" class="status-update">No</label>
+
+                            @Html.RadioButtonFor(x => x.isDelayed, true, new { id = "delayed_yes" })
+                            <label for="delayed_yes" class="status-update">Yes</label>
+                        </div>
+
+                        <!--Duration-->
+                        <div class="form-group mb-4 d-none" id="delay_div">
+                            <label for="weeks_delayed" class="status-update d-block mb-2">Duration:</label>
+                            <div class="input-group">
+                                @Html.EditorFor(x => x.delay, new { htmlAttributes = new { @class = "form-control", @min = "1", @id = "weeks_delayed", @placeholder = "Enter how many weeks delayed" } })
+                                <div class="input-group-append">
+                                    <span class="input-group-text">Week/s</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Status Update -->
                         <div class="form-group mb-4">
                             <label for="statusUpdate" class="status-update">Status Update</label>
                             @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3, id = "statusUpdate" })
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="statusUpdate" class="status-update">Delayed?</label>
-
-                            @Html.RadioButtonFor(x => x.isDelayed, false, new { id = "delayed_no" })
-                            <label for="statusUpdate" class="status-update">No</label>
-
-                            @Html.RadioButtonFor(x => x.isDelayed, true, new { id = "delayed_yes" })
-                            <label for="statusUpdate" class="status-update">Yes</label>
-
-                        </div>
-
-                        <div div class="form-group mb-4 d-none" id="delay_div">
-                            <label for="weeks_delayed" class="status-update">By: </label>
-                            @Html.EditorFor(x => x.delay, new { htmlAttributes = new { @min = "1" } })
-                            <span class="text-bold"> Week/s </span>
                         </div>
 
                         <div class="form-group mb-4">
                             <label for="fileUpload" class="select-attach">Attachment</label>
                             <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
                         </div>
-                        @*@using (Html.BeginForm("UploadFile", "Upload", FormMethod.Post, new
-                            {
-                                enctype = "multipart/form-data"
-                            }))
-                            {
-                                <div>
-                                    @Html.TextBox("file", "", new { type = "file" }) <br />
-                                    <input type="submit" value="Upload" />
-                                    @ViewBag.Message
-                                </div>
-                            }*@
-                        <!-- Validation message area -->
+
+                        <!-- validation  -->
                         <div id="validationMessage" class="text-danger" style="display:none; margin-bottom:10px;">
                             Please fill out all required fields.
                         </div>
@@ -486,6 +485,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Project Members Section -->
     <div class="table-container" id="detailsContainer">
