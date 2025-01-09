@@ -113,10 +113,11 @@ namespace ProjectManagementSystem.Models
         public List<ApproverViewModel> Approvers { get; set; }
         public List<ProjectMilestoneViewModel> ProjectList { get; set; }
         public IEnumerable<SelectListItem> TaskTitle { get; set; }
-
+         
         public bool isDelayed { get; set; }
         public int delay { get; set; }
-        public DateTime? CurrentTaskEnd { get; set; }
+        public DateTime? CompletionDate { get; set; } // Original Completion Date
+        public DateTime? CurrentCompletionDate { get; set; } // Current Updated Completion Date
 
 
 
@@ -316,14 +317,17 @@ namespace ProjectManagementSystem.Models
         //public List<ApproverViewModel> Approvers { get; set; }
         public int MilestonePosition { get; set; }
         public List<ApproverViewModel> Approvers { get; set; } = new List<ApproverViewModel>();
+        public DateTime? CurrentTaskEnd { get; set; }
     }
-
 
     public class DashboardManagementViewModel
     {
         public Dictionary<string, List<MainTableViewModel>> ProjectsByDivision { get; set; }
         public List<string> UniqueMilestoneNames { get; set; }
-
+        public List<ProjectMilestoneViewModel> ProjectsMilestones { get; set; }
+        public DateTime? EndDate { get; set; }
+        public DateTime? CurrentTaskEnd { get; set; }
+        public List<string> Divisions { get; set; }
     }
     public class ProjectWithMilestonesViewModel
     {
@@ -331,7 +335,6 @@ namespace ProjectManagementSystem.Models
         public List<MainTableViewModel> Projects { get; set; }
         public List<string> UniqueMilestoneNames { get; set; }
     }
-
 
     public class exportCSVHeader
     {
