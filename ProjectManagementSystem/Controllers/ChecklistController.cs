@@ -35,47 +35,61 @@ namespace ProjectManagementSystem.Controllers
 
             return View(checklist);
         }
-
         public ActionResult DashboardManagement()
         {
-            var allProjectsWithMilestones = db.MainTables
+    
+            var divisions = db.MainTables
+                .Where(p => !string.IsNullOrEmpty(p.division))
+                .Select(p => p.division)
+                .Distinct()
+                .ToList() ?? new List<string>(); 
+
+         
+            var projectsByDivision = db.MainTables
+                .Where(p => !string.IsNullOrEmpty(p.division))
                 .GroupBy(p => p.division)
                 .ToDictionary(
                     g => g.Key,
                     g => g.Select(p => new MainTableViewModel
                     {
                         MainId = p.main_id,
-                        ProjectTitle = p.project_title,
-                        ProjectStart = p.project_start.ToString(),
-                        ProjectEnd = p.project_end.ToString(),
-                        Duration = p.duration.ToString(),
-                        Year = p.year.ToString(),
-                        Division = p.division,
-                        Category = p.category,
-                        ProjectOwner = p.project_owner,
-                        Milestones = db.MilestoneTbls
+                        ProjectTitle = p.project_title ?? "Untitled Project",
+                ProjectStart = p.project_start?.ToString("yyyy-MM-dd") ?? "Not Set",
+                ProjectEnd = p.project_end?.ToString("yyyy-MM-dd") ?? "Not Set",
+                Duration = p.duration?.ToString() ?? "0", 
+                Year = p.year?.ToString() ?? "Unknown Year", 
+                Division = p.division,
+                        Category = p.category ?? "Uncategorized",
+                ProjectOwner = p.project_owner ?? "No Owner",
+                Milestones = db.MilestoneTbls
                             .Where(m => m.main_id == p.main_id)
                             .Select(m => new MilestoneViewModel
                             {
-                                MilestoneName = m.milestone_name,
-                                // EndDate = m.end_date
-                            }).OrderBy(m => m.MilestoneName)
+                                MilestoneName = m.milestone_name ?? "Unnamed Milestone", 
+                        CurrentTaskEnd = m.current_completion_date 
+                    })
+                            .OrderBy(m => m.MilestoneName)
                             .ToList()
                     }).ToList()
                 );
 
+
+            var uniqueMilestoneNames = db.MilestoneTbls
+                .Select(m => m.milestone_name)
+                .Distinct()
+                .Where(name => !string.IsNullOrEmpty(name))
+                .ToList() ?? new List<string>();
+
+    
             var viewModel = new DashboardManagementViewModel
             {
-                ProjectsByDivision = allProjectsWithMilestones,
-                UniqueMilestoneNames = allProjectsWithMilestones
-                    .SelectMany(d => d.Value.SelectMany(p => p.Milestones.Select(m => m.MilestoneName)))
-                    .Distinct()
-                    .ToList()
+                Divisions = divisions,
+                ProjectsByDivision = projectsByDivision,
+                UniqueMilestoneNames = uniqueMilestoneNames
             };
 
             return View(viewModel);
         }
-
 
         public ActionResult Dashboard()
         {
@@ -105,8 +119,8 @@ namespace ProjectManagementSystem.Controllers
                                             join p in db.MainTables on m.main_id equals p.main_id
                                             join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
                                             from task in tasks.DefaultIfEmpty()
-                                            group task by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position, p.user_id }
-                                            into g
+                                            group new { m, task } by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position, p.user_id }
+                                       into g
                                             select new
                                             {
                                                 MainId = g.Key.main_id,
@@ -114,13 +128,16 @@ namespace ProjectManagementSystem.Controllers
                                                 ProjectTitle = g.Key.project_title,
                                                 MilestoneName = g.Key.milestone_name,
                                                 MilestonePosition = g.Key.milestone_position,
-                                                Tasks = g.Where(t => t != null).Select(t => new
+                                                Tasks = g.Select(x => new
                                                 {
-                                                    t.task_start,
-                                                    t.task_duration,
-                                                    t.isCompleted
+                                                    x.task.task_start,
+                                                    x.task.task_duration,
+                                                    x.task.isCompleted,
+                                                    CurrentCompletionDate = x.m.current_completion_date,
+                                                    CompletionDate = x.m.completion_date
                                                 }).ToList()
                                             }).ToList();
+
 
             var projectsAndMilestones = rawProjectsAndMilestones
                 .Where(g => g.UserId == userId)
@@ -130,7 +147,7 @@ namespace ProjectManagementSystem.Controllers
                     MainId = g.MainId,
                     ProjectTitle = g.ProjectTitle,
                     MilestoneName = g.MilestoneName,
-                   // CurrentTaskEnd = g.CurrentTaskEnd,
+                    CurrentCompletionDate = g.Tasks.Max(t => t.CurrentCompletionDate ?? t.CompletionDate), 
                     Tasks = g.Tasks.Select(t => new TaskViewModel
                     {
                         TaskStart = t.task_start,
@@ -150,7 +167,7 @@ namespace ProjectManagementSystem.Controllers
             var upcomingDeliverables = db.DetailsTbls
                 .Where(t => t.isCompleted == false && t.task_start.HasValue && t.task_duration.HasValue)
                 .Select(t => new
-                {
+                {   
                     Tasks = t.process_title,
                     TaskStart = t.task_start.Value,
                     TaskDuration = t.task_duration.Value
@@ -179,6 +196,7 @@ namespace ProjectManagementSystem.Controllers
             };
             return View(viewModel);
         }
+
 
         private List<string> GetUniqueMilestoneNames()
         {
@@ -1229,7 +1247,7 @@ namespace ProjectManagementSystem.Controllers
                
                                     <p style='font-size: 14px; color: #555;'>
                                         <b>Your Role:</b> <span style='color: #333;'>" + userRole + @"</span><br>
-                                        <b>Assigned Task(s):</b> <span style='color: #333;'> <insert tasks here> </span>
+                             
                                     </p>
                                     <p style='font-size: 14px; color: #555; margin-top: 20px;'>
                                        Please click the button to get started:

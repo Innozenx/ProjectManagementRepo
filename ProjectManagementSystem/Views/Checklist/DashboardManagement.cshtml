@@ -15,76 +15,12 @@
 </head>
 
 <style>
-    .card-container {
-        margin-top: 20px;
-        padding: 20px;
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 0;
     }
-
-    .accordion-item {
-        border: none;
-        border-bottom: 1px solid #e5e5e5;
-        margin-bottom: 10px;
-    }
-
-    .accordion-header button {
-        background-color: #f7f9fc;
-        color: #66339A;
-        font-weight: 600;
-        width: 100%;
-        padding: 15px;
-        border: none;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-        .accordion-header button:hover {
-            background-color: #ebeff5;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-        }
-
-        .accordion-header button:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(102, 57, 154, 0.2);
-        }
-
-    .accordion-header .toggle-icon {
-        transition: transform 0.3s ease;
-    }
-
-    .accordion-button[aria-expanded="true"] .toggle-icon {
-        transform: rotate(180deg);
-    }
-
-    .table-container {
-        background-color: #ffffff;
-        border-radius: 8px;
-        padding: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .table th, .table td {
-        padding: 12px;
-        font-size: 14px;
-    }
-
-    .table th {
-        background-color: #470A67;
-        color: #ffffff;
-        font-weight: bold;
-    }
-
-    .table td {
-        color: #555;
-    }
-
-    .h3 {
-        background-color: #66339A;
-    }
-
 
     .header-container {
         background-color: #470A67;
@@ -96,115 +32,118 @@
 
         .header-container h3 {
             font-size: 2rem;
-            /*font-weight: bold;*/
-            margin-left: 30px;
         }
 
-    body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f4f6f9;
-        margin: 0;
-        padding: 0;
+    .nav-tabs {
+        margin-bottom: 20px;
     }
 
-    .header-left {
-        position: absolute;
-        margin-left: 30px;
+    .nav-link {
+        color: #470A67;
+        font-weight: bold;
     }
 
-    .home-link {
-        font-size: 1.1rem;
-        /*font-weight: bold;*/
-        color: white;
-        text-decoration: none;
-    }
-
-        .home-link:hover {
-            color: #e0e0e0;
+        .nav-link.active {
+            background-color: #470A67;
+            color: #ffffff;
         }
+
+    .table-container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .table th {
+        background-color: #470A67;
+        color: #ffffff;
+    }
+
+    .table td {
+        text-align: center;
+    }
 </style>
 
 <div class="header-container">
-    @*<div class="content-header">*@
-    <div class="header-left">
-        <a href="@Url.Action("DashboardManagement","Checklist")" class="home-link">Dashboard</a>
+    <div>
+        <h3>Hello, @userName!</h3>
+        <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
     </div>
-    <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
-    <h3>Hello, @userName!</h3>
-</div>
-<div>
-    <h3>Project Summary by Division</h3>
 </div>
 
-@*<div class="divider"></div>*@
-<div class="accordion" id="divisionAccordion">
-    @foreach (var divisionGroup in Model.ProjectsByDivision)
-    {
-        var divisionId = "division-" + divisionGroup.Key.Replace(" ", "");
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="heading-@divisionId">
-                <button class="accordion-button collapsed" type="button" data-toggle="collapse" data-target="#collapse-@divisionId" aria-expanded="false" aria-controls="collapse-@divisionId">
-                    @divisionGroup.Key Division
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </button>
-            </h2>
-            <div id="collapse-@divisionId" class="accordion-collapse collapse" aria-labelledby="heading-@divisionId" data-parent="#divisionAccordion">
-                <div class="accordion-body">
-                    <div class="table-container">
-                        <table class="table">
-                            <thead>
+<div class="container">
+    <ul class="nav nav-tabs" id="divisionTabs" role="tablist">
+        @foreach (var division in Model.Divisions)
+        {
+            var divisionId = division.Replace(" ", "");
+            <li class="nav-item">
+                <a class="nav-link @((Model.Divisions.First() == division) ? "active" : "")"
+                   id="tab-@divisionId"
+                   data-toggle="tab"
+                   href="#panel-@divisionId"
+                   role="tab"
+                   aria-controls="panel-@divisionId"
+                   aria-selected="true">
+                    @division Division
+                </a>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content" id="divisionTabContent">
+        @foreach (var divisionGroup in Model.ProjectsByDivision)
+        {
+            var divisionId = divisionGroup.Key.Replace(" ", "");
+            <div class="tab-pane fade @((Model.ProjectsByDivision.First().Key == divisionGroup.Key) ? "show active" : "")"
+                 id="panel-@divisionId"
+                 role="tabpanel"
+                 aria-labelledby="tab-@divisionId">
+                <div class="table-container">
+                    <h5>@divisionGroup.Key Division's Project Summary</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Project Name</th>
+                                @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                {
+                                    <th>@milestoneName (OS/CS)</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var project in divisionGroup.Value)
+                            {
                                 <tr>
-                                    <th>Project Name</th>
+                                    <td>
+                                        <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId })" class="text-decoration-none text-primary">
+                                            @project.ProjectTitle
+                                        </a>
+                                    </td>
                                     @foreach (var milestoneName in Model.UniqueMilestoneNames)
                                     {
-                                        <th>@milestoneName</th>
+                                        var milestone = project.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
+                                        var endDateFormatted = milestone != null
+                                            ? $"WW{milestone.EndDate:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                            : "N/A";
+                                        <td>@endDateFormatted</td>
                                     }
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var project in divisionGroup.Value)
-                                {
-                                    <tr>
-                                        <td>
-                                            @*<a href="@Url.Action("ProjectDetails", "Projects", new { id = project.MainId })" class="text-decoration-none text-primary">
-                                                    @project.ProjectTitle
-                                                </a>*@
-                                            <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId })" class="text-decoration-none text-primary">
-                                                @project.ProjectTitle
-                                            </a>
-                                        </td>
-                                        @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                        {
-                                            var milestone = project.Milestones.FirstOrDefault(m => m.MilestoneName == milestoneName);
-                                            var endDateFormatted = milestone != null
-                                                ? $"WW{milestone.EndDate:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
-                                                : "N/A";
-                                            <td>@endDateFormatted</td>
-                                        }
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-    }
-</div>
-@section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    @*<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>*@ @*This line causes errors*@
+        }
+    </div>
 
+@section Scripts {
     <script>
         $(document).ready(function () {
-            $('.accordion-button').on('click', function () {
-                $(this).attr('aria-expanded', function (i, attr) {
-                    return attr === 'true' ? 'false' : 'true';
-                });
+            $('#divisionTabs a').on('click', function (e) {
+                e.preventDefault();
+                $(this).tab('show');
             });
-
-
         });
     </script>
-
 }

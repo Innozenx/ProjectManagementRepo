@@ -375,8 +375,19 @@
                                 </tr>
                                 <tr>
                                     <th>Duration:</th>
-                                    <td>@data.ProjectDuration days</td>
+                                    <td>
+                                        @data.ProjectDuration
+                                        @if (data.ProjectDuration == 1)
+                                        {
+                                            @:day
+                                        }
+                                        else
+                                        {
+                                            @:days
+                                        }
+                                    </td>
                                 </tr>
+
                             </table>
                         </td>
                         <td style="vertical-align: top; width: 50%;">
@@ -425,58 +436,65 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content shadow-lg rounded">
                 <div class="modal-header bg-white">
-                    <h5 class="modal-title" id="updateMilestoneLabel">
-                        Status
-                    </h5>
+                    <h5 class="modal-title" id="updateMilestoneLabel">Update Status</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body bg-white p-4">
                     <form id="updateStatusForm" action="@Url.Action("UpdateStatus", "Checklist")" method="post" enctype="multipart/form-data">
+
                         <div class="form-group mb-4">
-                            <label for="milestone" class="milestone-text">Select Task</label>
+                            <label for="milestone" class="milestone-text">
+                                Select Task <span class="text-danger">*</span>
+                            </label>
                             @Html.DropDownListFor(m => m.SelectedMilestone, Model.TaskTitle, "Choose a Task", new { @class = "form-control rounded border-light", id = "selectedMilestone" })
                         </div>
 
-                        <!-- Delay -->
                         <div class="form-group mb-4">
-                            <label for="statusUpdate" class="status-update">Is your task delayed?</label>
-                            <br />
-                            @Html.RadioButtonFor(x => x.isDelayed, false, new { id = "delayed_no" })
-                            <label for="delayed_no" class="status-update">No</label>
-
-                            @Html.RadioButtonFor(x => x.isDelayed, true, new { id = "delayed_yes" })
-                            <label for="delayed_yes" class="status-update">Yes</label>
+                            <label for="isDelayed" class="status-update d-block mb-2">
+                                Is your task delayed? <span class="text-danger">*</span>
+                            </label>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(x => x.isDelayed, false, new { id = "delayed_no", @class = "form-check-input" })
+                                <label for="delayed_no" class="form-check-label">No</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(x => x.isDelayed, true, new { id = "delayed_yes", @class = "form-check-input" })
+                                <label for="delayed_yes" class="form-check-label">Yes</label>
+                            </div>
                         </div>
 
-                        <!--Duration-->
                         <div class="form-group mb-4 d-none" id="delay_div">
-                            <label for="weeks_delayed" class="status-update d-block mb-2">Duration:</label>
+                            <label for="weeks_delayed" class="status-update d-block mb-2">
+                                If delayed, by how many weeks? <span class="text-danger">*</span>
+                            </label>
                             <div class="input-group">
-                                @Html.EditorFor(x => x.delay, new { htmlAttributes = new { @class = "form-control", @min = "1", @id = "weeks_delayed", @placeholder = "Enter how many weeks delayed" } })
+                                @Html.EditorFor(x => x.delay, new { htmlAttributes = new { @class = "form-control", @min = "1", @id = "weeks_delayed", @placeholder = "Enter number of weeks" } })
                                 <div class="input-group-append">
                                     <span class="input-group-text">Week/s</span>
                                 </div>
                             </div>
                         </div>
 
-
-                        <!-- Status Update -->
                         <div class="form-group mb-4">
-                            <label for="statusUpdate" class="status-update">Status Update</label>
+                            <label for="statusUpdate" class="status-update">
+                                Description <span class="text-danger">*</span>
+                            </label>
                             @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3, id = "statusUpdate" })
                         </div>
 
                         <div class="form-group mb-4">
-                            <label for="fileUpload" class="select-attach">Attachment</label>
+                            <label for="fileUpload" class="select-attach">
+                                Attachment <span class="text-danger">*</span>
+                            </label>
                             <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
                         </div>
 
-                        <!-- validation  -->
                         <div id="validationMessage" class="text-danger" style="display:none; margin-bottom:10px;">
                             Please fill out all required fields.
                         </div>
+
                         <div class="d-flex justify-content-end">
                             <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Submit</button>
                         </div>
@@ -486,7 +504,6 @@
         </div>
     </div>
 
-
     <!-- Project Members Section -->
     <div class="table-container" id="detailsContainer">
         <h3>Project Members</h3>
@@ -495,37 +512,44 @@
             <div class="members-grid">
                 @foreach (var member in Model.ProjectMembers)
                 {
-                    <div class="member-card">
-                        <div class="avatar-circle">@member.Initials</div>
-                        <div class="member-details">
-                            <p class="member-name">@member.Name</p>
-                            <p class="member-role">
-                                @{
-                                    switch (member.Role)
-                                    {
-                                        case 1:
-                                        <p>Tester</p>;
-                                        break;
-                                    case 2:
-                                        <p>Editor</p>
-                                        break;
-                                    case 3:
-                                        <p>Viewer</p>
-                                        break;
-                                }
-                                }
+                    <div class="member-card shadow-sm p-3 mb-4 bg-white rounded">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-circle d-flex justify-content-center align-items-center">
+                                <span class="avatar-initials">@member.Initials</span>
+                            </div>
+                            <div class="ml-3 member-details">
+                                <p class="member-name font-weight-bold mb-1">@member.Name</p>
+                                <p class="member-role text-muted mb-1">
+                                   @switch (member.Role.ToString().ToLowerInvariant())
+                                   {
+                                       case "1":
+                                        <span>Tester</span>
+                                           break;
+                                       case "2":
+                                        <span>Editor</span>
+                                           break;
+                                       case "3":
+                                        <span>Viewer</span>
+                                           break;
+                                       default:
+                                        <span>Unknown Role</span>
+                                           break;
+                                   }
+
                                 </p>
-                                <p class="member-email">@member.Email</p>
+                                <p class="member-email text-muted small">@member.Email</p>
                             </div>
                         </div>
-                    }
+                    </div>
+                }
             </div>
         }
         else
         {
-            <p class="no-members-text">No members are assigned to this project yet.</p>
+            <p class="no-members-text text-center text-muted">No members are assigned to this project yet.</p>
         }
     </div>
+
 
     <!-- Status Successfully Updated Modal -->
     <div class="modal fade" id="statusUpdatedModal" tabindex="-1" role="dialog" aria-labelledby="statusUpdatedLabel" aria-hidden="true">
