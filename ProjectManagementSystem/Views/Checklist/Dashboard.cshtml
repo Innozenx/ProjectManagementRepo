@@ -35,6 +35,8 @@
     var userEmail = User.Identity.Name ?? "Guest";
     var userName = userEmail.Contains("@") ? userEmail.Split('@')[0] : userEmail;
 
+
+
 }
 <style>
     body {
@@ -499,6 +501,13 @@
     #milestonesTable tbody tr:hover {
         background-color: #f1f1f1;
     }
+    .switch-dashboard {
+        margin-top: 10px;
+    }
+
+        .switch-dashboard .btn {
+            margin-right: 10px;
+        }
 </style>
 
 <!-- Header Section -->
@@ -509,6 +518,7 @@
     <br />
     <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
     <h3>Hello, @userName!</h3>
+
 </div>
 
 <!-- Top Cards Row -->
@@ -549,7 +559,7 @@
                 <table id="milestonesTable" class="table">
                     <thead>
                         <tr>
-                            <th>Project Name</th>
+                            <th>ONGOING PROJECTS</th>
                             @foreach (var milestoneName in Model.UniqueMilestoneNames)
                             {
                                 <th>@milestoneName <br />(OS/CS)</th>
@@ -584,6 +594,8 @@
                                     var csFormatted = currentEndDate.HasValue
                                         ? $"WW {currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
                                         : "-";
+
+                                    // kunyari foresee na nilang madedelay project, hindi muna sya mag display sa dashboard
 
                                     // OS / CS Combined
                                     var combinedFormatted = osFormatted != csFormatted && csFormatted != "-"

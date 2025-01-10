@@ -7,6 +7,7 @@
 
     var userEmail = User.Identity.Name ?? "Guest";
     var userName = userEmail.Contains("@") ? userEmail.Split('@')[0] : userEmail;
+
 }
 
 <head>
@@ -57,19 +58,19 @@
 
     .table th {
         background-color: #470A67;
+        text-align:center;
         color: #ffffff;
     }
-
+    
     .table td {
         text-align: center;
     }
 </style>
 
 <div class="header-container">
-    <div>
-        <h3>Hello, @userName!</h3>
-        <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
-    </div>
+    <h1>Dashboard Management</h1>
+    <p>View all projects across divisions</p>
+    <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
 </div>
 
 <div class="container">
@@ -90,7 +91,7 @@
             </li>
         }
     </ul>
-
+    
     <div class="tab-content" id="divisionTabContent">
         @foreach (var divisionGroup in Model.ProjectsByDivision)
         {
@@ -135,6 +136,7 @@
                 </div>
             </div>
         }
+    </div>
     </div>
 
 @section Scripts {
