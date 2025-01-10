@@ -328,6 +328,8 @@ namespace ProjectManagementSystem.Models
         public DateTime? EndDate { get; set; }
         public DateTime? CurrentTaskEnd { get; set; }
         public List<string> Divisions { get; set; }
+        public string MilestoneTasks { get; set; }
+
     }
     public class ProjectWithMilestonesViewModel
     {

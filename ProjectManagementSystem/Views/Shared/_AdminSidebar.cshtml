@@ -1,6 +1,8 @@
 ﻿@{
     var isPMSManagement = User.IsInRole("PMS_Management");
-    var isOtherRole = User.IsInRole("OtherRole"); 
+    var isPMS_ODCP_Admin = User.IsInRole("PMS_ODCP_ADMIN");
+    var isPMS_Project_Manager = User.IsInRole("PMS_PROJECT_MANAGER");
+    var isPMS_Project_Admin = User.IsInRole("PMS_PROJECT_ADMIN");
 }
 
 <!-- Main Sidebar Container -->
@@ -8,66 +10,69 @@
     <!-- Brand Logo -->
     <a href="@Url.Action("Dashboard", "Checklist")" class="brand-link d-flex align-items-center">
         <img src="~/AdminLTE-3.2.0/dist/img/29th-Logo.png" alt="EK-PMS Logo" class="brand-image img-circle elevation-3" style="opacity: 1; height: 40px; width: 40px; object-fit: cover; margin-right: 10px;">
-        <span class="brand-text font-weight-bold" style="font-size: 1rem; color: #333;">PM System</span>
+        <span class="brand-text font-weight-light" style="font-size: 0.85rem; color: #333; white-space: nowrap;">Project Management <br /> System</span>
     </a>
 
-<div class="sidebar">
-    <!-- Sidebar Menu -->
-    <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column small-font" data-widget="treeview" role="menu" data-accordion="false">
-            <!-- Panels Section -->
-            <li class="nav-header">Panels</li>
+    <div class="sidebar">
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column small-font" data-widget="treeview" role="menu" data-accordion="false">
+                <!-- Panels Section -->
 
-            <!-- Management Dashboard -->
-            @if (isPMSManagement)
-            {
-                <li class="nav-item">
-                    <a href="@Url.Action("DashboardManagement", "Checklist")" class="nav-link">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Management Dashboard</p>
-                    </a>
-                </li>
-            }
-            <!-- User-Specific Dashboard -->
-            @if (!isPMSManagement) 
-            {
-                <li class="nav-item">
-                    <a href="@Url.Action("Dashboard", "Checklist")" class="nav-link">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Dashboard</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
-                        <i class="nav-icon fas fa-plus-circle"></i>
-                        <p>Project Onboarding</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="@Url.Action("ActivityView", "Checklist", new { user = User.Identity.Name.ToString() })" class="nav-link">
-                        <i class="nav-icon fas fa-list"></i>
-                        <p>Activity Logs</p>
-                    </a>
-                </li>
-            }
-            <!-- Report Section -->
-            <li class="nav-header">Report</li>
-            @if (isPMSManagement && !isPMSManagement) 
-            {
-                <li class="nav-item">
-                    <a href="@Url.Action("Index", "PMReports")" class="nav-link">
-                        <i class="nav-icon fas fa-chart-pie"></i>
-                        <p>Reports</p>
-                    </a>
-                </li>
-            }
-        </ul>
-    </nav>
-    <!-- /.sidebar-menu -->
-</div>
+                <!-- Dashboard for Management-->
+                @if (isPMSManagement || isPMS_ODCP_Admin)
+                {
+                    <li class="nav-header">For Management</li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("DashboardManagement", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                }
+               
+                <!-- Dashboard for Project Managers -->
+                @if (@*!isPMSManagement ||*@ isPMS_ODCP_Admin || isPMS_Project_Manager || isPMS_Project_Admin)
+                {
+                    <li class="nav-header">Panels</li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Dashboard", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-plus-circle"></i>
+                            <p>Project Onboarding</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("ActivityView", "Checklist", new { user = User.Identity.Name.ToString() })" class="nav-link">
+                            <i class="nav-icon fas fa-list"></i>
+                            <p>Activity Logs</p>
+                        </a>
+                    </li>
+                }
+
+                <!-- Report Section -->
+               
+                @if (isPMSManagement || isPMS_ODCP_Admin || isPMS_Project_Admin)
+                {
+                    <li class="nav-header">Report</li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "PMReports")" class="nav-link">
+                            <i class="nav-icon fas fa-chart-pie"></i>
+                            <p>Reports</p>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
 </aside>
 
-<!-- Sidebar Styling -->
 <style>
     .main-sidebar {
         background-color: #ffffff !important;
@@ -84,38 +89,39 @@
 
     .brand-text {
         font-size: 1rem;
-        font-weight: bold;
+        font-weight: bold; 
     }
 
     .nav-sidebar .nav-link {
-        padding: 8px 10px; 
+        padding: 8px 10px;
         font-size: 0.85rem;
         color: #4a4a4a;
         border-left: 4px solid transparent;
         transition: all 0.3s;
+        font-weight: normal; 
     }
 
         .nav-sidebar .nav-link .nav-icon {
             margin-right: 8px;
             color: #666;
-            font-size: 1rem; 
+            font-size: 1rem;
         }
 
-        .nav-sidebar .nav-link:hover {
-            color: #66339A;
-            background-color: #f9f9f9;
-        }
+    .nav-sidebar .nav-link:hover {
+        color: #66339A;
+        background-color: #f9f9f9;
+    }
 
     .nav-header {
         color: #888;
-        font-size: 0.8rem; 
+        font-size: 0.8rem;
         margin: 8px 0;
         text-transform: uppercase;
-        font-weight: bold;
+        font-weight: normal; 
     }
 
     .dot {
-        height: 8px; 
+        height: 8px;
         width: 8px;
         display: inline-block;
         border-radius: 50%;
@@ -125,4 +131,5 @@
     .nav-header + .nav-item {
         margin-top: 8px;
     }
+
 </style>
