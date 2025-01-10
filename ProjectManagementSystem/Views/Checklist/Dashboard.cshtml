@@ -542,163 +542,171 @@
 <!-- Content Section -->
 <div class="content-section">
     <div class="card-container wide-card-container">
-        @if (Model.ProjectsByDivision != null && Model.ProjectsByDivision.Any())
+        @if (Model.ProjectsMilestones != null && Model.ProjectsMilestones.Any())
         {
-            <div class="vertical-tabs-container">
-                <!-- Tabs Navigation -->
-                <div class="tabs-navigation">
-                    <ul class="nav flex-column nav-pills" id="divisionTabs" role="tablist">
-                        @foreach (var division in Model.ProjectsByDivision.Keys)
+            <div class="table-container wide-table-container">
+                <h5 class="card-title">Project Summary</h5>
+                <table id="milestonesTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Project Name</th>
+                            @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                            {
+                                <th>@milestoneName <br />(OS/CS)</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var projectGroup in Model.ProjectsMilestones.GroupBy(pm => pm.ProjectTitle))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link @((division == Model.ProjectsByDivision.Keys.First()) ? "active" : "")"
-                                   id="tab-@division.Replace(" ", "-")"
-                                   data-toggle="pill"
-                                   href="#content-@division.Replace(" ", "-")"
-                                   role="tab"
-                                   aria-controls="content-@division.Replace(" ", "-")"
-                                   aria-selected="@((division == Model.ProjectsByDivision.Keys.First()).ToString().ToLower())">
-                                    @division Division
-                                </a>
-                            </li>
+                            <tr>
+                                <td>
+                                    <a href="javascript:void(0);" onclick="toDetailedView('@projectGroup.First().MainId', '@projectGroup.Key')">
+                                        @projectGroup.Key
+                                    </a>
+                                </td>
+                                @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                {
+                                    var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName);
+
+                                    // OS
+                                    var latestEndDate = milestoneTasks.Any(pm => pm.EndDate.HasValue)
+                                        ? milestoneTasks.Max(pm => pm.EndDate.Value)
+                                        : (DateTime?)null;
+                                    var osFormatted = latestEndDate.HasValue
+                                        ? $"WW {latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
+                                        : "-";
+
+                                    // CS
+                                    var currentEndDate = milestoneTasks.Any(pm => pm.CurrentCompletionDate.HasValue)
+                                        ? milestoneTasks.Max(pm => pm.CurrentCompletionDate.Value)
+                                        : latestEndDate;
+                                    var csFormatted = currentEndDate.HasValue
+                                        ? $"WW {currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
+                                        : "-";
+
+                                    // OS / CS Combined
+                                    var combinedFormatted = osFormatted != csFormatted && csFormatted != "-"
+                                        ? $"{osFormatted} / {csFormatted}"
+                                        : osFormatted;
+
+                                    <td class="duedate-colors">@combinedFormatted</td>
+                                }
+                            </tr>
                         }
-                    </ul>
-                </div>
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div style="text-align: center; padding: 20px;">
+                <h5>Your dashboard is looking a little empty - start your project now!</h5>
+                <br />
+                <a href="@Url.Action("AddProject", "Checklist")" class="invite-button">Let's get started</a>
+            </div>
+        }
+    </div>
 
-                <!-- Tabs Content -->
-                <div class="tab-content" id="divisionTabsContent">
-                    @foreach (var divisionGroup in Model.ProjectsByDivision)
+    <div class="sidebar-cards">
+        <!-- Upcoming Tasks Card -->
+        <div class="sidebar-card">
+            <h5 class="card-title">Upcoming Tasks</h5>
+            <ul class="upcoming-tasks-list">
+                @if (Model.UpcomingDeliverables != null && Model.UpcomingDeliverables.Any())
+                {
+                    foreach (var deliverable in Model.UpcomingDeliverables)
                     {
-                        <div class="tab-pane fade @((divisionGroup.Key == Model.ProjectsByDivision.Keys.First()) ? "show active" : "")"
-                             id="content-@divisionGroup.Key.Replace(" ", "-")"
-                             role="tabpanel"
-                             aria-labelledby="tab-@divisionGroup.Key.Replace(" ", "-")">
-                            <h5 class="card-title">@divisionGroup.Key Division</h5>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Project Name</th>
-                                        @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                        {
-                                            <th>@milestoneName <br />(OS/CS)</th>
-                                        }
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var project in divisionGroup.Value)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId })" class="text-decoration-none text-primary">
-                                                    @project.ProjectTitle
-                                                </a>
-                                            </td>
-                                            @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                            {
-                                                var milestone = project.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
-
-                                                // OS (Original Schedule)
-                                                var osFormatted = milestone?.EndDate.HasValue == true
-                                                    ? $"WW {milestone.EndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
-                                                    : "-";
-
-                                                // CS (Current Schedule)
-                                                var csFormatted = milestone?.CurrentTaskEnd.HasValue == true
-                                                    ? $"WW {milestone.CurrentTaskEnd.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.CurrentTaskEnd.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
-                                                    : "-";
-
-                                                // OS / CS Combined
-                                                var combinedFormatted = (osFormatted != csFormatted && csFormatted != "-")
-                                                    ? $"{osFormatted} / {csFormatted}"
-                                                    : osFormatted;
-
-                                                <td class="duedate-colors">@combinedFormatted</td>
-                                            }
-                                            }
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                        <li>
+                            <strong>@deliverable.Tasks</strong>
+                            <p>Due on @deliverable.DueDate.ToString("MMMM dd, yyyy")</p>
+                        </li>
                     }
-                </div>
                 }
                 else
                 {
-                <div style="text-align: center; padding: 20px;">
-                    <h5>Your dashboard is looking a little empty - start your project now!</h5>
-                    <br />
-                    <a href="@Url.Action("AddProject", "Checklist")" class="invite-button">Let's get started</a>
-                </div>
+                    <li>No upcoming tasks.</li>
                 }
-            </div>
+            </ul>
         </div>
 
+        <!-- Overall Progress Card -->
+        <div class="sidebar-card">
+            <h5 class="card-title">Overall Progress</h5>
+            <div class="chart-container">
+                <canvas id="progressChart"></canvas>
+            </div>
+            <p class="text-center">Completed: @completedPercentage.ToString("F2")% | Pending: @pendingPercentage.ToString("F2")%</p>
+        </div>
+    </div>
+</div>
 
-        @section scripts {
-            <script>
-                $(document).ready(function () {
-                    $('#milestonesTable').DataTable({
-                        responsive: true,
-                        pagingType: 'full_numbers',
-                        language: {
-                            search: "_INPUT_",
-                            searchPlaceholder: "Search project name...",
-                            paginate: {
-                                first: '<<',
-                                last: '>>',
-                                next: '>',
-                                previous: '<'
-                            },
-                            lengthMenu: "Show _MENU_ entries",
-                            info: "Showing _START_ to _END_ of _TOTAL_ entries"
-                        },
-                        dom: '<"top d-flex justify-content-between align-items-center"lfr>t<"bottom d-flex justify-content-between align-items-center"ip><"clear">',
-                        initComplete: function () {
-                            $('.dataTables_filter input').addClass('form-control').css({
-                                'font-size': '14px',
-                                'width': '300px',
-                                'margin-left': '10px',
-                                'margin-right': '10px',
-                                'border-radius': '5px',
-                                'padding': '5px 10px'
-                            });
 
-                            $('.dataTables_length select').addClass('form-select').css({
-                                'font-size': '14px',
-                                'width': 'auto',
-                                'margin-left': '5px',
-                                'margin-right': '5px',
-                                'padding': '5px 10px'
-                            });
 
-                            $('.dataTables_paginate').css({
-                                'margin-top': '10px'
-                            });
-
-                            $('.dataTables_info').css({
-                                'margin-top': '10px',
-                                'font-size': '14px',
-                                'color': '#666'
-                            });
-
-                            $('#milestonesTable').css({
-                                'border-collapse': 'separate',
-                                'border-spacing': '0 10px'
-                            });
-
-                            $('#milestonesTable tbody tr').hover(function () {
-                                $(this).css('background-color', '#f9f9f9');
-                            }, function () {
-                                $(this).css('background-color', '');
-                            });
-                        }
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#milestonesTable').DataTable({
+                responsive: true,
+                pagingType: 'full_numbers',
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search project name...",
+                    paginate: {
+                        first: '<<',
+                        last: '>>',
+                        next: '>',
+                        previous: '<'
+                    },
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries"
+                },
+                dom: '<"top d-flex justify-content-between align-items-center"lfr>t<"bottom d-flex justify-content-between align-items-center"ip><"clear">',
+                initComplete: function () {
+                    $('.dataTables_filter input').addClass('form-control').css({
+                        'font-size': '14px',
+                        'width': '300px',
+                        'margin-left': '10px',
+                        'margin-right': '10px',
+                        'border-radius': '5px',
+                        'padding': '5px 10px'
                     });
-                });
 
-                function toDetailedView(mainId, projectTitle) {
-                    window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${projectTitle}`;
+                    $('.dataTables_length select').addClass('form-select').css({
+                        'font-size': '14px',
+                        'width': 'auto',
+                        'margin-left': '5px',
+                        'margin-right': '5px',
+                        'padding': '5px 10px'
+                    });
+
+                    $('.dataTables_paginate').css({
+                        'margin-top': '10px'
+                    });
+
+                    $('.dataTables_info').css({
+                        'margin-top': '10px',
+                        'font-size': '14px',
+                        'color': '#666'
+                    });
+
+                    $('#milestonesTable').css({
+                        'border-collapse': 'separate',
+                        'border-spacing': '0 10px'
+                    });
+
+                    $('#milestonesTable tbody tr').hover(function () {
+                        $(this).css('background-color', '#f9f9f9');
+                    }, function () {
+                        $(this).css('background-color', '');
+                    });
                 }
-            </script>
+            });
+        });
+
+        function toDetailedView(mainId, projectTitle) {
+            window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${projectTitle}`;
         }
+    </script>
+}
 
