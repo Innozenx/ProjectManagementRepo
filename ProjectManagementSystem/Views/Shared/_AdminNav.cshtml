@@ -41,8 +41,8 @@
                 </a>
 
                 <div class="dropdown-divider"></div>
-                    @if (User.IsInRole("PMS_Developer"))
-                    {
+                      @if (User.IsInRole("PMS_Developer") || User.IsInRole("PMS_PROJECT_OWNER") || User.IsInRole("PMS_PROJECT_MANAGER"))
+                      {
                         <a href="@Url.Action("Register", "Admin")" class="dropdown-item">
                             <i class="fas fa-cogs mr-2"></i> Admin Console
                         </a>
@@ -51,9 +51,10 @@
                         </a>
                         <a href="@Url.Action("ChecklistSettings", "Admin")" class="dropdown-item">
                             <i class="fas fa-pen-square mr-2"></i> Checklist Settings
-                        </a>                            
+                        </a>
                         <div class="dropdown-divider"></div>
-                    }
+                      }
+
 
              
                 <a href="@Url.Action("Logout", "Account")" class="dropdown-item">

@@ -127,8 +127,8 @@
         }
 
         .error-message {
-            display: none; /* Initially hidden */
-            color: #d9534f; /* Bootstrap danger color */
+            display: none; 
+            color: #d9534f; 
             font-size: 12px;
             margin-top: 5px;
         }
@@ -202,31 +202,24 @@
         const csvFile = csvFileInput.files[0];
         let isValid = true;
 
-        projectDropdown.style.borderColor = "";
-        projectOwner.style.borderColor = "";
-        csvFileInput.style.borderColor = "";
+        resetFieldStyles();
 
         if (!projectDropdown.value) {
-            projectDropdown.style.borderColor = "#d9534f";
-            displayError("Project name is required.");
+            setFieldError(projectDropdown, "Project name is required.");
             isValid = false;
         }
 
         if (!projectOwner.value.trim()) {
-            projectOwner.style.borderColor = "#d9534f";
-            displayError("Project owner is required.");
+            setFieldError(projectOwner, "Project owner is required.");
             isValid = false;
         }
 
         if (!csvFile) {
-            csvFileInput.style.borderColor = "#d9534f";
-            displayError("A CSV file is required.");
+            setFieldError(csvFileInput, "A CSV file is required.");
             isValid = false;
         }
 
-        if (!isValid) {
-            return;
-        }
+        if (!isValid) return;
 
         const formData = new FormData();
         formData.append("projectTitle", projectDropdown.value);
@@ -253,17 +246,58 @@
         });
     }
 
-    function displayError(message) {
-        const errorContainer = document.getElementById("errorContainer");
-        if (!errorContainer) {
-
-            const container = document.createElement("div");
-            container.id = "errorContainer";
-            container.style.color = "#d9534f";
-            container.style.marginTop = "10px";
-            document.body.prepend(container);
-        }
-        document.getElementById("errorContainer").innerText = message;
+    function resetFieldStyles() {
+        const fields = document.querySelectorAll("#projectDropdown, #projectOwner, #csvFileInput");
+        fields.forEach(field => field.style.borderColor = "");
+        clearError();
     }
+
+    function setFieldError(field, message) {
+        field.style.borderColor = "#d9534f";
+        displayError(message);
+    }
+
+    function displayError(message) {
+        let errorContainer = document.getElementById("errorContainer");
+        if (!errorContainer) {
+            errorContainer = document.createElement("div");
+            errorContainer.id = "errorContainer";
+            errorContainer.style.color = "#d9534f";
+            errorContainer.style.marginTop = "10px";
+            document.body.prepend(errorContainer);
+        }
+        errorContainer.innerText = message;
+    }
+
+    function clearError() {
+        const errorContainer = document.getElementById("errorContainer");
+        if (errorContainer) errorContainer.innerText = "";
+    }
+
+    document.getElementById("projectDropdown").addEventListener("change", function () {
+        const projectId = this.value;
+
+        if (projectId) {
+            $.ajax({
+                url: '/Checklist/GetProjectOwner',
+                type: 'GET',
+                data: { projectId: projectId },
+                success: function (response) {
+                    if (response.success) {
+                        const ownerName = `${response.owner.FullName} (${response.owner.Email})`;
+                        document.getElementById("projectOwner").value = ownerName;
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while fetching the project owner.");
+                }
+            });
+        } else {
+            document.getElementById("projectOwner").value = "";
+        }
+    });
 </script>
+
 

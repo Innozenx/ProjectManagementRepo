@@ -23,7 +23,7 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
-        [CustomAuthorize(Roles = "PMS_Developer")]
+        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         public ActionResult Register()
         {
             return View();
@@ -300,7 +300,7 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message, status }, JsonRequestBehavior.AllowGet);
         }
 
-        [CustomAuthorize(Roles = "PMS_Developer")]
+        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         [HttpGet]
         public ActionResult ChecklistSettings()
         {

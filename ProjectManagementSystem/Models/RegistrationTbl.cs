@@ -25,5 +25,6 @@ namespace ProjectManagementSystem.Models
         public string unregister_reason { get; set; }
         public Nullable<System.DateTime> date_unregistered { get; set; }
         public Nullable<bool> is_file_uploaded { get; set; }
+        public Nullable<int> main_id { get; set; }
     }
 }
