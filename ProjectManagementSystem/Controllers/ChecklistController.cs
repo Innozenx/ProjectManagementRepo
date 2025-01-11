@@ -35,7 +35,7 @@ namespace ProjectManagementSystem.Controllers
 
             return View(checklist);
         }
-        [Authorize(Roles = "PMS_Management, PMS_ODCP_ADMIN")]
+        [Authorize(Roles = "PMS_Management, PMS_ODCP_ADMIN, PMS_DIVISION_HEAD")]
         public ActionResult DashboardManagement()
         {
             var currentYear = DateTime.Now.Year;
@@ -124,13 +124,12 @@ namespace ProjectManagementSystem.Controllers
             return View(viewModel);
         }
 
-    
-        [Authorize(Roles = "PMS_PROJECT_MANAGER, PMS_ODCP_ADMIN, PMS_Management, PMS_PROJECT_ADMIN")]
+        [Authorize(Roles = "PMS_PROJECT_MANAGER, PMS_ODCP_ADMIN, PMS_Management, PMS_PROJECT_OWNER, PMS_DIVISION_HEAD")]
         public ActionResult Dashboard()
         {
             var userId = User.Identity.GetUserId();
 
-            if (User.IsInRole("PMS_Management") && !User.IsInRole("PMS_ODCP_ADMIN"))
+            if (User.IsInRole("PMS_Management") || User.IsInRole("PMS_DIVISION_HEAD"))
             {
                 return RedirectToAction("DashboardManagement");
             }
@@ -334,7 +333,7 @@ namespace ProjectManagementSystem.Controllers
 
             var userId = User.Identity.GetUserId();
 
-            var userProject = db.MainTables
+            var userProject = db.MainTables 
                 .Where(m => m.main_id == id && m.user_id == userId)
                 .FirstOrDefault();
 
@@ -479,7 +478,7 @@ namespace ProjectManagementSystem.Controllers
             return View(viewModel);
         }
 
-
+        
 
         public JsonResult getGanttData(int id)
         {
@@ -559,7 +558,7 @@ namespace ProjectManagementSystem.Controllers
                 return "red"; // overdue task
         }
 
-        [CustomAuthorize(Roles = "PMS_Developer")]
+        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         public ActionResult AddProject()
         {
             var onboardingDetails = new Onboarding()
@@ -624,7 +623,6 @@ namespace ProjectManagementSystem.Controllers
             if (attachment == null || attachment.ContentLength <= 0)
             {
                 return Json(new { message = "File is empty", status = false }, JsonRequestBehavior.AllowGet);
-
             }
 
             try
@@ -680,16 +678,18 @@ namespace ProjectManagementSystem.Controllers
 
                             if (getProject.ProjectTitle == project.project_name)
                             {
-                                string dateFormat = "MM/dd/yyyy"; // date format to be followed
+                                string dateFormat = "MM/dd/yyyy"; 
 
                                 if (string.IsNullOrWhiteSpace(getProject.projectStart) ||
                                      string.IsNullOrWhiteSpace(getProject.projectEnd) ||
                                      getProject.ProjectDuration <= 0 ||
                                      getProject.ProjectYear <= 0)
                                 {
-                                    throw new Exception("Start date, end date, duration, and year cannot be" +
-                                        " empty.");
+                                    throw new Exception("Start date, end date, duration, and year cannot be empty.");
                                 }
+
+                                // fetch registered_by and assign it as project_owner
+                                var registeredBy = project.registered_by;
 
                                 var addWeeklyChecklist = new MainTable
                                 {
@@ -700,9 +700,8 @@ namespace ProjectManagementSystem.Controllers
                                     year = getProject.ProjectYear,
                                     division = getProject.division,
                                     category = getProject.category,
-                                    project_owner = getProject.projectOwner,
+                                    project_owner = registeredBy, // assign registered_by to project_owner
                                     user_id = UserId
-
                                 };
 
                                 db.MainTables.Add(addWeeklyChecklist);
@@ -745,9 +744,9 @@ namespace ProjectManagementSystem.Controllers
 
                                     foreach (var taskGroup in groupedTasks)
                                     {
-                                        
+
                                         DateTime taskStartDate = DateTime.ParseExact(getProject.projectStart.ToString(), dateFormat, CultureInfo.InvariantCulture);
-                                        int taskDuration = taskGroup.task_duration;                                                                                                             
+                                        int taskDuration = taskGroup.task_duration;
                                         DateTime taskEndDate = taskStartDate.AddDays(taskDuration);
 
                                         var subtask = false;
@@ -778,7 +777,6 @@ namespace ProjectManagementSystem.Controllers
                                             main_id = mainIDfordetails,
                                             excel_id = taskGroup.id,
                                             task_delay = 0
-
                                         };
 
                                         detailList.Add(addTask);
@@ -813,7 +811,7 @@ namespace ProjectManagementSystem.Controllers
                                         datetime_performed = DateTime.Now,
                                         action_level = 5,
                                         action = "Project Upload",
-                                        description = getProject.ProjectTitle + " Project Uploaded by: " + getProject.projectOwner + " For Year: " + getProject.ProjectYear,
+                                        description = getProject.ProjectTitle + " Project Uploaded by: " + registeredBy + " For Year: " + getProject.ProjectYear,
                                         department = department,
                                         division = division
                                     };
@@ -824,9 +822,7 @@ namespace ProjectManagementSystem.Controllers
                                     transaction.Commit();
                                     message = "Project schedule added successfully!";
                                     status = true;
-
                                 }
-
                                 else
                                 {
                                     transaction.Rollback();
@@ -855,6 +851,7 @@ namespace ProjectManagementSystem.Controllers
 
             return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
         }
+
 
 
         public JsonResult SaveStatus()
@@ -1409,6 +1406,35 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+        [HttpGet] // not finish 
+        public JsonResult GetProjectOwner(int mainId)
+        {
+            // fetch proj 
+            var project = db.RegistrationTbls
+                .Where(x => x.registration_id == mainId)
+                .Select(x => new { x.registered_by })
+                .SingleOrDefault();
+
+            if (project == null)
+            {
+                return Json(new { success = false, message = "Project not found." }, JsonRequestBehavior.AllowGet);
+            }
+
+          
+            var owner = cmdb.AspNetUsers
+                .Where(u => u.Id == project.registered_by)
+                .Select(u => new { u.FirstName, u.LastName, u.Email })
+                .FirstOrDefault();
+
+            if (owner == null)
+            {
+                return Json(new { success = false, message = "Project Owner not found." }, JsonRequestBehavior.AllowGet);
+            }
+            var ownerFullName = $"{owner.FirstName} {owner.LastName}";
+
+            return Json(new { success = true, owner = new { FullName = ownerFullName, owner.Email } }, JsonRequestBehavior.AllowGet);
+        }
+
 
 
 

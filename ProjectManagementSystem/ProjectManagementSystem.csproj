@@ -271,13 +271,13 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Activity_Log.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AdminList.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ApproversTbl.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AspNetRole.cs">
       <DependentUpon>CMIdentity.tt</DependentUpon>
@@ -295,25 +295,28 @@
       <DependentUpon>CMIdentity.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AttachmentTable.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CheckListDB.Context.cs">
+    <Compile Include="Models\CheckList.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>CheckListDB.Context.tt</DependentUpon>
+      <DependentUpon>CheckList.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CheckListDB.cs">
+    <Compile Include="Models\CheckList.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\CheckListDB.Designer.cs">
+    <Compile Include="Models\CheckList.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>CheckListDB.edmx</DependentUpon>
+      <DependentUpon>CheckList.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ChecklistSubmission.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ChecklistTable.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\CMIdentity.Context.cs">
       <AutoGen>True</AutoGen>
@@ -340,7 +343,7 @@
       <DependentUpon>CMIdentity.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DetailsTbl.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Identity_JobDescription.cs">
@@ -350,30 +353,30 @@
       <DependentUpon>CMIdentity.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\MainTable.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MilestoneTbl.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ProjectMembersTbl.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\RegistrationTbl.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Report.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Role.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Models\WeeklyChecklistTable.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\WeeklyStatu.cs">
-      <DependentUpon>CheckListDB.tt</DependentUpon>
+      <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -4431,15 +4434,15 @@
     <Content Include="FrontEnd\plugins\uplot\uPlot.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Models\CheckListDB.Context.tt">
+    <Content Include="Models\CheckList.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>CheckListDB.edmx</DependentUpon>
-      <LastGenOutput>CheckListDB.Context.cs</LastGenOutput>
+      <DependentUpon>CheckList.edmx</DependentUpon>
+      <LastGenOutput>CheckList.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Models\CheckListDB.tt">
+    <Content Include="Models\CheckList.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>CheckListDB.edmx</DependentUpon>
-      <LastGenOutput>CheckListDB.cs</LastGenOutput>
+      <DependentUpon>CheckList.edmx</DependentUpon>
+      <LastGenOutput>CheckList.cs</LastGenOutput>
     </Content>
     <Content Include="Models\CMIdentity.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -5015,12 +5018,12 @@
     <Content Include="AdminLTE-3.2.0\plugins\summernote\summernote.min.js.map" />
     <Content Include="AdminLTE-3.2.0\plugins\toastr\toastr.js.map" />
     <Content Include="AdminLTE-3.2.0\README.md" />
-    <EntityDeploy Include="Models\CheckListDB.edmx">
+    <EntityDeploy Include="Models\CheckList.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>CheckListDB.Designer.cs</LastGenOutput>
+      <LastGenOutput>CheckList.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Models\CheckListDB.edmx.diagram">
-      <DependentUpon>CheckListDB.edmx</DependentUpon>
+    <Content Include="Models\CheckList.edmx.diagram">
+      <DependentUpon>CheckList.edmx</DependentUpon>
     </Content>
     <EntityDeploy Include="Models\CMIdentity.edmx">
       <Generator>EntityModelCodeGenerator</Generator>

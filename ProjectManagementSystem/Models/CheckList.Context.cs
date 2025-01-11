@@ -29,6 +29,7 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<AdminList> AdminLists { get; set; }
         public virtual DbSet<ApproversTbl> ApproversTbls { get; set; }
         public virtual DbSet<AttachmentTable> AttachmentTables { get; set; }
+        public virtual DbSet<ChecklistSubmission> ChecklistSubmissions { get; set; }
         public virtual DbSet<ChecklistTable> ChecklistTables { get; set; }
         public virtual DbSet<DetailsTbl> DetailsTbls { get; set; }
         public virtual DbSet<MainTable> MainTables { get; set; }
