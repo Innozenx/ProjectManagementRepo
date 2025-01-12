@@ -1632,6 +1632,28 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { success = true, owner = new { FullName = ownerFullName, owner.Email } }, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetTaskUpdate(int selection)
+        {
+            var task = db.DetailsTbls.Where(x => x.details_id == selection).SingleOrDefault();
+            var success = false;
+            var message = "";
+            var delay_week = 0;
+
+            try
+            {
+                if (task.task_delay != 0)
+                {
+                    delay_week = task.task_delay.Value;
+                }
+
+                success = true;
+            }
+
+            catch (Exception e)
+            {
+                message = e.Message;
+            }
+
 
             return Json(new { success = success, data = delay_week, message = message }, JsonRequestBehavior.AllowGet);
         }
