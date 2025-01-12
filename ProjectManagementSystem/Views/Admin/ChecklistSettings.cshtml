@@ -94,7 +94,7 @@
                                 foreach (var user in Model.FirstOrDefault().Onboarding.Users)
                                 {
                                     <div class="dropdown-item approver-item">
-                                        <input type="checkbox" id="approver_@user.Id" value="@user.Id" class="approver-checkbox" />
+                                        <input type="checkbox" id="approver_@user.Id" value="@user.Id" class="approver-checkbox" name="@user.FirstName @user.LastName"/>
                                         <label for="approver_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
                                     </div>
                                 }
@@ -139,7 +139,7 @@
                                 foreach (var user in Model.FirstOrDefault().Onboarding.Users)
                                 {
                                     <div class="dropdown-item">
-                                        <input type="checkbox" id="approver_@user.Id" value="@user.Id" class="approver-checkbox" />
+                                        <input type="checkbox" id="approver_@user.Id" value="@user.Id" class="approver-checkbox" name="@user.FirstName @user.LastName"/>
                                         <label for="approver_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
                                     </div>
                                 }
@@ -147,10 +147,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group mt-3">
+                @*<div class="form-group mt-3">
                     <label>Selected Approvers</label>
                     <div id="selectedApproversChips" class="selected-members-chips"></div>
-                </div>
+                </div>*@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="saveApprovers">Save</button>
@@ -219,6 +219,23 @@
             document.getElementById(approverId).checked = false;
             updateSelectedChips();
         }
+
+        else if (event.target.classList.contains('approver-checkbox') && event.target.checked == true) {
+            const div = document.getElementById("selectedApproversChips");
+            const selected = document.createElement("span");
+
+            selected.textContent = event.target.name;
+            selected.id = event.target.name;
+            div.appendChild(selected);
+        }
+
+        else if (event.target.classList.contains('approver-checkbox') && event.target.checked == false) {
+            const div = document.getElementById("selectedApproversChips");
+            const child = document.getElementById(event.target.name);
+
+            div.removeChild(child);
+        }
+
     });
 
     $(document).ready(function () {
@@ -279,6 +296,21 @@
                 approverButtonContainer.html(
                     `<button class="btn btn-sm btn-primary assign-approver" data-task-id="${taskId}" data-milestone-id="${$(this).data("milestone-id")}">Set Approvers</button>`
                 );
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("UpdateTaskApproval", "Admin")",
+                    data: { taskId: taskId, requiresApproval: true },
+                    success: function (res) {
+                        if (success == true) {
+                            alert("Task Update Successful");
+                        }
+
+                        else {
+                            alert("Task Update Unsuccessful");
+                        }
+                    }
+                });
             } else {
                 $.post('/Admin/CheckApprovers', { taskId: taskId }, function (response) {
                     if (response.success && response.hasApprovers) {
@@ -329,7 +361,7 @@
                     if (response.success) {
                         approverContainer.innerHTML = response.data.map(approver => `
                             <div class="approver-item">
-                                <input type="checkbox" id="approver-${approver.id}" class="approver-checkbox" value="${approver.id}" ${approver.isSelected ? 'checked' : ''}>
+                                <input type="checkbox" id="approver-${approver.id}" class="approver-checkbox" value="${approver.id}" name="${approver.name}" ${approver.isSelected ? 'checked' : ''}>
                                 <label for="approver-${approver.id}">${approver.name}</label>
                             </div>`).join('');
                     } else {

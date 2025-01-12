@@ -123,6 +123,7 @@ namespace ProjectManagementSystem.Models
 
         public List<ApproverViewModel> Checklist { get; set; }
     }
+
     public class StatusLogsViewModel
     {
         public int StatusId { get; set; }
@@ -331,7 +332,9 @@ namespace ProjectManagementSystem.Models
         public DateTime? CurrentTaskEnd { get; set; }
         public List<string> Divisions { get; set; }
         public string MilestoneTasks { get; set; }
-
+        public List<MainTableViewModel> IndividualProjects { get; set; }
+        public int userRole { get; set; }
+        public string userDivision { get; set; }
     }
     public class ProjectWithMilestonesViewModel
     {
@@ -527,6 +530,12 @@ namespace ProjectManagementSystem.Models
         public int TaskId { get; set; } 
         public string TaskName { get; set; } 
         public List<ApproverViewModel> Approvers { get; set; } 
+    }
+
+    public class projectDivisionModel
+    {
+        public int projectId { get; set; }
+        public List<string> division { get; set; }
     }
 }
 

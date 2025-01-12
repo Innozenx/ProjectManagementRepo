@@ -58,10 +58,10 @@
 
     .table th {
         background-color: #470A67;
-        text-align:center;
+        text-align: center;
         color: #ffffff;
     }
-    
+
     .table td {
         text-align: center;
     }
@@ -75,69 +75,179 @@
 
 <div class="container">
     <ul class="nav nav-tabs" id="divisionTabs" role="tablist">
-        @foreach (var division in Model.Divisions)
+        @if (Model.userRole == 4035)
         {
-            var divisionId = division.Replace(" ", "");
+            var divisionId = Model.userDivision.Split(' ').Select(x => x[0]);
+            var divisionInitials = string.Join("", divisionId);
             <li class="nav-item">
-                <a class="nav-link @((Model.Divisions.First() == division) ? "active" : "")"
-                   id="tab-@divisionId"
+                <a class="nav-link @divisionInitials active"
+                   id="tab-@divisionInitials"
                    data-toggle="tab"
-                   href="#panel-@divisionId"
+                   href="#panel-@divisionInitials"
                    role="tab"
-                   aria-controls="panel-@divisionId"
+                   aria-controls="panel-@divisionInitials"
                    aria-selected="true">
-                    @division Division
+                    @divisionInitials Division
                 </a>
             </li>
         }
-    </ul>
-    
-    <div class="tab-content" id="divisionTabContent">
-        @foreach (var divisionGroup in Model.ProjectsByDivision)
+
+        else
         {
-            var divisionId = divisionGroup.Key.Replace(" ", "");
-            <div class="tab-pane fade @((Model.ProjectsByDivision.First().Key == divisionGroup.Key) ? "show active" : "")"
+            foreach (var division in Model.Divisions)
+            {
+                var divisionId = division.Replace(" ", "");
+                <li class="nav-item">
+                    <a class="nav-link @((Model.Divisions.First() == division) ? "active" : "")"
+                       id="tab-@divisionId"
+                       data-toggle="tab"
+                       href="#panel-@divisionId"
+                       role="tab"
+                       aria-controls="panel-@divisionId"
+                       aria-selected="true">
+                        @division Division
+                    </a>
+                </li>
+            }
+        }
+
+    </ul>
+
+    <div class="tab-content" id="divisionTabContent">
+        @if (Model.userRole == 4035)
+        {
+            var divisionId = Model.userDivision;
+            <div class="tab-pane fade"
                  id="panel-@divisionId"
                  role="tabpanel"
                  aria-labelledby="tab-@divisionId">
-                <div class="table-container">
-                    <h5>@divisionGroup.Key Division's Project Summary</h5>
-                    <table class="table">
-                        <thead>
+            </div>
+            <div class="table-container">
+                <h5>@divisionId Division's Project Summary</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Project Name</th>
+                            @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                            {
+                                <th>@milestoneName (OS/CS)</th>
+                            }
+                        </tr>
+                    </thead>
+                    @foreach (var divisionGroup in Model.IndividualProjects)
+                    {
+                        <tbody>
                             <tr>
-                                <th>Project Name</th>
+                                <td>
+                                    <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = divisionGroup.MainId })" class="text-decoration-none text-primary">
+                                        @divisionGroup.ProjectTitle
+                                    </a>
+                                </td>
                                 @foreach (var milestoneName in Model.UniqueMilestoneNames)
                                 {
-                                    <th>@milestoneName (OS/CS)</th>
+                                    var milestone = divisionGroup.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
+                                    var endDateFormatted = milestone != null
+                                        ? $"WW{milestone.EndDate:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                        : "N/A";
+                                    <td>@endDateFormatted</td>
                                 }
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var project in divisionGroup.Value)
-                            {
+                        </tbody>
+                    }
+                </table>
+            </div>
+
+            @*foreach (var divisionGroup in Model.IndividualProjects)
+                {
+                    var divisionId = divisionGroup.Division;
+                    <div class="tab-pane fade"
+                         id="panel-@divisionId"
+                         role="tabpanel"
+                         aria-labelledby="tab-@divisionId">
+                        <div class="table-container">
+                            <h5>@divisionGroup.Division Division's Project Summary</h5>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Project Name</th>
+                                        @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                        {
+                                            <th>@milestoneName (OS/CS)</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td>
+                                                <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = divisionGroup.MainId })" class="text-decoration-none text-primary">
+                                                    @divisionGroup.ProjectTitle
+                                                </a>
+                                            </td>
+                                            @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                            {
+                                                var milestone = divisionGroup.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
+                                                var endDateFormatted = milestone != null
+                                                    ? $"WW{milestone.EndDate:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                                    : "N/A";
+                                                <td>@endDateFormatted</td>
+                                            }
+                                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }*@
+        }
+
+        else
+        {
+            foreach (var divisionGroup in Model.ProjectsByDivision)
+            {
+                var divisionId = divisionGroup.Key.Replace(" ", "");
+                <div class="tab-pane fade @((Model.ProjectsByDivision.First().Key == divisionGroup.Key) ? "show active" : "")"
+                     id="panel-@divisionId"
+                     role="tabpanel"
+                     aria-labelledby="tab-@divisionId">
+                    <div class="table-container">
+                        <h5>@divisionGroup.Key Division's Project Summary</h5>
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId })" class="text-decoration-none text-primary">
-                                            @project.ProjectTitle
-                                        </a>
-                                    </td>
+                                    <th>Project Name</th>
                                     @foreach (var milestoneName in Model.UniqueMilestoneNames)
                                     {
-                                        var milestone = project.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
-                                        var endDateFormatted = milestone != null
-                                            ? $"WW{milestone.EndDate:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
-                                            : "N/A";
-                                        <td>@endDateFormatted</td>
+                                        <th>@milestoneName (OS/CS)</th>
                                     }
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var project in divisionGroup.Value)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId })" class="text-decoration-none text-primary">
+                                                @project.ProjectTitle
+                                            </a>
+                                        </td>
+                                        @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                        {
+                                            var milestone = project.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
+                                            var endDateFormatted = milestone != null
+                                                ? $"WW{milestone.EndDate:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                                : "N/A";
+                                            <td>@endDateFormatted</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            }
         }
+
     </div>
-    </div>
+</div>
 
 @section Scripts {
     <script>

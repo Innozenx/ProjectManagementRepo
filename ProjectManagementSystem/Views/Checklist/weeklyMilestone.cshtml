@@ -335,7 +335,7 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="timeline-tab" data-toggle="tab" href="#checklist" role="tab" aria-controls="checkist" aria-selected="false">
+        <a class="nav-link" id="checklist-tab" data-toggle="tab" href="#checklist" role="tab" aria-controls="checkist" aria-selected="false">
             <i class="fa-solid fa-list-check"></i> Checklist
         </a>
     </li>
@@ -436,7 +436,9 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content shadow-lg rounded">
                 <div class="modal-header bg-white">
-                    <h5 class="modal-title" id="updateMilestoneLabel">Update Status</h5>
+                    <h5 class="modal-title" id="updateMilestoneLabel">
+                        Status Update
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -451,45 +453,51 @@
                             @Html.DropDownListFor(m => m.SelectedMilestone, Model.TaskTitle, "Choose a Task", new { @class = "form-control rounded border-light", id = "selectedMilestone" })
                         </div>
 
-                        <div class="form-group mb-4">
-                            <label for="isDelayed" class="status-update d-block mb-2">
-                                Is your task delayed? <span class="text-danger">*</span>
-                            </label>
-                            <div class="form-check form-check-inline">
-                                @Html.RadioButtonFor(x => x.isDelayed, false, new { id = "delayed_no", @class = "form-check-input" })
-                                <label for="delayed_no" class="form-check-label">No</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                @Html.RadioButtonFor(x => x.isDelayed, true, new { id = "delayed_yes", @class = "form-check-input" })
-                                <label for="delayed_yes" class="form-check-label">Yes</label>
-                            </div>
-                        </div>
-
                         <div class="form-group mb-4 d-none" id="delay_div">
-                            <label for="weeks_delayed" class="status-update d-block mb-2">
-                                If delayed, by how many weeks? <span class="text-danger">*</span>
-                            </label>
+                            <div class="form-group mb-4">
+                                <label for="isDelayed" class="status-update d-block mb-2">
+                                    Is your task delayed? <span class="text-danger">*</span>
+                                </label>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(x => x.isDelayed, false, new { id = "delayed_no", @class = "form-check-input" })
+                                    <label for="delayed_no" class="form-check-label">No</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(x => x.isDelayed, true, new { id = "delayed_yes", @class = "form-check-input" })
+                                    <label for="delayed_yes" class="form-check-label">Yes</label>
+                                </div>
+                            </div>
+
                             <div class="input-group">
+                                <label for="weeks_delayed" class="status-update d-block mb-2" id="delay_label">
+                                    If delayed, by how many weeks? <span class="text-danger">*</span>
+                                </label>
                                 @Html.EditorFor(x => x.delay, new { htmlAttributes = new { @class = "form-control", @min = "1", @id = "weeks_delayed", @placeholder = "Enter number of weeks" } })
                                 <div class="input-group-append">
                                     <span class="input-group-text">Week/s</span>
                                 </div>
+                                <div id="delay_note_div" style="width: 100%">
+                                    <p style="color: red; font-style: italic"><small id="delay_note"></small></p>
+                                </div>
                             </div>
+
+                            <div class="form-group mb-4">
+                                <label for="statusUpdate" class="status-update">
+                                    Description <span class="text-danger">*</span>
+                                </label>
+                                @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3, id = "statusUpdate" })
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label for="fileUpload" class="select-attach">
+                                    Attachment <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
+                            </div>
+
                         </div>
 
-                        <div class="form-group mb-4">
-                            <label for="statusUpdate" class="status-update">
-                                Description <span class="text-danger">*</span>
-                            </label>
-                            @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3, id = "statusUpdate" })
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label for="fileUpload" class="select-attach">
-                                Attachment <span class="text-danger">*</span>
-                            </label>
-                            <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
-                        </div>
+                        
 
                         <div id="validationMessage" class="text-danger" style="display:none; margin-bottom:10px;">
                             Please fill out all required fields.
@@ -520,21 +528,24 @@
                             <div class="ml-3 member-details">
                                 <p class="member-name font-weight-bold mb-1">@member.Name</p>
                                 <p class="member-role text-muted mb-1">
-                                   @switch (member.Role.ToString().ToLowerInvariant())
-                                   {
-                                       case "1":
-                                        <span>Tester</span>
-                                           break;
-                                       case "2":
-                                        <span>Editor</span>
-                                           break;
-                                       case "3":
-                                        <span>Viewer</span>
-                                           break;
-                                       @*default:
-                                        <span>Unknown Role</span>*@
-                                           break;
-                                   }
+                                    @switch (member.Role.ToString().ToLowerInvariant())
+                                    {
+                                        case "1":
+                                            <span>Tester</span>
+                                            break;
+                                        case "2":
+                                            <span>Editor</span>
+                                            break;
+                                        case "1004":
+                                            <span>Project Manager</span>
+                                            break;
+                                        case "1005":
+                                            <span>Viewer</span>
+                                            break;
+                                        default:
+                                            <span>Unknown Role</span>
+                                            break;
+                                    }
 
                                 </p>
                                 <p class="member-email text-muted small">@member.Email</p>
@@ -659,7 +670,7 @@
 <!-- Timeline Tab -->
 <div class="tab-pane fade" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
     <!-- Gantt Chart Section -->
-    <div class="card-container">
+    <div class="card-container" id="gantt_container">
         <div class="table-container">
             <div class="gantt-header">
                 <div class="gantt-view-controls">
@@ -714,7 +725,7 @@
                         <th>Status</th>
                         <th>Attachment</th>
                         <th>Approver</th>
-                        @*<th>Actions</th>*@
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="checklistTableBody">
@@ -780,6 +791,8 @@
                         icon: 'success',
                         title: 'Status Updated!',
                         text: 'Milestone status has been successfully updated.',
+                    }).then(function(){
+                        location.reload();
                     });
 
                     loadActivityLogs();
@@ -873,23 +886,29 @@
             $("#timeline-tab").on("click", function () {
                 $("#detailsContainer").css("display", "none");
                 $("#overview").css("display", "none");
+                $("#checklist").css("display", "none");
+                $("#timeline").css("display", "block");
             });
 
             $("#overview-tab").on("click", function () {
                 $("#detailsContainer").css("display", "block");
                 $("#overview").css("display", "block");
-            }); 
+                $("#checklist").css("display", "none");
+                $("#timeline").css("display", "none");
+            });
 
             $("#checklist-tab").on("click", function () {
                 $("#detailsContainer").css("display", "none");
-                $("#overview").css("display", "block");
+                $("#overview").css("display", "none");
+                $("#checklist").css("display", "block");
+                $("#timeline").css("display", "none");
 
             });
 
             setWeekView();
             activateButton("week-view");
 
-            loadActivityLogs();
+            //loadActivityLogs();
         });
 
     </script>
@@ -897,79 +916,17 @@
     <script>
 
         $(document).ready(function () {
-        const milestoneDropdown = $("#milestoneDropdown");
-        const checklistTableBody = $("#checklistTableBody");
-        const mainId = '@(TempData["main_id"] ?? "null")';
+        const mainId = '@(TempData["entry"] ?? "null")';
 
         if (mainId === "null") {
             console.error("mainId is not set. Please check your TempData.");
             return;
-        }
-
-
-        function loadMilestones(mainId) {
-                $.ajax({
-                url: "/Checklist/GetMilestonesWithApprovalTasks",
-                    type: "GET",
-                    data: { mainId },
-                    success: function (response) {
-                    if (response.success) {
-                        milestoneDropdown.empty().append('<option value="">Select a Milestone</option>');
-                        response.data.forEach(milestone => {
-                        milestoneDropdown.append(`<option value="${milestone.MilestoneId}">${milestone.MilestoneName}</option>`);
-                            });
-                        } else {
-                            Swal.fire("Error", "Failed to load milestones.", "error");
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("Error fetching milestones:", xhr.responseText);
-                    }
-                });
             }
+        });
 
-            function loadTasksForMilestone(milestoneId) {
-                if (!milestoneId) {
-                    checklistTableBody.html('<tr><td colspan="5" class="text-center">Select a milestone to view tasks.</td></tr>');
-                    return;
-                }
-
-                $.ajax({
-                    url: "/Checklist/GetTasksForMilestone",
-                    type: "GET",
-                    data: { milestoneId },
-                    success: function (response) {
-                        checklistTableBody.empty();
-                        if (response.success && response.data.length > 0) {
-                            response.data.forEach(task => {
-                                checklistTableBody.append(`
-                                    <tr>
-                                        <td>${task.TaskName}</td>
-                                        <td>${task.IsApproved ? "Approved" : "Pending"}</td>
-                                        <td><input type="file" class="form-control-file" /></td>
-                                        <td>${task.Approvers.join(", ") || "N/A"}</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-success" onclick="submitApproval(${task.TaskId})">Submit</button>
-                                        </td>
-                                    </tr>
-                                `);
-                            });
-                        } else {
-                            checklistTableBody.html('<tr><td colspan="5" class="text-center">No tasks found for this milestone.</td></tr>');
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("Error fetching tasks:", xhr.responseText);
-                    }
-                });
-            }
-
-            loadMilestones(mainId);
-
-            milestoneDropdown.on("change", function () {
-                const milestoneId = $(this).val();
-                loadTasksForMilestone(milestoneId);
-            });
+        $("#milestoneDropdown").on("change", function () {
+            const milestoneId = $(this).val();
+            loadTasksForMilestone(milestoneId);
         });
 
         $("#delayed_yes").on("click", function () {
@@ -978,8 +935,127 @@
         });
 
         $("#delayed_no").on("click", function () {
-            $("#delay_div").prop("class", "d-none");
+            $("#delay_div").classList.add("d-none");
         });
+
+        $("#selectedMilestone").on("change", function () {
+            let selection = $("#selectedMilestone").val();
+            if (selection != "") {
+                $("#status_input_group").removeClass("d-none");
+
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("GetTaskUpdate", "Checklist")",
+                    data: { selection },
+                    success: function (res) {
+                        if (res.success == true) {
+                            if (res.data != 0) {
+                                var note = document.getElementById("delay_note");
+                                $("#delayed_yes").prop("checked", true);
+                                $("#weeks_delayed").prop("value", res.data);
+                                $("#delay_div").removeClass("d-none");
+
+                                note.textContent = "Previously Delayed by: " + res.data + " week/s";
+                            }
+
+                            else {
+                                var note = document.getElementById("delay_note");
+
+                                $("#delayed_no").prop("checked", true);
+                                $("#weeks_delayed").prop("value", res.data);
+                                $("#delay_label").prop("class", "d-none");
+                                //$("#delay_div").prop("class", "d-none");
+
+                                note.textContent = "";
+                            }
+                        }
+
+                        else {
+                            alert(res.message);
+                        }
+                    }
+                });
+            }
+
+            else {
+                $("#status_input_group").prop("class", "d-none");
+            }
+        });
+        
+    </script>
+
+    <script>
+        loadMilestones(@TempData["entry"]);
+
+        function loadMilestones(mainId) {
+            $.ajax({
+                url: "/Checklist/GetMilestonesWithApprovalTasks",
+                type: "GET",
+                data: { mainId },
+                datatype: "json",
+                success: function (response) {
+                    if (response.success) {
+                        //milestoneDropdown.empty().append('<option value="">Select a Milestone</option>');
+                        response.data.forEach(milestone => {
+                            //milestoneDropdown.append(`<option value="${}">${response.data.milestone}</option>`);
+                            $("#milestoneDropdown").append('<option value="'+ milestone.MilestoneId +'">' + milestone.MilestoneName + '</option>');
+                        });
+                        //$("#milestoneDropdown").append('<option>' + response.data[0].MilestoneName + '</option>');
+                    } else {
+                        Swal.fire("Error", "Failed to load milestones.", "error");
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error fetching milestones:", xhr.responseText);
+                }
+            });
+        }
+
+        function loadTasksForMilestone(milestoneId) {
+            const checklistTableBody = $("#checklistTableBody");
+
+            if (!milestoneId) {
+                checklistTableBody.html('<tr><td colspan="5" class="text-center">Select a milestone to view tasks.</td></tr>');
+                return;
+            }
+
+            $.ajax({
+                url: "/Checklist/GetTasksForMilestone",
+                type: "GET",
+                data: { milestoneId },
+                success: function (response) {
+                    checklistTableBody.empty();
+                    if (response.success && response.data.length > 0) {
+                        response.data.forEach(task => {
+                            checklistTableBody.append(`
+                                        <tr>
+                                            <td>${task.taskname}</td>
+                                            <td>${task.approved ? "Approved" : "Pending"}</td>
+                                            <td><input type="file" class="form-control-file" /></td>
+                                            <td>${task.approvers.join(", ") || "N/A"}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-success" onclick="submitApproval(${task.task_id})">Submit</button>
+                                            </td>
+                                        </tr>
+                                    `);
+                        });
+                    } else {
+                        checklistTableBody.html('<tr><td colspan="5" class="text-center">No tasks found for this milestone.</td></tr>');
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error fetching tasks:", xhr.responseText);
+                }
+            });
+        }
+
+        function submitApproval(task_id) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("", "")"
+            });
+        }
+
     </script>
 
 }

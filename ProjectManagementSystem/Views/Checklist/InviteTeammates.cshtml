@@ -378,13 +378,21 @@
             contentType: 'application/json',
             data: JSON.stringify(payload),
             success: function (response) {
-                alert(response.message);
                 if (response.status) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Status Updated!',
+                        text: 'Milestone status has been successfully updated.',
+                    });
                     location.reload();
                 }
             },
             error: function () {
-                alert('Failed to send invitations.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Update Failed',
+                    text: 'An error occurred while sending invitations.',
+                });
             }
         });
     }
@@ -415,11 +423,22 @@
             data: {"users": userArr, "roles": roleArr, "project": project},
             success: function (res) {
                 if (res.message == "Success") {
-                    alert("SUCCESS");
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Status Updated!',
+                            text: 'Milestone status has been successfully updated.',
+                        });
+                        location.reload();
+
                 }
 
                 else {
-                    alert(res.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: 'An error occurred while sending invitations.',
+                    });
                 }
             }
         });
