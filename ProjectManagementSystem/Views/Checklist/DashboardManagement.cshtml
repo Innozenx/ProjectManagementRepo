@@ -8,6 +8,10 @@
     var userEmail = User.Identity.Name ?? "Guest";
     var userName = userEmail.Contains("@") ? userEmail.Split('@')[0] : userEmail;
 
+    var calendar = CultureInfo.InvariantCulture.Calendar;
+    var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Sunday);
+
+
 }
 
 <head>
@@ -29,49 +33,91 @@
         text-align: center;
         padding: 30px 0;
         margin-bottom: 20px;
+        border-radius: 10px;
+        animation: fadeIn 1s ease-in-out;
     }
 
-        .header-container h3 {
-            font-size: 2rem;
+        .header-container h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header-container p {
+            font-size: 1rem;
+            margin: 5px 0;
         }
 
     .nav-tabs {
         margin-bottom: 20px;
+        justify-content: center;
     }
 
     .nav-link {
         color: #470A67;
         font-weight: bold;
+        transition: background-color 0.3s, transform 0.3s;
     }
 
         .nav-link.active {
             background-color: #470A67;
-            color: #ffffff;
+            color: white;
+            border-radius: 10px;
         }
 
+        /*.nav-link:hover {
+            background-color: #dfe3f7;
+            transform: scale(1.05);
+        }*/
+
     .table-container {
-        background-color: #ffffff;
-        border-radius: 8px;
+        background: #ffffff;
+        border-radius: 10px;
         padding: 20px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 1s ease-in-out;
     }
 
     .table th {
         background-color: #470A67;
+        color: #fff;
         text-align: center;
-        color: #ffffff;
+        text-transform: uppercase;
     }
 
     .table td {
         text-align: center;
+        font-size: 0.85rem;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>
 
 <div class="header-container">
-    <h1>Dashboard Management</h1>
-    <p>View all projects across divisions</p>
+    <h1>📊</h1>
     <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
+
+    @if (User.IsInRole("PMS_DIVISION_HEAD"))
+    {
+        <h1> Division's Project Overview</h1>
+        <p>Track and manage your team's projects.</p>
+        }
+        else if (User.IsInRole("PMS_Management") || (User.IsInRole("PMS_ODCP_ADMIN")))
+    {
+        <h1>Dashboard Management Overview</h1>
+        <p>View all projects across divisions.</p>
+    }
 </div>
+
 
 <div class="container">
     <ul class="nav nav-tabs" id="divisionTabs" role="tablist">

@@ -35,6 +35,7 @@ namespace ProjectManagementSystem.Controllers
 
             return View(checklist);
         }
+
         [Authorize(Roles = "PMS_Management, PMS_ODCP_ADMIN, PMS_DIVISION_HEAD")]
         public ActionResult DashboardManagement()
         {
@@ -175,6 +176,8 @@ namespace ProjectManagementSystem.Controllers
                     userRole = userDetails.JobLevel.Value,
                     userDivision = userDivision
                 };
+
+    
             }
             else
             {

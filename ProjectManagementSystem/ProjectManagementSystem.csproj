@@ -266,6 +266,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\PMReportsController.cs" />
     <Compile Include="CustomAttributes\CustomAuth.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
