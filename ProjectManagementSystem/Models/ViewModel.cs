@@ -7,7 +7,7 @@ using System.Linq;
 using System.Web;
 using CsvHelper.Configuration.Attributes;
 using System.Web.Mvc;
-using ProjectManagementSystem.Models;
+using ProjectManagementSystem.Models;   
 
 namespace ProjectManagementSystem.Models
 {
@@ -259,6 +259,7 @@ namespace ProjectManagementSystem.Models
         public DateTime DateUnregistered { get; set; }
         public bool IsFileUploaded { get; set; }
 
+
     }
 
     public class exportCSV
@@ -289,6 +290,7 @@ namespace ProjectManagementSystem.Models
         public int ProjectDuration { get; set; }
         public List<exportCSV> ProjectDetails { get; set; }
         public string UserId { get; set; }
+        public string Owner { get; set; }
 
     }
 
@@ -360,27 +362,25 @@ namespace ProjectManagementSystem.Models
             public ProjectMap()
             {
                 Map(x => x.Process).Name("Process");
-                Map(x => x.ProjectTitle).Name("Project_Title");
                 Map(x => x.ProcessTitle).Name("Process_Title");
                 Map(x => x.TaskStart).Name("Start");
-                Map(x => x.projectStart).Name("Project_Start");
-                Map(x => x.projectEnd).Name("Project_End");
                 Map(x => x.task_duration).Name("Duration");
-                Map(x => x.division).Name("Division");
-                Map(x => x.category).Name("Category");
-                Map(x => x.projectOwner).Name("Owner");
-                Map(x => x.MilestoneName).Name("Process");
-                Map(x => x.ProjectYear).Name("Project_Year");
-
-                Map(x => x.projectStart).Name("Project_Start");
-                Map(x => x.TaskEnd).Name("Project_End");
-                Map(x => x.ProjectDuration).Name("Project_Duration");
                 Map(x => x.Source).Name("Source");
                 Map(x => x.Target).Name("Target");
                 Map(x => x.Parent).Name("Parent");
-                Map(x => x.Sequence).Name("Sequence");
+                Map(x => x.ProjectTitle).Name("Project_Title");
+                Map(x => x.projectStart).Name("Project_Start");
+                Map(x => x.ProjectDuration).Name("Project_Duration");
+                Map(x => x.projectEnd).Name("Project_End");
+                Map(x => x.ProjectYear).Name("Project_Year");
+                Map(x => x.division).Name("Division");
+                Map(x => x.category).Name("Category");
+                Map(x => x.Owner).Name("Owner"); 
                 Map(x => x.id).Name("ID");
+                Map(x => x.Sequence).Name("Sequence");
+                Map(x => x.ProjectDetails).Name("Project_ID"); 
             }
+        }
         }
         public class WeeeklyStatus
         {
@@ -412,7 +412,7 @@ namespace ProjectManagementSystem.Models
             public string MilestoneName { get; set; }
             
         }
-    }
+   
 
     public class UserTypes
     {
@@ -524,10 +524,9 @@ namespace ProjectManagementSystem.Models
     }
     public class TaskApproverViewModel
     {
-        public int TaskId { get; set; } // ID of the task
-        public string TaskName { get; set; } // Name of the task
-        public List<ApproverViewModel> Approvers { get; set; } // List of approvers
+        public int TaskId { get; set; } 
+        public string TaskName { get; set; } 
+        public List<ApproverViewModel> Approvers { get; set; } 
     }
 }
 
-    
