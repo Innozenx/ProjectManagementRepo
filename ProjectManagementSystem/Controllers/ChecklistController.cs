@@ -607,7 +607,6 @@ namespace ProjectManagementSystem.Controllers
 
             return View(model);
         }
-
         [HttpPost]
         public JsonResult AddProjectUpload()
         {
@@ -619,6 +618,7 @@ namespace ProjectManagementSystem.Controllers
             var project = db.RegistrationTbls.Where(x => x.registration_id == projectId).Single();
             var division = "";
             var department = "";
+            var ownerName = "";
 
             if (attachment == null || attachment.ContentLength <= 0)
             {
@@ -630,7 +630,8 @@ namespace ProjectManagementSystem.Controllers
                 var tblJoin = (from netUser in cmdb.AspNetUsers
                                join jobDesc in cmdb.Identity_JobDescription on netUser.JobId equals jobDesc.Id
                                join idKey in cmdb.Identity_Keywords on jobDesc.DeptId equals idKey.Id
-                               select new { netUser.UserName, jobDesc.DeptId, jobDesc.DivisionId, idKey.Description }).Where(x => x.UserName == User.Identity.Name).ToList();
+                               select new { netUser.UserName, jobDesc.DeptId, jobDesc.DivisionId, idKey.Description })
+                              .Where(x => x.UserName == User.Identity.Name).ToList();
 
                 foreach (var item in tblJoin)
                 {
@@ -639,7 +640,12 @@ namespace ProjectManagementSystem.Controllers
                 }
 
                 using (var reader = new StreamReader(attachment.InputStream))
-                using (var csv = new CsvReader(reader, new CsvHelper.Configuration.CsvConfiguration(CultureInfo.CurrentCulture)))
+                using (var csv = new CsvReader(reader, new CsvHelper.Configuration.CsvConfiguration(CultureInfo.CurrentCulture)
+                {
+                    MissingFieldFound = null, 
+                    BadDataFound = null,      
+                    HeaderValidated = null,   
+                }))
                 {
                     csv.Context.RegisterClassMap<exportCSVHeader.ProjectMap>();
                     var exportList = new List<exportCSV>();
@@ -660,9 +666,11 @@ namespace ProjectManagementSystem.Controllers
                         }
                         catch (Exception ex)
                         {
-                            return Json(new { message = "Error parsing CSV: " + ex.Message, status = false }, JsonRequestBehavior.AllowGet);
+                            return Json(new { message = $"Error parsing CSV: Row {csv.Context.Parser.Row}: {ex.Message}", status = false }, JsonRequestBehavior.AllowGet);
                         }
                     }
+
+                    ownerName = exportList.FirstOrDefault()?.Owner?.Trim();
 
                     using (var transaction = db.Database.BeginTransaction())
                     {
@@ -678,7 +686,7 @@ namespace ProjectManagementSystem.Controllers
 
                             if (getProject.ProjectTitle == project.project_name)
                             {
-                                string dateFormat = "MM/dd/yyyy"; 
+                                string dateFormat = "MM/dd/yyyy";
 
                                 if (string.IsNullOrWhiteSpace(getProject.projectStart) ||
                                      string.IsNullOrWhiteSpace(getProject.projectEnd) ||
@@ -687,9 +695,6 @@ namespace ProjectManagementSystem.Controllers
                                 {
                                     throw new Exception("Start date, end date, duration, and year cannot be empty.");
                                 }
-
-                                // fetch registered_by and assign it as project_owner
-                                var registeredBy = project.registered_by;
 
                                 var addWeeklyChecklist = new MainTable
                                 {
@@ -700,7 +705,7 @@ namespace ProjectManagementSystem.Controllers
                                     year = getProject.ProjectYear,
                                     division = getProject.division,
                                     category = getProject.category,
-                                    project_owner = registeredBy, // assign registered_by to project_owner
+                                    project_owner = ownerName, 
                                     user_id = UserId
                                 };
 
@@ -744,7 +749,6 @@ namespace ProjectManagementSystem.Controllers
 
                                     foreach (var taskGroup in groupedTasks)
                                     {
-
                                         DateTime taskStartDate = DateTime.ParseExact(getProject.projectStart.ToString(), dateFormat, CultureInfo.InvariantCulture);
                                         int taskDuration = taskGroup.task_duration;
                                         DateTime taskEndDate = taskStartDate.AddDays(taskDuration);
@@ -811,7 +815,7 @@ namespace ProjectManagementSystem.Controllers
                                         datetime_performed = DateTime.Now,
                                         action_level = 5,
                                         action = "Project Upload",
-                                        description = getProject.ProjectTitle + " Project Uploaded by: " + registeredBy + " For Year: " + getProject.ProjectYear,
+                                        description = getProject.ProjectTitle + " Project Uploaded by: " + ownerName + " For Year: " + getProject.ProjectYear,
                                         department = department,
                                         division = division
                                     };
@@ -831,7 +835,7 @@ namespace ProjectManagementSystem.Controllers
                             }
                             else
                             {
-                                message = "Invalid excel file. Please try again.";
+                                message = "Invalid. Project title and Project name must be the same. Please try again.";
                                 status = false;
                             }
                         }
@@ -849,8 +853,9 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { message = message, status = false }, JsonRequestBehavior.AllowGet);
             }
 
-            return Json(new { message = message, status = status }, JsonRequestBehavior.AllowGet);
+            return Json(new { message = message, status = status, owner = ownerName }, JsonRequestBehavior.AllowGet);
         }
+
 
 
 
@@ -1406,13 +1411,13 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-        [HttpGet] // not finish 
-        public JsonResult GetProjectOwner(int mainId)
+        [HttpGet]
+        public JsonResult GetProjectOwner(int projectId)
         {
-            // fetch proj 
+            // fetch project and the registered_by
             var project = db.RegistrationTbls
-                .Where(x => x.registration_id == mainId)
-                .Select(x => new { x.registered_by })
+                .Where(x => x.registration_id == projectId)
+                .Select(x => new { x.registered_by }) // sa registered_by column, email laman neto
                 .SingleOrDefault();
 
             if (project == null)
@@ -1420,20 +1425,25 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Project not found." }, JsonRequestBehavior.AllowGet);
             }
 
-          
+            var registeredByEmail = project.registered_by?.Trim();
+            //Debug.WriteLine($"Registered By (Email): {registeredByEmail}");
+
+            // fetch the owner's details
             var owner = cmdb.AspNetUsers
-                .Where(u => u.Id == project.registered_by)
+                .Where(u => u.Email.Trim().ToLower() == registeredByEmail.ToLower())
                 .Select(u => new { u.FirstName, u.LastName, u.Email })
                 .FirstOrDefault();
 
             if (owner == null)
             {
-                return Json(new { success = false, message = "Project Owner not found." }, JsonRequestBehavior.AllowGet);
+                Debug.WriteLine($"No owner found with Email: {registeredByEmail}");
+                return Json(new { success = false, message = "Owner not found." }, JsonRequestBehavior.AllowGet);
             }
-            var ownerFullName = $"{owner.FirstName} {owner.LastName}";
 
+            var ownerFullName = $"{owner.FirstName} {owner.LastName}";
             return Json(new { success = true, owner = new { FullName = ownerFullName, owner.Email } }, JsonRequestBehavior.AllowGet);
         }
+
 
 
 

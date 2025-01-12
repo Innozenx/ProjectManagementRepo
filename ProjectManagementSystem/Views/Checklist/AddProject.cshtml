@@ -7,9 +7,13 @@
 
 <div class="content">
     <div class="form-container">
-        <div class="form-header">
-            <h3>Create a new project</h3>
-            <p>Provide the necessary details to onboard your project.</p>
+        <div class="form-header" style="text-align: center;">
+            <h3>
+                🚀 <br />Start Your New Project
+            </h3>
+            <p>
+                Upload your project schedule here. 📂
+            </p>
         </div>
 
         <form id="onboardingForm" name="onboardingForm" enctype="multipart/form-data">
@@ -30,7 +34,7 @@
 
             <div class="form-group">
                 <label for="projectOwner">Project Owner</label>
-                <input type="text" id="projectOwner" name="projectOwner" class="form-control" placeholder="Enter project owner name" required />
+                <input type="text" id="projectOwner" name="projectOwner" class="form-control" placeholder="Project owner" required readonly />
             </div>
 
             <div class="form-group">
@@ -223,7 +227,6 @@
 
         const formData = new FormData();
         formData.append("projectTitle", projectDropdown.value);
-        formData.append("projectOwner", projectOwner.value);
         formData.append("csvFile", csvFile);
 
         $.ajax({
@@ -274,30 +277,35 @@
         if (errorContainer) errorContainer.innerText = "";
     }
 
-    document.getElementById("projectDropdown").addEventListener("change", function () {
-        const projectId = this.value;
+    document.getElementById("csvFileInput").addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const csvContent = e.target.result;
+                const rows = csvContent.split("\n").map(row => row.split(","));
 
-        if (projectId) {
-            $.ajax({
-                url: '/Checklist/GetProjectOwner',
-                type: 'GET',
-                data: { projectId: projectId },
-                success: function (response) {
-                    if (response.success) {
-                        const ownerName = `${response.owner.FullName} (${response.owner.Email})`;
+                // Assuming the "Owner" column is at a specific index (e.g., column 15, adjust as needed)
+                const headerRow = rows[0];
+                const ownerIndex = headerRow.findIndex(col => col.trim().toLowerCase() === "owner");
+
+                if (ownerIndex !== -1) {
+                    const ownerName = rows[1] ?.[ownerIndex] ?.trim();
+                    if (ownerName) {
                         document.getElementById("projectOwner").value = ownerName;
                     } else {
-                        alert(response.message);
+                        document.getElementById("projectOwner").value = "";
+                        alert("No owner information found in the uploaded file.");
                     }
-                },
-                error: function () {
-                    alert("An error occurred while fetching the project owner.");
+                } else {
+                    document.getElementById("projectOwner").value = "";
+                    alert("The 'Owner' column is missing in the uploaded file.");
                 }
-            });
-        } else {
-            document.getElementById("projectOwner").value = "";
+            };
+            reader.readAsText(file);
         }
     });
 </script>
+
 
 

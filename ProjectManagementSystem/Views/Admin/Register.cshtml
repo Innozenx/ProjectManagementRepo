@@ -147,8 +147,12 @@
 
 <div class="content">
     <div class="form-container">
-        <h3>Project Registration</h3>
-        <p>First, input your project name.</p>
+        <h3>
+            📝 <br /> Project Registration
+        </h3>
+        <p>
+            First, input your project name.
+        </p>
 
         <form id="projectRegistrationForm" name="projectRegistrationForm" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
@@ -182,7 +186,7 @@
                 errorMessage.hide();
             }
 
-            $.ajax({
+          $.ajax({
                 method: "POST",
                 url: "@Url.Action("Register_Project", "Admin")",
                 data: { "name": projectName },
@@ -191,10 +195,10 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Project Registered',
-                            text: 'Your project name has been successfully registered! Kindly see on project onboarding.',
+                            text: 'Your project name has been successfully registered! Redirecting to Project Onboarding...',
                             confirmButtonColor: '#470A67',
                         }).then(() => {
-                            location.reload();
+                            window.location.href = "@Url.Action("AddProject", "Checklist")";
                         });
                     } else {
                         Swal.fire({
