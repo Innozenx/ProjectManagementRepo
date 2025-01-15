@@ -2,7 +2,7 @@
 @using System.Globalization;
 
 @{
-    ViewBag.Title = "Dashboard Management";
+    ViewBag.Title = "Dashboard";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
     var userEmail = User.Identity.Name ?? "Guest";
@@ -83,7 +83,7 @@
         text-align: center;
         text-transform: uppercase;
     }
-
+    
     .table td {
         text-align: center;
         font-size: 0.85rem;
@@ -103,19 +103,20 @@
 </style>
 
 <div class="header-container">
-    <h1>📊</h1>
-    <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
-
     @if (User.IsInRole("PMS_DIVISION_HEAD"))
     {
-        <h1> Division's Project Overview</h1>
+        <h1>💻</h1>
+        <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
+        <h1>Division's Project Overview</h1>
         <p>Track and manage your team's projects.</p>
-        }
-        else if (User.IsInRole("PMS_Management") || (User.IsInRole("PMS_ODCP_ADMIN")))
-    {
-        <h1>Dashboard Management Overview</h1>
-        <p>View all projects across divisions.</p>
     }
+    else if (User.IsInRole("PMS_Management") || (User.IsInRole("PMS_ODCP_ADMIN")))
+    {
+        <h1>📊</h1>
+        <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
+        <h1>Dashboard Management Overview</h1>
+        <p>View all projects across divisions.</p> 
+      }
 </div>
 
 
@@ -164,7 +165,7 @@
         {
             var divisionId = Model.userDivision;
             <div class="tab-pane fade"
-                 id="panel-@divisionId"
+                 id="panel-@divisionId" 
                  role="tabpanel"
                  aria-labelledby="tab-@divisionId">
             </div>
@@ -180,7 +181,7 @@
                             }
                         </tr>
                     </thead>
-                    @foreach (var divisionGroup in Model.IndividualProjects)
+                    @foreach (var divisionGroup in Model.IndividualProjects) // added as a member
                     {
                         <tbody>
                             <tr>
@@ -247,7 +248,7 @@
 
         else
         {
-            foreach (var divisionGroup in Model.ProjectsByDivision)
+            foreach (var divisionGroup in Model.ProjectsByDivision) // overall projects 
             {
                 var divisionId = divisionGroup.Key.Replace(" ", "");
                 <div class="tab-pane fade @((Model.ProjectsByDivision.First().Key == divisionGroup.Key) ? "show active" : "")"
@@ -255,7 +256,7 @@
                      role="tabpanel"
                      aria-labelledby="tab-@divisionId">
                     <div class="table-container">
-                        <h5>@divisionGroup.Key Division's Project Summary</h5>
+                        <h5>@divisionGroup.Key @*Division's*@ Projects</h5>
                         <table class="table">
                             <thead>
                                 <tr>

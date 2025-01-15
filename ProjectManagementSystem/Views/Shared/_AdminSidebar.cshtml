@@ -22,13 +22,21 @@
                 <!-- Dashboard for Management-->
                 @if (User.IsInRole("PMS_Management") || User.IsInRole("PMS_ODCP_ADMIN") || User.IsInRole("PMS_DIVISION_HEAD"))
                 {
-                    <li class="nav-header">Management</li>
-                <li class="nav-item">
-                    <a href="@Url.Action("DashboardManagement", "Checklist")" class="nav-link">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Dashboard</p>
-                    </a>
-                </li>
+                    if (User.IsInRole("PMS_Management") || User.IsInRole("PMS_ODCP_ADMIN"))
+                    {
+                        <li class="nav-header">Management</li>
+                    }
+                    else
+                    {
+                        <li class="nav-header">Division Head</li>
+                    }
+
+                    <li class="nav-item">
+                        <a href="@Url.Action("DashboardManagement", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
                 }
 
                 <!-- Dashboard for Project Managers -->
