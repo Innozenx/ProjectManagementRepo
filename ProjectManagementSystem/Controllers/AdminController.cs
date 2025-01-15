@@ -23,7 +23,7 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
-        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
+        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER, PMS_PROJECT_MANAGER")]
         public ActionResult Register()
         {
             return View();

@@ -122,7 +122,8 @@
 
 <div class="container">
     <ul class="nav nav-tabs" id="divisionTabs" role="tablist">
-        @if (Model.userRole == 4035)
+
+        @if (Model.userRole == 4035) //IF DIVISION HEAD
         {
             var divisionId = Model.userDivision.Split(' ').Select(x => x[0]);
             var divisionInitials = string.Join("", divisionId);
@@ -139,7 +140,7 @@
             </li>
         }
 
-        else
+        else if(Model.userRole == 4036) //IF STEERCOM
         {
             foreach (var division in Model.Divisions)
             {
@@ -161,7 +162,7 @@
     </ul>
 
     <div class="tab-content" id="divisionTabContent">
-        @if (Model.userRole == 4035)
+        @if (Model.userRole == 4035) //IF DIVISION HEAD
         {
             var divisionId = Model.userDivision;
             <div class="tab-pane fade"
@@ -246,7 +247,7 @@
                 }*@
         }
 
-        else
+        else if(Model.userRole == 4036) //IF STEERCOM
         {
             foreach (var divisionGroup in Model.ProjectsByDivision) // overall projects 
             {

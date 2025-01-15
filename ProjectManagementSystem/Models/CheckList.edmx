@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ProjectManagementDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="ProjectManagementDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Activity_Log">
           <Key>
             <PropertyRef Name="log_id" />
@@ -135,6 +135,7 @@
           <Property Name="category" Type="nvarchar" MaxLength="255" />
           <Property Name="project_owner" Type="nvarchar" MaxLength="255" />
           <Property Name="user_id" Type="varchar" MaxLength="255" />
+          <Property Name="isCompleted" Type="bit" />
         </EntityType>
         <EntityType Name="MilestoneTbl">
           <Key>
@@ -291,11 +292,31 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             <End Role="MilestoneTbl" EntitySet="MilestoneTbl" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ProjectManagementDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="ProjectManagementDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Activity_Log" EntityType="ProjectManagementDBModel.Activity_Log" />
+          <EntitySet Name="AdminLists" EntityType="ProjectManagementDBModel.AdminList" />
+          <EntitySet Name="ApproversTbls" EntityType="ProjectManagementDBModel.ApproversTbl" />
+          <EntitySet Name="AttachmentTables" EntityType="ProjectManagementDBModel.AttachmentTable" />
+          <EntitySet Name="ChecklistSubmissions" EntityType="ProjectManagementDBModel.ChecklistSubmission" />
+          <EntitySet Name="ChecklistTables" EntityType="ProjectManagementDBModel.ChecklistTable" />
+          <EntitySet Name="DetailsTbls" EntityType="ProjectManagementDBModel.DetailsTbl" />
+          <EntitySet Name="MainTables" EntityType="ProjectManagementDBModel.MainTable" />
+          <EntitySet Name="MilestoneTbls" EntityType="ProjectManagementDBModel.MilestoneTbl" />
+          <EntitySet Name="ProjectMembersTbls" EntityType="ProjectManagementDBModel.ProjectMembersTbl" />
+          <EntitySet Name="RegistrationTbls" EntityType="ProjectManagementDBModel.RegistrationTbl" />
+          <EntitySet Name="Reports" EntityType="ProjectManagementDBModel.Report" />
+          <EntitySet Name="Roles" EntityType="ProjectManagementDBModel.Role" />
+          <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
+          <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
+          <AssociationSet Name="FK_MilestoneTbl_MainTable" Association="ProjectManagementDBModel.FK_MilestoneTbl_MainTable">
+            <End Role="MainTable" EntitySet="MainTables" />
+            <End Role="MilestoneTbl" EntitySet="MilestoneTbls" />
+          </AssociationSet>
+        </EntityContainer>
         <EntityType Name="Activity_Log">
           <Key>
             <PropertyRef Name="log_id" />
@@ -359,7 +380,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           </Key>
           <Property Name="localId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="projectId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="id" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="id" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="sequenceId" Type="Int32" />
           <Property Name="text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="duration" Type="Int32" Nullable="false" />
@@ -426,7 +447,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="category" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="project_owner" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="user_id" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="MilestoneTbls" Relationship="Self.FK_MilestoneTbl_MainTable" FromRole="MainTable" ToRole="MilestoneTbl" />
+          <Property Name="isCompleted" Type="Boolean" />
+          <NavigationProperty Name="MilestoneTbls" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MainTable" ToRole="MilestoneTbl" />
         </EntityType>
         <EntityType Name="MilestoneTbl">
           <Key>
@@ -446,7 +468,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="target" Type="Int32" />
           <Property Name="completion_date" Type="DateTime" Precision="3" />
           <Property Name="current_completion_date" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="MainTable" Relationship="Self.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
+          <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
           <Key>
@@ -510,7 +532,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             <PropertyRef Name="localId" />
           </Key>
           <Property Name="localId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="weeklyID" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="weeklyID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="sequenceId" Type="Int32" />
           <Property Name="weeklyOwner" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="weeklyTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
@@ -545,8 +567,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="delay" Type="Int32" />
         </EntityType>
         <Association Name="FK_MilestoneTbl_MainTable">
-          <End Role="MainTable" Type="Self.MainTable" Multiplicity="0..1" />
-          <End Role="MilestoneTbl" Type="Self.MilestoneTbl" Multiplicity="*" />
+          <End Type="ProjectManagementDBModel.MainTable" Role="MainTable" Multiplicity="0..1" />
+          <End Type="ProjectManagementDBModel.MilestoneTbl" Role="MilestoneTbl" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="MainTable">
               <PropertyRef Name="main_id" />
@@ -556,27 +578,6 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="ProjectManagementDBEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Activity_Log" EntityType="Self.Activity_Log" />
-          <EntitySet Name="AdminLists" EntityType="Self.AdminList" />
-          <EntitySet Name="ApproversTbls" EntityType="Self.ApproversTbl" />
-          <EntitySet Name="AttachmentTables" EntityType="Self.AttachmentTable" />
-          <EntitySet Name="ChecklistSubmissions" EntityType="Self.ChecklistSubmission" />
-          <EntitySet Name="ChecklistTables" EntityType="Self.ChecklistTable" />
-          <EntitySet Name="DetailsTbls" EntityType="Self.DetailsTbl" />
-          <EntitySet Name="MainTables" EntityType="Self.MainTable" />
-          <EntitySet Name="MilestoneTbls" EntityType="Self.MilestoneTbl" />
-          <EntitySet Name="ProjectMembersTbls" EntityType="Self.ProjectMembersTbl" />
-          <EntitySet Name="RegistrationTbls" EntityType="Self.RegistrationTbl" />
-          <EntitySet Name="Reports" EntityType="Self.Report" />
-          <EntitySet Name="Roles" EntityType="Self.Role" />
-          <EntitySet Name="WeeklyChecklistTables" EntityType="Self.WeeklyChecklistTable" />
-          <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatu" />
-          <AssociationSet Name="FK_MilestoneTbl_MainTable" Association="Self.FK_MilestoneTbl_MainTable">
-            <End Role="MainTable" EntitySet="MainTables" />
-            <End Role="MilestoneTbl" EntitySet="MilestoneTbls" />
-          </AssociationSet>
-        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -586,261 +587,262 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="Activity_Log">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.Activity_Log">
               <MappingFragment StoreEntitySet="Activity_Log">
-                <ScalarProperty Name="log_id" ColumnName="log_id" />
-                <ScalarProperty Name="username" ColumnName="username" />
-                <ScalarProperty Name="datetime_performed" ColumnName="datetime_performed" />
-                <ScalarProperty Name="action_level" ColumnName="action_level" />
-                <ScalarProperty Name="action" ColumnName="action" />
-                <ScalarProperty Name="description" ColumnName="description" />
-                <ScalarProperty Name="department" ColumnName="department" />
                 <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="department" ColumnName="department" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="action" ColumnName="action" />
+                <ScalarProperty Name="action_level" ColumnName="action_level" />
+                <ScalarProperty Name="datetime_performed" ColumnName="datetime_performed" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="log_id" ColumnName="log_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AdminLists">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.AdminList">
               <MappingFragment StoreEntitySet="AdminList">
-                <ScalarProperty Name="admin_id" ColumnName="admin_id" />
-                <ScalarProperty Name="user_level" ColumnName="user_level" />
-                <ScalarProperty Name="user_email" ColumnName="user_email" />
                 <ScalarProperty Name="is_active" ColumnName="is_active" />
+                <ScalarProperty Name="user_email" ColumnName="user_email" />
+                <ScalarProperty Name="user_level" ColumnName="user_level" />
+                <ScalarProperty Name="admin_id" ColumnName="admin_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ApproversTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ApproversTbl">
               <MappingFragment StoreEntitySet="ApproversTbl">
-                <ScalarProperty Name="Approver_Id" ColumnName="Approver_Id" />
-                <ScalarProperty Name="Milestone_Id" ColumnName="Milestone_Id" />
-                <ScalarProperty Name="Approver_Name" ColumnName="Approver_Name" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="Details_Id" ColumnName="Details_Id" />
-                <ScalarProperty Name="User_Id" ColumnName="User_Id" />
-                <ScalarProperty Name="ApprovalDate" ColumnName="ApprovalDate" />
-                <ScalarProperty Name="Main_Id" ColumnName="Main_Id" />
                 <ScalarProperty Name="IsRemoved_" ColumnName="IsRemoved?" />
+                <ScalarProperty Name="Main_Id" ColumnName="Main_Id" />
+                <ScalarProperty Name="ApprovalDate" ColumnName="ApprovalDate" />
+                <ScalarProperty Name="User_Id" ColumnName="User_Id" />
+                <ScalarProperty Name="Details_Id" ColumnName="Details_Id" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Approver_Name" ColumnName="Approver_Name" />
+                <ScalarProperty Name="Milestone_Id" ColumnName="Milestone_Id" />
+                <ScalarProperty Name="Approver_Id" ColumnName="Approver_Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AttachmentTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.AttachmentTable">
               <MappingFragment StoreEntitySet="AttachmentTable">
-                <ScalarProperty Name="attachment_id" ColumnName="attachment_id" />
-                <ScalarProperty Name="status_id" ColumnName="status_id" />
-                <ScalarProperty Name="path_file" ColumnName="path_file" />
                 <ScalarProperty Name="details_id" ColumnName="details_id" />
+                <ScalarProperty Name="path_file" ColumnName="path_file" />
+                <ScalarProperty Name="status_id" ColumnName="status_id" />
+                <ScalarProperty Name="attachment_id" ColumnName="attachment_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ChecklistSubmissions">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistSubmission">
               <MappingFragment StoreEntitySet="ChecklistSubmissions">
-                <ScalarProperty Name="submission_id" ColumnName="submission_id" />
-                <ScalarProperty Name="submission_description" ColumnName="submission_description" />
-                <ScalarProperty Name="task_name" ColumnName="task_name" />
-                <ScalarProperty Name="task_id" ColumnName="task_id" />
-                <ScalarProperty Name="submitted_by" ColumnName="submitted_by" />
-                <ScalarProperty Name="submission_date" ColumnName="submission_date" />
                 <ScalarProperty Name="is_approved" ColumnName="is_approved" />
+                <ScalarProperty Name="submission_date" ColumnName="submission_date" />
+                <ScalarProperty Name="submitted_by" ColumnName="submitted_by" />
+                <ScalarProperty Name="task_id" ColumnName="task_id" />
+                <ScalarProperty Name="task_name" ColumnName="task_name" />
+                <ScalarProperty Name="submission_description" ColumnName="submission_description" />
+                <ScalarProperty Name="submission_id" ColumnName="submission_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistTable">
               <MappingFragment StoreEntitySet="ChecklistTable">
-                <ScalarProperty Name="localId" ColumnName="localId" />
-                <ScalarProperty Name="projectId" ColumnName="projectId" />
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="sequenceId" ColumnName="sequenceId" />
-                <ScalarProperty Name="text" ColumnName="text" />
-                <ScalarProperty Name="duration" ColumnName="duration" />
-                <ScalarProperty Name="start_date" ColumnName="start_date" />
-                <ScalarProperty Name="end_date" ColumnName="end_date" />
-                <ScalarProperty Name="parent" ColumnName="parent" />
-                <ScalarProperty Name="projectReference" ColumnName="projectReference" />
-                <ScalarProperty Name="source" ColumnName="source" />
-                <ScalarProperty Name="target" ColumnName="target" />
-                <ScalarProperty Name="type" ColumnName="type" />
-                <ScalarProperty Name="ofYear" ColumnName="ofYear" />
-                <ScalarProperty Name="startWeek" ColumnName="startWeek" />
-                <ScalarProperty Name="endWeek" ColumnName="endWeek" />
-                <ScalarProperty Name="title" ColumnName="title" />
-                <ScalarProperty Name="projectType" ColumnName="projectType" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="color" ColumnName="color" />
-                <ScalarProperty Name="details" ColumnName="details" />
-                <ScalarProperty Name="dateInitial" ColumnName="dateInitial" />
-                <ScalarProperty Name="dateFinished" ColumnName="dateFinished" />
-                <ScalarProperty Name="project_owner" ColumnName="project_owner" />
-                <ScalarProperty Name="project_name" ColumnName="project_name" />
-                <ScalarProperty Name="process" ColumnName="process" />
                 <ScalarProperty Name="isUnscheduled" ColumnName="isUnscheduled" />
+                <ScalarProperty Name="process" ColumnName="process" />
+                <ScalarProperty Name="project_name" ColumnName="project_name" />
+                <ScalarProperty Name="project_owner" ColumnName="project_owner" />
+                <ScalarProperty Name="dateFinished" ColumnName="dateFinished" />
+                <ScalarProperty Name="dateInitial" ColumnName="dateInitial" />
+                <ScalarProperty Name="details" ColumnName="details" />
+                <ScalarProperty Name="color" ColumnName="color" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="projectType" ColumnName="projectType" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="endWeek" ColumnName="endWeek" />
+                <ScalarProperty Name="startWeek" ColumnName="startWeek" />
+                <ScalarProperty Name="ofYear" ColumnName="ofYear" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="target" ColumnName="target" />
+                <ScalarProperty Name="source" ColumnName="source" />
+                <ScalarProperty Name="projectReference" ColumnName="projectReference" />
+                <ScalarProperty Name="parent" ColumnName="parent" />
+                <ScalarProperty Name="end_date" ColumnName="end_date" />
+                <ScalarProperty Name="start_date" ColumnName="start_date" />
+                <ScalarProperty Name="duration" ColumnName="duration" />
+                <ScalarProperty Name="text" ColumnName="text" />
+                <ScalarProperty Name="sequenceId" ColumnName="sequenceId" />
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="projectId" ColumnName="projectId" />
+                <ScalarProperty Name="localId" ColumnName="localId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DetailsTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.DetailsTbl">
               <MappingFragment StoreEntitySet="DetailsTbl">
-                <ScalarProperty Name="details_id" ColumnName="details_id" />
-                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
-                <ScalarProperty Name="main_id" ColumnName="main_id" />
-                <ScalarProperty Name="process_title" ColumnName="process_title" />
-                <ScalarProperty Name="IsSubtask" ColumnName="IsSubtask" />
-                <ScalarProperty Name="task_start" ColumnName="task_start" />
-                <ScalarProperty Name="task_end" ColumnName="task_end" />
-                <ScalarProperty Name="task_duration" ColumnName="task_duration" />
-                <ScalarProperty Name="source" ColumnName="source" />
-                <ScalarProperty Name="target" ColumnName="target" />
-                <ScalarProperty Name="parent" ColumnName="parent" />
-                <ScalarProperty Name="created_date" ColumnName="created_date" />
-                <ScalarProperty Name="task_status" ColumnName="task_status" />
-                <ScalarProperty Name="color_status" ColumnName="color_status" />
-                <ScalarProperty Name="isUnscheduled" ColumnName="isUnscheduled" />
-                <ScalarProperty Name="isCompleted" ColumnName="isCompleted" />
-                <ScalarProperty Name="key_person" ColumnName="key_person" />
-                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
-                <ScalarProperty Name="RequiresApproval" ColumnName="RequiresApproval" />
-                <ScalarProperty Name="task_delay" ColumnName="task_delay" />
-                <ScalarProperty Name="excel_id" ColumnName="excel_id" />
                 <ScalarProperty Name="current_task_end" ColumnName="current_task_end" />
+                <ScalarProperty Name="excel_id" ColumnName="excel_id" />
+                <ScalarProperty Name="task_delay" ColumnName="task_delay" />
+                <ScalarProperty Name="RequiresApproval" ColumnName="RequiresApproval" />
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+                <ScalarProperty Name="key_person" ColumnName="key_person" />
+                <ScalarProperty Name="isCompleted" ColumnName="isCompleted" />
+                <ScalarProperty Name="isUnscheduled" ColumnName="isUnscheduled" />
+                <ScalarProperty Name="color_status" ColumnName="color_status" />
+                <ScalarProperty Name="task_status" ColumnName="task_status" />
+                <ScalarProperty Name="created_date" ColumnName="created_date" />
+                <ScalarProperty Name="parent" ColumnName="parent" />
+                <ScalarProperty Name="target" ColumnName="target" />
+                <ScalarProperty Name="source" ColumnName="source" />
+                <ScalarProperty Name="task_duration" ColumnName="task_duration" />
+                <ScalarProperty Name="task_end" ColumnName="task_end" />
+                <ScalarProperty Name="task_start" ColumnName="task_start" />
+                <ScalarProperty Name="IsSubtask" ColumnName="IsSubtask" />
+                <ScalarProperty Name="process_title" ColumnName="process_title" />
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
+                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
+                <ScalarProperty Name="details_id" ColumnName="details_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="MainTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.MainTable">
               <MappingFragment StoreEntitySet="MainTable">
-                <ScalarProperty Name="main_id" ColumnName="main_id" />
-                <ScalarProperty Name="project_title" ColumnName="project_title" />
-                <ScalarProperty Name="project_start" ColumnName="project_start" />
-                <ScalarProperty Name="project_end" ColumnName="project_end" />
-                <ScalarProperty Name="duration" ColumnName="duration" />
-                <ScalarProperty Name="year" ColumnName="year" />
-                <ScalarProperty Name="division" ColumnName="division" />
-                <ScalarProperty Name="category" ColumnName="category" />
-                <ScalarProperty Name="project_owner" ColumnName="project_owner" />
+                <ScalarProperty Name="isCompleted" ColumnName="isCompleted" />
                 <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="project_owner" ColumnName="project_owner" />
+                <ScalarProperty Name="category" ColumnName="category" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="year" ColumnName="year" />
+                <ScalarProperty Name="duration" ColumnName="duration" />
+                <ScalarProperty Name="project_end" ColumnName="project_end" />
+                <ScalarProperty Name="project_start" ColumnName="project_start" />
+                <ScalarProperty Name="project_title" ColumnName="project_title" />
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="MilestoneTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.MilestoneTbl">
               <MappingFragment StoreEntitySet="MilestoneTbl">
-                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
-                <ScalarProperty Name="main_id" ColumnName="main_id" />
-                <ScalarProperty Name="milestone_name" ColumnName="milestone_name" />
-                <ScalarProperty Name="created_date" ColumnName="created_date" />
-                <ScalarProperty Name="milestone_position" ColumnName="milestone_position" />
-                <ScalarProperty Name="status_update" ColumnName="status_update" />
-                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
-                <ScalarProperty Name="unscheduled" ColumnName="unscheduled" />
-                <ScalarProperty Name="parent" ColumnName="parent" />
-                <ScalarProperty Name="excel_id" ColumnName="excel_id" />
-                <ScalarProperty Name="source" ColumnName="source" />
-                <ScalarProperty Name="target" ColumnName="target" />
-                <ScalarProperty Name="completion_date" ColumnName="completion_date" />
                 <ScalarProperty Name="current_completion_date" ColumnName="current_completion_date" />
+                <ScalarProperty Name="completion_date" ColumnName="completion_date" />
+                <ScalarProperty Name="target" ColumnName="target" />
+                <ScalarProperty Name="source" ColumnName="source" />
+                <ScalarProperty Name="excel_id" ColumnName="excel_id" />
+                <ScalarProperty Name="parent" ColumnName="parent" />
+                <ScalarProperty Name="unscheduled" ColumnName="unscheduled" />
+                <ScalarProperty Name="IsCompleted" ColumnName="IsCompleted" />
+                <ScalarProperty Name="status_update" ColumnName="status_update" />
+                <ScalarProperty Name="milestone_position" ColumnName="milestone_position" />
+                <ScalarProperty Name="created_date" ColumnName="created_date" />
+                <ScalarProperty Name="milestone_name" ColumnName="milestone_name" />
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
+                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ProjectMembersTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ProjectMembersTbl">
               <MappingFragment StoreEntitySet="ProjectMembersTbl">
-                <ScalarProperty Name="member_id" ColumnName="member_id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="email" ColumnName="email" />
-                <ScalarProperty Name="project_id" ColumnName="project_id" />
-                <ScalarProperty Name="division" ColumnName="division" />
-                <ScalarProperty Name="department" ColumnName="department" />
-                <ScalarProperty Name="role" ColumnName="role" />
-                <ScalarProperty Name="acknowledged" ColumnName="acknowledged" />
                 <ScalarProperty Name="is_removed" ColumnName="is_removed" />
+                <ScalarProperty Name="acknowledged" ColumnName="acknowledged" />
+                <ScalarProperty Name="role" ColumnName="role" />
+                <ScalarProperty Name="department" ColumnName="department" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="project_id" ColumnName="project_id" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="member_id" ColumnName="member_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="RegistrationTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.RegistrationTbl">
               <MappingFragment StoreEntitySet="RegistrationTbl">
-                <ScalarProperty Name="registration_id" ColumnName="registration_id" />
-                <ScalarProperty Name="project_name" ColumnName="project_name" />
-                <ScalarProperty Name="date_registered" ColumnName="date_registered" />
-                <ScalarProperty Name="division" ColumnName="division" />
-                <ScalarProperty Name="registered_by" ColumnName="registered_by" />
-                <ScalarProperty Name="year" ColumnName="year" />
-                <ScalarProperty Name="is_completed" ColumnName="is_completed" />
-                <ScalarProperty Name="unregistered" ColumnName="unregistered" />
-                <ScalarProperty Name="unregister_reason" ColumnName="unregister_reason" />
-                <ScalarProperty Name="date_unregistered" ColumnName="date_unregistered" />
-                <ScalarProperty Name="is_file_uploaded" ColumnName="is_file_uploaded" />
                 <ScalarProperty Name="main_id" ColumnName="main_id" />
+                <ScalarProperty Name="is_file_uploaded" ColumnName="is_file_uploaded" />
+                <ScalarProperty Name="date_unregistered" ColumnName="date_unregistered" />
+                <ScalarProperty Name="unregister_reason" ColumnName="unregister_reason" />
+                <ScalarProperty Name="unregistered" ColumnName="unregistered" />
+                <ScalarProperty Name="is_completed" ColumnName="is_completed" />
+                <ScalarProperty Name="year" ColumnName="year" />
+                <ScalarProperty Name="registered_by" ColumnName="registered_by" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="date_registered" ColumnName="date_registered" />
+                <ScalarProperty Name="project_name" ColumnName="project_name" />
+                <ScalarProperty Name="registration_id" ColumnName="registration_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Reports">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.Report">
               <MappingFragment StoreEntitySet="Reports">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="division" ColumnName="division" />
-                <ScalarProperty Name="year" ColumnName="year" />
-                <ScalarProperty Name="inQuarter" ColumnName="inQuarter" />
-                <ScalarProperty Name="projectName" ColumnName="projectName" />
-                <ScalarProperty Name="targetKPI" ColumnName="targetKPI" />
-                <ScalarProperty Name="actualKPI" ColumnName="actualKPI" />
-                <ScalarProperty Name="completionRate" ColumnName="completionRate" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="currentTask" ColumnName="currentTask" />
-                <ScalarProperty Name="nextTask" ColumnName="nextTask" />
-                <ScalarProperty Name="comments" ColumnName="comments" />
-                <ScalarProperty Name="milestoneActual" ColumnName="milestoneActual" />
                 <ScalarProperty Name="milestoneTarget" ColumnName="milestoneTarget" />
+                <ScalarProperty Name="milestoneActual" ColumnName="milestoneActual" />
+                <ScalarProperty Name="comments" ColumnName="comments" />
+                <ScalarProperty Name="nextTask" ColumnName="nextTask" />
+                <ScalarProperty Name="currentTask" ColumnName="currentTask" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="completionRate" ColumnName="completionRate" />
+                <ScalarProperty Name="actualKPI" ColumnName="actualKPI" />
+                <ScalarProperty Name="targetKPI" ColumnName="targetKPI" />
+                <ScalarProperty Name="projectName" ColumnName="projectName" />
+                <ScalarProperty Name="inQuarter" ColumnName="inQuarter" />
+                <ScalarProperty Name="year" ColumnName="year" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Roles">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.Role">
               <MappingFragment StoreEntitySet="Roles">
-                <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="WeeklyChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.WeeklyChecklistTable">
               <MappingFragment StoreEntitySet="WeeklyChecklistTable">
-                <ScalarProperty Name="localId" ColumnName="localId" />
-                <ScalarProperty Name="weeklyID" ColumnName="weeklyID" />
-                <ScalarProperty Name="sequenceId" ColumnName="sequenceId" />
-                <ScalarProperty Name="weeklyOwner" ColumnName="weeklyOwner" />
-                <ScalarProperty Name="weeklyTitle" ColumnName="weeklyTitle" />
-                <ScalarProperty Name="weeklyDuration" ColumnName="weeklyDuration" />
-                <ScalarProperty Name="weeklyStart" ColumnName="weeklyStart" />
-                <ScalarProperty Name="weeklyTarget" ColumnName="weeklyTarget" />
-                <ScalarProperty Name="weeklyInYear" ColumnName="weeklyInYear" />
-                <ScalarProperty Name="subMain" ColumnName="subMain" />
-                <ScalarProperty Name="subSub" ColumnName="subSub" />
-                <ScalarProperty Name="division" ColumnName="division" />
-                <ScalarProperty Name="category" ColumnName="category" />
-                <ScalarProperty Name="inWeek" ColumnName="inWeek" />
-                <ScalarProperty Name="isCancelled" ColumnName="isCancelled" />
-                <ScalarProperty Name="isDelayed" ColumnName="isDelayed" />
-                <ScalarProperty Name="WeeklyMonth" ColumnName="WeeklyMonth" />
-                <ScalarProperty Name="WeeklyDay" ColumnName="WeeklyDay" />
                 <ScalarProperty Name="isCompleted" ColumnName="isCompleted" />
+                <ScalarProperty Name="WeeklyDay" ColumnName="WeeklyDay" />
+                <ScalarProperty Name="WeeklyMonth" ColumnName="WeeklyMonth" />
+                <ScalarProperty Name="isDelayed" ColumnName="isDelayed" />
+                <ScalarProperty Name="isCancelled" ColumnName="isCancelled" />
+                <ScalarProperty Name="inWeek" ColumnName="inWeek" />
+                <ScalarProperty Name="category" ColumnName="category" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="subSub" ColumnName="subSub" />
+                <ScalarProperty Name="subMain" ColumnName="subMain" />
+                <ScalarProperty Name="weeklyInYear" ColumnName="weeklyInYear" />
+                <ScalarProperty Name="weeklyTarget" ColumnName="weeklyTarget" />
+                <ScalarProperty Name="weeklyStart" ColumnName="weeklyStart" />
+                <ScalarProperty Name="weeklyDuration" ColumnName="weeklyDuration" />
+                <ScalarProperty Name="weeklyTitle" ColumnName="weeklyTitle" />
+                <ScalarProperty Name="weeklyOwner" ColumnName="weeklyOwner" />
+                <ScalarProperty Name="sequenceId" ColumnName="sequenceId" />
+                <ScalarProperty Name="weeklyID" ColumnName="weeklyID" />
+                <ScalarProperty Name="localId" ColumnName="localId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="WeeklyStatus">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.WeeklyStatu">
               <MappingFragment StoreEntitySet="WeeklyStatus">
-                <ScalarProperty Name="status_id" ColumnName="status_id" />
-                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
-                <ScalarProperty Name="project_owner" ColumnName="project_owner" />
-                <ScalarProperty Name="description" ColumnName="description" />
-                <ScalarProperty Name="date_updated" ColumnName="date_updated" />
-                <ScalarProperty Name="attachment" ColumnName="attachment" />
-                <ScalarProperty Name="main_id" ColumnName="main_id" />
-                <ScalarProperty Name="user_id" ColumnName="user_id" />
-                <ScalarProperty Name="milestone_name" ColumnName="milestone_name" />
                 <ScalarProperty Name="delay" ColumnName="delay" />
+                <ScalarProperty Name="milestone_name" ColumnName="milestone_name" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
+                <ScalarProperty Name="attachment" ColumnName="attachment" />
+                <ScalarProperty Name="date_updated" ColumnName="date_updated" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="project_owner" ColumnName="project_owner" />
+                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
+                <ScalarProperty Name="status_id" ColumnName="status_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

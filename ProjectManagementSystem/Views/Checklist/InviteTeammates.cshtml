@@ -284,6 +284,7 @@
 </style>
 
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     let availableRoles = @Html.Raw(Json.Encode(Model.Roles));
@@ -437,7 +438,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Update Failed',
-                        text: 'An error occurred while sending invitations.',
+                        text: 'An error occurred while sending invitations.' + res.message,
                     });
                 }
             }

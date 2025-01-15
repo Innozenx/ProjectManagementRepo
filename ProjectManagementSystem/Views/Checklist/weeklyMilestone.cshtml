@@ -468,7 +468,7 @@
                                 </div>
                             </div>
 
-                            <div class="input-group">
+                            <div class="input-group d-none" id="delay_input_group">
                                 <label for="weeks_delayed" class="status-update d-block mb-2" id="delay_label">
                                     If delayed, by how many weeks? <span class="text-danger">*</span>
                                 </label>
@@ -722,7 +722,7 @@
                 <thead class="table-primary">
                     <tr>
                         <th>Task</th>
-                        <th>Status</th>
+                        <th>Description</th>
                         <th>Attachment</th>
                         <th>Approver</th>
                         <th>Actions</th>
@@ -951,22 +951,26 @@
                         if (res.success == true) {
                             if (res.data != 0) {
                                 var note = document.getElementById("delay_note");
+                                var inputGrp = document.getElementById("delay_input_group");
+
                                 $("#delayed_yes").prop("checked", true);
                                 $("#weeks_delayed").prop("value", res.data);
                                 $("#delay_div").removeClass("d-none");
+                                inputGrp.classList.remove("d-none");
 
                                 note.textContent = "Previously Delayed by: " + res.data + " week/s";
                             }
 
                             else {
                                 var note = document.getElementById("delay_note");
+                                var inputGrp = document.getElementById("delay_input_group");
 
                                 $("#delayed_no").prop("checked", true);
                                 $("#weeks_delayed").prop("value", res.data);
-                                $("#delay_label").prop("class", "d-none");
-                                //$("#delay_div").prop("class", "d-none");
+                                $("#delay_div").removeClass("d-none");
+                                inputGrp.classList.add("d-none");
 
-                                note.textContent = "";
+                                //note.textContent = "";
                             }
                         }
 
@@ -1031,7 +1035,7 @@
                                         <tr>
                                             <td>${task.taskname}</td>
                                             <td>${task.approved ? "Approved" : "Pending"}</td>
-                                            <td><input type="file" class="form-control-file" /></td>
+                                            <td><input type="file" class="form-control-file" id="${task.taskname} + file"></td>
                                             <td>${task.approvers.join(", ") || "N/A"}</td>
                                             <td>
                                                 <button class="btn btn-sm btn-success" onclick="submitApproval(${task.task_id})">Submit</button>
@@ -1052,7 +1056,11 @@
         function submitApproval(task_id) {
             $.ajax({
                 type: "POST",
-                url: "@Url.Action("", "")"
+                url: "@Url.Action("UploadFile", "FileUpload")",
+                data: {},
+                success: function () {
+
+                }
             });
         }
 

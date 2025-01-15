@@ -80,14 +80,6 @@ namespace ProjectManagementSystem.Controllers
                 }
             }
 
-            /*
-             * userProjectList contains the list of projects with the corresponding division (i.e. user is division head of ITS; userprojectlist = projects of ITS)
-             * userDivision = division of currently logged user
-             * userName = user email
-             * 
-             * 
-             */
-
             var currentYear = DateTime.Now.Year;
             var calendar = CultureInfo.InvariantCulture.Calendar;
             var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
@@ -268,7 +260,7 @@ namespace ProjectManagementSystem.Controllers
             return View(viewModel);
         }
 
-        [Authorize(Roles = "PMS_PROJECT_MANAGER, PMS_ODCP_ADMIN, PMS_Management, PMS_PROJECT_OWNER, PMS_DIVISION_HEAD")]
+        [Authorize(Roles = "PMS_PROJECT_MANAGER, PMS_ODCP_ADMIN, PMS_Management, PMS_PROJECT_OWNER, PMS_DIVISION_HEAD, PMS_USER")]
         public ActionResult Dashboard()
         {
             var userId = User.Identity.GetUserId();
@@ -280,6 +272,16 @@ namespace ProjectManagementSystem.Controllers
 
             if (User.Identity.IsAuthenticated)
             {
+                //START OF MY CODE FOR DASHBOARD -TROY
+                var userEmail = User.Identity.GetUserName();
+
+                var projectList = (from p in db.ProjectMembersTbls
+                                   join m in db.MainTables on new { id = p.project_id } equals new { id = (int?)m.main_id }
+                                   where p.email == userEmail && m.isCompleted != true
+                                   select m.main_id).ToList();
+
+                //END
+
                 var currentYear = DateTime.Now.Year;
                 var calendar = CultureInfo.InvariantCulture.Calendar;
                 var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
@@ -287,7 +289,7 @@ namespace ProjectManagementSystem.Controllers
                 db.Database.CommandTimeout = 120;
 
                 var projects = db.MainTables
-                   .Where(p => p.user_id == userId)
+                   .Where(p => projectList.Contains(p.main_id))
                    .Select(p => new ProjectChecklistGroupViewModel
                    {
                        MainId = p.main_id,
@@ -320,7 +322,7 @@ namespace ProjectManagementSystem.Controllers
 
 
             var projectsAndMilestones = rawProjectsAndMilestones
-                .Where(g => g.UserId == userId)
+                .Where(g => projectList.Contains(g.MainId))
                 .OrderBy(g => g.MilestonePosition)
                 .Select(g => new ProjectMilestoneViewModel
                 {
@@ -485,9 +487,15 @@ namespace ProjectManagementSystem.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.Identity.GetUserId();
+                var userEmail = User.Identity.GetUserName();
+
+                var projectList = (from p in db.ProjectMembersTbls
+                                   join m in db.MainTables on new { id = p.project_id } equals new { id = (int?)m.main_id }
+                                   where p.email == userEmail && m.isCompleted != true
+                                   select m.main_id).ToList();
 
                 var userProject = db.MainTables
-                    .Where(m => m.main_id == id && m.user_id == userId)
+                    .Where(m => m.main_id == id && projectList.Contains(m.main_id))
                     .FirstOrDefault();
 
                 if (userProject == null)
@@ -718,7 +726,7 @@ namespace ProjectManagementSystem.Controllers
                 return "red"; // overdue task
         }
 
-        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
+        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER, PMS_PROJECT_MANAGER")]
         public ActionResult AddProject()
         {
             var onboardingDetails = new Onboarding()
@@ -1411,6 +1419,11 @@ namespace ProjectManagementSystem.Controllers
             var message = "";
             var intProject = Int32.Parse(project);
             var title = db.MainTables.Where(x => x.main_id == intProject).Select(x => x.project_title).SingleOrDefault();
+            var userDivision = (from u in cmdb.AspNetUsers
+                                join j in cmdb.Identity_JobDescription on new { jobid = u.JobId, uname = u.UserName } equals new { jobid = j.Id, uname = User.Identity.Name }
+                                join i in cmdb.Identity_Keywords on j.DivisionId equals i.Id
+                                where i.Type == "Divisions"
+                                select i.Description).FirstOrDefault();
 
             using (var transaction = db.Database.BeginTransaction())
             {
@@ -1491,7 +1504,7 @@ namespace ProjectManagementSystem.Controllers
                                 Email = userEmail,
                                 Project_ID = Int32.Parse(project),
                                 Role = roles[i],
-                                Division = "N/A",
+                                Division = userDivision,
                                 Department = "N/A"
                             };
 
