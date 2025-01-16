@@ -335,6 +335,10 @@ namespace ProjectManagementSystem.Models
         public List<MainTableViewModel> IndividualProjects { get; set; }
         public int userRole { get; set; }
         public string userDivision { get; set; }
+        public int CompletedTasks { get; set; }
+        public int PendingTasks { get; set; }
+        public int TotalTasks { get; set; }
+        public int CurrentWeek { get; set; }
     }
     public class ProjectWithMilestonesViewModel
     {
@@ -523,7 +527,9 @@ namespace ProjectManagementSystem.Models
         public string ProjectName { get; set; }
         public List<MilestoneViewModel> Milestones { get; set; }
         public Onboarding Onboarding { get; set; }
-     
+        public List<string> Divisions { get; set; }
+   
+
     }
     public class TaskApproverViewModel
     {
@@ -536,6 +542,20 @@ namespace ProjectManagementSystem.Models
     {
         public int projectId { get; set; }
         public List<string> division { get; set; }
+    }
+
+    public class ChecklistConfigurationViewModel
+    {
+        public int ClSettId { get; set; } 
+        public string ChecklistName { get; set; } 
+        public DateTime? DateCreated { get; set; } 
+        public DateTime? DateRemoved { get; set; } 
+        public bool IsActive { get; set; } 
+        public string CreatedBy { get; set; } 
+        public string Division { get; set; } 
+        public string MilestoneId { get; set; } 
+        public bool ProjectSpecific { get; set; } 
+        public int? MainId { get; set; }
     }
 }
 

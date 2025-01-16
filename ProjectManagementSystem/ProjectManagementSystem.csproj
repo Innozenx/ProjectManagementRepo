@@ -313,6 +313,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CheckList.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\ChecklistSetup.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ChecklistSubmission.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
@@ -370,6 +373,9 @@
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Role.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TransactionTbl.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
@@ -5112,6 +5118,7 @@
     <Content Include="Views\Checklist\ProjectChecklist.cshtml" />
     <Content Include="Views\Checklist\AcknowledgeInvite.cshtml" />
     <Content Include="Views\Admin\ChecklistSettings.cshtml" />
+    <Content Include="Views\Admin\ChecklistSetup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

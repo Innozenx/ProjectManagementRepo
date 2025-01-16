@@ -477,15 +477,12 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
-
-
-
-
         [HttpPost]
         public JsonResult UpdateTaskApproval(int taskId, bool requiresApproval)
         {
             try
             {
+      
                 var task = db.DetailsTbls.FirstOrDefault(t => t.details_id == taskId);
                 if (task == null)
                 {
@@ -521,5 +518,54 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { hasApprovers });
         }
 
+        [Authorize(Roles = "PMS_ODCP_ADMIN")]
+        [HttpGet]
+        public ActionResult ChecklistSetup()
+        {
+            var divisions = db.MainTables
+                              .Select(m => m.division.Trim())
+                              .Distinct()
+                              .OrderBy(d => d)
+                              .ToList();
+
+            ViewBag.Divisions = divisions;
+
+            return View();
+        }
+
+        [Authorize(Roles = "PMS_ODCP_ADMIN")]
+        [HttpGet]
+        public JsonResult GetMilestonesByDivision(string division)
+        {
+            if (string.IsNullOrEmpty(division))
+            {
+                return Json(new { success = false, message = "Division not specified." }, JsonRequestBehavior.AllowGet);
+            }
+
+            var uniqueMilestones = db.MilestoneTbls
+                .Join(db.MainTables,
+                      milestone => milestone.main_id,
+                      main => main.main_id,
+                      (milestone, main) => new
+                      {
+                          Division = main.division,
+                          MilestoneId = milestone.milestone_id,
+                          MilestoneName = milestone.milestone_name,
+                          MilestonePosition = milestone.milestone_position
+                          
+                      })
+                .Where(x => x.Division == division)
+                .GroupBy(x => x.MilestoneName) 
+                .Select(group => group.FirstOrDefault()) 
+                .Select(m => new
+                {
+                    MilestoneId = m.MilestoneId,
+                    MilestoneName = m.MilestoneName,
+                    MilestonePosition = m.MilestonePosition
+                })
+                .ToList();
+
+            return Json(uniqueMilestones, JsonRequestBehavior.AllowGet);
+        }
     }
 }

@@ -9,7 +9,7 @@
             <div class="icon">
                 <img src="~/AdminLTE-3.2.0/dist/img/giphy.jpg" alt="princesses">
             </div>
-            <h3>Invite your Teammates</h3>
+            <h3>Invite your Collaborators</h3>
             <p>Select a project to assign team members and their roles to join  your project.</p>
 
         </div>
@@ -305,8 +305,7 @@
     }
 
     function createRoleDropdown(memberId) {
-        //let roleDropdown = `<select class="role-dropdown" id="role_${memberId}">`;
-        let roleDropdown = `<select class="role-dropdown" id="role">`;
+        let roleDropdown = `<select class="role-dropdown" id="role_${memberId}">`;
         availableRoles.forEach(role => {
             roleDropdown += `<option value="${role.Id}">${role.RoleName}</option>`;
         });
@@ -345,7 +344,11 @@
     function submitInvitations() {
         const selectedProject = document.getElementById('projectDropdown').value;
         if (!selectedProject) {
-            alert("Please select a project.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Missing Information',
+                text: 'Please select a project.',
+            });
             return;
         }
 
@@ -359,7 +362,11 @@
             });
 
         if (selectedMembers.length === 0) {
-            alert("Please select at least one teammate and assign roles.");
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Members Selected',
+                text: 'Please select at least one teammate and assign roles.',
+            });
             return;
         }
 
@@ -382,17 +389,32 @@
                 if (response.status) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Status Updated!',
-                        text: 'Milestone status has been successfully updated.',
+                        title: 'Invitations Sent!',
+                        text: 'Your team members have been successfully invited.',
+                    }).then(() => {
+                        // Remove invited members from the chips and uncheck them
+                        const checkboxes = document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked');
+                        checkboxes.forEach(checkbox => {
+                            checkbox.checked = false;
+                        });
+                        updateSelectedChips();
+
+                        // Redirect to the weeklyMilestone view with the project ID
+                        window.location.href = `/Checklist/weeklyMilestone?id=${selectedProject}`;
                     });
-                    location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invitation Failed',
+                        text: response.message,
+                    });
                 }
             },
             error: function () {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Update Failed',
-                    text: 'An error occurred while sending invitations.',
+                    title: 'An Error Occurred',
+                    text: 'Unable to send invitations. Please try again later.',
                 });
             }
         });
@@ -406,42 +428,79 @@
 
     $("#inviteButton").on("click", function () {
         const chips = document.getElementsByClassName("chip");
-        const roles = document.querySelectorAll("#role");
         let userArr = [];
         let roleArr = [];
         let project = document.getElementById("projectDropdown").value;
 
-        for (i = 0; i < chips.length; i++) {
-            //alert(chips.item(i).getAttribute("data-value"));
-            //alert(chips.item(i).getAttribute("data-value") + "with role: " + roles[i].value);
-            userArr[i] = chips.item(i).getAttribute("data-value");
-            roleArr[i] = roles[i].value
-        };
+        for (let i = 0; i < chips.length; i++) {
+            // Get the associated role dropdown for the current chip
+            const roleDropdown = chips[i].querySelector("select.role-dropdown");
+            if (roleDropdown) {
+                userArr[i] = chips.item(i).getAttribute("data-value");
+                roleArr[i] = roleDropdown.value;
+            } else {
+                console.error(`Role dropdown not found for chip at index ${i}`);
+            }
+        }
+
+        if (!project) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Missing Project',
+                text: 'Please select a project.',
+            });
+            return;
+        }
+
+        if (userArr.length === 0 || roleArr.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Missing Members or Roles',
+                text: 'Please select members and assign roles before inviting.',
+            });
+            return;
+        }
 
         $.ajax({
             url: "@Url.Action("EmailInvitees", "Checklist")",
             type: "POST",
-            data: {"users": userArr, "roles": roleArr, "project": project},
+            data: { "users": userArr, "roles": roleArr, "project": project },
             success: function (res) {
-                if (res.message == "Success") {
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Status Updated!',
-                            text: 'Milestone status has been successfully updated.',
+                if (res.message === "Success") {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Invitation Sent!',
+                        text: 'Your team members have been successfully invited.',
+                    }).then(() => {
+                        // Remove invited members from the chips and uncheck them
+                        const checkboxes = document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked');
+                        checkboxes.forEach(checkbox => {
+                            checkbox.checked = false;
                         });
-                        location.reload();
+                        updateSelectedChips();
 
-                }
-
-                else {
+                        // Redirect to the weeklyMilestone view with the project ID
+                        window.location.href = `/Checklist/weeklyMilestone?id=${project}`;
+                    });
+                } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Update Failed',
-                        text: 'An error occurred while sending invitations.' + res.message,
+                        title: 'Invitation Failed',
+                        text: 'An error occurred while sending invitations. ' + res.message,
                     });
                 }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'An Error Occurred',
+                    text: 'Unable to send invitations. Please try again later.',
+                });
             }
         });
     });
 </script>
+
+
+
+

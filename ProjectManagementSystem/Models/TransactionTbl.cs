@@ -12,8 +12,15 @@ namespace ProjectManagementSystem.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class ChecklistTable
+    public partial class TransactionTbl
     {
-        public int checklist_id { get; set; }
+        public int transaction_id { get; set; }
+        public Nullable<int> project_id { get; set; }
+        public Nullable<bool> registration_check { get; set; }
+        public Nullable<bool> teammate_check { get; set; }
+        public Nullable<bool> upload_check { get; set; }
+        public Nullable<bool> is_complete { get; set; }
+        public Nullable<System.DateTime> transaction_date { get; set; }
+        public string transaction_user { get; set; }
     }
 }
