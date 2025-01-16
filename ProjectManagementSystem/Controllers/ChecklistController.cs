@@ -309,7 +309,7 @@ namespace ProjectManagementSystem.Controllers
                                                 UserId = g.Key.user_id,
                                                 ProjectTitle = g.Key.project_title,
                                                 MilestoneName = g.Key.milestone_name,
-                                                MilestonePosition = g.Key.milestone_position,
+                                                MilestonePosition = g.Key.milestone_position, // sorting of milestone 
                                                 Tasks = g.Select(x => new
                                                 {
                                                     x.task.task_start,
@@ -597,7 +597,7 @@ namespace ProjectManagementSystem.Controllers
                         Initials = !string.IsNullOrEmpty(pm.name) && pm.name.Split(' ').Length > 2
                             ? pm.name.Split(' ')[0].Substring(0, 1) + pm.name.Split(' ')[1].Substring(0, 1)
                             : "N/A",
-                    //Initials = pm.name,
+            
                     Email = pm.email
                     })
                     .ToList();
@@ -1457,32 +1457,31 @@ namespace ProjectManagementSystem.Controllers
                                 Text = @"
                             <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
                                 <div style='text-align: center; margin-bottom: 20px;'>
-                                    <img src='~/AdminLTE-3.2.0/dist/img/ekk.jpg' alt='Eldar Logo' style='max-width: 80px; border-radius: 50%; margin-bottom: 20px;'>
-                                    <h1 style='font-size: 24px; color: #66339A; margin: 0;'>You have been added to the project </h1> <span style='font-size: 16px; font-weight: bold; color: #66339A;'><i>" + userProject + @"</i></span>
-                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>Get started on your new assignment with just one click.</p>
+                              
+                                    <h1 style='font-size: 26px; color: #66339A; margin: 0;'>Welcome to the Project!</h1>
+                                    <h2 style='font-size: 20px; color: #333; margin: 10px 0;'>Project: <b>" + userProject + @"</b></h2>
+                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>We’re thrilled to have you on board! Let’s make some magic happen.</p>
                                 </div>
                                 <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);'>
-                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Magical Day, " + userName + @"!</p>
-               
+                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Hello, " + userName + @"!</p>
                                     <p style='font-size: 14px; color: #555;'>
-                                        <b>Your Role:</b> <span style='color: #333;'>" + userRole + @"</span><br>
-                             
+                                        You've been officially added to the project <b>" + userProject + @"</b> as a <b>" + userRole + @"</b>.;
                                     </p>
                                     <p style='font-size: 14px; color: #555; margin-top: 20px;'>
-                                       Please click the button to get started:
+                                        Ready to dive in? Click the button below to explore your tasks and milestones:
                                     </p>
                                     <div style='text-align: center; margin: 30px 0;'>
                                         <a href='http://localhost:60297/Checklist/weeklyMilestone?id=" + project + "&title=" + title + @"'
-                                           style='display: inline-block; padding: 12px 30px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 14px;'>
-                                           View Project
+                                           style='display: inline-block; padding: 14px 40px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 16px;'>
+                                           Get Started
                                         </a>
                                     </div>
                                     <p style='font-size: 14px; color: #555; text-align: center;'>
-                                        Need assistance? Please don’t hesitate to reach out.
+                                        Need help or have questions? Don’t hesitate to reach out. We’re here to support you every step of the way!
                                     </p>
                                 </div>
                                 <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
-                                    <i>*This is an automated email from the Project Management System. Please do not reply. For any concerns, kindly contact your immediate supervisor or reach out to ITS at <b>LOCAL: 132</b>.</i>
+                                    <i>*This is an automated email from the Project Management System. Please do not reply. For assistance, contact your supervisor or ITS at <b>LOCAL: 132</b>.</i>
                                 </div>
                             </div>"
                             };

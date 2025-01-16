@@ -50,6 +50,23 @@
           <Property Name="path_file" Type="varchar(max)" />
           <Property Name="details_id" Type="int" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ProjectManagementDB.dbo.ChecklistSetup' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ChecklistSetup">
+          <Key>
+            <PropertyRef Name="cl_sett_id" />
+          </Key>
+          <Property Name="cl_sett_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="checklist_name" Type="nvarchar" MaxLength="100" />
+          <Property Name="date_created" Type="datetime" />
+          <Property Name="date_removed" Type="datetime" />
+          <Property Name="is_active" Type="bit" />
+          <Property Name="created_by" Type="nvarchar" MaxLength="100" />
+          <Property Name="division" Type="nvarchar" MaxLength="50" />
+          <Property Name="milestone_id" Type="int" />
+          <Property Name="project_specific" Type="bit" />
+          <Property Name="main_id" Type="int" />
+        </EntityType>
         <EntityType Name="ChecklistSubmissions">
           <Key>
             <PropertyRef Name="submission_id" />
@@ -64,35 +81,9 @@
         </EntityType>
         <EntityType Name="ChecklistTable">
           <Key>
-            <PropertyRef Name="localId" />
+            <PropertyRef Name="checklist_id" />
           </Key>
-          <Property Name="localId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="projectId" Type="nvarchar" MaxLength="20" />
-          <Property Name="id" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="sequenceId" Type="int" />
-          <Property Name="text" Type="varchar" MaxLength="50" />
-          <Property Name="duration" Type="int" Nullable="false" />
-          <Property Name="start_date" Type="date" />
-          <Property Name="end_date" Type="date" />
-          <Property Name="parent" Type="int" />
-          <Property Name="projectReference" Type="int" />
-          <Property Name="source" Type="int" />
-          <Property Name="target" Type="int" />
-          <Property Name="type" Type="varchar" MaxLength="50" />
-          <Property Name="ofYear" Type="int" />
-          <Property Name="startWeek" Type="int" />
-          <Property Name="endWeek" Type="int" />
-          <Property Name="title" Type="varchar" MaxLength="50" />
-          <Property Name="projectType" Type="nvarchar" MaxLength="50" />
-          <Property Name="status" Type="nvarchar" MaxLength="20" />
-          <Property Name="color" Type="nvarchar" MaxLength="5" />
-          <Property Name="details" Type="nvarchar" MaxLength="250" />
-          <Property Name="dateInitial" Type="datetime" />
-          <Property Name="dateFinished" Type="datetime" />
-          <Property Name="project_owner" Type="nvarchar" MaxLength="255" />
-          <Property Name="project_name" Type="nvarchar" MaxLength="255" />
-          <Property Name="process" Type="nvarchar" MaxLength="50" />
-          <Property Name="isUnscheduled" Type="bit" />
+          <Property Name="checklist_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="DetailsTbl">
           <Key>
@@ -214,6 +205,21 @@
           <Property Name="RoleName" Type="varchar" MaxLength="255" />
         </EntityType>
         <!--Errors Found During Generation:
+warning 6002: The table/view 'ProjectManagementDB.dbo.TransactionTbl' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="TransactionTbl">
+          <Key>
+            <PropertyRef Name="transaction_id" />
+          </Key>
+          <Property Name="transaction_id" Type="int" Nullable="false" />
+          <Property Name="project_id" Type="int" />
+          <Property Name="registration_check" Type="bit" />
+          <Property Name="teammate_check" Type="bit" />
+          <Property Name="upload_check" Type="bit" />
+          <Property Name="is_complete" Type="bit" />
+          <Property Name="transaction_date" Type="datetime" />
+          <Property Name="transaction_user" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <!--Errors Found During Generation:
 warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
         <EntityType Name="UserRoles">
           <Property Name="user_id" Type="int" />
@@ -287,6 +293,32 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatus" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ChecklistSetup" EntityType="Self.ChecklistSetup" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ChecklistSetup].[cl_sett_id] AS [cl_sett_id], 
+    [ChecklistSetup].[checklist_name] AS [checklist_name], 
+    [ChecklistSetup].[date_created] AS [date_created], 
+    [ChecklistSetup].[date_removed] AS [date_removed], 
+    [ChecklistSetup].[is_active] AS [is_active], 
+    [ChecklistSetup].[created_by] AS [created_by], 
+    [ChecklistSetup].[division] AS [division], 
+    [ChecklistSetup].[milestone_id] AS [milestone_id], 
+    [ChecklistSetup].[project_specific] AS [project_specific], 
+    [ChecklistSetup].[main_id] AS [main_id]
+    FROM [dbo].[ChecklistSetup] AS [ChecklistSetup]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="TransactionTbl" EntityType="Self.TransactionTbl" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [TransactionTbl].[transaction_id] AS [transaction_id], 
+    [TransactionTbl].[project_id] AS [project_id], 
+    [TransactionTbl].[registration_check] AS [registration_check], 
+    [TransactionTbl].[teammate_check] AS [teammate_check], 
+    [TransactionTbl].[upload_check] AS [upload_check], 
+    [TransactionTbl].[is_complete] AS [is_complete], 
+    [TransactionTbl].[transaction_date] AS [transaction_date], 
+    [TransactionTbl].[transaction_user] AS [transaction_user]
+    FROM [dbo].[TransactionTbl] AS [TransactionTbl]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_MilestoneTbl_MainTable" Association="Self.FK_MilestoneTbl_MainTable">
             <End Role="MainTable" EntitySet="MainTable" />
             <End Role="MilestoneTbl" EntitySet="MilestoneTbl" />
@@ -312,6 +344,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="Roles" EntityType="ProjectManagementDBModel.Role" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
           <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
+          <EntitySet Name="ChecklistSetups" EntityType="ProjectManagementDBModel.ChecklistSetup" />
+          <EntitySet Name="TransactionTbls" EntityType="ProjectManagementDBModel.TransactionTbl" />
           <AssociationSet Name="FK_MilestoneTbl_MainTable" Association="ProjectManagementDBModel.FK_MilestoneTbl_MainTable">
             <End Role="MainTable" EntitySet="MainTables" />
             <End Role="MilestoneTbl" EntitySet="MilestoneTbls" />
@@ -376,35 +410,9 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
         </EntityType>
         <EntityType Name="ChecklistTable">
           <Key>
-            <PropertyRef Name="localId" />
+            <PropertyRef Name="checklist_id" />
           </Key>
-          <Property Name="localId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="projectId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="id" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="sequenceId" Type="Int32" />
-          <Property Name="text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="duration" Type="Int32" Nullable="false" />
-          <Property Name="start_date" Type="DateTime" Precision="0" />
-          <Property Name="end_date" Type="DateTime" Precision="0" />
-          <Property Name="parent" Type="Int32" />
-          <Property Name="projectReference" Type="Int32" />
-          <Property Name="source" Type="Int32" />
-          <Property Name="target" Type="Int32" />
-          <Property Name="type" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ofYear" Type="Int32" />
-          <Property Name="startWeek" Type="Int32" />
-          <Property Name="endWeek" Type="Int32" />
-          <Property Name="title" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="projectType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="color" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
-          <Property Name="details" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="dateInitial" Type="DateTime" Precision="3" />
-          <Property Name="dateFinished" Type="DateTime" Precision="3" />
-          <Property Name="project_owner" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="project_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="process" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="isUnscheduled" Type="Boolean" />
+          <Property Name="checklist_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <EntityType Name="DetailsTbl">
           <Key>
@@ -566,6 +574,34 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="milestone_name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="delay" Type="Int32" />
         </EntityType>
+        <EntityType Name="ChecklistSetup">
+          <Key>
+            <PropertyRef Name="cl_sett_id" />
+          </Key>
+          <Property Name="cl_sett_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="checklist_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="date_created" Type="DateTime" Precision="3" />
+          <Property Name="date_removed" Type="DateTime" Precision="3" />
+          <Property Name="is_active" Type="Boolean" />
+          <Property Name="created_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="milestone_id" Type="Int32" />
+          <Property Name="project_specific" Type="Boolean" />
+          <Property Name="main_id" Type="Int32" />
+        </EntityType>
+        <EntityType Name="TransactionTbl">
+          <Key>
+            <PropertyRef Name="transaction_id" />
+          </Key>
+          <Property Name="transaction_id" Type="Int32" Nullable="false" />
+          <Property Name="project_id" Type="Int32" />
+          <Property Name="registration_check" Type="Boolean" />
+          <Property Name="teammate_check" Type="Boolean" />
+          <Property Name="upload_check" Type="Boolean" />
+          <Property Name="is_complete" Type="Boolean" />
+          <Property Name="transaction_date" Type="DateTime" Precision="3" />
+          <Property Name="transaction_user" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
         <Association Name="FK_MilestoneTbl_MainTable">
           <End Type="ProjectManagementDBModel.MainTable" Role="MainTable" Multiplicity="0..1" />
           <End Type="ProjectManagementDBModel.MilestoneTbl" Role="MilestoneTbl" Multiplicity="*" />
@@ -649,33 +685,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="ChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistTable">
               <MappingFragment StoreEntitySet="ChecklistTable">
-                <ScalarProperty Name="isUnscheduled" ColumnName="isUnscheduled" />
-                <ScalarProperty Name="process" ColumnName="process" />
-                <ScalarProperty Name="project_name" ColumnName="project_name" />
-                <ScalarProperty Name="project_owner" ColumnName="project_owner" />
-                <ScalarProperty Name="dateFinished" ColumnName="dateFinished" />
-                <ScalarProperty Name="dateInitial" ColumnName="dateInitial" />
-                <ScalarProperty Name="details" ColumnName="details" />
-                <ScalarProperty Name="color" ColumnName="color" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="projectType" ColumnName="projectType" />
-                <ScalarProperty Name="title" ColumnName="title" />
-                <ScalarProperty Name="endWeek" ColumnName="endWeek" />
-                <ScalarProperty Name="startWeek" ColumnName="startWeek" />
-                <ScalarProperty Name="ofYear" ColumnName="ofYear" />
-                <ScalarProperty Name="type" ColumnName="type" />
-                <ScalarProperty Name="target" ColumnName="target" />
-                <ScalarProperty Name="source" ColumnName="source" />
-                <ScalarProperty Name="projectReference" ColumnName="projectReference" />
-                <ScalarProperty Name="parent" ColumnName="parent" />
-                <ScalarProperty Name="end_date" ColumnName="end_date" />
-                <ScalarProperty Name="start_date" ColumnName="start_date" />
-                <ScalarProperty Name="duration" ColumnName="duration" />
-                <ScalarProperty Name="text" ColumnName="text" />
-                <ScalarProperty Name="sequenceId" ColumnName="sequenceId" />
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="projectId" ColumnName="projectId" />
-                <ScalarProperty Name="localId" ColumnName="localId" />
+                <ScalarProperty Name="checklist_id" ColumnName="checklist_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -843,6 +853,36 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
                 <ScalarProperty Name="project_owner" ColumnName="project_owner" />
                 <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
                 <ScalarProperty Name="status_id" ColumnName="status_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ChecklistSetups">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistSetup">
+              <MappingFragment StoreEntitySet="ChecklistSetup">
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
+                <ScalarProperty Name="project_specific" ColumnName="project_specific" />
+                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="created_by" ColumnName="created_by" />
+                <ScalarProperty Name="is_active" ColumnName="is_active" />
+                <ScalarProperty Name="date_removed" ColumnName="date_removed" />
+                <ScalarProperty Name="date_created" ColumnName="date_created" />
+                <ScalarProperty Name="checklist_name" ColumnName="checklist_name" />
+                <ScalarProperty Name="cl_sett_id" ColumnName="cl_sett_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TransactionTbls">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.TransactionTbl">
+              <MappingFragment StoreEntitySet="TransactionTbl">
+                <ScalarProperty Name="transaction_user" ColumnName="transaction_user" />
+                <ScalarProperty Name="transaction_date" ColumnName="transaction_date" />
+                <ScalarProperty Name="is_complete" ColumnName="is_complete" />
+                <ScalarProperty Name="upload_check" ColumnName="upload_check" />
+                <ScalarProperty Name="teammate_check" ColumnName="teammate_check" />
+                <ScalarProperty Name="registration_check" ColumnName="registration_check" />
+                <ScalarProperty Name="project_id" ColumnName="project_id" />
+                <ScalarProperty Name="transaction_id" ColumnName="transaction_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

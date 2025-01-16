@@ -198,6 +198,7 @@
     }
 
 </style>
+
 <script>
     function AddProject() {
         const projectDropdown = document.getElementById("projectDropdown");
@@ -238,7 +239,8 @@
             success: function (response) {
                 if (response.status) {
                     alert(response.message);
-                    location.reload();
+                    // Redirect to the InviteTeammates view
+                    window.location.href = "/Checklist/InviteTeammates?projectTitle=" + encodeURIComponent(projectDropdown.value);
                 } else {
                     displayError(response.message);
                 }
@@ -306,6 +308,7 @@
         }
     });
 </script>
+
 
 
 

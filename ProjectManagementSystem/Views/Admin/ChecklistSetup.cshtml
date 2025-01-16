@@ -1,0 +1,100 @@
+﻿@model IEnumerable<ProjectManagementSystem.Models.ChecklistSettingsViewModel>
+
+@{
+    ViewBag.Title = "Checklist Setup";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm p-4">
+        <h2 class="text-center">Checklist Setup</h2>
+        <p class="text-center text-muted">Manage approval settings for tasks within the divisions' projects and milestones.</p>
+    </div>
+
+    <!-- Division -->
+    <div class="form-group mt-4">
+        <label for="divisionDropdown">Division</label>
+        <select id="divisionDropdown" class="form-control">
+            <option value="">Select Division</option>
+            @foreach (var division in ViewBag.Divisions)
+            {
+                <option value="@division">@division</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group mt-3">
+        <label for="milestoneChecklist">Milestones</label>
+        <div id="milestoneChecklist" class="milestone-checklist">
+        </div>
+        <p id="noMilestonesMessage" class="text-muted mt-2" style="display: none;">No milestones available for this division.</p>
+    </div>
+</div>
+
+<style>
+    .milestone-checklist {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 5px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .custom-checkbox {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .custom-checkbox input[type="checkbox"] {
+        margin-right: 10px;
+    }
+
+    .custom-checkbox label {
+        margin: 0;
+    }
+</style>
+
+<script>
+    document.getElementById("divisionDropdown").addEventListener("change", function () {
+        const selectedDivision = this.value.trim();
+        const milestoneChecklist = document.getElementById("milestoneChecklist");
+        const noMilestonesMessage = document.getElementById("noMilestonesMessage");
+
+        milestoneChecklist.innerHTML = "";
+        noMilestonesMessage.style.display = "none";
+
+        if (selectedDivision) {
+            fetch(`/Admin/GetMilestonesByDivision?division=${encodeURIComponent(selectedDivision)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.length > 0) {
+                        data.forEach(milestone => {
+                            const checkboxDiv = document.createElement("div");
+                            checkboxDiv.className = "custom-checkbox";
+
+                            checkboxDiv.innerHTML = `
+                                <input type="checkbox" id="milestone_${milestone.MilestoneId}" value="${milestone.MilestoneId}">
+                                <label for="milestone_${milestone.MilestoneId}">${milestone.MilestoneName}</label>
+                            `;
+
+                            milestoneChecklist.appendChild(checkboxDiv);
+                        });
+                    } else {
+                        noMilestonesMessage.style.display = "block";
+                        noMilestonesMessage.textContent = "No milestones available for this division.";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching milestones:", error);
+                    noMilestonesMessage.style.display = "block";
+                    noMilestonesMessage.textContent = "An error occurred while fetching milestones.";
+                });
+        }
+    });
+</script>

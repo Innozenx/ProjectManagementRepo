@@ -183,6 +183,10 @@
     .table-hover tbody tr:hover {
         background-color: #e7dff3;
     }
+    .duedate-colors{
+        font-size: 14px;
+    }
+    
 
 </style>
 
@@ -250,7 +254,7 @@
                             <th>PROJECTS</th>
                             @foreach (var milestoneName in Model.UniqueMilestoneNames)
                             {
-                                <th>@milestoneName <br />(OS/CS)</th>
+                                <th>@milestoneName</th>
                             }
                         </tr>
                     </thead>
@@ -259,7 +263,7 @@
                         {
                             <tr>
                                 <td>
-                                    <a href="javascript:void(0);" onclick="toDetailedView('@projectGroup.First().MainId', '@projectGroup.Key')">
+                                    <a href="javascript:void(0);" style="font-size:14px;" onclick="toDetailedView('@projectGroup.First().MainId', '@projectGroup.Key')">
                                         @projectGroup.Key
                                     </a>
                                 </td>
@@ -272,7 +276,7 @@
                                         ? milestoneTasks.Max(pm => pm.EndDate.Value)
                                         : (DateTime?)null;
                                     var osFormatted = latestEndDate.HasValue
-                                        ? $"WW {latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
+                                        ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00} os"
                                         : "-";
 
                                     // CS
@@ -280,7 +284,7 @@
                                         ? milestoneTasks.Max(pm => pm.CurrentCompletionDate.Value)
                                         : latestEndDate;
                                     var csFormatted = currentEndDate.HasValue
-                                        ? $"WW {currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
+                                        ? $"WW{currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00} cs"
                                         : "-";
 
                                     // kunyari foresee na nilang madedelay project, hindi muna sya mag display sa dashboard
