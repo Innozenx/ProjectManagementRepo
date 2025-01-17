@@ -557,5 +557,43 @@ namespace ProjectManagementSystem.Models
         public bool ProjectSpecific { get; set; } 
         public int? MainId { get; set; }
     }
+
+    public class ChecklistSetupModel
+    {
+        public int setting_id { get; set; }
+        public string checklist_name { get; set; }
+        public DateTime date_created { get; set; }
+        public DateTime date_removed { get; set; }
+        public bool is_active { get; set; }
+        public string created_by { get; set; }
+        public string division { get; set; }
+        public int milestone_id { get; set; }
+        public bool project_specific { get; set; }
+        public int main_id { get; set; }
+    }
+
+    public class ChecklistSubmissionModel
+    {
+        public int submission_id { get; set; }
+        public string submission_description { get; set; }
+        public string task_name { get; set; }
+        public int task_id { get; set; }
+        public string submitted_by { get; set; }
+        public DateTime submission_date { get; set; }
+        public bool is_approved { get; set; }
+        public string filepath { get; set; }
+    }
+
+    public class TaskContainerModel
+    {
+        public string taskname { get; set; }
+        public bool? approved { get; set; }
+        public List<string> approvers { get; set; }
+        public int? task_id { get; set; }
+        public int? milestone_id { get; set; }
+        public int? project_id { get; set; }
+        public string attachment { get; set; }
+        public string reason { get; set; }
+    }
 }
 

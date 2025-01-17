@@ -926,7 +926,7 @@
 
         $("#milestoneDropdown").on("change", function () {
             const milestoneId = $(this).val();
-            loadTasksForMilestone(milestoneId);
+            loadTasksForMilestone(milestoneId, @(TempData["entry"]));
         });
 
         $("#delayed_yes").on("click", function () {
@@ -1015,7 +1015,7 @@
             });
         }
 
-        function loadTasksForMilestone(milestoneId) {
+        function loadTasksForMilestone(milestoneId, mainId) {
             const checklistTableBody = $("#checklistTableBody");
 
             if (!milestoneId) {
@@ -1026,20 +1026,31 @@
             $.ajax({
                 url: "/Checklist/GetTasksForMilestone",
                 type: "GET",
-                data: { milestoneId },
+                data: { milestoneId, mainId },
                 success: function (response) {
                     checklistTableBody.empty();
                     if (response.success && response.data.length > 0) {
                         response.data.forEach(task => {
                             checklistTableBody.append(`
                                         <tr>
-                                            <td>${task.taskname}</td>
-                                            <td>${task.approved ? "Approved" : "Pending"}</td>
-                                            <td><input type="file" class="form-control-file" id="${task.taskname} + file"></td>
+                                            <td id="${task.task_id}name">${task.taskname}</td>
+                                            <td>${task.approved ? "Approved" : task.reason != null ? "Disapproved" : "Pending"}</td>
+                                            <td>${task.attachment != null
+                                                ? `<a href="${task.attachment}">View Attachment</a>` 
+                                                : `<input type="file" class="form-control-file" id="${task.task_id}file">`}
+                                            </td>
                                             <td>${task.approvers.join(", ") || "N/A"}</td>
                                             <td>
-                                                <button class="btn btn-sm btn-success" onclick="submitApproval(${task.task_id})">Submit</button>
+                                                ${task.attachment != null
+                                                ? task.approved == true
+                                                    ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
+                                                    : task.reason != null
+                                                        ? `<button class="btn btn-sm btn-danger" disabled>Disapproved</button>`
+                                                        : `<button class="btn btn-sm btn-warning" disabled>Pending Approval</button>`
+                                                    : `<button class="btn btn-sm btn-success" onclick="submitApproval(${task.task_id})">Submit</button>`}         
                                             </td>
+                                            <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
+                                            <td class="d-none" id="${task.task_id}project">${task.project_id}</td>
                                         </tr>
                                     `);
                         });
@@ -1054,12 +1065,53 @@
         }
 
         function submitApproval(task_id) {
+            var inputFile = $("#" + task_id + "file");
+            var inputName = $("#" + task_id + "name");
+            var inputMilestone = $("#" + task_id + "milestone");
+            var inputProject = $("#" + task_id + "project");
+
+            var fileupload = inputFile.get(0);
+            var taskname = inputName.text();
+            var taskmilestone = inputMilestone.text();
+            var taskproject = inputProject.text();
+
+            var files = fileupload.files;
+
+            var fileData = new FormData();
+
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(files[i].name, files[i]);
+            }
+
+            fileData.append("name", taskname);
+            fileData.append("id", task_id);
+            fileData.append("milestone_id", taskmilestone);
+            fileData.append("project_id", taskproject);
+
             $.ajax({
                 type: "POST",
                 url: "@Url.Action("UploadFile", "FileUpload")",
-                data: {},
-                success: function () {
+                contentType: false,
+                processData: false,
+                data: fileData,
+                success: function (res) {
+                    if (res.message == "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'File Upload Successful!',
+                            text: 'File successfully submitted to the server!',
+                        }).then(function () {
+                            location.reload();
+                        });
+                    }
 
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Upload Failed',
+                            text: 'An error occurred while uploading.',
+                        });
+                    }
                 }
             });
         }
