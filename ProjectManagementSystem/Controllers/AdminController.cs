@@ -539,10 +539,10 @@ namespace ProjectManagementSystem.Controllers
         {
             if (string.IsNullOrEmpty(division))
             {
-                return Json(new { success = false, message = "Division not specified." }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Division not found." }, JsonRequestBehavior.AllowGet);
             }
 
-            var uniqueMilestones = db.MilestoneTbls
+            var milestones = db.MilestoneTbls
                 .Join(db.MainTables,
                       milestone => milestone.main_id,
                       main => main.main_id,
@@ -551,21 +551,23 @@ namespace ProjectManagementSystem.Controllers
                           Division = main.division,
                           MilestoneId = milestone.milestone_id,
                           MilestoneName = milestone.milestone_name,
-                          MilestonePosition = milestone.milestone_position
-                          
+                          Position = milestone.milestone_position
                       })
                 .Where(x => x.Division == division)
-                .GroupBy(x => x.MilestoneName) 
-                .Select(group => group.FirstOrDefault()) 
-                .Select(m => new
+                .GroupBy(x => x.MilestoneName) // grouping of milestones
+                .Select(group => group.OrderBy(m => m.Position).FirstOrDefault()) // avoiding of milestone duplicates
+                .Select(x => new
                 {
-                    MilestoneId = m.MilestoneId,
-                    MilestoneName = m.MilestoneName,
-                    MilestonePosition = m.MilestonePosition
+                    x.MilestoneId,
+                    x.MilestoneName,
+                    x.Position
                 })
+                .OrderBy(m => m.Position) // milestones in order based from csv
                 .ToList();
 
-            return Json(uniqueMilestones, JsonRequestBehavior.AllowGet);
+            return Json(milestones, JsonRequestBehavior.AllowGet);
         }
+
+
     }
 }
