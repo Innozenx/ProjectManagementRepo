@@ -61,6 +61,7 @@
         const milestoneChecklist = document.getElementById("milestoneChecklist");
         const noMilestonesMessage = document.getElementById("noMilestonesMessage");
 
+   
         milestoneChecklist.innerHTML = "";
         noMilestonesMessage.style.display = "none";
 
@@ -74,6 +75,9 @@
                 })
                 .then(data => {
                     if (data.length > 0) {
+                      
+                        data.sort((a, b) => a.Position - b.Position);
+
                         data.forEach(milestone => {
                             const checkboxDiv = document.createElement("div");
                             checkboxDiv.className = "custom-checkbox";

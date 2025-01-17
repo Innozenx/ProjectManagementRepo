@@ -168,8 +168,6 @@ namespace ProjectManagementSystem.Controllers
                     userRole = userDetails.JobLevel.Value,
                     userDivision = userDivision
                 };
-
-    
             }
             else
             {
