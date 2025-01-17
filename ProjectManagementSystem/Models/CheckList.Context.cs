@@ -42,7 +42,5 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<TransactionTbl> TransactionTbls { get; set; }
         public virtual DbSet<WeeklyChecklistTable> WeeklyChecklistTables { get; set; }
         public virtual DbSet<WeeklyStatu> WeeklyStatus { get; set; }
-        public virtual DbSet<ChecklistSetup> ChecklistSetups { get; set; }
-        public virtual DbSet<TransactionTbl> TransactionTbls { get; set; }
     }
 }
