@@ -33,6 +33,7 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<ChecklistSubmission> ChecklistSubmissions { get; set; }
         public virtual DbSet<ChecklistTable> ChecklistTables { get; set; }
         public virtual DbSet<DetailsTbl> DetailsTbls { get; set; }
+        public virtual DbSet<FixedChecklistTbl> FixedChecklistTbls { get; set; }
         public virtual DbSet<MainTable> MainTables { get; set; }
         public virtual DbSet<MilestoneTbl> MilestoneTbls { get; set; }
         public virtual DbSet<ProjectMembersTbl> ProjectMembersTbls { get; set; }

@@ -116,6 +116,17 @@
           <Property Name="excel_id" Type="int" />
           <Property Name="current_task_end" Type="datetime" />
         </EntityType>
+        <EntityType Name="FixedChecklistTbl">
+          <Key>
+            <PropertyRef Name="Fixed_Checklist_ID" />
+          </Key>
+          <Property Name="Fixed_Checklist_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Checklist_ID" Type="int" />
+          <Property Name="Milestone_ID" Type="int" />
+          <Property Name="Date_Created" Type="date" />
+          <Property Name="Project_Specific" Type="bit" />
+          <Property Name="Main_ID" Type="int" />
+        </EntityType>
         <EntityType Name="MainTable">
           <Key>
             <PropertyRef Name="main_id" />
@@ -267,6 +278,30 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="milestone_name" Type="varchar" MaxLength="255" />
           <Property Name="delay" Type="int" />
         </EntityType>
+        <Association Name="FK_FixedChecklistTbl_ChecklistSetup">
+          <End Role="ChecklistSetup" Type="Self.ChecklistSetup" Multiplicity="0..1" />
+          <End Role="FixedChecklistTbl" Type="Self.FixedChecklistTbl" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ChecklistSetup">
+              <PropertyRef Name="cl_sett_id" />
+            </Principal>
+            <Dependent Role="FixedChecklistTbl">
+              <PropertyRef Name="Checklist_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FixedChecklistTbl_MilestoneTbl">
+          <End Role="MilestoneTbl" Type="Self.MilestoneTbl" Multiplicity="0..1" />
+          <End Role="FixedChecklistTbl" Type="Self.FixedChecklistTbl" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MilestoneTbl">
+              <PropertyRef Name="milestone_id" />
+            </Principal>
+            <Dependent Role="FixedChecklistTbl">
+              <PropertyRef Name="Milestone_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_MilestoneTbl_MainTable">
           <End Role="MainTable" Type="Self.MainTable" Multiplicity="0..1" />
           <End Role="MilestoneTbl" Type="Self.MilestoneTbl" Multiplicity="*" />
@@ -288,6 +323,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="ChecklistSubmissions" EntityType="Self.ChecklistSubmissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChecklistTable" EntityType="Self.ChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DetailsTbl" EntityType="Self.DetailsTbl" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FixedChecklistTbl" EntityType="Self.FixedChecklistTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MainTable" EntityType="Self.MainTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MilestoneTbl" EntityType="Self.MilestoneTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProjectMembersTbl" EntityType="Self.ProjectMembersTbl" Schema="dbo" store:Type="Tables" />
@@ -315,6 +351,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="ChecklistSubmissions" EntityType="ProjectManagementDBModel.ChecklistSubmission" />
           <EntitySet Name="ChecklistTables" EntityType="ProjectManagementDBModel.ChecklistTable" />
           <EntitySet Name="DetailsTbls" EntityType="ProjectManagementDBModel.DetailsTbl" />
+          <EntitySet Name="FixedChecklistTbls" EntityType="ProjectManagementDBModel.FixedChecklistTbl" />
           <EntitySet Name="MainTables" EntityType="ProjectManagementDBModel.MainTable" />
           <EntitySet Name="MilestoneTbls" EntityType="ProjectManagementDBModel.MilestoneTbl" />
           <EntitySet Name="ProjectMembersTbls" EntityType="ProjectManagementDBModel.ProjectMembersTbl" />
@@ -440,6 +477,19 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="excel_id" Type="Int32" />
           <Property Name="current_task_end" Type="DateTime" Precision="3" />
         </EntityType>
+        <EntityType Name="FixedChecklistTbl">
+          <Key>
+            <PropertyRef Name="Fixed_Checklist_ID" />
+          </Key>
+          <Property Name="Fixed_Checklist_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Checklist_ID" Type="Int32" />
+          <Property Name="Milestone_ID" Type="Int32" />
+          <Property Name="Date_Created" Type="DateTime" Precision="0" />
+          <Property Name="Project_Specific" Type="Boolean" />
+          <Property Name="Main_ID" Type="Int32" />
+          <NavigationProperty Name="ChecklistSetup" Relationship="ProjectManagementDBModel.FK_FixedChecklistTbl_ChecklistSetup" FromRole="FixedChecklistTbl" ToRole="ChecklistSetup" />
+          <NavigationProperty Name="MilestoneTbl" Relationship="ProjectManagementDBModel.FK_FixedChecklistTbl_MilestoneTbl" FromRole="FixedChecklistTbl" ToRole="MilestoneTbl" />
+        </EntityType>
         <EntityType Name="MainTable">
           <Key>
             <PropertyRef Name="main_id" />
@@ -475,6 +525,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="target" Type="Int32" />
           <Property Name="completion_date" Type="DateTime" Precision="3" />
           <Property Name="current_completion_date" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="FixedChecklistTbls" Relationship="ProjectManagementDBModel.FK_FixedChecklistTbl_MilestoneTbl" FromRole="MilestoneTbl" ToRole="FixedChecklistTbl" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
@@ -598,7 +649,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -720,6 +771,18 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
                 <ScalarProperty Name="main_id" ColumnName="main_id" />
                 <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
                 <ScalarProperty Name="details_id" ColumnName="details_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FixedChecklistTbls">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.FixedChecklistTbl">
+              <MappingFragment StoreEntitySet="FixedChecklistTbl">
+                <ScalarProperty Name="Main_ID" ColumnName="Main_ID" />
+                <ScalarProperty Name="Project_Specific" ColumnName="Project_Specific" />
+                <ScalarProperty Name="Date_Created" ColumnName="Date_Created" />
+                <ScalarProperty Name="Milestone_ID" ColumnName="Milestone_ID" />
+                <ScalarProperty Name="Checklist_ID" ColumnName="Checklist_ID" />
+                <ScalarProperty Name="Fixed_Checklist_ID" ColumnName="Fixed_Checklist_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -548,7 +548,7 @@ namespace ProjectManagementSystem.Models
     {
         public int ClSettId { get; set; } 
         public string ChecklistName { get; set; } 
-        public DateTime? DateCreated { get; set; } 
+        public string DateCreated { get; set; } 
         public DateTime? DateRemoved { get; set; } 
         public bool IsActive { get; set; } 
         public string CreatedBy { get; set; } 

@@ -14,6 +14,12 @@ namespace ProjectManagementSystem.Models
     
     public partial class ChecklistSetup
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ChecklistSetup()
+        {
+            this.FixedChecklistTbls = new HashSet<FixedChecklistTbl>();
+        }
+    
         public int cl_sett_id { get; set; }
         public string checklist_name { get; set; }
         public Nullable<System.DateTime> date_created { get; set; }
@@ -24,5 +30,8 @@ namespace ProjectManagementSystem.Models
         public Nullable<int> milestone_id { get; set; }
         public Nullable<bool> project_specific { get; set; }
         public Nullable<int> main_id { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<FixedChecklistTbl> FixedChecklistTbls { get; set; }
     }
 }
