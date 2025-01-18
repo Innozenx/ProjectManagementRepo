@@ -25,6 +25,7 @@
         <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyStatu" Width="1.5" PointX="11.75" PointY="10.75" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_FixedChecklistTbl_ChecklistSetup" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_FixedChecklistTbl_MilestoneTbl" />
+
         <AssociationConnector Association="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" />
       </Diagram>
     </edmx:Diagrams>

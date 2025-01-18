@@ -333,14 +333,6 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="TransactionTbl" EntityType="Self.TransactionTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatus" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_FixedChecklistTbl_ChecklistSetup" Association="Self.FK_FixedChecklistTbl_ChecklistSetup">
-            <End Role="ChecklistSetup" EntitySet="ChecklistSetup" />
-            <End Role="FixedChecklistTbl" EntitySet="FixedChecklistTbl" />
-          </AssociationSet>
-          <AssociationSet Name="FK_FixedChecklistTbl_MilestoneTbl" Association="Self.FK_FixedChecklistTbl_MilestoneTbl">
-            <End Role="MilestoneTbl" EntitySet="MilestoneTbl" />
-            <End Role="FixedChecklistTbl" EntitySet="FixedChecklistTbl" />
-          </AssociationSet>
           <AssociationSet Name="FK_MilestoneTbl_MainTable" Association="Self.FK_MilestoneTbl_MainTable">
             <End Role="MainTable" EntitySet="MainTable" />
             <End Role="MilestoneTbl" EntitySet="MilestoneTbl" />
@@ -369,14 +361,6 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="TransactionTbls" EntityType="ProjectManagementDBModel.TransactionTbl" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
           <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
-          <AssociationSet Name="FK_FixedChecklistTbl_ChecklistSetup" Association="ProjectManagementDBModel.FK_FixedChecklistTbl_ChecklistSetup">
-            <End Role="ChecklistSetup" EntitySet="ChecklistSetups" />
-            <End Role="FixedChecklistTbl" EntitySet="FixedChecklistTbls" />
-          </AssociationSet>
-          <AssociationSet Name="FK_FixedChecklistTbl_MilestoneTbl" Association="ProjectManagementDBModel.FK_FixedChecklistTbl_MilestoneTbl">
-            <End Role="MilestoneTbl" EntitySet="MilestoneTbls" />
-            <End Role="FixedChecklistTbl" EntitySet="FixedChecklistTbls" />
-          </AssociationSet>
           <AssociationSet Name="FK_MilestoneTbl_MainTable" Association="ProjectManagementDBModel.FK_MilestoneTbl_MainTable">
             <End Role="MainTable" EntitySet="MainTables" />
             <End Role="MilestoneTbl" EntitySet="MilestoneTbls" />
@@ -441,7 +425,6 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="milestone_id" Type="Int32" />
           <Property Name="project_specific" Type="Boolean" />
           <Property Name="main_id" Type="Int32" />
-          <NavigationProperty Name="FixedChecklistTbls" Relationship="ProjectManagementDBModel.FK_FixedChecklistTbl_ChecklistSetup" FromRole="ChecklistSetup" ToRole="FixedChecklistTbl" />
         </EntityType>
         <EntityType Name="ChecklistSubmission">
           <Key>
@@ -654,30 +637,6 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="milestone_name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="delay" Type="Int32" />
         </EntityType>
-        <Association Name="FK_FixedChecklistTbl_ChecklistSetup">
-          <End Type="ProjectManagementDBModel.ChecklistSetup" Role="ChecklistSetup" Multiplicity="0..1" />
-          <End Type="ProjectManagementDBModel.FixedChecklistTbl" Role="FixedChecklistTbl" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ChecklistSetup">
-              <PropertyRef Name="cl_sett_id" />
-            </Principal>
-            <Dependent Role="FixedChecklistTbl">
-              <PropertyRef Name="Checklist_ID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_FixedChecklistTbl_MilestoneTbl">
-          <End Type="ProjectManagementDBModel.MilestoneTbl" Role="MilestoneTbl" Multiplicity="0..1" />
-          <End Type="ProjectManagementDBModel.FixedChecklistTbl" Role="FixedChecklistTbl" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MilestoneTbl">
-              <PropertyRef Name="milestone_id" />
-            </Principal>
-            <Dependent Role="FixedChecklistTbl">
-              <PropertyRef Name="Milestone_ID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_MilestoneTbl_MainTable">
           <End Type="ProjectManagementDBModel.MainTable" Role="MainTable" Multiplicity="0..1" />
           <End Type="ProjectManagementDBModel.MilestoneTbl" Role="MilestoneTbl" Multiplicity="*" />

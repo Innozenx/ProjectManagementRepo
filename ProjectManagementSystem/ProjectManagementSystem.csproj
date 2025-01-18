@@ -5126,7 +5126,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\DataTable\" />
-    <Folder Include="Views\FileUpload\" />
     <Folder Include="Views\Products\" />
   </ItemGroup>
   <ItemGroup>
