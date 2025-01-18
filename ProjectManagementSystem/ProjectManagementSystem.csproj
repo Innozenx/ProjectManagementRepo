@@ -349,6 +349,9 @@
     <Compile Include="Models\DetailsTbl.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\FixedChecklistTbl.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Identity_JobDescription.cs">
       <DependentUpon>CMIdentity.tt</DependentUpon>

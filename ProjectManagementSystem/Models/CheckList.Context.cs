@@ -29,18 +29,19 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<AdminList> AdminLists { get; set; }
         public virtual DbSet<ApproversTbl> ApproversTbls { get; set; }
         public virtual DbSet<AttachmentTable> AttachmentTables { get; set; }
+        public virtual DbSet<ChecklistSetup> ChecklistSetups { get; set; }
         public virtual DbSet<ChecklistSubmission> ChecklistSubmissions { get; set; }
         public virtual DbSet<ChecklistTable> ChecklistTables { get; set; }
         public virtual DbSet<DetailsTbl> DetailsTbls { get; set; }
+        public virtual DbSet<FixedChecklistTbl> FixedChecklistTbls { get; set; }
         public virtual DbSet<MainTable> MainTables { get; set; }
         public virtual DbSet<MilestoneTbl> MilestoneTbls { get; set; }
         public virtual DbSet<ProjectMembersTbl> ProjectMembersTbls { get; set; }
         public virtual DbSet<RegistrationTbl> RegistrationTbls { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<TransactionTbl> TransactionTbls { get; set; }
         public virtual DbSet<WeeklyChecklistTable> WeeklyChecklistTables { get; set; }
         public virtual DbSet<WeeklyStatu> WeeklyStatus { get; set; }
-        public virtual DbSet<ChecklistSetup> ChecklistSetups { get; set; }
-        public virtual DbSet<TransactionTbl> TransactionTbls { get; set; }
     }
 }

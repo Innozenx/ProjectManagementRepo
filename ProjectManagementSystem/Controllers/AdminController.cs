@@ -482,7 +482,7 @@ namespace ProjectManagementSystem.Controllers
         {
             try
             {
-      
+                
                 var task = db.DetailsTbls.FirstOrDefault(t => t.details_id == taskId);
                 if (task == null)
                 {
@@ -568,6 +568,72 @@ namespace ProjectManagementSystem.Controllers
             return Json(milestones, JsonRequestBehavior.AllowGet);
         }
 
+        [Authorize(Roles = "PMS_ODCP_ADMIN")]
+        [HttpPost]
+        public JsonResult SaveChecklist(string division, List<int> milestoneIds, string checklistName)
+        {
+            if (string.IsNullOrEmpty(division) || milestoneIds == null || !milestoneIds.Any())
+            {
+                return Json(new { success = false, message = "Please select a division and at least one milestone." });
+            }
 
+            try
+            {
+                using (var transaction = db.Database.BeginTransaction())
+                {
+                    
+                    var existingChecklist = db.ChecklistSetups.FirstOrDefault(c => c.division == division);
+                    if (existingChecklist != null)
+                    {
+                        return Json(new { success = false, message = "Checklist for this division already exists." });
+                    }
+
+                    var newChecklist = new ChecklistSetup
+                    {
+                        checklist_name = checklistName,
+                        division = division,
+                        created_by = User.Identity.Name,
+                        date_created = DateTime.Now
+                    };
+                    db.ChecklistSetups.Add(newChecklist);
+                    db.SaveChanges();
+
+                    
+                    int newChecklistId = newChecklist.cl_sett_id;
+
+                   
+                    foreach (var milestoneId in milestoneIds)
+                    {
+                        
+                        var mainId = db.MilestoneTbls
+                                       .Where(m => m.milestone_id == milestoneId)
+                                       .Select(m => m.main_id)
+                                       .FirstOrDefault();
+
+                        if (mainId != null)
+                        {
+                            var fixedChecklistEntry = new FixedChecklistTbl
+                            {
+                                Checklist_ID = newChecklistId,
+                                Milestone_ID = milestoneId,
+                                Main_ID = mainId,
+                                //Date_Created = DateTime.Now.ToString("yyyy-MM-dd"),
+                                Project_Specific = false // fixed checklist
+                            };
+                            db.FixedChecklistTbls.Add(fixedChecklistEntry);
+                        }
+                    }
+
+                    db.SaveChanges();
+                    transaction.Commit();
+
+                    return Json(new { success = true, message = $"{checklistName} saved successfully." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while saving the checklist.", error = ex.Message });
+            }
+        }
     }
 }

@@ -21,5 +21,11 @@ namespace ProjectManagementSystem.Models
         public string submitted_by { get; set; }
         public Nullable<System.DateTime> submission_date { get; set; }
         public Nullable<bool> is_approved { get; set; }
+        public string filepath { get; set; }
+        public Nullable<int> main_id { get; set; }
+        public Nullable<int> milestone_id { get; set; }
+        public string approved_by { get; set; }
+        public Nullable<System.DateTime> approval_date { get; set; }
+        public string disapproval_reason { get; set; }
     }
 }
