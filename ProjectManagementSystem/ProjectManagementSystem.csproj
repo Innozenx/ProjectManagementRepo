@@ -5028,19 +5028,19 @@
     <Content Include="AdminLTE-3.2.0\plugins\summernote\summernote.min.js.map" />
     <Content Include="AdminLTE-3.2.0\plugins\toastr\toastr.js.map" />
     <Content Include="AdminLTE-3.2.0\README.md" />
-    <EntityDeploy Include="Models\CheckList.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>CheckList.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\CheckList.edmx.diagram">
-      <DependentUpon>CheckList.edmx</DependentUpon>
-    </Content>
     <EntityDeploy Include="Models\CMIdentity.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>CMIdentity.Designer.cs</LastGenOutput>
     </EntityDeploy>
     <Content Include="Models\CMIdentity.edmx.diagram">
       <DependentUpon>CMIdentity.edmx</DependentUpon>
+    </Content>
+    <EntityDeploy Include="Models\CheckList.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>CheckList.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\CheckList.edmx.diagram">
+      <DependentUpon>CheckList.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\dataTables.min.js" />
