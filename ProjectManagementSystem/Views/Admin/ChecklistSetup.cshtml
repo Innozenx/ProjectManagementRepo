@@ -1,53 +1,109 @@
 ﻿@model IEnumerable<ProjectManagementSystem.Models.ChecklistSettingsViewModel>
-
 @{
-    ViewBag.Title = "Checklist Management";
+    ViewBag.Title = "Checklist Setup";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
     var userRole = User.IsInRole("PMS_ODCP_ADMIN") ? "PMS_ODCP_ADMIN" :
                    User.IsInRole("PMS_PROJECT_OWNER") ? "PMS_PROJECT_OWNER" :
                    (User.IsInRole("PMS_PROJECT_MANAGER") ? "PMS_PROJECT_MANAGER" : "Unknown");
+
+    var checklists = ViewBag.Checklists as List<ProjectManagementSystem.Models.ChecklistSettingsViewModel>;
 }
 
 <div class="container mt-5">
     @if (userRole == "PMS_ODCP_ADMIN")
     {
-        <!-- Checklist Setup for ODCP Admin -->
-        <div class="card shadow-sm p-4">
+        <div class="card shadow-sm mb-4 p-4 bg-light">
             <h2 class="text-center text-purple">Checklist Setup</h2>
-            <p class="text-center text-muted">
-                Define a Fixed Checklist for Divisions.
-            </p>
+            <p class="text-center text-muted">Manage fixed checklists for divisions.</p>
         </div>
 
-        <!-- Division Dropdown -->
-        <div class="form-group mt-4">
-            <label for="divisionDropdown" class="form-label">Division</label>
-            <select id="divisionDropdown" class="form-select shadow-sm animated-dropdown">
-                <option value="">Select Division</option>
-                @foreach (var division in ViewBag.Divisions)
-                {
-                    <option value="@division">@division</option>
-                }
-            </select>
-        </div>
-
-        <!-- Milestone Checklist -->
-        <div class="form-group mt-3">
-            <label for="milestoneChecklist" class="form-label">Milestones</label>
-            <div id="milestoneChecklist" class="milestone-checklist border rounded p-3 bg-light">
-                <!-- Checkboxes will be dynamically populated here -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h4 class="text-purple">Create checklist</h4>
+            <p class="text-muted mb-3">Select a division and assign fixed milestones that will be required for their checklist.</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="divisionDropdown" class="form-label">Division</label>
+                    <select id="divisionDropdown" class="form-select shadow-sm">
+                        <option value="">Select Division</option>
+                        @foreach (var division in ViewBag.Divisions)
+                        {
+                            <option value="@division">@division</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6 mt-4 mt-md-0">
+                    <button id="clearSelection" class="btn btn-secondary w-100 shadow-sm" style="display:none;">Clear Selection</button>
+                </div>
             </div>
-            <p id="noMilestonesMessage" class="text-muted mt-2" style="display: none;">
-                No milestones available for this division.
-            </p>
+            <div class="mt-3">
+                <label for="milestoneChecklist" class="form-label">Milestones</label>
+                <div id="milestoneChecklist" class="milestone-checklist border rounded p-3 bg-light">
+                </div>
+                <p id="noMilestonesMessage" class="text-muted mt-2 text-center" style="display: none;">
+                    No milestones available for this division.
+                </p>
+            </div>
+            <div class="d-flex justify-content-center mt-4 gap-2">
+                <button id="saveChecklistButton" class="btn btn-primary shadow-sm px-4" style="display: none;">
+                    Save 
+                </button>
+                <button id="updateChecklistButton" class="btn btn-warning shadow-sm px-4" style="display: none;">
+                    Update
+                </button>
+            </div>
         </div>
 
-        <!-- Save Button -->
-        <div class="d-flex justify-content-center">
-            <button id="saveChecklistButton" class="btn btn-primary mt-4 px-3 py-2 shadow-sm" style="display: none;">
-                Save Checklist
-            </button>
+        <div class="card shadow-sm p-4">
+            <h4 class="text-purple">Saved Checklists</h4>
+            <p class="text-muted">Review and manage your existing checklists.</p>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover shadow-sm">
+                    <thead class="table-primary">
+                        <tr class="text-center">
+                            <th>Checklist Name</th>
+                            <th>Division</th>
+                            <th>Milestones</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (checklists != null && checklists.Any())
+                        {
+                            foreach (var checklist in checklists)
+                            {
+                                <tr>
+                                    <td>@checklist.ChecklistName</td>
+                                    <td>@checklist.Division</td>
+                                    <td>
+                                        <ul class="mb-0">
+                                            @foreach (var milestone in checklist.Milestones)
+                                            {
+                                                <li>@milestone.MilestoneName</li>
+                                            }
+                                        </ul>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-danger delete-checklist-btn shadow-sm" data-id="@checklist.ChecklistId" title="Delete Checklist">
+                                            <i class="fas fa-trash-alt"></i> 
+                                        </button>
+
+                                        <button class="btn btn-sm btn-primary edit-checklist-btn shadow-sm" data-id="@checklist.ChecklistId" data-division="@checklist.Division" title="Edit Checklist">
+                                            <i class="fas fa-edit"></i> 
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No checklists found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     }
 </div>
@@ -59,174 +115,195 @@
     }
 
     .text-purple {
-        color: #470A67;
+        color: #6f42c1;
     }
 
-    .form-select {
-        border: 1px solid #ced4da;
-        padding: 10px;
+    .form-select, .form-control {
         font-size: 16px;
         border-radius: 5px;
         transition: all 0.3s ease-in-out;
     }
 
-        .form-select:hover {
-            border-color: #470A67;
-            box-shadow: 0 0 5px rgba(71, 10, 103, 0.5);
-        }
-
-    .milestone-checklist {
-        max-height: 200px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        padding: 15px;
-        border-radius: 5px;
-        background-color: #ffffff;
-        transition: all 0.3s ease-in-out;
-    }
-
-        .milestone-checklist:hover {
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-        }
-
-    .custom-checkbox {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-
-        .custom-checkbox input[type="checkbox"] {
-            margin-right: 10px;
-        }
-
-    .form-label {
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-
     .btn-primary {
-        background-color: #470A67;
+        background-color: #6f42c1;
         border: none;
-        font-size: 14px;
-        transition: all 0.3s ease-in-out;
     }
 
         .btn-primary:hover {
-            background-color: #5b1186;
-            transform: scale(1.05);
+            background-color: #583099;
         }
 
-    .card {
+    .milestone-checklist {
+        max-height: 250px;
+        overflow-y: auto;
         background-color: #ffffff;
-        border: none;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ced4da;
+        border-radius: 5px;
     }
 
-        .card h2 {
-            font-size: 1.75rem;
-        }
+    .form-check-input:checked {
+        background-color: #6f42c1;
+        border-color: #6f42c1;
+    }
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    document.getElementById("divisionDropdown") ?.addEventListener("change", function () {
-        const selectedDivision = this.value.trim();
+    document.addEventListener("DOMContentLoaded", function () {
+        const divisionDropdown = document.getElementById("divisionDropdown");
         const milestoneChecklist = document.getElementById("milestoneChecklist");
-        const noMilestonesMessage = document.getElementById("noMilestonesMessage");
         const saveButton = document.getElementById("saveChecklistButton");
+        const updateButton = document.getElementById("updateChecklistButton");
+        const noMilestonesMessage = document.getElementById("noMilestonesMessage");
+        const clearSelection = document.getElementById("clearSelection");
 
-        milestoneChecklist.innerHTML = "";
-        noMilestonesMessage.style.display = "none";
-        saveButton.style.display = "none";
+        let editingChecklistId = null;
 
-        if (selectedDivision) {
-            fetch(`/Admin/GetMilestonesByDivision?division=${encodeURIComponent(selectedDivision)}`)
-                .then(response => response.json())
-                .then(data => {
+        const toggleButtons = (isEditing) => {
+            saveButton.style.display = isEditing ? "none" : "block";
+            updateButton.style.display = isEditing ? "block" : "none";
+            clearSelection.style.display = isEditing ? "block" : "none";
+        };
+
+        const fetchMilestones = (division, checklistId = null) => {
+            milestoneChecklist.innerHTML = "";
+            noMilestonesMessage.style.display = "none";
+
+            fetch(`/Admin/GetMilestonesByDivision?division=${encodeURIComponent(division)}&checklistId=${checklistId || ""}`)
+                .then((res) => res.json())
+                .then((data) => {
                     if (data.length > 0) {
-                        saveButton.style.display = "block";
-                        data.sort((a, b) => a.Position - b.Position);
+                        toggleButtons(Boolean(checklistId));
 
-                        data.forEach(milestone => {
-                            const checkboxDiv = document.createElement("div");
-                            checkboxDiv.className = "custom-checkbox";
-
-                            checkboxDiv.innerHTML = `
-                                <input type="checkbox" id="milestone_${milestone.MilestoneId}" value="${milestone.MilestoneId}">
-                                <label for="milestone_${milestone.MilestoneId}">${milestone.MilestoneName}</label>
+                        data.forEach((milestone) => {
+                            const div = document.createElement("div");
+                            div.className = "form-check";
+                            div.innerHTML = `
+                                <input class="form-check-input milestone-checkbox"
+                                       type="checkbox"
+                                       id="milestone_${milestone.MilestoneId}"
+                                       value="${milestone.MilestoneId}"
+                                       ${milestone.IsSelected ? "checked" : ""}>
+                                <label class="form-check-label" for="milestone_${milestone.MilestoneId}">${milestone.MilestoneName}</label>
                             `;
-
-                            milestoneChecklist.appendChild(checkboxDiv);
+                            milestoneChecklist.appendChild(div);
                         });
                     } else {
                         noMilestonesMessage.style.display = "block";
-                        noMilestonesMessage.textContent = "No milestones available for this division.";
                     }
                 })
-                .catch(error => {
-                    noMilestonesMessage.style.display = "block";
-                    noMilestonesMessage.textContent = "Error fetching milestones.";
+                .catch((error) => {
                     console.error("Error fetching milestones:", error);
+                    Swal.fire("Error", "Failed to load milestones. Please try again.", "error");
                 });
-        }
+        };
+
+        divisionDropdown.addEventListener("change", () => {
+            fetchMilestones(divisionDropdown.value.trim());
+        });
+
+        clearSelection.addEventListener("click", () => {
+            divisionDropdown.value = "";
+            milestoneChecklist.innerHTML = "";
+            toggleButtons(false);
+        });
+
+        saveButton.addEventListener("click", function () {
+            const division = divisionDropdown.value.trim();
+            const selectedMilestones = Array.from(document.querySelectorAll(".milestone-checkbox:checked"))
+                .map(chk => parseInt(chk.value));
+
+            if (!division || selectedMilestones.length === 0) {
+                Swal.fire("Warning", "Please select a division and at least one milestone.", "warning");
+                return;
+            }
+
+            const body = {
+                division,
+                milestoneIds: selectedMilestones,
+                checklistName: `${division} Checklist`
+            };
+
+            handleChecklistSave("/Admin/SaveChecklist", "POST", body, "Checklist saved successfully.");
+        });
+
+        document.body.addEventListener("click", function (event) {
+            if (event.target.classList.contains("edit-checklist-btn")) {
+                editingChecklistId = event.target.dataset.id;
+                const division = event.target.dataset.division;
+
+                divisionDropdown.value = division;
+                fetchMilestones(division, editingChecklistId);
+            }
+
+            if (event.target.classList.contains("delete-checklist-btn")) {
+                const checklistId = event.target.dataset.id;
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Are you sure?",
+                    text: "This will permanently delete the checklist.",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "Cancel"
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        handleChecklistSave(`/Admin/DeleteChecklist`, "POST", { checklistId }, "Checklist deleted successfully.");
+                    }
+                });
+            }
+        });
+
+        updateButton.addEventListener("click", function () {
+            const division = divisionDropdown.value.trim();
+            const selectedMilestones = Array.from(document.querySelectorAll(".milestone-checkbox:checked"))
+                .map(chk => parseInt(chk.value));
+
+            if (!division || selectedMilestones.length === 0) {
+                Swal.fire("Warning", "Please select a division and at least one milestone.", "warning");
+                return;
+            }
+
+            const body = {
+                checklistId: editingChecklistId,
+                division,
+                milestoneIds: selectedMilestones
+            };
+
+            handleChecklistSave("/Admin/UpdateChecklist", "POST", body, "Checklist updated successfully.");
+        });
     });
 
-    document.getElementById("saveChecklistButton") ?.addEventListener("click", function () {
-        const division = document.getElementById("divisionDropdown").value.trim();
-        const selectedMilestones = Array.from(
-            document.querySelectorAll("#milestoneChecklist input[type='checkbox']:checked")
-        ).map(checkbox => parseInt(checkbox.value));
-
-        if (!division || selectedMilestones.length === 0) {
-            Swal.fire({
-                icon: "warning",
-                title: "Invalid Input",
-                text: "Please select a division and at least one milestone.",
-                confirmButtonText: "OK"
-            });
-            return;
-        }
-
-        const checklistName = `${division} Checklist`;
-
-        fetch('/Admin/SaveChecklist', {
-            method: 'POST',
+    function handleChecklistSave(url, method, body, successMessage) {
+        fetch(url, {
+            method: method,
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify({ division, milestoneIds: selectedMilestones, checklistName })
+            body: JSON.stringify(body)
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Success",
-                        text: data.message,
-                        confirmButtonText: "OK"
-                    }).then(() => {
-                        window.location.href = "/Admin/ChecklistSettings";
+                    Swal.fire("Success", successMessage, "success").then(() => {
+                        location.reload();
                     });
                 } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: data.message || "An error occurred while saving the checklist.",
-                        confirmButtonText: "OK"
-                    });
-                    console.error(data.error);
+                    Swal.fire("Error", data.message || "An unexpected error occurred.", "error");
                 }
             })
             .catch(error => {
                 console.error("Error:", error);
-                Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "An error occurred. Please try again.",
-                    confirmButtonText: "OK"
-                });
+                Swal.fire("Error", "Failed to complete the request. Please try again.", "error");
             });
-    });
+    }
 </script>
+
+
+
