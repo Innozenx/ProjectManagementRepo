@@ -146,7 +146,7 @@
     {
         <h1>💻</h1>
         <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
-        <h1>Division's Project Overview</h1>
+        <h1>[DIV NAME] Division's Project Overview</h1>
         <p>Track and manage your team's projects.</p>
     }
     else if (User.IsInRole("PMS_Management") || (User.IsInRole("PMS_ODCP_ADMIN")))
@@ -211,19 +211,19 @@
             <div class="top-card-row">
                 <div class="top-card">
                     <i class="fas fa-check-circle"></i>
-                    <p>Completed Tasks</p>
+                    <p>Completed Projects</p>
                     @*<h3>@Model.CompletedTasks</h3>*@
 
                 </div>
                 <div class="top-card">
                     <i class="fas fa-exclamation-circle"></i>
-                    <p>Pending Tasks</p>
+                    <p>Pending Projects</p>
                     @*<h3>@Model.PendingTasks</h3>*@
 
                 </div>
                 <div class="top-card">
                     <i class="fas fa-tasks"></i>
-                    <p>Total Tasks</p>
+                    <p>Total Projects</p>
                     @*<h3>@Model.TotalTasks</h3>*@
 
                 </div>
@@ -241,39 +241,48 @@
                  role="tabpanel"
                  aria-labelledby="tab-@divisionId">
             </div>
+
+            <!-- Table -->
             <div class="table-container">
-                <h5>@divisionId Division's Project Summary</h5>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Project Name</th>
-                            @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                            {
-                                <th>@milestoneName (OS/CS)</th>
-                            }
-                        </tr>
-                    </thead>
-                    @foreach (var divisionGroup in Model.IndividualProjects)
-                    {
-                        <tbody>
+                @*<h3>@divisionId Project Lists</h3>*@
+                <h3>[dept name] PROJECT LIST</h3> @*change to dept*@ 
+                <h5>Total Number of Projects: </h5> @*add computation on this so we can get total proj per dept.*@
+                <br />
+                
+                @*<table class="table">*@
+                    <table id="projectSummaryTable" class="table">
+                        <thead>
                             <tr>
-                                <td>
-                                    <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = divisionGroup.MainId })" class="text-decoration-none text-primary">
-                                        @divisionGroup.ProjectTitle
-                                    </a>
-                                </td>
+                                <th>Project Name</th>
+                                <th>Business Units</th>
                                 @foreach (var milestoneName in Model.UniqueMilestoneNames)
                                 {
-                                    var milestone = divisionGroup.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
-                                    var endDateFormatted = milestone != null
-                                        ? $"WW{milestone.EndDate:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
-                                        : "N/A";
-                                    <td>@endDateFormatted</td>
+                                    <th>@milestoneName (OS/CS)</th>
                                 }
                             </tr>
-                        </tbody>
-                    }
-                </table>
+                        </thead>
+                        @foreach (var divisionGroup in Model.IndividualProjects)
+                        {
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = divisionGroup.MainId })" class="text-decoration-none text-primary">
+                                            @divisionGroup.ProjectTitle
+                                        </a>
+                                    </td>
+                                    @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                    {
+                                        var milestone = divisionGroup.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
+                                        var endDateFormatted = milestone?.EndDate.HasValue == true
+                                            ? $"WW{milestone.EndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                            : "-";
+                                        <td>@endDateFormatted</td>
+                                    }
+
+                                </tr>
+                            </tbody>
+                        }
+                    </table>
             </div>
         }
         else if (Model.userRole == 4036) //IF STEERCOM
@@ -306,14 +315,15 @@
                                                 @project.ProjectTitle
                                             </a>
                                         </td>
-                                        @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                        {
-                                            var milestone = project.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
-                                            var endDateFormatted = milestone != null
-                                                ? $"WW{milestone.EndDate:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
-                                                : "N/A";
-                                            <td>@endDateFormatted</td>
-                                        }
+                                      @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                      {
+                                          @*var milestone = divisionGroup.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
+                                          var endDateFormatted = milestone?.EndDate.HasValue == true
+                                              ? $"WW{milestone.EndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                              : "-";
+                                        <td>@endDateFormatted</td>*@
+                                      }
+
                                     </tr>
                                 }
                             </tbody>
@@ -327,6 +337,65 @@
 
 @section Scripts {
     <script>
+        $(document).ready(function () {
+            $('#projectSummaryTable').DataTable({
+                responsive: true,
+                pagingType: 'full_numbers',
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search project name...",
+                    paginate: {
+                        first: '<<',
+                        last: '>>',
+                        next: '>',
+                        previous: '<'
+                    },
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries"
+                },
+                dom: '<"top d-flex justify-content-between align-items-center"lfr>t<"bottom d-flex justify-content-between align-items-center"ip><"clear">',
+                initComplete: function () {
+                    $('.dataTables_filter input').addClass('form-control').css({
+                        'font-size': '14px',
+                        'width': '300px',
+                        'margin-left': '10px',
+                        'margin-right': '10px',
+                        'border-radius': '5px',
+                        'padding': '5px 10px'
+                    });
+
+                    $('.dataTables_length select').addClass('form-select').css({
+                        'font-size': '14px',
+                        'width': 'auto',
+                        'margin-left': '5px',
+                        'margin-right': '5px',
+                        'padding': '5px 10px'
+                    });
+
+                    $('.dataTables_paginate').css({
+                        'margin-top': '10px'
+                    });
+
+                    $('.dataTables_info').css({
+                        'margin-top': '10px',
+                        'font-size': '14px',
+                        'color': '#666'
+                    });
+
+                    $('#milestonesTable').css({
+                        'border-collapse': 'separate',
+                        'border-spacing': '0 10px'
+                    });
+
+                    $('#milestonesTable tbody tr').hover(function () {
+                        $(this).css('background-color', '#f9f9f9');
+                    }, function () {
+                        $(this).css('background-color', '');
+                    });
+                }
+            });
+        });
+
         $(document).ready(function () {
             $('#divisionTabs a').on('click', function (e) {
                 e.preventDefault();

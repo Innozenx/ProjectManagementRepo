@@ -190,9 +190,6 @@
 
 </style>
 
-
-
-<!-- Header Section -->
 <div class="header-container">
 @*<div class="header-left">
     <a href="@Url.Action("Dashboard","Checklist")" class="home-link">Dashboard</a></div>*@
@@ -213,7 +210,6 @@
     }
 </div>
 
-<!-- Top Cards Row -->
 <div class="top-card-row">
     <div class="top-card">
         <i class="fas fa-check-circle"></i>
@@ -241,13 +237,15 @@
     </div>
 </div>
 
-<!-- Content Section -->
 <div class="content-section">
     <div class="card-container wide-card-container">
         @if (Model.ProjectsMilestones != null && Model.ProjectsMilestones.Any())
         {
             <div class="table-container wide-table-container">
-                @*<h5 class="card-title">Project Summary</h5>*@
+
+                <h3>Project Summary List</h3> @*change to dept*@
+                @*<h5>Total Number of Projects: </h5>*@ @*add computation on this so we can get total proj per dept.*@
+
                 <table id="milestonesTable" class="table">
                     <thead>
                         <tr>
@@ -344,8 +342,6 @@
         </div>
     </div>*@
 </div>
-
-
 
 @section scripts {
     <script>

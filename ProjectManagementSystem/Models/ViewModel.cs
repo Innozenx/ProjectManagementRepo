@@ -311,17 +311,17 @@ namespace ProjectManagementSystem.Models
 
     public class MilestoneViewModel
     {
-        public int Id { get; set; }
-        public string MilestoneName { get; set; }
-        public DateTime EndDate { get; set; }
-        public bool IsCompleted { get; set; }
-        public string StatusUpdate { get; set; }
-        public List<TaskViewModel> Tasks { get; set; }
-        //public List<ApproverViewModel> Approvers { get; set; }
-        public int MilestonePosition { get; set; }
+        public int Id { get; set; } 
+        public string MilestoneName { get; set; } = string.Empty; 
+        public DateTime? EndDate { get; set; }
+        public bool IsCompleted { get; set; } 
+        public string StatusUpdate { get; set; } = string.Empty;
+        public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>(); 
+        public int? MilestonePosition { get; set; } 
         public List<ApproverViewModel> Approvers { get; set; } = new List<ApproverViewModel>();
         public DateTime? CurrentTaskEnd { get; set; }
     }
+
 
     public class DashboardManagementViewModel
     {
@@ -523,12 +523,15 @@ namespace ProjectManagementSystem.Models
 
     public class ChecklistSettingsViewModel
     {
+        public int ChecklistId { get; set; }
         public int MainId { get; set; }
         public string ProjectName { get; set; }
         public List<MilestoneViewModel> Milestones { get; set; }
         public Onboarding Onboarding { get; set; }
         public List<string> Divisions { get; set; }
-   
+        public string ChecklistName { get; set; }
+        public string Division { get; set; }
+
 
     }
     public class TaskApproverViewModel
