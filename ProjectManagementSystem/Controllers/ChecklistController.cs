@@ -44,10 +44,14 @@ namespace ProjectManagementSystem.Controllers
             var userName = User.Identity.Name;
             var userDetails = cmdb.AspNetUsers.Where(x => x.UserName == userName).SingleOrDefault();
             var userDivision = (from u in cmdb.AspNetUsers
-                                join j in cmdb.Identity_JobDescription on new { jobid = u.JobId, uname = u.UserName } equals new { jobid = j.Id, uname = userName }
-                                join i in cmdb.Identity_Keywords on j.DivisionId equals i.Id
-                                where i.Type == "Divisions"
-                                select i.Description).FirstOrDefault();
+                                 join j in cmdb.Identity_JobDescription on new { jobid = u.JobId, uname = u.UserName } equals new { jobid = j.Id, uname = userName }
+                                 join i in cmdb.Identity_Keywords on j.DivisionId equals i.Id
+                                 where i.Type == "Divisions"
+                                 select i.Description).FirstOrDefault();
+
+
+            //List<int> userProjectList = new List<int>();
+            //List<projectDivisionModel>
 
             List<int> userProjectList = new List<int>();
 
@@ -258,6 +262,10 @@ namespace ProjectManagementSystem.Controllers
 
             return View(viewModel);
         }
+
+
+
+     
 
         [Authorize(Roles = "PMS_PROJECT_MANAGER, PMS_ODCP_ADMIN, PMS_Management, PMS_PROJECT_OWNER, PMS_DIVISION_HEAD, PMS_USER")]
         public ActionResult Dashboard()
