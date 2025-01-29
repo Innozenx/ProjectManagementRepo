@@ -17,6 +17,7 @@ namespace ProjectManagementSystem.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MainTable()
         {
+            this.FixedChecklistTbls = new HashSet<FixedChecklistTbl>();
             this.MilestoneTbls = new HashSet<MilestoneTbl>();
         }
     
@@ -32,6 +33,8 @@ namespace ProjectManagementSystem.Models
         public string user_id { get; set; }
         public Nullable<bool> isCompleted { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<FixedChecklistTbl> FixedChecklistTbls { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MilestoneTbl> MilestoneTbls { get; set; }
     }

@@ -22,6 +22,7 @@ namespace ProjectManagementSystem.Models
         public Nullable<int> Main_ID { get; set; }
     
         public virtual ChecklistSetup ChecklistSetup { get; set; }
+        public virtual MainTable MainTable { get; set; }
         public virtual MilestoneTbl MilestoneTbl { get; set; }
     }
 }
