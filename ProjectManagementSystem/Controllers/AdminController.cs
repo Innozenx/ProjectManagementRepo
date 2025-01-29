@@ -300,96 +300,132 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message, status }, JsonRequestBehavior.AllowGet);
         }
 
+
         [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         [HttpGet]
         public ActionResult ChecklistSettings()
         {
-  
-            var onboarding = new Onboarding
-            {
-                Users = cmdb.AspNetUsers.Select(user => new UserModel
+            var checklists = db.ChecklistSetups
+                .Select(c => new ChecklistSettingsViewModel
                 {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email
-                }).ToList()
-            };
+                    ChecklistId = c.cl_sett_id,
+                    ChecklistName = c.checklist_name,
+                    Division = c.division
+                }).ToList();
 
+            ViewBag.Checklists = checklists;
+            return View();
+        }
+
+        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
+        [HttpGet]
+        public JsonResult GetProjectsByChecklist(int checklistId)
+        {
             var projects = db.MainTables
+                .Where(project => db.FixedChecklistTbls.Any(fc =>
+                    fc.Checklist_ID == checklistId &&
+                    fc.Main_ID == project.main_id))
                 .Select(project => new
                 {
                     MainId = project.main_id,
-                    ProjectName = project.project_title,
-                    Milestones = db.MilestoneTbls
-                        .Where(m => m.main_id == project.main_id)
-                        .Select(m => new
+                    ProjectTitle = project.project_title
+                }).ToList();
+
+            return Json(projects, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
+        [HttpGet]
+        public JsonResult GetProjectDetails(int projectId)
+        {
+            var milestones = db.MilestoneTbls
+                .Where(m => m.main_id == projectId)
+                .Select(milestone => new
+                {
+                    MilestoneName = milestone.milestone_name,
+                    Tasks = db.DetailsTbls
+                        .Where(task => task.milestone_id == milestone.milestone_id)
+                        .Select(task => new
                         {
-                            Id = m.milestone_id,
-                            MilestoneName = m.milestone_name,
-                            Tasks = db.DetailsTbls
-                                .Where(d => d.milestone_id == m.milestone_id)
-                                .Select(d => new
-                                {
-                                    Id = d.details_id,
-                                    TaskName = d.process_title,
-                                    RequiresApproval = d.RequiresApproval ?? false
-                                }).ToList()
+                            Id = task.details_id,
+                            TaskName = task.process_title,
+                            RequiresApproval = task.RequiresApproval ?? false
                         }).ToList()
                 }).ToList();
 
-         
-            var checklistSettings = projects.Select(p => new ChecklistSettingsViewModel
-            {
-                MainId = p.MainId,
-                ProjectName = p.ProjectName,
-                Milestones = p.Milestones.Select(m => new MilestoneViewModel
-                {
-                    Id = m.Id,
-                    MilestoneName = m.MilestoneName,
-                    Tasks = m.Tasks.Select(t => new TaskViewModel
-                    {
-                        Id = t.Id,
-                        TaskName = t.TaskName,
-                        RequiresApproval = t.RequiresApproval
-                    }).ToList()
-                }).ToList(),
-                Onboarding = onboarding 
-            }).ToList();
-
-            return View(checklistSettings);
+            return Json(new { Milestones = milestones }, JsonRequestBehavior.AllowGet);
         }
 
 
+        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
+        [HttpGet]
+        public JsonResult GetProjectsForChecklist(int checklistId)
+        {
+            var projects = db.MainTables
+                .Where(project => db.FixedChecklistTbls.Any(fc =>
+                    fc.Checklist_ID == checklistId &&
+                    fc.Main_ID == project.main_id))
+                .Select(project => new
+                {
+                    MainId = project.main_id,
+                    ProjectTitle = project.project_title
+                }).ToList();
 
+            return Json(projects, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         [HttpGet]
         public JsonResult GetProjectTasks(int projectId)
         {
-            var projectTasks = db.MainTables
-                .Where(p => p.main_id == projectId)
-                .Select(p => new
+            var projectTasks = db.MilestoneTbls
+                .Where(m => m.main_id == projectId)
+                .Select(milestone => new
                 {
-                    ProjectName = p.project_title,
-                    Milestones = db.MilestoneTbls
-                        .Where(m => m.main_id == p.main_id)
-                        .Select(m => new
+                    MilestoneName = milestone.milestone_name,
+                    MilestoneId = milestone.milestone_id,
+                    Tasks = db.DetailsTbls
+                        .Where(task => task.milestone_id == milestone.milestone_id)
+                        .Select(task => new
                         {
-                            MilestoneName = m.milestone_name,
-                            MilestoneId = m.milestone_id,
-                            Tasks = db.DetailsTbls
-                                .Where(d => d.milestone_id == m.milestone_id)
-                                .Select(d => new
-                                {
-                                    Id = d.details_id,
-                                    TaskName = d.process_title,
-                                    RequiresApproval = d.RequiresApproval ?? false
-                                }).ToList()
+                            Id = task.details_id,
+                            TaskName = task.process_title,
+                            RequiresApproval = task.RequiresApproval ?? false
                         }).ToList()
                 }).ToList();
 
-            return Json(projectTasks, JsonRequestBehavior.AllowGet);
-
+            return Json(new { Milestones = projectTasks }, JsonRequestBehavior.AllowGet);
         }
+
+
+        //[HttpGet]
+        //public JsonResult GetProjectTasks(int projectId)
+        //{
+        //    var projectTasks = db.MainTables
+        //        .Where(p => p.main_id == projectId)
+        //        .Select(p => new
+        //        {
+        //            ProjectName = p.project_title,
+        //            Milestones = db.MilestoneTbls
+        //                .Where(m => m.main_id == p.main_id)
+        //                .Select(m => new
+        //                {
+        //                    MilestoneName = m.milestone_name,
+        //                    MilestoneId = m.milestone_id,
+        //                    Tasks = db.DetailsTbls
+        //                        .Where(d => d.milestone_id == m.milestone_id)
+        //                        .Select(d => new
+        //                        {
+        //                            Id = d.details_id,
+        //                            TaskName = d.process_title,
+        //                            RequiresApproval = d.RequiresApproval ?? false
+        //                        }).ToList()
+        //                }).ToList()
+        //        }).ToList();
+
+        //    return Json(projectTasks, JsonRequestBehavior.AllowGet);
+
+        //}
         [HttpPost]
         public JsonResult AssignApprovers(int taskId, List<string> approvers, int milestoneId, int mainId)
         {

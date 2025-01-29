@@ -531,6 +531,7 @@ namespace ProjectManagementSystem.Models
         public List<string> Divisions { get; set; }
         public string ChecklistName { get; set; }
         public string Division { get; set; }
+        public List<ChecklistSettingsViewModel> Projects { get; set; }
 
 
     }
