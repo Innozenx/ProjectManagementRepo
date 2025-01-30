@@ -300,7 +300,7 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message, status }, JsonRequestBehavior.AllowGet);
         }
 
-
+      
         [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         [HttpGet]
         public ActionResult ChecklistSettings()
@@ -321,18 +321,23 @@ namespace ProjectManagementSystem.Controllers
         [HttpGet]
         public JsonResult GetProjectsByChecklist(int checklistId)
         {
+            var checklist = db.ChecklistSetups.FirstOrDefault(c => c.cl_sett_id == checklistId);
+            if (checklist == null)
+                return Json(new { success = false, message = "Checklist not found." }, JsonRequestBehavior.AllowGet);
+
+            // getting all projects under the same division
             var projects = db.MainTables
-                .Where(project => db.FixedChecklistTbls.Any(fc =>
-                    fc.Checklist_ID == checklistId &&
-                    fc.Main_ID == project.main_id))
-                .Select(project => new
+                .Where(p => p.division == checklist.division)
+                .Select(p => new
                 {
-                    MainId = project.main_id,
-                    ProjectTitle = project.project_title
-                }).ToList();
+                    MainId = p.main_id,
+                    ProjectTitle = p.project_title
+                })
+                .ToList();
 
             return Json(projects, JsonRequestBehavior.AllowGet);
         }
+
 
         [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         [HttpGet]
@@ -397,35 +402,6 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { Milestones = projectTasks }, JsonRequestBehavior.AllowGet);
         }
 
-
-        //[HttpGet]
-        //public JsonResult GetProjectTasks(int projectId)
-        //{
-        //    var projectTasks = db.MainTables
-        //        .Where(p => p.main_id == projectId)
-        //        .Select(p => new
-        //        {
-        //            ProjectName = p.project_title,
-        //            Milestones = db.MilestoneTbls
-        //                .Where(m => m.main_id == p.main_id)
-        //                .Select(m => new
-        //                {
-        //                    MilestoneName = m.milestone_name,
-        //                    MilestoneId = m.milestone_id,
-        //                    Tasks = db.DetailsTbls
-        //                        .Where(d => d.milestone_id == m.milestone_id)
-        //                        .Select(d => new
-        //                        {
-        //                            Id = d.details_id,
-        //                            TaskName = d.process_title,
-        //                            RequiresApproval = d.RequiresApproval ?? false
-        //                        }).ToList()
-        //                }).ToList()
-        //        }).ToList();
-
-        //    return Json(projectTasks, JsonRequestBehavior.AllowGet);
-
-        //}
         [HttpPost]
         public JsonResult AssignApprovers(int taskId, List<string> approvers, int milestoneId, int mainId)
         {
@@ -553,10 +529,11 @@ namespace ProjectManagementSystem.Controllers
                 .Any(a => a.Details_Id == taskId && (a.IsRemoved_ == false || a.IsRemoved_ == null));
             return Json(new { hasApprovers });
         }
+
+
         [Authorize(Roles = "PMS_ODCP_ADMIN")]
         public ActionResult ChecklistSetup()
         {
-       
             var divisions = db.MainTables
                               .Select(m => m.division.Trim())
                               .Distinct()
@@ -572,19 +549,18 @@ namespace ProjectManagementSystem.Controllers
                     Division = c.division,
                     Milestones = db.FixedChecklistTbls
                         .Where(fc => fc.Checklist_ID == c.cl_sett_id)
+                        .GroupBy(fc => fc.Milestone_ID) 
+                        .Select(fcGroup => fcGroup.FirstOrDefault()) 
                         .Select(fc => new MilestoneViewModel
                         {
-                            Id = fc.Milestone_ID ?? 0, 
+                            Id = fc.Milestone_ID ?? 0,
                             MilestoneName = db.MilestoneTbls
                                 .Where(m => fc.Milestone_ID.HasValue && m.milestone_id == fc.Milestone_ID.Value)
                                 .Select(m => m.milestone_name)
                                 .FirstOrDefault() ?? "No Name"
-                }).ToList()
+                        }).ToList()
                 })
                 .ToList();
-
-
-            //System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(checklists));
 
             ViewBag.Checklists = checklists;
 
@@ -630,6 +606,34 @@ namespace ProjectManagementSystem.Controllers
             return Json(milestones, JsonRequestBehavior.AllowGet);
         }
 
+        public void AssignChecklistToDivision(int checklistId)
+        {
+            var checklist = db.ChecklistSetups.FirstOrDefault(c => c.cl_sett_id == checklistId);
+            if (checklist == null) return;
+
+            var projectsInDivision = db.MainTables
+                .Where(m => m.division == checklist.division)
+                .Select(m => m.main_id)
+                .ToList();
+
+            foreach (var projectId in projectsInDivision)
+            {
+                bool exists = db.FixedChecklistTbls
+                    .Any(fc => fc.Checklist_ID == checklistId && fc.Main_ID == projectId);
+
+                if (!exists)
+                {
+                    db.FixedChecklistTbls.Add(new FixedChecklistTbl
+                    {
+                        Checklist_ID = checklistId,
+                        Main_ID = projectId
+                    });
+                }
+            }
+
+            db.SaveChanges();
+        }
+
         [Authorize(Roles = "PMS_ODCP_ADMIN")]
         [HttpPost]
         public JsonResult SaveChecklist(string division, List<int> milestoneIds, string checklistName)
@@ -638,20 +642,19 @@ namespace ProjectManagementSystem.Controllers
             {
                 return Json(new { success = false, message = "Please select a division and at least one milestone." });
             }
-           
+
             try
             {
                 using (var transaction = db.Database.BeginTransaction())
                 {
-                   
                     var existingChecklist = db.ChecklistSetups
                         .FirstOrDefault(c => c.division.Equals(division, StringComparison.OrdinalIgnoreCase));
+
                     if (existingChecklist != null)
                     {
                         return Json(new { success = false, message = "A checklist for this division already exists." });
                     }
-
- 
+                    
                     var newChecklist = new ChecklistSetup
                     {
                         checklist_name = checklistName,
@@ -664,27 +667,22 @@ namespace ProjectManagementSystem.Controllers
 
                     int newChecklistId = newChecklist.cl_sett_id;
 
+                    var projectsInDivision = db.MainTables
+                        .Where(p => p.division == division)
+                        .Select(p => p.main_id)
+                        .ToList();
 
-                    var milestoneToMainIdMap = db.MilestoneTbls
-                        .Where(m => milestoneIds.Contains(m.milestone_id))
-                        .ToDictionary(m => m.milestone_id, m => m.main_id);
-
-                    foreach (var milestoneId in milestoneIds)
+                    foreach (var mainId in projectsInDivision)
                     {
-                        if (milestoneToMainIdMap.TryGetValue(milestoneId, out var mainId))
+                        foreach (var milestoneId in milestoneIds)
                         {
-                            var fixedChecklistEntry = new FixedChecklistTbl
+                            db.FixedChecklistTbls.Add(new FixedChecklistTbl
                             {
                                 Checklist_ID = newChecklistId,
                                 Milestone_ID = milestoneId,
                                 Main_ID = mainId,
                                 Project_Specific = false
-                            };
-                            db.FixedChecklistTbls.Add(fixedChecklistEntry);
-                        }
-                        else
-                        {
-                            return Json(new { success = false, message = $"Invalid milestone ID: {milestoneId}" });
+                            });
                         }
                     }
 
@@ -696,12 +694,11 @@ namespace ProjectManagementSystem.Controllers
             }
             catch (Exception ex)
             {
-
                 Console.WriteLine(ex);
-
                 return Json(new { success = false, message = "An error occurred while saving the checklist. Please try again later." });
             }
         }
+
 
         [Authorize(Roles = "PMS_ODCP_ADMIN")]
         [HttpPost]
@@ -770,8 +767,6 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
-
-
         [Authorize(Roles = "PMS_ODCP_ADMIN")]
         [HttpPost]
         public JsonResult UpdateChecklist(int checklistId, List<int> milestoneIds)
@@ -804,9 +799,9 @@ namespace ProjectManagementSystem.Controllers
 
                 return Json(new { success = true, message = "Checklist updated successfully." });
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                return Json(new { success = false, message = "An error occurred while updating the checklist.", error = ex.Message });
+                return Json(new { success = false, message = "An error occured while updating the checklist.", error = ex.Message });
             }
         }
 
