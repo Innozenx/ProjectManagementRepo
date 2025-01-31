@@ -37,6 +37,7 @@
                             <p>Dashboard</p>
                         </a>
                     </li>
+
                 }
 
                 <!-- Dashboard for Project Managers -->
@@ -59,6 +60,12 @@
                         <a href="@Url.Action("ActivityView", "Checklist", new { user = User.Identity.Name.ToString() })" class="nav-link">
                             <i class="nav-icon fas fa-list"></i>
                             <p>Activity Logs</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Approval","Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-check-square"></i>
+                            <p>Approval</p>
                         </a>
                     </li>
                 }

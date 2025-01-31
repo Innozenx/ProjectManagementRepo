@@ -300,22 +300,69 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message, status }, JsonRequestBehavior.AllowGet);
         }
 
-      
+
         [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         [HttpGet]
         public ActionResult ChecklistSettings()
         {
-            var checklists = db.ChecklistSetups
-                .Select(c => new ChecklistSettingsViewModel
-                {
-                    ChecklistId = c.cl_sett_id,
-                    ChecklistName = c.checklist_name,
-                    Division = c.division
-                }).ToList();
+            try
+            {
+                
+                var users = cmdb.AspNetUsers
+                    .Select(u => new UserModel
+                    {
+                        Id = u.Id,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        Email = u.Email
+                    })
+                    .ToList();
 
-            ViewBag.Checklists = checklists;
-            return View();
+                
+                ViewBag.Users = users;
+
+               
+                var checklists = db.ChecklistSetups
+                    .Select(c => new
+                    {
+                        ChecklistId = c.cl_sett_id,
+                        ChecklistName = c.checklist_name,
+                        Division = c.division
+                    })
+                    .ToList();
+
+              
+                var checklistViewModels = checklists
+                    .Select(c => new ChecklistSettingsViewModel
+                    {
+                        ChecklistId = c.ChecklistId,
+                        ChecklistName = c.ChecklistName,
+                        Division = c.Division,
+                        Onboarding = new Onboarding
+                        {
+                            Users = users 
+                }
+                    })
+                    .ToList();
+
+                
+                ViewBag.Checklists = checklistViewModels;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                
+                Console.WriteLine($"Error in ChecklistSettings: {ex.Message}");
+
+                TempData["ErrorMessage"] = "An error occurred while loading checklist settings.";
+                return RedirectToAction("Error", "Home");
+            }
         }
+
+
+
+
 
         [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         [HttpGet]
@@ -325,7 +372,6 @@ namespace ProjectManagementSystem.Controllers
             if (checklist == null)
                 return Json(new { success = false, message = "Checklist not found." }, JsonRequestBehavior.AllowGet);
 
-            // getting all projects under the same division
             var projects = db.MainTables
                 .Where(p => p.division == checklist.division)
                 .Select(p => new
@@ -405,89 +451,83 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult AssignApprovers(int taskId, List<string> approvers, int milestoneId, int mainId)
         {
-            try
+            using (var transaction = db.Database.BeginTransaction()) 
             {
-                Console.WriteLine("Task ID: " + taskId);
-                Console.WriteLine("Approvers: " + string.Join(", ", approvers ?? new List<string>()));
-                Console.WriteLine("Milestone ID: " + milestoneId);
-                Console.WriteLine("Main ID: " + mainId);
-
-                if (taskId <= 0 || milestoneId <= 0 || mainId <= 0)
+                try
                 {
-                    return Json(new { success = false, message = "Invalid task, milestone, or project ID." });
-                }
+                    if (taskId <= 0 || milestoneId <= 0 || mainId <= 0)
+                    {
+                        return Json(new { success = false, message = "Invalid task, milestone, or project ID." });
+                    }
 
-                if (approvers != null && approvers.Any())
-                {
                     var existingApprovers = db.ApproversTbls
                         .Where(a => a.Details_Id == taskId)
                         .ToList();
 
-                    foreach (var approver in existingApprovers)
+                    if (approvers != null && approvers.Any())
                     {
-                        if (approvers.Contains(approver.User_Id))
+                        foreach (var approver in existingApprovers)
                         {
-                            approver.IsRemoved_ = false;
-                        }
-                        else
-                        {
-                            approver.IsRemoved_ = true;
-                        }
-                        db.Entry(approver).State = EntityState.Modified;
-                    }
-
-                    foreach (var approverId in approvers)
-                    {
-                        if (!existingApprovers.Any(a => a.User_Id == approverId))
-                        {
-                            var user = cmdb.AspNetUsers
-                                .Where(x => x.Id == approverId)
-                                .Select(x => new { x.FirstName, x.LastName })
-                                .FirstOrDefault();
-
-                            if (user != null)
+                            if (approvers.Contains(approver.User_Id))
                             {
-                                var newApprover = new ApproversTbl
-                                {
-                                    Details_Id = taskId,
-                                    User_Id = approverId,
-                                    Approver_Name = $"{user.FirstName} {user.LastName}",
-                                    Milestone_Id = milestoneId,
-                                    Main_Id = mainId, 
-                                    ApprovalDate = DateTime.Now,
-                                    IsRemoved_ = false
-                                };
+                                approver.IsRemoved_ = false; 
+                            }
+                            else
+                            {
+                                approver.IsRemoved_ = true; 
+                            }
+                            db.Entry(approver).State = EntityState.Modified;
+                        }
 
-                                db.ApproversTbls.Add(newApprover);
+                        foreach (var approverId in approvers)
+                        {
+                            if (!existingApprovers.Any(a => a.User_Id == approverId))
+                            {
+                                var user = cmdb.AspNetUsers
+                                    .Where(x => x.Id == approverId)
+                                    .Select(x => new { x.FirstName, x.LastName })
+                                    .FirstOrDefault();
+
+                                if (user != null)
+                                {
+                                    var newApprover = new ApproversTbl
+                                    {
+                                        Details_Id = taskId,
+                                        User_Id = approverId,
+                                        Approver_Name = $"{user.FirstName} {user.LastName}",
+                                        Milestone_Id = milestoneId,
+                                        Main_Id = mainId,
+                                        ApprovalDate = DateTime.Now,
+                                        IsRemoved_ = false
+                                    };
+
+                                    db.ApproversTbls.Add(newApprover);
+                                }
                             }
                         }
                     }
-
-                    db.SaveChanges();
-                    return Json(new { success = true, message = "Approvers assigned successfully." });
-                }
-                else
-                {
-                    var existingApprovers = db.ApproversTbls
-                        .Where(a => a.Details_Id == taskId)
-                        .ToList();
-
-                    foreach (var approver in existingApprovers)
+                    else
                     {
-                        approver.IsRemoved_ = true;
-                        db.Entry(approver).State = EntityState.Modified;
+                        foreach (var approver in existingApprovers)
+                        {
+                            approver.IsRemoved_ = true;
+                            db.Entry(approver).State = EntityState.Modified;
+                        }
                     }
 
                     db.SaveChanges();
-                    return Json(new { success = true, message = "All approvers removed successfully." });
+                    transaction.Commit(); 
+                    return Json(new { success = true, message = "Approvers assigned successfully." });
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback(); 
+                    return Json(new { success = false, message = "Error assigning approvers: " + ex.Message });
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex}");
-                return Json(new { success = false, message = "Error assigning approvers: " + ex.Message });
-            }
         }
+
+
 
         [HttpPost]
         public JsonResult UpdateTaskApproval(int taskId, bool requiresApproval)
@@ -598,7 +638,7 @@ namespace ProjectManagementSystem.Controllers
                     x.MilestoneName,
                     x.Position,
                     IsSelected = checklistId.HasValue && db.FixedChecklistTbls
-                        .Any(cm => cm.Checklist_ID == checklistId && cm.Milestone_ID == x.MilestoneId) // check if milestone is part of the checklist
+                        .Any(cm => cm.Checklist_ID == checklistId && cm.Milestone_ID == x.MilestoneId) 
                 })
                 .OrderBy(m => m.Position)
                 .ToList();
