@@ -659,8 +659,6 @@
     </div>
 </div>
 
-
-
 <!-- Timeline Tab -->
 <div class="tab-pane fade" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
     <!-- Gantt Chart Section -->
@@ -695,7 +693,6 @@
     <div class="card shadow-sm p-4">
         <h3 class="text-center text-purple">Checklist</h3>
         <p class="text-center text-muted">Manage checklist for each milestone.</p>
-
         <!-- Milestone Dropdown -->
         <div class="row mt-4 justify-content-center align-items-center">
             <div class="col-md-6">
@@ -703,34 +700,19 @@
                     <label class="input-group-text bg-purple text-white" for="milestoneDropdown">
                         <i class="fas fa-tasks"></i>
                     </label>
-                    <select id="milestoneDropdown" class="form-select shadow-sm">
+                    <select id="milestoneDropdown" class="form-select shadow-sm" onchange="loadChecklist(this.value)">
                         <option value="">Select a Milestone</option>
                     </select>
                 </div>
             </div>
         </div>
-
-        <!-- Checklist Table -->
-        <div class="table-responsive mt-4">
-            <table class="table table-bordered table-hover text-center align-middle">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Task</th>
-                        <th>Description</th>
-                        <th>Attachment</th>
-                        <th>Approver</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="checklistTableBody">
-                    <tr>
-                        <td colspan="5" class="text-center">Select a milestone to view tasks.</td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Checklist -->
+        <div id="checklistContainer" class="mt-4">
+            <div class="text-center text-muted">Select a milestone to view tasks.</div>
         </div>
     </div>
 </div>
+
 
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -1111,5 +1093,4 @@
         }
 
     </script>
-
 }

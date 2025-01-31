@@ -432,7 +432,7 @@ namespace ProjectManagementSystem.Models
     {
         public List<RegistrationTbl> registered_project { get; set; }
         public List<AspNetUser> users { get; set; }
-        public List<UserModel> Users { get; set; }
+        public List<UserModel> Users { get; set; } 
         public List<RoleModel> Roles { get; set; }
         public List<ProjectModel> Projects { get; set; }
         public List<MemberAccess> CurrentMembers { get; set; }
@@ -532,7 +532,6 @@ namespace ProjectManagementSystem.Models
         public string ChecklistName { get; set; }
         public string Division { get; set; }
         public List<ChecklistSettingsViewModel> Projects { get; set; }
-
 
     }
     public class TaskApproverViewModel

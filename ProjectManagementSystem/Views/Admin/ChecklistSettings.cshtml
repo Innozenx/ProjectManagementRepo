@@ -1,18 +1,15 @@
 ﻿@model IEnumerable<ProjectManagementSystem.Models.ChecklistSettingsViewModel>
 
 @{
-    ViewBag.Title = "Checklist Setup";
+    ViewBag.Title = "Checklist Management";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div class="container mt-5">
     <div class="card shadow-sm p-4 rounded-lg text-center">
-        <h2 class="fw-bold text-primary">Manage your checklist</h2>
-        <p class="text-muted">Select division and projects to apply approvers each tasks to move their milestone.</p>
+        <h2 class="fw-bold text-primary">Checklist Management</h2>
+        <p class="text-muted">Select division and projects to apply approvers to each task.</p>
     </div>
-
-
-
     <div class="container mt-4">
         <div class="row justify-content-center text-center">
             <div class="col-md-6 mb-3">
@@ -25,7 +22,6 @@
                     }
                 </select>
             </div>
-
             <div class="col-md-6">
                 <label class="form-label fw-bold text-secondary">Project Title</label>
                 <select id="projectDropdown" class="form-select shadow-sm wider-dropdown" disabled onchange="loadProjectDetails(this.value)">
@@ -33,22 +29,172 @@
                 </select>
             </div>
         </div>
-
+        <!-- Project Checklist -->
         <div id="projectContent" class="mt-4 d-none">
             <div class="card shadow-sm rounded-lg">
                 <div class="card-body">
-                <h2 class="card-title fw-bold text-primary" id="selectedProjectTitle"></h2>
+                    <h2 class="card-title fw-bold text-primary" id="selectedProjectTitle"></h2>
                     <br />
                     <div class="list-group" id="checklistContainer"></div>
                 </div>
             </div>
         </div>
-
     </div>
-
 </div>
 
+<!-- Set Approvers Modal -->
+<div id="setApproversModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Assign Approvers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="multiSelectDropdown">Select Approvers</label>
+                    <div class="form-group mb-3">
+                        <input type="text" id="searchApprovers" class="form-control" placeholder="Search users..." onkeyup="filterApprovers()">
+                    </div>
+
+                    <!-- Users List with Scrollbar -->
+                    <div class="list-group approver-list-container" id="approverList">
+                        @if (ViewBag.Users != null)
+                        {
+                            foreach (var user in ViewBag.Users as List<ProjectManagementSystem.Models.UserModel>)
+                            {
+                                <div class="list-group-item approver-item d-flex justify-content-between align-items-center">
+                                    <span>@user.FirstName @user.LastName (@user.Email)</span>
+                                    <input type="checkbox" id="approver_@user.Id" value="@user.Id" class="approver-checkbox" onchange="updateSelectedApprovers()">
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted">No approvers available</div>
+                        }
+                    </div>
+
+            </div>
+                </div>
+                <div class="form-group mt-3">
+                    <label>Selected Approvers</label>
+                    <div id="selectedApproversChips" class="selected-members-chips"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveApprovers()">Save</button>
+            </div>
+        </div>
+    </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
+    let currentTaskId;
+
+    $(document).on("change", ".task-checkbox", function () {
+        let taskId = $(this).data("task-id");
+        let button = $(`.assign-approver[data-task-id="${taskId}"]`);
+
+        if ($(this).is(":checked")) {
+            button.show();
+        } else {
+            button.hide();
+        }
+    });
+
+    $(document).on("click", ".assign-approver", function () {
+        currentTaskId = $(this).data("task-id");
+        $("#setApproversModal").modal("show");
+    });
+
+    function filterApprovers() {
+        let searchVal = $("#searchApprovers").val().toLowerCase();
+        $(".approver-item").each(function () {
+            let name = $(this).text().toLowerCase();
+            $(this).toggle(name.includes(searchVal));
+        });
+    }
+
+    function updateSelectedApprovers() {
+        let selectedApproversContainer = $("#selectedApproversChips");
+        selectedApproversContainer.empty();
+
+        $(".approver-checkbox:checked").each(function () {
+            let userId = $(this).val();
+            let userName = $("label[for='approver_" + userId + "']").text();
+
+            selectedApproversContainer.append(`
+                <div class="approver-chip">
+                    ${userName}
+                    <span onclick="removeApprover('${userId}')" class="remove-chip">&times;</span>
+                </div>
+            `);
+        });
+    }
+
+    function removeApprover(approverId) {
+        $("#approver_" + approverId).prop("checked", false);
+        updateSelectedApprovers();
+    }
+
+    function saveApprovers() {
+        let selectedApprovers = [];
+        $(".approver-checkbox:checked").each(function () {
+            selectedApprovers.push($(this).val());
+        });
+
+        if (selectedApprovers.length === 0) {
+            Swal.fire({
+                title: "No Approvers Selected",
+                text: "Please select at least one approver before saving.",
+                icon: "warning",
+                confirmButtonColor: "#6f42c1"
+            });
+            return;
+        }
+
+        $.post("/Admin/AssignApprovers", {
+            taskId: currentTaskId,
+            approvers: selectedApprovers
+        })
+            .done(function (response) {
+                console.log("Response:", response);
+
+                if (response.success) {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Approvers assigned successfully!",
+                        icon: "success",
+                        confirmButtonColor: "#6f42c1"
+                    }).then(() => {
+                        $("#setApproversModal").modal("hide");
+                        $(".approver-checkbox").prop("checked", false); 
+                        updateSelectedApprovers(); 
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Error!",
+                        text: response.message || "Failed to assign approvers. Try again.",
+                        icon: "error",
+                        confirmButtonColor: "#d33"
+                    });
+                }
+            })
+            .fail(function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                Swal.fire({
+                    title: "Error!",
+                    text: "Error assigning approvers. Please try again later.",
+                    icon: "error",
+                    confirmButtonColor: "#d33"
+                });
+            });
+    }
+
     function loadProjects(checklistId) {
         if (!checklistId) {
             $("#projectDropdown").prop("disabled", true);
@@ -66,10 +212,20 @@
                 });
             } else {
                 $("#projectDropdown").prop("disabled", true);
-                alert("No projects found for the selected checklist.");
+                Swal.fire({
+                    title: "No Projects Found",
+                    text: "No projects found for the selected checklist.",
+                    icon: "warning",
+                    confirmButtonColor: "#6f42c1"
+                });
             }
         }).fail(() => {
-            alert("Error loading projects.");
+            Swal.fire({
+                title: "Error",
+                text: "Error loading projects. Please try again.",
+                icon: "error",
+                confirmButtonColor: "#d33"
+            });
         });
     }
 
@@ -78,6 +234,7 @@
             $("#projectContent").addClass("d-none");
             return;
         }
+
         let selectedProjectName = $("#projectDropdown option:selected").text();
         $("#selectedProjectTitle").text(selectedProjectName);
 
@@ -89,29 +246,39 @@
 
                 data.Milestones.forEach(milestone => {
                     checklistContainer.append(`
-                    <div class="milestone-header">${milestone.MilestoneName}</div>
-                    <hr class="purple-hr">
-                `);
+                        <div class="milestone-header">${milestone.MilestoneName}</div>
+                        <hr class="purple-hr">
+                    `);
 
                     milestone.Tasks.forEach(task => {
                         const row = `
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div class="task-container">
-                                <input type="checkbox" class="task-checkbox" data-task-id="${task.Id}" ${task.RequiresApproval ? "checked" : ""}>
-                                <span>${task.TaskName}</span>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="task-container">
+                                    <input type="checkbox" class="task-checkbox" data-task-id="${task.Id}" ${task.RequiresApproval ? "checked" : ""}>
+                                    <span>${task.TaskName}</span>
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm assign-approver" data-task-id="${task.Id}" style="display: none;">Set Approvers</button>
                             </div>
-                            <button class="btn btn-outline-primary btn-sm assign-approver" data-task-id="${task.Id}">Set Approvers</button>
-                        </div>
-                    `;
+                        `;
                         checklistContainer.append(row);
                     });
                 });
             } else {
                 $("#projectContent").addClass("d-none");
-                Swal.fire("No tasks found", "This project has no milestones or tasks.", "warning");
+                Swal.fire({
+                    title: "No Tasks Found",
+                    text: "This project has no milestones or tasks.",
+                    icon: "warning",
+                    confirmButtonColor: "#6f42c1"
+                });
             }
         }).fail(() => {
-            Swal.fire("Error", "Failed to load project details. Please try again.", "error");
+            Swal.fire({
+                title: "Error",
+                text: "Failed to load project details. Please try again.",
+                icon: "error",
+                confirmButtonColor: "#d33"
+            });
         });
     }
 </script>
@@ -241,4 +408,109 @@
             transform: translateX(0);
         }
     }
+    .modal-header {
+        background-color: #6f42c1;
+        color: white;
+    }
+
+    .list-group-item {
+        cursor: pointer;
+    }
+
+        .list-group-item:hover {
+            background-color: #f3e8ff;
+        }
+
+    .btn-primary {
+        background-color: #6f42c1;
+        border-color: #6f42c1;
+    }
+
+        .btn-primary:hover {
+            background-color: #5a2ca0;
+        }
+
+    .multi-select-dropdown {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .dropdown-header {
+        background: #6f42c1;
+        color: white;
+        padding: 10px;
+        cursor: pointer;
+        text-align: center;
+        border-radius: 5px;
+    }
+
+    .dropdown-options {
+        display: none;
+        position: absolute;
+        background: white;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-item {
+        padding: 8px;
+        display: flex;
+        align-items: center;
+    }
+
+        .dropdown-item:hover {
+            background: #f3e8ff;
+        }
+
+    .selected-members-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .approver-chip {
+        background: #6f42c1;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .remove-chip {
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .approver-list-container {
+        max-height: 300px;
+        overflow-y: auto; 
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+        .approver-list-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .approver-list-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        .approver-list-container::-webkit-scrollbar-thumb {
+            background: #6f42c1;
+            border-radius: 5px;
+        }
+
+            .approver-list-container::-webkit-scrollbar-thumb:hover {
+                background: #5a2ca0;
+            }
+
 </style>
