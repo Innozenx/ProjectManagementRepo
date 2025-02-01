@@ -14,6 +14,12 @@ namespace ProjectManagementSystem.Models
     
     public partial class DetailsTbl
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public DetailsTbl()
+        {
+            this.TaskApprovals = new HashSet<TaskApproval>();
+        }
+    
         public int details_id { get; set; }
         public Nullable<int> milestone_id { get; set; }
         public Nullable<int> main_id { get; set; }
@@ -36,5 +42,8 @@ namespace ProjectManagementSystem.Models
         public Nullable<int> task_delay { get; set; }
         public Nullable<int> excel_id { get; set; }
         public Nullable<System.DateTime> current_task_end { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TaskApproval> TaskApprovals { get; set; }
     }
 }

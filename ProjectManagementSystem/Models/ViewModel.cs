@@ -598,5 +598,23 @@ namespace ProjectManagementSystem.Models
         public string attachment { get; set; }
         public string reason { get; set; }
     }
+
+    public class ApproverTaskViewModel
+    {
+        public int DetailsID { get; set; }
+        public string TaskName { get; set; }
+        public string ProjectTitle { get; set; }
+        public string SubmittedBy { get; set; }
+        public DateTime SubmittedDate { get; set; }
+        public int? AttachmentID { get; set; }
+        public string AttachmentName { get; set; }
+        public string FilePath { get; set; }
+        public string Status { get; set; }
+        public string RejectReason { get; set; }
+
+        public int ApprovedCount { get; set; }
+        public int TotalApprovers { get; set; }
+        public List<string> ApprovedByUsers { get; set; } = new List<string>();
+    }
 }
 

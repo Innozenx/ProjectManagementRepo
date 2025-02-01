@@ -219,6 +219,16 @@
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RoleName" Type="varchar" MaxLength="255" />
         </EntityType>
+        <EntityType Name="TaskApproval">
+          <Key>
+            <PropertyRef Name="Approval_ID" />
+          </Key>
+          <Property Name="Approval_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Details_ID" Type="int" />
+          <Property Name="Approver_ID" Type="int" />
+          <Property Name="IsApproved" Type="bit" />
+          <Property Name="ApprovalDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="TransactionTbl">
           <Key>
             <PropertyRef Name="transaction_id" />
@@ -326,6 +336,18 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_TaskApproval_DetailsTbl">
+          <End Role="DetailsTbl" Type="Self.DetailsTbl" Multiplicity="0..1" />
+          <End Role="TaskApproval" Type="Self.TaskApproval" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DetailsTbl">
+              <PropertyRef Name="details_id" />
+            </Principal>
+            <Dependent Role="TaskApproval">
+              <PropertyRef Name="Details_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="ProjectManagementDBModelStoreContainer">
           <EntitySet Name="Activity_Log" EntityType="Self.Activity_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AdminList" EntityType="Self.AdminList" Schema="dbo" store:Type="Tables" />
@@ -342,6 +364,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="RegistrationTbl" EntityType="Self.RegistrationTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Reports" EntityType="Self.Reports" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TaskApproval" EntityType="Self.TaskApproval" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TransactionTbl" EntityType="Self.TransactionTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatus" Schema="dbo" store:Type="Tables" />
@@ -360,6 +383,10 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <AssociationSet Name="FK_MilestoneTbl_MainTable" Association="Self.FK_MilestoneTbl_MainTable">
             <End Role="MainTable" EntitySet="MainTable" />
             <End Role="MilestoneTbl" EntitySet="MilestoneTbl" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TaskApproval_DetailsTbl" Association="Self.FK_TaskApproval_DetailsTbl">
+            <End Role="DetailsTbl" EntitySet="DetailsTbl" />
+            <End Role="TaskApproval" EntitySet="TaskApproval" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -382,12 +409,17 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="RegistrationTbls" EntityType="ProjectManagementDBModel.RegistrationTbl" />
           <EntitySet Name="Reports" EntityType="ProjectManagementDBModel.Report" />
           <EntitySet Name="Roles" EntityType="ProjectManagementDBModel.Role" />
+          <EntitySet Name="TaskApprovals" EntityType="ProjectManagementDBModel.TaskApproval" />
           <EntitySet Name="TransactionTbls" EntityType="ProjectManagementDBModel.TransactionTbl" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
           <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
           <AssociationSet Name="FK_FixedChecklistTbl_ChecklistSetup" Association="ProjectManagementDBModel.FK_FixedChecklistTbl_ChecklistSetup">
             <End Role="ChecklistSetup" EntitySet="ChecklistSetups" />
             <End Role="FixedChecklistTbl" EntitySet="FixedChecklistTbls" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TaskApproval_DetailsTbl" Association="ProjectManagementDBModel.FK_TaskApproval_DetailsTbl">
+            <End Role="DetailsTbl" EntitySet="DetailsTbls" />
+            <End Role="TaskApproval" EntitySet="TaskApprovals" />
           </AssociationSet>
           <AssociationSet Name="FK_FixedChecklistTbl_MainTable" Association="ProjectManagementDBModel.FK_FixedChecklistTbl_MainTable">
             <End Role="MainTable" EntitySet="MainTables" />
@@ -513,6 +545,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="task_delay" Type="Int32" />
           <Property Name="excel_id" Type="Int32" />
           <Property Name="current_task_end" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="TaskApprovals" Relationship="ProjectManagementDBModel.FK_TaskApproval_DetailsTbl" FromRole="DetailsTbl" ToRole="TaskApproval" />
         </EntityType>
         <EntityType Name="FixedChecklistTbl">
           <Key>
@@ -624,6 +657,17 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="RoleName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="TaskApproval">
+          <Key>
+            <PropertyRef Name="Approval_ID" />
+          </Key>
+          <Property Name="Approval_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Details_ID" Type="Int32" />
+          <Property Name="Approver_ID" Type="Int32" />
+          <Property Name="IsApproved" Type="Boolean" />
+          <Property Name="ApprovalDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="DetailsTbl" Relationship="ProjectManagementDBModel.FK_TaskApproval_DetailsTbl" FromRole="TaskApproval" ToRole="DetailsTbl" />
+        </EntityType>
         <EntityType Name="TransactionTbl">
           <Key>
             <PropertyRef Name="transaction_id" />
@@ -688,6 +732,18 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_TaskApproval_DetailsTbl">
+          <End Type="ProjectManagementDBModel.DetailsTbl" Role="DetailsTbl" Multiplicity="0..1" />
+          <End Type="ProjectManagementDBModel.TaskApproval" Role="TaskApproval" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DetailsTbl">
+              <PropertyRef Name="details_id" />
+            </Principal>
+            <Dependent Role="TaskApproval">
+              <PropertyRef Name="Details_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_FixedChecklistTbl_MainTable">
           <End Type="ProjectManagementDBModel.MainTable" Role="MainTable" Multiplicity="0..1" />
           <End Type="ProjectManagementDBModel.FixedChecklistTbl" Role="FixedChecklistTbl" Multiplicity="*" />
@@ -724,7 +780,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -956,6 +1012,17 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
               <MappingFragment StoreEntitySet="Roles">
                 <ScalarProperty Name="RoleName" ColumnName="RoleName" />
                 <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TaskApprovals">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.TaskApproval">
+              <MappingFragment StoreEntitySet="TaskApproval">
+                <ScalarProperty Name="ApprovalDate" ColumnName="ApprovalDate" />
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+                <ScalarProperty Name="Approver_ID" ColumnName="Approver_ID" />
+                <ScalarProperty Name="Details_ID" ColumnName="Details_ID" />
+                <ScalarProperty Name="Approval_ID" ColumnName="Approval_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
