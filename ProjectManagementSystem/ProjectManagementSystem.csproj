@@ -378,6 +378,9 @@
     <Compile Include="Models\Role.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\TaskApproval.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\TransactionTbl.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
@@ -5122,6 +5125,7 @@
     <Content Include="Views\Checklist\AcknowledgeInvite.cshtml" />
     <Content Include="Views\Admin\ChecklistSettings.cshtml" />
     <Content Include="Views\Admin\ChecklistSetup.cshtml" />
+    <Content Include="Views\Admin\PendingApprovals.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -845,7 +845,39 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
+        [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER, PMS_PROJECT_MANAGER")]
+        public ActionResult PendingApprovals()
+        {
+            var userId = User.Identity.Name;
+
+            var approverTasks = db.ApproversTbls
+                .Where(a => a.User_Id == userId && a.IsRemoved_ == false)
+                .ToList(); 
+
+         
+            var taskIds = approverTasks.Select(a => a.Details_Id).ToList();
+            var projectIds = approverTasks.Select(a => a.Main_Id).ToList();
+
+            var tasks = db.DetailsTbls.Where(t => taskIds.Contains(t.details_id)).ToList();
+            var projects = db.MainTables.Where(p => projectIds.Contains(p.main_id)).ToList();
+            var attachments = db.AttachmentTables.Where(att => taskIds.Contains(att.details_id)).ToList();
 
 
+            var userIds = approverTasks.Select(a => a.User_Id).Distinct().ToList();
+            var users = cmdb.AspNetUsers.Where(u => userIds.Contains(u.Id)).ToList();
+
+            var pendingTasks = approverTasks.Select(a => new ApproverTaskViewModel
+            {
+                DetailsID = a.Details_Id ?? 0 ,
+                TaskName = tasks.FirstOrDefault(t => t.details_id == a.Details_Id)?.process_title ?? "N/A",
+                ProjectTitle = projects.FirstOrDefault(p => p.main_id == a.Main_Id)?.project_title ?? "N/A",
+                SubmittedBy = users.FirstOrDefault(u => u.Id == a.User_Id)?.UserName ?? "Unknown",
+                SubmittedDate = tasks.FirstOrDefault(t => t.details_id == a.Details_Id)?.created_date ?? DateTime.MinValue,
+                AttachmentID = attachments.FirstOrDefault(att => att.details_id == a.Details_Id)?.details_id ?? 0,
+                FilePath = attachments.FirstOrDefault(att => att.details_id == a.Details_Id)?.path_file
+            }).ToList();
+
+            return View(pendingTasks);
+        }
     }
 }

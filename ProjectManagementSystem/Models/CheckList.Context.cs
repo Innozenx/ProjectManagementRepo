@@ -40,6 +40,7 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<RegistrationTbl> RegistrationTbls { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<TaskApproval> TaskApprovals { get; set; }
         public virtual DbSet<TransactionTbl> TransactionTbls { get; set; }
         public virtual DbSet<WeeklyChecklistTable> WeeklyChecklistTables { get; set; }
         public virtual DbSet<WeeklyStatu> WeeklyStatus { get; set; }
