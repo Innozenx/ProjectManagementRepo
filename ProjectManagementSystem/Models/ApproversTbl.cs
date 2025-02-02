@@ -23,5 +23,8 @@ namespace ProjectManagementSystem.Models
         public Nullable<System.DateTime> ApprovalDate { get; set; }
         public Nullable<int> Main_Id { get; set; }
         public Nullable<bool> IsRemoved_ { get; set; }
+        public Nullable<bool> IsApproved_ { get; set; }
+        public Nullable<bool> IsRejected_ { get; set; }
+        public string RejectReason { get; set; }
     }
 }

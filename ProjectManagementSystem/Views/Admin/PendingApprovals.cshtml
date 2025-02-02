@@ -13,11 +13,14 @@
             ProjectTitle = "Project Management System",
             SubmittedBy = "Crystal Joyce Benauro",
             SubmittedDate = DateTime.Now.AddDays(-1),
+            ApprovalDate = DateTime.Now,
             AttachmentID = 101,
             FilePath = "/uploads/project_plan.pdf",
             ApprovedCount = 1,
             TotalApprovers = 3,
-            ApprovedByUsers = new List<string> { "Yas Afdal" }
+            ApprovedByUsers = new List<string> { "Yas Afdal" },
+            IsApproved = false,
+            IsRejected = false
         },
         new ProjectManagementSystem.Models.ApproverTaskViewModel
         {
@@ -26,11 +29,14 @@
             ProjectTitle = "Asset Management Phase 2",
             SubmittedBy = "Jantroy Yparraguirre",
             SubmittedDate = DateTime.Now.AddDays(-2),
+            ApprovalDate = DateTime.Now.AddHours(-5),
             AttachmentID = 102,
             FilePath = "/uploads/asset_transfer.pdf",
             ApprovedCount = 2,
             TotalApprovers = 2,
-            ApprovedByUsers = new List<string> { "Mark Reformo", "Yas Afdal" }
+            ApprovedByUsers = new List<string> { "Mark Reformo", "Yas Afdal" },
+            IsApproved = true,
+            IsRejected = false
         },
         new ProjectManagementSystem.Models.ApproverTaskViewModel
         {
@@ -39,67 +45,59 @@
             ProjectTitle = "Project Management System",
             SubmittedBy = "Jantroy Yparraguirre",
             SubmittedDate = DateTime.Now.AddHours(-5),
+            ApprovalDate = DateTime.Now.AddHours(-2),
             AttachmentID = null,
             FilePath = "",
             ApprovedCount = 0,
             TotalApprovers = 2,
-            ApprovedByUsers = new List<string>()
+            ApprovedByUsers = new List<string>(),
+            IsApproved = false,
+            IsRejected = true,
+            RejectReason = "Design does not follow brand guidelines."
         }
     };
 
-    var tasksToShow = Model != null && Model.Any() ? Model : dummyTasks;
+    var tasksToShow = Model != null && Model.Any() ? Model.ToList() : dummyTasks;
+    var pendingApprovals = tasksToShow.Where(t => !t.IsApproved && !t.IsRejected).ToList();
+    var approvedTasks = tasksToShow.Where(t => t.IsApproved).ToList();
+    var rejectedTasks = tasksToShow.Where(t => t.IsRejected).ToList();
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm p-4 rounded-3 bg-white">
-        <h2 class="text-purple fw-bold mb-4"><i class="fas fa-check-circle"></i> Pending Approvals</h2>
-        <p class="text-muted">Review and approve/reject tasks submitted for approval.</p>
-
-        @if (tasksToShow.Any())
-        {
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-purple">@*<i class="fas fa-check-circle"></i>*@ Approvals</h2>
+        @*<p class="text-muted">Review and manage approvals efficiently.</p>*@
+    </div>
+    <ul class="nav nav-tabs custom-tabs" id="approvalsTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="pending-tab" data-bs-toggle="tab" href="#pending" role="tab">Pending</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="approved-tab" data-bs-toggle="tab" href="#approved" role="tab">Approved</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="rejected-tab" data-bs-toggle="tab" href="#rejected" role="tab">Rejected</a>
+        </li>
+    </ul>
+    <div class="tab-content p-4 bg-white rounded border" id="approvalsTabContent">
+        <div class="tab-pane fade show active" id="pending" role="tabpanel">
             <div class="row g-4">
-                @foreach (var task in tasksToShow)
+                @foreach (var task in pendingApprovals)
                 {
                     <div class="col-lg-4 col-md-6">
                         <div class="card task-card shadow-sm border-0">
                             <div class="card-body">
                                 <h5 class="fw-bold text-dark">@task.TaskName</h5>
-                                <p class="small text-muted"><i class="fas fa-project-diagram"></i> @task.ProjectTitle</p>
-
-                                <p class="small">
-                                    <i class="fas fa-user-check"></i> <b>Approved:</b> @task.ApprovedCount / @task.TotalApprovers
-                                </p>
-
-                                @if (task.ApprovedByUsers.Any())
-                                {
-                                    <p class="small text-muted">
-                                        <i class="fas fa-users"></i> Approved By:
-                                        <span class="fw-semibold">@string.Join(", ", task.ApprovedByUsers)</span>
-                                    </p>
-                                }
-
+                                <p class="small"><i class="fas fa-user"></i> <b>Submitted By:</b> @task.SubmittedBy</p>
+                                <p class="small"><i class="fas fa-user-check"></i> <b>Approved:</b> @task.ApprovedCount / @task.TotalApprovers</p>
                                 <p class="small"><i class="far fa-calendar-alt"></i> <b>Submitted On:</b> @task.SubmittedDate.ToString("yyyy-MM-dd HH:mm")</p>
-
-                                <!-- Show Rejection Reason -->
-                                @if (!string.IsNullOrEmpty(task.RejectReason))
-                                {
-                                    <p class="small text-danger"><i class="fas fa-exclamation-circle"></i> <b>Rejection Reason:</b> @task.RejectReason</p>
-                                }
-
                                 @if (!string.IsNullOrEmpty(task.FilePath))
                                 {
-                                    <div class="text-center my-3">
-                                        <a href="@Url.Action("DownloadAttachment", "Admin", new { id = task.AttachmentID })" class="btn btn-outline-success btn-sm w-100">
-                                            <i class="fas fa-download"></i> Download
-                                        </a>
-                                    </div>
+                                    <a href="@Url.Action("DownloadAttachment", "Admin", new { id = task.AttachmentID })" class="btn btn-outline-success btn-sm w-100 mb-2">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
                                 }
-                                else
-                                {
-                                    <p class="text-center"><span class="badge bg-secondary">No Attachment</span></p>
-                                }
-
-                                <div class="d-flex justify-content-between">
+                                <div class="d-flex justify-content-between mt-3 gap-2">
                                     <button class="btn btn-success approve-btn w-50" data-taskid="@task.DetailsID">
                                         <i class="fas fa-check"></i> Approve
                                     </button>
@@ -112,24 +110,63 @@
                     </div>
                 }
             </div>
-        }
-        else
-        {
-            <div class="text-center text-muted mt-4">
-                <p><i class="fas fa-info-circle"></i> No tasks require approval at the moment.</p>
+        </div>
+
+        <div class="tab-pane fade" id="approved" role="tabpanel">
+            <div class="row g-4">
+                @foreach (var task in approvedTasks)
+                {
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card task-card shadow-sm border-0">
+                            <div class="card-body">
+                                <h5 class="fw-bold text-dark">@task.TaskName</h5>
+                                <p class="small"><i class="fas fa-user"></i> <b>Approved By:</b> @string.Join(", ", task.ApprovedByUsers)</p>
+                                <p class="small"><i class="far fa-calendar-alt"></i> <b>Approved On:</b> @task.ApprovalDate?.ToString("yyyy-MM-dd HH:mm")</p>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        }
+        </div>
+
+        <div class="tab-pane fade" id="rejected" role="tabpanel">
+            <div class="row g-4">
+                @foreach (var task in rejectedTasks)
+                {
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card task-card shadow-sm border-0">
+                            <div class="card-body">
+                                <h5 class="fw-bold text-dark">@task.TaskName</h5>
+                                <p class="small text-danger"><i class="fas fa-exclamation-triangle"></i> <b>Reject Reason:</b> @task.RejectReason</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>
 
-
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     $(document).ready(function () {
-       
         $(".approve-btn").click(function () {
             let taskId = $(this).data("taskid");
+
+            $(document).ready(function () {
+                var triggerTabList = [].slice.call(document.querySelectorAll('.nav-tabs .nav-link'))
+                triggerTabList.forEach(function (triggerEl) {
+                    var tabTrigger = new bootstrap.Tab(triggerEl)
+                    triggerEl.addEventListener('click', function (event) {
+                        event.preventDefault()
+                        tabTrigger.show()
+                    })
+                });
+            });
+
 
             Swal.fire({
                 title: "Approve Task?",
@@ -143,7 +180,6 @@
                 if (result.isConfirmed) {
                     $.post("@Url.Action("ApproveTask", "Admin")", { taskId: taskId })
                         .done(response => {
-                            Swal.close();
                             if (response.success) {
                                 Swal.fire("Success", "Task approved successfully!", "success").then(() => location.reload());
                             } else {
@@ -155,87 +191,66 @@
             });
         });
 
-        let taskIdToReject = null;
         $(".reject-btn").click(function () {
-            taskIdToReject = $(this).data("taskid");
-            $("#rejectTaskModal").modal("show");
-        });
+            let taskId = $(this).data("taskid");
 
-        $("#confirmRejectBtn").click(function () {
-            let reason = $("#rejectReason").val().trim();
-            if (!reason) {
-                Swal.fire("Warning", "Please provide a reason for rejection.", "warning");
-                return;
-            }
-
-            $.post("@Url.Action("RejectTask", "Admin")", { taskId: taskIdToReject, reason: reason })
-                .done(response => {
-                    if (response.success) {
-                        Swal.fire("Rejected", "Task has been rejected.", "success").then(() => location.reload());
-                    } else {
-                        Swal.fire("Error", response.message, "error");
-                    }
-                })
-                .fail(() => Swal.fire("Error", "Failed to reject task.", "error"));
-
-            $("#rejectTaskModal").modal("hide");
+            Swal.fire({
+                title: "Reject Task?",
+                text: "Provide a reason for rejection:",
+                input: "text",
+                showCancelButton: true,
+                confirmButtonText: "Reject",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed && result.value.trim() !== "") {
+                    $.post("@Url.Action("RejectTask", "Admin")", { taskId: taskId, reason: result.value.trim() })
+                        .done(response => {
+                            if (response.success) {
+                                Swal.fire("Rejected", "Task has been rejected.", "success").then(() => location.reload());
+                            }
+                        })
+                        .fail(() => Swal.fire("Error", "Failed to reject task.", "error"));
+                }
+            });
         });
     });
 </script>
 
 <style>
-    body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f8f9fa;
+    .custom-tabs {
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        padding-bottom: 5px;
     }
 
-    .text-purple {
-        color: #6f42c1;
-    }
+        .custom-tabs .nav-link {
+            font-size: 16px;
+            font-weight: 500;
+            color: #9c9c9c;
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .custom-tabs .nav-link.active {
+                color: #6f42c1;
+                font-weight: 600;
+                border-bottom: 2px solid #6f42c1;
+                transition: all 0.3s ease-in-out;
+            }
 
     .task-card {
         border-radius: 12px;
         padding: 15px;
-        border-left: 5px solid #6f42c1; 
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        background-color: #ffffff; 
+        background-color: #ffffff;
     }
 
-        /*.task-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }*/
-
-    .btn {
-        transition: all 0.2s ease-in-out;
+    .gap-2 {
+        gap: 10px;
     }
-
-    .btn-success {
-        background-color: #28a745;
-        border: none;
-    }
-
-        .btn-success:hover {
-            background-color: #218838;
-        }
-
-    .btn-danger {
-        background-color: #dc3545;
-        border: none;
-    }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-
-    .btn-outline-success {
-        border-color: #28a745;
-        color: #28a745;
-    }
-
-        .btn-outline-success:hover {
-            background-color: #28a745;
-            color: white;
-        }
-
 </style>
+
+
