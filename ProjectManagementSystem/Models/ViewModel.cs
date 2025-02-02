@@ -615,6 +615,12 @@ namespace ProjectManagementSystem.Models
         public int ApprovedCount { get; set; }
         public int TotalApprovers { get; set; }
         public List<string> ApprovedByUsers { get; set; } = new List<string>();
+
+        public bool IsApproved { get; set; }
+        public bool IsRejected { get; set; }
+        public DateTime? ApprovalDate { get; set; }
+
+
     }
 }
 

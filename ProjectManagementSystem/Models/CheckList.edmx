@@ -40,6 +40,9 @@
           <Property Name="ApprovalDate" Type="datetime" />
           <Property Name="Main_Id" Type="int" />
           <Property Name="IsRemoved?" Type="bit" />
+          <Property Name="IsApproved?" Type="bit" />
+          <Property Name="IsRejected?" Type="bit" />
+          <Property Name="RejectReason" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="AttachmentTable">
           <Key>
@@ -469,6 +472,9 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="ApprovalDate" Type="DateTime" Precision="3" />
           <Property Name="Main_Id" Type="Int32" />
           <Property Name="IsRemoved_" Type="Boolean" />
+          <Property Name="IsApproved_" Type="Boolean" />
+          <Property Name="IsRejected_" Type="Boolean" />
+          <Property Name="RejectReason" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="AttachmentTable">
           <Key>
@@ -813,6 +819,9 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="ApproversTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ApproversTbl">
               <MappingFragment StoreEntitySet="ApproversTbl">
+                <ScalarProperty Name="RejectReason" ColumnName="RejectReason" />
+                <ScalarProperty Name="IsRejected_" ColumnName="IsRejected?" />
+                <ScalarProperty Name="IsApproved_" ColumnName="IsApproved?" />
                 <ScalarProperty Name="IsRemoved_" ColumnName="IsRemoved?" />
                 <ScalarProperty Name="Main_Id" ColumnName="Main_Id" />
                 <ScalarProperty Name="ApprovalDate" ColumnName="ApprovalDate" />

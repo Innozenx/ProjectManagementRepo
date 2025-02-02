@@ -607,8 +607,6 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
-
-
         [Authorize(Roles = "PMS_ODCP_ADMIN")]
         [HttpGet]
         public JsonResult GetMilestonesByDivision(string division, int? checklistId = null)
@@ -765,7 +763,6 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Error deleting checklist.", error = ex.Message });
             }
         }
-
          
         [Authorize(Roles = "PMS_ODCP_ADMIN")]
         [HttpGet]
@@ -878,6 +875,61 @@ namespace ProjectManagementSystem.Controllers
             }).ToList();
 
             return View(pendingTasks);
+        }
+
+        [HttpPost]
+        public JsonResult ApproveTask(int taskId)
+        {
+            try
+            {
+                var userId = User.Identity.Name;
+                var task = db.ApproversTbls.FirstOrDefault
+                    (a => a.Details_Id == taskId && a.User_Id == userId);
+
+
+                if (task == null)
+                {
+                    return Json(new { success = false, message = "Task not found" });
+                }
+
+                task.IsApproved_ = true;
+                task.IsRejected_ = false;
+                task.ApprovalDate = DateTime.Now;
+                db.SaveChanges();
+
+                return Json(new { success = true, message = "Task approved successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error" + ex.Message});
+            }
+        }
+
+        [HttpPost]
+        public ActionResult RejectTask(int taskId, string reason)
+        {
+            try
+            {
+                var userId = User.Identity.Name;
+                var task = db.ApproversTbls.FirstOrDefault
+                    (a => a.Details_Id == taskId && a.User_Id == userId);
+
+                if (task == null)
+                {
+                    return Json(new { success = false, message = "Task not found" });
+                }
+
+                task.IsApproved_ = false;
+                task.IsRejected_ = true;
+                task.RejectReason = reason;
+                db.SaveChanges();
+
+                return Json(new { success = true, message = "Task rejected! :( " });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error" + ex.Message });
+            }
         }
     }
 }
