@@ -619,8 +619,14 @@ namespace ProjectManagementSystem.Models
         public bool IsApproved { get; set; }
         public bool IsRejected { get; set; }
         public DateTime? ApprovalDate { get; set; }
+    }
 
-
+    public class ApproverRequest
+    {
+        public int DetailsId { get; set; } //
+        public int MilestoneId { get; set; }
+        public int MainId { get; set; }
+        public List<string> Approvers { get; set; }
     }
 }
 
