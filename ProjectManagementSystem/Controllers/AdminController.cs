@@ -9,6 +9,9 @@ using System.Web.Routing;
 using ProjectManagementSystem.CustomAttributes;
 using System.Data.Entity;
 using System.Data.SqlClient;
+using System.IO;
+using Newtonsoft.Json;
+using Microsoft.AspNet.Identity;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -360,10 +363,6 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
-
-
-
-
         [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         [HttpGet]
         public JsonResult GetProjectsByChecklist(int checklistId)
@@ -393,19 +392,26 @@ namespace ProjectManagementSystem.Controllers
                 .Where(m => m.main_id == projectId)
                 .Select(milestone => new
                 {
+                    MilestoneId = milestone.milestone_id, 
                     MilestoneName = milestone.milestone_name,
                     Tasks = db.DetailsTbls
                         .Where(task => task.milestone_id == milestone.milestone_id)
                         .Select(task => new
                         {
-                            Id = task.details_id,
-                            TaskName = task.process_title,
-                            RequiresApproval = task.RequiresApproval ?? false
-                        }).ToList()
+                            DetailsID = task.details_id,  
+                    TaskName = task.process_title,
+                            RequiresApproval = task.RequiresApproval ?? false,
+                            MilestoneId = task.milestone_id,  
+                    MainId = db.MainTables
+                                .Where(main => main.main_id == milestone.main_id)
+                                .Select(main => main.main_id)
+                                .FirstOrDefault()  
+                }).ToList()
                 }).ToList();
 
             return Json(new { Milestones = milestones }, JsonRequestBehavior.AllowGet);
         }
+
 
 
         [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
@@ -449,85 +455,66 @@ namespace ProjectManagementSystem.Controllers
         }
 
         [HttpPost]
-        public JsonResult AssignApprovers(int taskId, List<string> approvers, int milestoneId, int mainId)
+        public JsonResult AssignApprovers([System.Web.Http.FromBody] ApproverRequest request)
         {
-            using (var transaction = db.Database.BeginTransaction()) 
+            if (request == null)
             {
-                try
-                {
-                    if (taskId <= 0 || milestoneId <= 0 || mainId <= 0)
-                    {
-                        return Json(new { success = false, message = "Invalid task, milestone, or project ID." });
-                    }
+                return Json(new { success = false, message = "Invalid request data." });
+            }
 
+            Console.WriteLine($"Received Data: DetailsId={request.DetailsId}, MilestoneId={request.MilestoneId}, MainId={request.MainId}");
+
+            if (request.DetailsId <= 0 || request.MilestoneId <= 0 || request.MainId <= 0)
+            {
+                return Json(new { success = false, message = "Invalid task, milestone, or project ID." });
+            }
+
+            try
+            {
+                using (var transaction = db.Database.BeginTransaction())
+                {
                     var existingApprovers = db.ApproversTbls
-                        .Where(a => a.Details_Id == taskId)
+                        .Where(a => a.Details_Id == request.DetailsId)
                         .ToList();
 
-                    if (approvers != null && approvers.Any())
+                    foreach (var approver in existingApprovers)
                     {
-                        foreach (var approver in existingApprovers)
-                        {
-                            if (approvers.Contains(approver.User_Id))
-                            {
-                                approver.IsRemoved_ = false; 
-                            }
-                            else
-                            {
-                                approver.IsRemoved_ = true; 
-                            }
-                            db.Entry(approver).State = EntityState.Modified;
-                        }
-
-                        foreach (var approverId in approvers)
-                        {
-                            if (!existingApprovers.Any(a => a.User_Id == approverId))
-                            {
-                                var user = cmdb.AspNetUsers
-                                    .Where(x => x.Id == approverId)
-                                    .Select(x => new { x.FirstName, x.LastName })
-                                    .FirstOrDefault();
-
-                                if (user != null)
-                                {
-                                    var newApprover = new ApproversTbl
-                                    {
-                                        Details_Id = taskId,
-                                        User_Id = approverId,
-                                        Approver_Name = $"{user.FirstName} {user.LastName}",
-                                        Milestone_Id = milestoneId,
-                                        Main_Id = mainId,
-                                        ApprovalDate = DateTime.Now,
-                                        IsRemoved_ = false
-                                    };
-
-                                    db.ApproversTbls.Add(newApprover);
-                                }
-                            }
-                        }
+                        approver.IsRemoved_ = !request.Approvers.Contains(approver.User_Id);
+                        db.Entry(approver).State = EntityState.Modified;
                     }
-                    else
+
+                    foreach (var approverId in request.Approvers.Except(existingApprovers.Select(a => a.User_Id)))
                     {
-                        foreach (var approver in existingApprovers)
+                        var user = cmdb.AspNetUsers
+                            .Where(x => x.Id == approverId)
+                            .Select(x => new { x.FirstName, x.LastName })
+                            .FirstOrDefault();
+
+                        if (user != null)
                         {
-                            approver.IsRemoved_ = true;
-                            db.Entry(approver).State = EntityState.Modified;
+                            db.ApproversTbls.Add(new ApproversTbl
+                            {
+                                Details_Id = request.DetailsId,
+                                User_Id = approverId,
+                                Approver_Name = $"{user.FirstName} {user.LastName}",
+                                Milestone_Id = request.MilestoneId,
+                                Main_Id = request.MainId,
+                                ApprovalDate = DateTime.Now,
+                                IsRemoved_ = false
+                            });
                         }
                     }
 
                     db.SaveChanges();
-                    transaction.Commit(); 
+                    transaction.Commit();
                     return Json(new { success = true, message = "Approvers assigned successfully." });
                 }
-                catch (Exception ex)
-                {
-                    transaction.Rollback(); 
-                    return Json(new { success = false, message = "Error assigning approvers: " + ex.Message });
-                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error assigning approvers: " + ex.Message });
             }
         }
-
-
 
         [HttpPost]
         public JsonResult UpdateTaskApproval(int taskId, bool requiresApproval)
@@ -597,7 +584,7 @@ namespace ProjectManagementSystem.Controllers
                             MilestoneName = db.MilestoneTbls
                                 .Where(m => fc.Milestone_ID.HasValue && m.milestone_id == fc.Milestone_ID.Value)
                                 .Select(m => m.milestone_name)
-                                .FirstOrDefault() ?? "No Name"
+                                .FirstOrDefault() ?? "No milestone name"
                         }).ToList()
                 })
                 .ToList();
@@ -882,19 +869,19 @@ namespace ProjectManagementSystem.Controllers
         {
             try
             {
-                var userId = User.Identity.Name;
-                var task = db.ApproversTbls.FirstOrDefault
-                    (a => a.Details_Id == taskId && a.User_Id == userId);
+             
+                var userID = User.Identity.Name;
+                var tasks = db.ApproversTbls.FirstOrDefault
+                    (a => a.Details_Id == taskId && a.User_Id == userID);
 
-
-                if (task == null)
+                if (tasks == null)
                 {
                     return Json(new { success = false, message = "Task not found" });
                 }
 
-                task.IsApproved_ = true;
-                task.IsRejected_ = false;
-                task.ApprovalDate = DateTime.Now;
+                tasks.IsApproved_ = true;
+                tasks.IsRejected_ = false;
+                tasks.ApprovalDate = DateTime.Now;
                 db.SaveChanges();
 
                 return Json(new { success = true, message = "Task approved successfully!" });
@@ -931,5 +918,86 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Error" + ex.Message });
             }
         }
+        [HttpGet]
+        public JsonResult GetApproversByTask(int taskId)
+        {
+            try
+            {
+                //Console.WriteLine($"Fetching All Users from AspNetUsers for Task ID: {taskId}");
+
+                var allUsers = cmdb.AspNetUsers
+                    .Select(user => new
+                    {
+                        Id = user.Id,
+                        FullName = user.FirstName + " " + user.LastName,
+                        Email = user.Email
+                    })
+                    .ToList();
+
+               
+                var assignedApprovers = db.ApproversTbls
+                    .Where(a => a.Details_Id == taskId)
+                    .Select(a => new { a.User_Id })
+                    .ToList();
+
+                var userList = allUsers.Select(user => new
+                {
+                    user.Id,
+                    user.FullName,
+                    user.Email,
+                    IsSelected = assignedApprovers.Any(a => a.User_Id == user.Id)
+                });
+                    return Json(userList, JsonRequestBehavior.AllowGet);
+                   
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ Error fetching users: " + ex.Message);
+                return Json(new { success = false, message = "Error fetching users: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        [HttpGet]
+        [Authorize]
+        public JsonResult GetPendingApprovals()
+        {
+            try
+            {
+                string currentUserId = User.Identity.GetUserId(); 
+
+                var pendingTasks = db.ApproversTbls
+                    .Where(a => a.User_Id == currentUserId && a.IsRemoved_ == false)
+                    .Select(a => new ApproverTaskViewModel
+                    {
+                        DetailsID = a.Details_Id ?? 0, 
+                        TaskName = db.DetailsTbls
+                            .Where(t => t.details_id == a.Details_Id)
+                            .Select(t => t.process_title)
+                            .FirstOrDefault(),
+
+                        ProjectTitle = db.MainTables
+                            .Where(p => p.main_id == a.Main_Id)
+                            .Select(p => p.project_title)
+                            .FirstOrDefault(),
+
+                        SubmittedBy = cmdb.AspNetUsers
+                            .Where(u => u.Id == a.User_Id)
+                            .Select(u => u.FirstName + " " + u.LastName)
+                            .FirstOrDefault(),
+                        SubmittedDate = a.ApprovalDate ?? DateTime.Now
+                    }).ToList();
+
+                return Json(pendingTasks, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+               
+                return Json(new { success = false, message = "Error loading pending approvals" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+
+
+
     }
 }
