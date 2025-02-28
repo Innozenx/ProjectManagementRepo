@@ -264,9 +264,6 @@ namespace ProjectManagementSystem.Controllers
         }
 
 
-
-     
-
         [Authorize(Roles = "PMS_PROJECT_MANAGER, PMS_ODCP_ADMIN, PMS_Management, PMS_PROJECT_OWNER, PMS_DIVISION_HEAD, PMS_USER")]
         public ActionResult Dashboard()
         {
@@ -1554,6 +1551,8 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message = message }, JsonRequestBehavior.AllowGet);
         }
 
+     
+
         public ActionResult AcknowledgeInvite(string email)
         {
             try
@@ -1599,6 +1598,8 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+
+  
 
         public JsonResult GetTasksForMilestone(int milestoneId, int mainId)
         {
@@ -1708,9 +1709,7 @@ namespace ProjectManagementSystem.Controllers
             }
 
             var registeredByEmail = project.registered_by?.Trim();
-            //Debug.WriteLine($"Registered By (Email): {registeredByEmail}");
 
-            // fetch the owner's details
             var owner = cmdb.AspNetUsers
                 .Where(u => u.Email.Trim().ToLower() == registeredByEmail.ToLower())
                 .Select(u => new { u.FirstName, u.LastName, u.Email })

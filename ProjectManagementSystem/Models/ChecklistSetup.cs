@@ -30,6 +30,7 @@ namespace ProjectManagementSystem.Models
         public Nullable<int> milestone_id { get; set; }
         public Nullable<bool> project_specific { get; set; }
         public Nullable<int> main_id { get; set; }
+        public string checklist_description { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FixedChecklistTbl> FixedChecklistTbls { get; set; }

@@ -11,6 +11,7 @@
         <p class="text-muted">Select division and projects to apply approvers to each task.</p>
     </div>
 
+
     <div class="container mt-4">
         <div class="row justify-content-center text-center">
             <div class="col-md-6 mb-3">
@@ -64,7 +65,6 @@
     </div>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -72,8 +72,6 @@
         currentMilestoneId = null,
         currentMainId = null;
     let projectCache = {};
-
- 
 
     function loadProjects(checklistId) {
         if (!checklistId) {
@@ -103,7 +101,7 @@
                 });
             }
         }).fail(() => {
-            console.error("❌ Error loading projects.");
+            console.error("Error loading projects.");
             Swal.fire({
                 title: "Error",
                 text: "Error loading projects.",

@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Create Milestone";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="text-center">
+        <h2 class="text-primary fw-bold">Create Milestone</h2>
+    </div>
+
+    <form id="milestoneForm">
+        <input type="hidden" name="DivisionId" value="@ViewBag.DivisionId" />
+
+        <div class="form-group mb-3">
+            <label class="fw-bold">Milestone Name</label>
+            <input type="text" name="MilestoneName" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="fw-bold">Task Requirement</label>
+            <input type="text" name="TaskRequirement" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="fw-bold">Approvers</label>
+            <select id="approversDropdown" name="Approvers" class="form-select" multiple>
+                @if (ViewBag.Users != null)
+                {
+                    foreach (var user in ViewBag.Users as List<SelectListItem>)
+                    {
+                        <option value="@user.Value">@user.Text</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="@Url.Action("AddMilestones", "Admin", new { divisionId = ViewBag.DivisionId })"
+           class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#approversDropdown').select2({ placeholder: "Select approvers", allowClear: true });
+
+        $('#milestoneForm').submit(function (e) {
+            e.preventDefault();
+            $.post('/Admin/SaveMilestone', $(this).serialize(), function (response) {
+                if (response.success) {
+                    alert("Milestone saved successfully!");
+                    window.location.href = "/Admin/AddMilestones?divisionId=" + '@ViewBag.DivisionId';
+                } else {
+                    alert("Error: " + response.message);
+                }
+            });
+        });
+    });
+</script>

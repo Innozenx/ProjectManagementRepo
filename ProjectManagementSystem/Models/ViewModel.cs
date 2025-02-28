@@ -528,12 +528,25 @@ namespace ProjectManagementSystem.Models
         public string ProjectName { get; set; }
         public List<MilestoneViewModel> Milestones { get; set; }
         public Onboarding Onboarding { get; set; }
-        public List<string> Divisions { get; set; }
+        //public List<string> Divisions { get; set; }
         public string ChecklistName { get; set; }
-        public string Division { get; set; }
-        public List<ChecklistSettingsViewModel> Projects { get; set; }
+       public string Division { get; set; }
+        public string Milestone { get; set; }
+        public string ChecklistDescription { get; set; }
 
+        public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>();
+        public List<DivisionViewModel> Divisions{ get; set; } = new List<DivisionViewModel>();
+    } 
+
+    
+
+    public class DivisionViewModel
+    {
+        public int DivisionID { get; set; }
+        public string DivisionName { get; set; }
     }
+
+
     public class TaskApproverViewModel
     {
         public int TaskId { get; set; } 
@@ -628,5 +641,14 @@ namespace ProjectManagementSystem.Models
         public int MainId { get; set; }
         public List<string> Approvers { get; set; }
     }
+
+    public class MilestoneDivision
+    {
+        [Key]
+        public int Id { get; set; }
+        public int DivisionId { get; set; }
+        public DateTime CreatedDate { get; set; }
+    }
+
 }
 

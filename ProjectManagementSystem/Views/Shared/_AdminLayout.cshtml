@@ -18,7 +18,7 @@
     <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet" type="text/css" />
 
     <style>
-        /* Define light and dark mode variables */
+
         :root {
             --background-color: #ffffff;
             --text-color: #333333;
@@ -70,6 +70,110 @@
             #theme-toggle:hover {
                 background-color: #532c7e;
             }
+
+        .btn {
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            padding: 6px 12px;
+            margin: 2px;
+            transition: all 0.3s ease-in-out;
+            width: 100px; 
+            text-align: center;
+        }
+
+        .btn-violet {
+            background-color: #6f42c1 !important;
+            border-color: #6f42c1 !important;
+            color: white !important;
+        }
+
+            .btn-violet:hover {
+                background-color: #5a32a3 !important;
+                border-color: #5a32a3 !important;
+            }
+        .btn-add {
+            background-color: #6f42c1 !important;
+            color: white !important;
+            border: none;
+        }
+
+        .btn-update {
+            background-color: #ffca2c !important;
+            color: black !important;
+            border: none;
+        }
+
+        .btn-delete {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border: none;
+        }
+
+        .btn-preview {
+            background-color: #17a2b8 !important;
+            color: white !important;
+            border: none;
+        }
+        .btn-add:hover {
+            background-color: #5a32a3 !important;
+        }
+
+        .btn-update:hover {
+            background-color: #e0a800 !important;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333 !important;
+        }
+
+        .btn-preview:hover {
+            background-color: #138496 !important;
+        }
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+        }
+        .division-container {
+            display: flex;
+            align-items: center;
+            gap: 15px; 
+            flex-wrap: wrap;
+        }
+
+        .add-btn {
+            width: 120px; 
+            height: 40px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #6f42c1, #8b5cf6);
+            border: none;
+            color: white;
+            border-radius: 6px;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .create-btn:hover {
+                background: linear-gradient(135deg, #5a32a3, #7a47e0);
+                color: white;
+            }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            text-align: center;
+            color: #470A67;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini">

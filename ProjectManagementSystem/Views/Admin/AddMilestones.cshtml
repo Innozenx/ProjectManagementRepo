@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "Add Milestones";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="text-center">
+        <h2 class="text-primary fw-bold">Add Milestones</h2>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ViewBag.DivisionName))
+    {
+        
+         <h5>@ViewBag.DivisionName</h5>
+        
+    }
+    else
+    {
+        <div class="alert alert-danger text-center fw-bold">
+            No division selected! Please go back and select a division.
+        </div>
+    }
+
+    <a href="@Url.Action("CreateMilestone", "Admin", new { divisionId = ViewBag.DivisionId })"
+       class="btn btn-violet add-btn">
+        <i class="fas fa-plus"></i> Add Milestone
+    </a>
+
+
+    <div class="card shadow-sm p-4">
+        <table class="table table-bordered" id="milestoneTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Milestone Name</th>
+                    <th>No. of Requirements</th>
+                    <th>No. of Approvers</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+       
+            </tbody>
+        </table>
+
+    
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#addMilestoneRow').click(function () {
+            $('#milestoneTable tbody').append(`
+                <tr>
+                    <td><input type="text" class="form-control milestone-name" placeholder="Enter milestone name" required></td>
+                    <td><textarea class="form-control milestone-requirements" placeholder="Enter requirements"></textarea></td>
+                    <td><input type="number" class="form-control milestone-approvers" placeholder="No. of Approvers" required></td>
+                    <td>
+                        <button class="btn btn-danger btn-sm removeRow"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `);
+        });
+
+     
+        $(document).on('click', '.removeRow', function () {
+            $(this).closest('tr').remove();
+        });
+
+        $('#saveMilestones').click(function () {
+            let milestones = [];
+            $('#milestoneTable tbody tr').each(function () {
+                let milestone = {
+                    DivisionId: '@ViewBag.DivisionId',
+                    Name: $(this).find('.milestone-name').val(),
+                    Requirements: $(this).find('.milestone-requirements').val(),
+                    Approvals: $(this).find('.milestone-approvers').val()
+                };
+                milestones.push(milestone);
+            });
+
+            $.ajax({
+                url: '/Admin/SaveMilestones',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(milestones),
+                success: function (response) {
+                    if (response.success) {
+                        alert("Milestones saved successfully!");
+                        window.location.href = "/Admin/Milestones";
+                    } else {
+                        alert("Error saving milestones: " + response.message);
+                    }
+                }
+            });
+        });
+    });
+</script>
