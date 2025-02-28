@@ -349,6 +349,9 @@
     <Compile Include="Models\DetailsTbl.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Division.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\FixedChecklistTbl.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
@@ -364,6 +367,9 @@
     </Compile>
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MilestoneTbl.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PreSetMilestone.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ProjectMembersTbl.cs">
@@ -5126,6 +5132,9 @@
     <Content Include="Views\Admin\ChecklistSettings.cshtml" />
     <Content Include="Views\Admin\ChecklistSetup.cshtml" />
     <Content Include="Views\Admin\PendingApprovals.cshtml" />
+    <Content Include="Views\Admin\Milestones.cshtml" />
+    <Content Include="Views\Admin\AddMilestones.cshtml" />
+    <Content Include="Views\Admin\CreateMilestone.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -20,6 +20,10 @@ namespace ProjectManagementSystem.Models
         public Nullable<System.DateTime> Date_Created { get; set; }
         public Nullable<bool> Project_Specific { get; set; }
         public Nullable<int> Main_ID { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public Nullable<bool> Requires_Documents { get; set; }
+        public string Division { get; set; }
     
         public virtual ChecklistSetup ChecklistSetup { get; set; }
         public virtual MainTable MainTable { get; set; }

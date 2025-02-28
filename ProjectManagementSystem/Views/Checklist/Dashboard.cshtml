@@ -194,7 +194,7 @@
     <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
     <h3>Hello, @userName! 👋🏼</h3>
 
-    @if (Model.PendingTasks > 0)
+    @*@if (Model.PendingTasks > 0)
     {
         <p style="font-size: 1.1rem; color: white; animation: fadeIn 1.5s ease-in-out;">
             Let’s make progress today—your tasks are waiting for you! 
@@ -205,25 +205,25 @@
         <p style="font-size: 1.1rem; color:white; animation: fadeIn 1.5s ease-in-out;">
             No tasks yet? Let's start your project journey today! 
         </p>
-    }
+    }*@
 </div>
 
 <div class="top-card-row">
     <div class="top-card">
         <i class="fas fa-check-circle"></i>
-        <p>Completed Tasks</p>
+        <p>Completed Milestones </p>
         <h3>@Model.CompletedTasks</h3>
         
     </div>
     <div class="top-card">
         <i class="fas fa-exclamation-circle"></i>
-        <p>Pending Tasks</p>
+        <p>Pending Milestones</p>
         <h3>@Model.PendingTasks</h3>
         
     </div>
     <div class="top-card">
         <i class="fas fa-tasks"></i>
-        <p>Total Tasks</p>
+        <p>Total Milestones</p>
         <h3>@Model.TotalTasks</h3>
         
     </div>

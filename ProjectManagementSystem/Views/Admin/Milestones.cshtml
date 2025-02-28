@@ -1,0 +1,193 @@
+﻿@{
+    ViewBag.Title = "Milestone Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="text-center">
+        <h2 class="text-primary fw-bold milestone-title">Milestone Management</h2>
+        <p class="text-muted">Easily create and manage project milestones.</p>
+    </div>
+
+    <div class="form-group mb-4">
+        <label for="divisionDropdown" class="form-label fw-bold">Select Division</label>
+        <select id="divisionDropdown" class="form-select custom-dropdown" required>
+            <option value="">Choose Division</option>
+            @if (ViewBag.Divisions != null)
+            {
+                foreach (var division in ViewBag.Divisions as List<SelectListItem>)
+                {
+                    <option value="@division.Value">@division.Text</option>
+                }
+            }
+        </select>
+    </div>
+
+
+    <button id="addMilestoneBtn" class="btn btn-violet add-btn">
+        <i class="fas fa-plus"></i> Create
+    </button>
+
+
+    <div class="table-responsive">
+        <table class="table table-bordered mt-3" id="milestoneTable">
+            <thead>
+                <tr>
+                    <th>Division</th>
+                    <th>No. of Milestones</th>
+                    <th>No. of Requirements</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .container {
+        max-width: 1000px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .milestone-title {
+        /*font-size: 2rem;*/
+        /*font-weight: 700;*/
+        color: #6f42c1 !important;
+    }
+
+    .custom-dropdown {
+        border: 2px solid #6f42c1;
+        border-radius: 6px;
+        padding: 8px;
+    }
+
+    .btn-violet {
+        background-color: #6f42c1;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 8px 20px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .btn-violet:hover {
+        background-color: #5a32a3;
+        color: #fff;
+    }
+
+    .dataTables_wrapper {
+        margin-top: 20px;
+    }
+
+    .dataTables_length label, .dataTables_filter label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .dataTables_length select, .dataTables_filter input {
+        border-radius: 5px;
+        padding: 6px;
+        border: 1px solid #ddd;
+    }
+
+    table.dataTable thead {
+        background-color: #f8f9fa;
+        font-weight: 700;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        let table = $('#milestoneTable').DataTable({
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true
+        });
+
+        $('#addMilestoneBtn').click(function () {
+            let divisionName = $('#divisionDropdown option:selected').text();
+            let divisionId = $('#divisionDropdown').val();
+
+            if (!divisionId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Select a Division!',
+                    text: 'Please select a division before creating a milestone.',
+                    confirmButtonColor: '#6f42c1'
+                });
+                return;
+            }
+
+            if ($(`#milestoneTable tbody tr[data-division-id="${divisionId}"]`).length > 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Duplicate Entry!',
+                    text: 'This division is already added.',
+                    confirmButtonColor: '#6f42c1'
+                });
+                return;
+            }
+
+            table.row.add([
+                divisionName,
+                "0",
+                "0",
+                `<button class="btn btn-success btn-sm addMilestone" data-id="${divisionId}">Add</button>
+                 <button class="btn btn-warning btn-sm updateMilestone" data-id="${divisionId}">Update</button>
+                 <button class="btn btn-danger btn-sm deleteMilestone" data-id="${divisionId}">Delete</button>
+                 <button class="btn btn-info btn-sm previewMilestone" data-id="${divisionId}">Preview</button>`
+            ]).draw(false);
+        });
+
+        $(document).on('click', '.deleteMilestone', function () {
+            let row = $(this).closest('tr');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will remove the division from the list!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    table.row(row).remove().draw(false);
+                    Swal.fire('Deleted!', 'The division has been removed.', 'success');
+                }
+            });
+        });
+
+        $(document).on('click', '.addMilestone', function () {
+            let divisionId = $(this).data('id');
+            window.location.href = `/Admin/AddMilestones?divisionId=${divisionId}`;
+        });
+
+       
+        $(document).on('click', '.previewMilestone', function () {
+            Swal.fire({
+                icon: 'info',
+                title: 'Preview Milestone',
+                text: 'wala po po hehe!',
+                confirmButtonColor: '#6f42c1'
+            });
+        });
+
+        $(document).on('click', '.updateMilestone', function () {
+            let divisionId = $(this).data('id');
+            window.location.href = `/Admin/AddMilestones?divisionId=${divisionId}`;
+             
+         
+        });
+    });
+</script>
