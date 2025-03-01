@@ -304,21 +304,19 @@ namespace ProjectManagementSystem.Controllers
 
         public ActionResult Milestones()
         {
-            using (var db = new ProjectManagementDBEntities()) 
-            {
-                var divisions = db.Divisions
-                    .Select(d => new SelectListItem
-                    {
-                        Value = d.DivisionID.ToString(),
-                        Text = d.DivisionName
-                    })
-                    .ToList();
+            var divisions = db.Divisions
+                .Select(d => new SelectListItem
+                {
+                    Value = d.DivisionID.ToString(),
+                    Text = d.DivisionName
+                })
+                .ToList();
 
-                ViewBag.Divisions = divisions; 
-            }
+            ViewBag.Divisions = divisions;
 
             return View();
         }
+
 
         public ActionResult GetDivisions()
         {
@@ -326,7 +324,6 @@ namespace ProjectManagementSystem.Controllers
             return Json(divisions, JsonRequestBehavior.AllowGet);
         }
 
-        // fetch milestones for the selected div
         public ActionResult GetMilestones(int divisionId)
         {
             var milestones = db.PreSetMilestones
@@ -342,30 +339,26 @@ namespace ProjectManagementSystem.Controllers
             return Json(milestones, JsonRequestBehavior.AllowGet);
         }
 
-        // add milestones, requirements, and approvers.
-        public ActionResult AddMilestones(int? divisionId)
+        public ActionResult CreateChecklist(int? divisionId)
         {
             if (divisionId == null)
             {
                 return new HttpStatusCodeResult(400, "Division ID is required.");
             }
 
-            using (var db = new ProjectManagementDBEntities())
+            var division = db.Divisions.FirstOrDefault(d => d.DivisionID == divisionId);
+            if (division == null)
             {
-                var division = db.Divisions.FirstOrDefault(d => d.DivisionID == divisionId);
-                if (division == null)
-                {
-                    return HttpNotFound("Division not found.");
-                }
-
-                ViewBag.DivisionId = division.DivisionID;
-                ViewBag.DivisionName = division.DivisionName; 
+                return HttpNotFound("Division not found.");
             }
+
+            ViewBag.DivisionId = division.DivisionID;
+            ViewBag.DivisionName = division.DivisionName;
 
             return View();
         }
 
-        public ActionResult CreateMilestone(int? divisionId)
+        public ActionResult AddMilestones(int? divisionId)
         {
             using (var db = new ProjectManagementDBEntities())
             {
@@ -390,25 +383,44 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
-
         [HttpPost]
-        public ActionResult SaveMilestone(PreSetMilestone model)
+        public ActionResult SaveMilestone(int DivisionID, string MilestoneName, string TaskRequirement,List<string> Approvers)
         {
-            if (ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(MilestoneName) || string.IsNullOrWhiteSpace(TaskRequirement))
             {
-                if (model.DivisionID == 0) 
+                return Json(new { success = false, message = "Milestone Name and Task Requirement are required!" });
+            }
+
+            try
+            {
+                if (db.PreSetMilestones.Any(m => m.MilestoneName == MilestoneName && m.DivisionID == DivisionID))
                 {
-                    db.PreSetMilestones.Add(model);
+                    return Json(new { success = false, message = "Milestone already exists for this division!" });
                 }
-                else
+                
+                var newMilestone = new PreSetMilestone
                 {
-                    db.Entry(model).State = System.Data.Entity.EntityState.Modified;
-                }
+                    DivisionID = DivisionID,
+                    MilestoneName = MilestoneName,
+                    Requirements = TaskRequirement,
+                    
+                    Approvers = string.Join(",", Approvers), 
+                    CreatedDate = DateTime.Now
+                };
+
+                db.PreSetMilestones.Add(newMilestone);
                 db.SaveChanges();
+
                 return Json(new { success = true });
             }
-            return Json(new { success = false, message = "Validation failed!" });
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error saving milestone: " + ex.Message });
+            }
         }
+
+
+
 
         public ActionResult PreviewMilestone(int id)
         {
@@ -428,10 +440,94 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { success = true });
         }
 
+        [HttpPost]
+        public JsonResult SaveDivision(int divisionId)
+        {
+            try
+            {
+                var existingDivision = db.SavedDivisions.FirstOrDefault(d => d.DivisionID == divisionId);
 
+                if (existingDivision != null)
+                {
+                    
+                    existingDivision.IsActive_ = true;
+                }
+                else
+                {
+                    var division = db.Divisions.FirstOrDefault(d => d.DivisionID == divisionId);
+                    if (division == null)
+                    {
+                        return Json(new { success = false, message = "Invalid Division selected." });
+                    }
 
+                    var savedDivision = new SavedDivision
+                    {
+                        DivisionID = division.DivisionID,
+                        DivisionName = division.DivisionName,
+                        NoOfMilestones = 0, 
+                        NoOfRequirements = 0, 
+                        IsActive_ = true 
+                    };
 
+                    db.SavedDivisions.Add(savedDivision);
+                }
 
+                db.SaveChanges();
+
+                return Json(new { success = true, message = "Division added successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error adding division: " + ex.Message });
+            }
+        }
+
+        public JsonResult GetSavedDivisions()
+        {
+            var divisions = db.SavedDivisions
+                .Where(d => d.IsActive_ == true) 
+                .Select(d => new
+                {
+                    d.DivisionID,
+                    d.DivisionName,
+                    d.NoOfMilestones,
+                    d.NoOfRequirements
+                }).ToList();
+
+            return Json(divisions, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult HideDivision(int divisionId)
+        {
+            try
+            {
+                var division = db.SavedDivisions.FirstOrDefault(d => d.DivisionID == divisionId);
+                if (division == null)
+                {
+                    return Json(new { success = false, message = "Division not found." });
+                }
+                division.IsActive_ = false;
+                db.SaveChanges();
+
+                return Json(new { success = true, message = "Division removed from table (but remains in the database)." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error hiding division: " + ex.Message });
+            }
+        }
+
+        public JsonResult GetMilestoneSuggestions(string term)
+        {
+            var suggestions = db.PreSetMilestones
+                .Where(m => m.MilestoneName.Contains(term))
+                .Select(m => m.MilestoneName)
+                .Take(10)
+                .ToList();
+
+            return Json(suggestions, JsonRequestBehavior.AllowGet);
+        }
 
         //[Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         //[HttpGet]
@@ -1124,5 +1220,4 @@ namespace ProjectManagementSystem.Controllers
         //}
 
     }
-
 }

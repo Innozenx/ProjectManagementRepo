@@ -384,6 +384,9 @@
     <Compile Include="Models\Role.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SavedDivision.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\TaskApproval.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
@@ -5133,8 +5136,8 @@
     <Content Include="Views\Admin\ChecklistSetup.cshtml" />
     <Content Include="Views\Admin\PendingApprovals.cshtml" />
     <Content Include="Views\Admin\Milestones.cshtml" />
+    <Content Include="Views\Admin\CreateChecklist.cshtml" />
     <Content Include="Views\Admin\AddMilestones.cshtml" />
-    <Content Include="Views\Admin\CreateMilestone.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

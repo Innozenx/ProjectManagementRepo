@@ -1,97 +1,237 @@
 ﻿@{
-    ViewBag.Title = "Add Milestones";
+    ViewBag.Title = "Add Milestone • Project Management System";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="container mt-5">
-    <div class="text-center">
-        <h2 class="text-primary fw-bold">Add Milestones</h2>
-    </div>
+<div class="content">
+    <div class="form-container">
+        <h2>Add Milestone</h2>
+        <p>First, input your milestone details.</p>
 
-    @if (!string.IsNullOrEmpty(ViewBag.DivisionName))
-    {
-        
-         <h5>@ViewBag.DivisionName</h5>
-        
-    }
-    else
-    {
-        <div class="alert alert-danger text-center fw-bold">
-            No division selected! Please go back and select a division.
-        </div>
-    }
+        <form id="milestoneForm">
+            <input type="hidden" name="DivisionId" value="@ViewBag.DivisionId" />
 
-    <a href="@Url.Action("CreateMilestone", "Admin", new { divisionId = ViewBag.DivisionId })"
-       class="btn btn-violet add-btn">
-        <i class="fas fa-plus"></i> Add Milestone
-    </a>
+            <div class="form-group">
+                <input type="text" name="MilestoneName" id="milestoneName" placeholder=" " required />
+                <label for="milestoneName">Milestone Name</label>
+            </div>
 
+            <div class="form-group">
+                <textarea name="TaskRequirement" id="taskRequirement" placeholder=" " required></textarea>
+                <label for="taskRequirement">Task Requirement</label>
+            </div>
 
-    <div class="card shadow-sm p-4">
-        <table class="table table-bordered" id="milestoneTable">
-            <thead class="table-light">
-                <tr>
-                    <th>Milestone Name</th>
-                    <th>No. of Requirements</th>
-                    <th>No. of Approvers</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-       
-            </tbody>
-        </table>
+            <div class="form-group">
+                <label class="fw-bold">Approvers</label>
+                <select id="approversDropdown" name="Approvers" class="form-select" multiple>
+                    @if (ViewBag.Users != null)
+                    {
+                        foreach (var user in ViewBag.Users as List<SelectListItem>)
+                        {
+                            <option value="@user.Value">@user.Text</option>
+                        }
+                    }
+                </select>
+            </div>
 
-    
+         
+            <div class="form-footer text-center">
+                <button type="submit" class="btn btn-primary px-4">Save</button>
+                <a href="@Url.Action("AddMilestones", "Admin", new { divisionId = ViewBag.DivisionId })"
+                   class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
     </div>
 </div>
 
+<style>
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    padding: 10px;
+}
+
+.form-container {
+    width: 600px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+h2 {
+    text-align: center;
+    color: #470A67;
+    margin-bottom: 10px;
+}
+
+p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #000;
+    outline: none;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #470A67;
+    box-shadow: 0 0 5px rgba(71, 10, 103, 0.4);
+}
+
+.form-group label {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #999;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus + label,
+.form-group textarea:focus + label,
+.form-group input:not(:placeholder-shown) + label,
+.form-group textarea:not(:placeholder-shown) + label {
+    top: 6px;
+    left: 12px;
+    font-size: 12px;
+    color: #470A67;
+}
+
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ui-menu-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.ui-menu-item:hover {
+    background-color: #f4f4f4;
+}
+
+.btn-primary {
+    background-color: #470A67;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #532c7e;
+}
+
+@@media (max-width: 768px) {
+    .form-container {
+        width: 90%;
+        padding: 20px;
+    }
+}
+
+</style>
+
 <script>
     $(document).ready(function () {
-        $('#addMilestoneRow').click(function () {
-            $('#milestoneTable tbody').append(`
-                <tr>
-                    <td><input type="text" class="form-control milestone-name" placeholder="Enter milestone name" required></td>
-                    <td><textarea class="form-control milestone-requirements" placeholder="Enter requirements"></textarea></td>
-                    <td><input type="number" class="form-control milestone-approvers" placeholder="No. of Approvers" required></td>
-                    <td>
-                        <button class="btn btn-danger btn-sm removeRow"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `);
-        });
-
-     
-        $(document).on('click', '.removeRow', function () {
-            $(this).closest('tr').remove();
-        });
-
-        $('#saveMilestones').click(function () {
-            let milestones = [];
-            $('#milestoneTable tbody tr').each(function () {
-                let milestone = {
-                    DivisionId: '@ViewBag.DivisionId',
-                    Name: $(this).find('.milestone-name').val(),
-                    Requirements: $(this).find('.milestone-requirements').val(),
-                    Approvals: $(this).find('.milestone-approvers').val()
-                };
-                milestones.push(milestone);
+        if ($.ui && $.ui.autocomplete) {
+            $("#milestoneName").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Admin/GetMilestoneSuggestions",
+                        data: { term: request.term },
+                        success: function (data) {
+                            response(data);
+                        },
+                        error: function () {
+                            console.error("Error fetching autocomplete suggestions.");
+                        }
+                    });
+                },
+                minLength: 1
             });
+        } else {
+        }
 
-            $.ajax({
-                url: '/Admin/SaveMilestones',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(milestones),
-                success: function (response) {
-                    if (response.success) {
-                        alert("Milestones saved successfully!");
-                        window.location.href = "/Admin/Milestones";
-                    } else {
-                        alert("Error saving milestones: " + response.message);
-                    }
+        if ($.fn.select2) {
+            $('#approversDropdown').select2({
+                placeholder: "Select approvers",
+                allowClear: true
+            });
+        } else {
+        }
+
+        $('#milestoneForm').submit(function (e) {
+            e.preventDefault();
+
+            let formData = {
+                DivisionID: $('input[name="DivisionId"]').val(),
+                MilestoneName: $('#milestoneName').val(),
+                TaskRequirement: $('#taskRequirement').val(),
+                Approvers: $('#approversDropdown').val() 
+            };
+
+            console.log("Submitting Milestone Data:", formData);
+
+            $.post('/Admin/SaveMilestone', formData, function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Milestone Created!',
+                        text: 'Your milestone has been saved.',
+                        confirmButtonColor: '#470A67'
+                    });
+
+                    setTimeout(() => {
+                        window.location.href = "/Admin/AddMilestones?divisionId=" + formData.DivisionID;
+                    }, 1500);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: response.message,
+                        confirmButtonColor: '#470A67'
+                    });
                 }
+            }).fail(function () {
             });
         });
     });
+
 </script>

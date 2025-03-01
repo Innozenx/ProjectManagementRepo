@@ -205,35 +205,28 @@
     <!-- ./wrapper -->
     <!-- REQUIRED SCRIPTS -->
     @RenderSection("scripts", required: false)
-    <!-- jQuery -->
-    <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
+    <!-- jQuery (ONLY LOAD ONCE) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- jQuery UI (Autocomplete Support) -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <!-- Select2 (For Multi-Select Dropdown) -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <!-- Bootstrap -->
     <script src="~/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE -->
     <script src="~/AdminLTE-3.2.0/dist/js/adminlte.js"></script>
     <!-- OPTIONAL SCRIPTS -->
     <script src="~/AdminLTE-3.2.0/plugins/chart.js/Chart.min.js"></script>
-    <!--Gant Chart-->
+    <!-- Gantt Chart -->
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
-    <!--Notify JS-->
+    <!-- Notify JS -->
     <script src="~/Scripts/notify.min.js"></script>
-    <!--DataTable -->
+    <!-- DataTables -->
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
-    <!-- JavaScript for Theme Toggle -->
-    <script>
-        //const currentTheme = localStorage.getItem('theme');
-        //if (currentTheme) {
-        //    document.body.classList.toggle('dark-mode', currentTheme === 'dark');
-        //}
+    <!-- SweetAlert2 (For Alerts) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        // toggle button
-        //const themeToggleButton = document.getElementById('theme-toggle');
-        //themeToggleButton.addEventListener('click', function () {
-        //    document.body.classList.toggle('dark-mode');
-        //    // save current theme to localStorage
-        //    const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-        //    localStorage.setItem('theme', theme);
-        //});
-    </script>
 </body>
 </html>
