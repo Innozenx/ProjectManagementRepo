@@ -186,8 +186,9 @@
           <Property Name="SubID" Type="int" />
           <Property Name="MilestoneName" Type="varchar" MaxLength="255" />
           <Property Name="Sorting" Type="bit" />
-          <Property Name="Requirements" Type="varchar" MaxLength="255" />
-          <Property Name="Approvers" Type="bit" />
+          <Property Name="Requirements" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Approvers" Type="nvarchar(max)" />
+          <Property Name="CreatedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
           <Key>
@@ -245,6 +246,17 @@
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="RoleName" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="SavedDivision">
+          <Key>
+            <PropertyRef Name="SavedDivID" />
+          </Key>
+          <Property Name="SavedDivID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DivisionID" Type="int" />
+          <Property Name="DivisionName" Type="varchar" MaxLength="255" />
+          <Property Name="NoOfMilestones" Type="int" />
+          <Property Name="NoOfRequirements" Type="int" />
+          <Property Name="IsActive?" Type="bit" />
         </EntityType>
         <EntityType Name="TaskApproval">
           <Key>
@@ -375,6 +387,18 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SavedDivision_Divisions">
+          <End Role="Divisions" Type="Self.Divisions" Multiplicity="0..1" />
+          <End Role="SavedDivision" Type="Self.SavedDivision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Divisions">
+              <PropertyRef Name="DivisionID" />
+            </Principal>
+            <Dependent Role="SavedDivision">
+              <PropertyRef Name="DivisionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TaskApproval_DetailsTbl">
           <End Role="DetailsTbl" Type="Self.DetailsTbl" Multiplicity="0..1" />
           <End Role="TaskApproval" Type="Self.TaskApproval" Multiplicity="*" />
@@ -405,6 +429,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="RegistrationTbl" EntityType="Self.RegistrationTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Reports" EntityType="Self.Reports" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SavedDivision" EntityType="Self.SavedDivision" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TaskApproval" EntityType="Self.TaskApproval" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TransactionTbl" EntityType="Self.TransactionTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
@@ -428,6 +453,10 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <AssociationSet Name="FK_PreSetMilestone_Divisions" Association="Self.FK_PreSetMilestone_Divisions">
             <End Role="Divisions" EntitySet="Divisions" />
             <End Role="PreSetMilestone" EntitySet="PreSetMilestone" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SavedDivision_Divisions" Association="Self.FK_SavedDivision_Divisions">
+            <End Role="Divisions" EntitySet="Divisions" />
+            <End Role="SavedDivision" EntitySet="SavedDivision" />
           </AssociationSet>
           <AssociationSet Name="FK_TaskApproval_DetailsTbl" Association="Self.FK_TaskApproval_DetailsTbl">
             <End Role="DetailsTbl" EntitySet="DetailsTbl" />
@@ -456,6 +485,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="RegistrationTbls" EntityType="ProjectManagementDBModel.RegistrationTbl" />
           <EntitySet Name="Reports" EntityType="ProjectManagementDBModel.Report" />
           <EntitySet Name="Roles" EntityType="ProjectManagementDBModel.Role" />
+          <EntitySet Name="SavedDivisions" EntityType="ProjectManagementDBModel.SavedDivision" />
           <EntitySet Name="TaskApprovals" EntityType="ProjectManagementDBModel.TaskApproval" />
           <EntitySet Name="TransactionTbls" EntityType="ProjectManagementDBModel.TransactionTbl" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
@@ -471,6 +501,10 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <AssociationSet Name="FK_PreSetMilestone_Divisions" Association="ProjectManagementDBModel.FK_PreSetMilestone_Divisions">
             <End Role="Division" EntitySet="Divisions" />
             <End Role="PreSetMilestone" EntitySet="PreSetMilestones" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SavedDivision_Divisions" Association="ProjectManagementDBModel.FK_SavedDivision_Divisions">
+            <End Role="Division" EntitySet="Divisions" />
+            <End Role="SavedDivision" EntitySet="SavedDivisions" />
           </AssociationSet>
           <AssociationSet Name="FK_FixedChecklistTbl_MainTable" Association="ProjectManagementDBModel.FK_FixedChecklistTbl_MainTable">
             <End Role="MainTable" EntitySet="MainTables" />
@@ -610,6 +644,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="DivisionName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="CMID_reference" Type="Int32" />
           <NavigationProperty Name="PreSetMilestone" Relationship="ProjectManagementDBModel.FK_PreSetMilestone_Divisions" FromRole="Division" ToRole="PreSetMilestone" />
+          <NavigationProperty Name="SavedDivisions" Relationship="ProjectManagementDBModel.FK_SavedDivision_Divisions" FromRole="Division" ToRole="SavedDivision" />
         </EntityType>
         <EntityType Name="FixedChecklistTbl">
           <Key>
@@ -676,8 +711,9 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="SubID" Type="Int32" />
           <Property Name="MilestoneName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Sorting" Type="Boolean" />
-          <Property Name="Requirements" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Approvers" Type="Boolean" />
+          <Property Name="Requirements" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Approvers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Division" Relationship="ProjectManagementDBModel.FK_PreSetMilestone_Divisions" FromRole="PreSetMilestone" ToRole="Division" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
@@ -736,6 +772,18 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="RoleName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="SavedDivision">
+          <Key>
+            <PropertyRef Name="SavedDivID" />
+          </Key>
+          <Property Name="SavedDivID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DivisionID" Type="Int32" />
+          <Property Name="DivisionName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="NoOfMilestones" Type="Int32" />
+          <Property Name="NoOfRequirements" Type="Int32" />
+          <Property Name="IsActive_" Type="Boolean" />
+          <NavigationProperty Name="Division" Relationship="ProjectManagementDBModel.FK_SavedDivision_Divisions" FromRole="SavedDivision" ToRole="Division" />
         </EntityType>
         <EntityType Name="TaskApproval">
           <Key>
@@ -832,6 +880,18 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
               <PropertyRef Name="DivisionID" />
             </Principal>
             <Dependent Role="PreSetMilestone">
+              <PropertyRef Name="DivisionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SavedDivision_Divisions">
+          <End Type="ProjectManagementDBModel.Division" Role="Division" Multiplicity="0..1" />
+          <End Type="ProjectManagementDBModel.SavedDivision" Role="SavedDivision" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Division">
+              <PropertyRef Name="DivisionID" />
+            </Principal>
+            <Dependent Role="SavedDivision">
               <PropertyRef Name="DivisionID" />
             </Dependent>
           </ReferentialConstraint>
@@ -1066,6 +1126,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="PreSetMilestones">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.PreSetMilestone">
               <MappingFragment StoreEntitySet="PreSetMilestone">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="Approvers" ColumnName="Approvers" />
                 <ScalarProperty Name="Requirements" ColumnName="Requirements" />
                 <ScalarProperty Name="Sorting" ColumnName="Sorting" />
@@ -1133,6 +1194,18 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
               <MappingFragment StoreEntitySet="Roles">
                 <ScalarProperty Name="RoleName" ColumnName="RoleName" />
                 <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SavedDivisions">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.SavedDivision">
+              <MappingFragment StoreEntitySet="SavedDivision">
+                <ScalarProperty Name="IsActive_" ColumnName="IsActive?" />
+                <ScalarProperty Name="NoOfRequirements" ColumnName="NoOfRequirements" />
+                <ScalarProperty Name="NoOfMilestones" ColumnName="NoOfMilestones" />
+                <ScalarProperty Name="DivisionName" ColumnName="DivisionName" />
+                <ScalarProperty Name="DivisionID" ColumnName="DivisionID" />
+                <ScalarProperty Name="SavedDivID" ColumnName="SavedDivID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

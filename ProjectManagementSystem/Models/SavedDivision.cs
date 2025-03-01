@@ -12,15 +12,14 @@ namespace ProjectManagementSystem.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class PreSetMilestone
+    public partial class SavedDivision
     {
-        public int DivisionID { get; set; }
-        public Nullable<int> SubID { get; set; }
-        public string MilestoneName { get; set; }
-        public Nullable<bool> Sorting { get; set; }
-        public string Requirements { get; set; }
-        public string Approvers { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public int SavedDivID { get; set; }
+        public Nullable<int> DivisionID { get; set; }
+        public string DivisionName { get; set; }
+        public Nullable<int> NoOfMilestones { get; set; }
+        public Nullable<int> NoOfRequirements { get; set; }
+        public Nullable<bool> IsActive_ { get; set; }
     
         public virtual Division Division { get; set; }
     }

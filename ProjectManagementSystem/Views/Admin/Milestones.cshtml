@@ -1,16 +1,16 @@
 ﻿@{
-    ViewBag.Title = "Milestone Management";
+    ViewBag.Title = "Milestone Management • Project Management System";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div class="container mt-5">
     <div class="text-center">
-        <h2 class="text-primary fw-bold milestone-title">Milestone Management</h2>
+        <h2 class="milestone-title">Checklist and Milestone <br />Management</h2>
         <p class="text-muted">Easily create and manage project milestones.</p>
     </div>
 
     <div class="form-group mb-4">
-        <label for="divisionDropdown" class="form-label fw-bold">Select Division</label>
+        <label for="divisionDropdown" class="form-label fw-bold">Division</label>
         <select id="divisionDropdown" class="form-select custom-dropdown" required>
             <option value="">Choose Division</option>
             @if (ViewBag.Divisions != null)
@@ -23,24 +23,21 @@
         </select>
     </div>
 
-
-    <button id="addMilestoneBtn" class="btn btn-violet add-btn">
+    <button id="addMilestoneBtn" class="btn btn-violet btn-lg">
         <i class="fas fa-plus"></i> Create
     </button>
 
-
-    <div class="table-responsive">
-        <table class="table table-bordered mt-3" id="milestoneTable">
-            <thead>
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered milestone-table" id="milestoneTable">
+            <thead class="table-header">
                 <tr>
                     <th>Division</th>
-                    <th>No. of Milestones</th>
-                    <th>No. of Requirements</th>
+                    <th>Milestones</th>
+                    <th>Requirements</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
 </div>
@@ -54,55 +51,84 @@
     .container {
         max-width: 1000px;
         background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
     }
 
+
     .milestone-title {
-        /*font-size: 2rem;*/
-        /*font-weight: 700;*/
+        /*font-size: 2rem;
+        font-weight: 700;*/
         color: #6f42c1 !important;
+        margin-bottom: 10px;
     }
 
     .custom-dropdown {
-        border: 2px solid #6f42c1;
-        border-radius: 6px;
-        padding: 8px;
+        /*border: 2px solid #6f42c1;*/
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 16px;
     }
 
     .btn-violet {
         background-color: #6f42c1;
-        color: #fff;
+        color: white;
         font-weight: 600;
-        border-radius: 6px;
-        padding: 8px 20px;
+        border-radius: 8px;
+        padding: 12px 24px;
         transition: 0.3s ease-in-out;
+        font-size: 16px;
     }
 
     .btn-violet:hover {
         background-color: #5a32a3;
-        color: #fff;
     }
 
-    .dataTables_wrapper {
-        margin-top: 20px;
+    .milestone-table {
+        width: 100%;
+        text-align: center;
+        border-collapse: collapse;
     }
 
-    .dataTables_length label, .dataTables_filter label {
-        font-weight: 600;
-        color: #333;
+    .milestone-table th {
+        background-color: #4C2A85;
+        color: white;
+        font-size: 16px;
+        /*font-weight: bold;*/
+        padding: 12px;
+        vertical-align: middle;
     }
 
-    .dataTables_length select, .dataTables_filter input {
-        border-radius: 5px;
-        padding: 6px;
-        border: 1px solid #ddd;
+    .milestone-table td {
+        padding: 12px;
+        font-size: 15px;
+        vertical-align: middle;
     }
 
-    table.dataTable thead {
-        background-color: #f8f9fa;
-        font-weight: 700;
+    .milestone-table tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .milestone-table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .action-btns .btn {
+        margin: 2px;
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    @@media (max-width: 768px) {
+        .container {
+            width: 95%;
+            padding: 20px;
+        }
+
+        .btn-violet {
+            width: 100%;
+        }
     }
 </style>
 
@@ -111,13 +137,42 @@
         let table = $('#milestoneTable').DataTable({
             "paging": true,
             "searching": true,
-            "ordering": true,
+            "ordering": false,
             "info": true
         });
 
+        function loadDivisions() {
+            $.get('/Admin/GetSavedDivisions', function (data) {
+                table.clear();
+                data.forEach(function (division) {
+                    table.row.add([
+                        `<strong>${division.DivisionName}</strong>`,
+                        division.NumberOfMilestones,
+                        division.NumberOfRequirements,
+                        `<div class="action-btns">
+                            <a href="/Admin/CreateChecklist?divisionId=${division.DivisionID}" class="btn btn-success btn-sm">
+                                <i class="fas fa-plus"></i> Add
+                            </a>
+                            <a href="/Admin/CreateChecklist?divisionId=${division.DivisionID}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Update
+                            </a>
+                            <button class="btn btn-danger btn-sm removeMilestone" data-id="${division.DivisionID}">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                            <button class="btn btn-info btn-sm previewMilestone" data-id="${division.DivisionID}">
+                                <i class="fas fa-eye"></i> Preview
+                            </button>
+                        </div>`
+                    ]).draw(false);
+                });
+            });
+        }
+
+        loadDivisions(); 
+
         $('#addMilestoneBtn').click(function () {
-            let divisionName = $('#divisionDropdown option:selected').text();
             let divisionId = $('#divisionDropdown').val();
+            let divisionName = $('#divisionDropdown option:selected').text();
 
             if (!divisionId) {
                 Swal.fire({
@@ -129,65 +184,49 @@
                 return;
             }
 
-            if ($(`#milestoneTable tbody tr[data-division-id="${divisionId}"]`).length > 0) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Duplicate Entry!',
-                    text: 'This division is already added.',
-                    confirmButtonColor: '#6f42c1'
-                });
-                return;
-            }
-
-            table.row.add([
-                divisionName,
-                "0",
-                "0",
-                `<button class="btn btn-success btn-sm addMilestone" data-id="${divisionId}">Add</button>
-                 <button class="btn btn-warning btn-sm updateMilestone" data-id="${divisionId}">Update</button>
-                 <button class="btn btn-danger btn-sm deleteMilestone" data-id="${divisionId}">Delete</button>
-                 <button class="btn btn-info btn-sm previewMilestone" data-id="${divisionId}">Preview</button>`
-            ]).draw(false);
-        });
-
-        $(document).on('click', '.deleteMilestone', function () {
-            let row = $(this).closest('tr');
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This will remove the division from the list!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    table.row(row).remove().draw(false);
-                    Swal.fire('Deleted!', 'The division has been removed.', 'success');
+            $.post('/Admin/SaveDivision', { divisionId: divisionId }, function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message,
+                        confirmButtonColor: '#6f42c1'
+                    });
+                    loadDivisions();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: response.message,
+                        confirmButtonColor: '#6f42c1'
+                    });
                 }
             });
         });
 
-        $(document).on('click', '.addMilestone', function () {
+        $(document).on('click', '.removeMilestone', function () {
             let divisionId = $(this).data('id');
-            window.location.href = `/Admin/AddMilestones?divisionId=${divisionId}`;
-        });
 
-       
-        $(document).on('click', '.previewMilestone', function () {
             Swal.fire({
-                icon: 'info',
-                title: 'Preview Milestone',
-                text: 'wala po po hehe!',
-                confirmButtonColor: '#6f42c1'
+                title: 'Are you sure?',
+                text: "This will remove the division from the table",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('/Admin/HideDivision', { divisionId: divisionId }, function (response) {
+                        if (response.success) {
+                            Swal.fire('Removed!', 'Successfully removed.', 'success');
+                            loadDivisions();
+                        } else {
+                            Swal.fire('Error!', response.message, 'error');
+                        }
+                    });
+                }
             });
-        });
-
-        $(document).on('click', '.updateMilestone', function () {
-            let divisionId = $(this).data('id');
-            window.location.href = `/Admin/AddMilestones?divisionId=${divisionId}`;
-             
-         
         });
     });
 </script>

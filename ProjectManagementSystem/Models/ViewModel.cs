@@ -648,6 +648,7 @@ namespace ProjectManagementSystem.Models
         public int Id { get; set; }
         public int DivisionId { get; set; }
         public DateTime CreatedDate { get; set; }
+        public string DivisionName { get; set; }
     }
 
 }

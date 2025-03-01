@@ -14,10 +14,18 @@ namespace ProjectManagementSystem.Models
     
     public partial class Division
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Division()
+        {
+            this.SavedDivisions = new HashSet<SavedDivision>();
+        }
+    
         public int DivisionID { get; set; }
         public string DivisionName { get; set; }
         public Nullable<int> CMID_reference { get; set; }
     
         public virtual PreSetMilestone PreSetMilestone { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SavedDivision> SavedDivisions { get; set; }
     }
 }

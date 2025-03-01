@@ -4,31 +4,33 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="ab3d7257c20f4f2688e5128e4a9093e2" Name="Diagram1" ZoomLevel="60">
-        <EntityTypeShape EntityType="ProjectManagementDBModel.Activity_Log" Width="1.5" PointX="5.75" PointY="11.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.AdminList" Width="1.5" PointX="7.75" PointY="11.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.ApproversTbl" Width="1.5" PointX="9.75" PointY="11.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.AttachmentTable" Width="1.5" PointX="11.75" PointY="11.75" />
+      <Diagram DiagramId="ab3d7257c20f4f2688e5128e4a9093e2" Name="Diagram1" ZoomLevel="76">
+        <EntityTypeShape EntityType="ProjectManagementDBModel.Activity_Log" Width="1.5" PointX="12.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.AdminList" Width="1.5" PointX="0.75" PointY="12.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.ApproversTbl" Width="1.5" PointX="2.75" PointY="12.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.AttachmentTable" Width="1.5" PointX="12.75" PointY="4.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.ChecklistSetup" Width="1.5" PointX="3" PointY="3" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.ChecklistSubmission" Width="1.5" PointX="12.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.ChecklistSubmission" Width="1.5" PointX="4.75" PointY="12.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.ChecklistTable" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.DetailsTbl" Width="1.5" PointX="7.75" PointY="1.125" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.Division" Width="1.5" PointX="7.75" PointY="8.25" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.DetailsTbl" Width="1.5" PointX="7.75" PointY="8.125" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.Division" Width="1.5" PointX="7.75" PointY="3" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.FixedChecklistTbl" Width="1.5" PointX="5.25" PointY="6" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.MainTable" Width="1.5" PointX="0.75" PointY="3.625" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.MilestoneTbl" Width="1.5" PointX="3" PointY="7.625" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.PreSetMilestone" Width="1.5" PointX="10" PointY="8" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.ProjectMembersTbl" Width="1.5" PointX="0.75" PointY="12.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.RegistrationTbl" Width="1.5" PointX="2.75" PointY="12.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.Report" Width="1.5" PointX="12.75" PointY="5.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.PreSetMilestone" Width="1.5" PointX="10" PointY="4.25" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.ProjectMembersTbl" Width="1.5" PointX="12.75" PointY="7.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.RegistrationTbl" Width="1.5" PointX="9.75" PointY="12.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.Report" Width="1.5" PointX="12.75" PointY="11.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.Role" Width="1.5" PointX="2.75" PointY="0.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.TaskApproval" Width="1.5" PointX="10" PointY="2.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.TransactionTbl" Width="1.5" PointX="13.75" PointY="10.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyChecklistTable" Width="1.5" PointX="14.75" PointY="0.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyStatu" Width="1.5" PointX="14.75" PointY="6.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.SavedDivision" Width="1.5" PointX="10" PointY="1.125" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.TaskApproval" Width="1.5" PointX="10" PointY="9.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.TransactionTbl" Width="1.5" PointX="14.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyChecklistTable" Width="1.5" PointX="14.75" PointY="4.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyStatu" Width="1.5" PointX="6.75" PointY="14.75" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_FixedChecklistTbl_ChecklistSetup" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_TaskApproval_DetailsTbl" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_PreSetMilestone_Divisions" />
+        <AssociationConnector Association="ProjectManagementDBModel.FK_SavedDivision_Divisions" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_FixedChecklistTbl_MainTable" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_FixedChecklistTbl_MilestoneTbl" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" />
