@@ -1,0 +1,119 @@
+﻿@model ProjectManagementSystem.Models.ChecklistInfo
+
+<style>
+
+    th {
+        margin-left: 3%;
+        width: 20%;
+    }
+
+    td {
+        width: 20%;
+    }
+</style>
+
+@*<div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">FriendsInfo</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src="..." alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">Card title @Model.division</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="modal-footer">
+
+    </div>*@
+
+<form id="optionalForm">
+    <input type="text" id="division" value="@Model.division" name="division" hidden readonly />
+    <input type="text" id="milestone_id" value="@Model.milestone_id" name="milestone_id" hidden readonly />
+    <table id="item_table">
+        <tbody>
+            <tr style="margin:auto; text-align: center">
+                <th>#</th>
+                <th>Task</th>
+                <th>Description</th>
+            </tr>
+
+            <tr style="margin:auto; text-align: center">
+                <td>1</td>
+                <td><input type="text" name="item[0].title" /></td>
+                <td><input type="text" name="item[0].description" /></td>
+            </tr>
+
+        </tbody>
+
+    </table>
+</form>
+
+<div style="margin: auto; text-align: center">
+    <button class="btn-primary w-25" id="add_row" onclick="AddRow()">Add Item</button>
+</div>
+
+
+<div class="modal-footer">
+    @{
+        <button class="btn btn-success" id="submit_button">Submit</button>
+    }
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $(document).on("click", "button[id='submit_button']", function () {
+
+            // Manually trigger form update by forcing a re-read of the input values
+            $('#optionalForm input').each(function () {
+                var value = $(this).val(); // Ensure the value is updated
+                $(this).val(value); // This triggers the value update
+                console.log(value);
+            });
+
+            // Re-create FormData after input fields are updated
+            var formData = new FormData($('#optionalForm')[0]);
+
+            // Log the form data to check if values are captured
+            formData.forEach(function (value, key) {
+                console.log(key + ': ' + value);
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("AddOptional", "Checklist")",
+                data: formData,
+                success: function (res) {
+                    alert("success");
+                }
+            });
+        });
+    });
+
+
+</script>
+<script>
+
+    function AddRow() {
+        var num = $('#item_table tr:last-child td:first-child').html();
+        var item_num = parseInt(num) + 1;
+        var inc_num = num;
+
+        $('#item_table tbody').append(`
+        <tr style="margin:auto; text-align: center">
+        <td>${item_num}</td>
+        <td><input type="text" name='item[${inc_num}].title'/></td>
+        <td><input type="text" name='item[${inc_num}].description' /></td>
+        </tr>
+        `);
+    }
+</script>
+

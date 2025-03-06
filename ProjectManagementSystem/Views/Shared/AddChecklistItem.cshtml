@@ -1,0 +1,147 @@
+﻿@model ProjectManagementSystem.Models.ChecklistInfo
+
+@*<div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel">FriendsInfo</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src="..." alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">Card title @Model.division</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="modal-footer">
+
+    </div>*@
+
+<form id="checklistForm">
+    <input type="text" id="division" value="@Model.division" name="division" hidden readonly />
+    <input type="text" id="milestone_id" value="@Model.milestone_id" name="milestone_id" hidden readonly />
+    <table id="item_table">
+        <tbody>
+            <tr style="margin:auto; text-align: center">
+                <th>#</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Requires Documents</th>
+            </tr>
+            @{
+                if (Model.fixedItemList.Count > 0)
+                {
+                    var cnt = 0;
+                    foreach (var item in Model.fixedItemList)
+                    {
+                        <tr style="margin:auto; text-align: center">
+                            <td>@(cnt + 1)</td>
+
+                            <td><input type="text" name="item[@cnt].title" value="@item.Title" /></td>
+
+                            <td><input type="text" name="item[@cnt].description" value="@item.Description" /></td>
+
+                            <td><input type="checkbox" name="item[@cnt].document" checked="@item.Requires_Documents" /></td>
+
+                        </tr>
+
+                        cnt++;
+                    }
+                }
+
+                else
+                {
+                    <tr style="margin:auto; text-align: center">
+                        <td>1</td>
+                        <td><input type="text" name="item[0].title" /></td>
+                        <td><input type="text" name="item[0].description" /></td>
+                        <td><input type="checkbox" name="item[0].document" /></td>
+                    </tr>
+                }
+
+            }
+
+        </tbody>
+
+    </table>
+
+    <button class="btn-primary" type="button" id="add_button">Add Item</button>
+    @*<button type="submit" class="btn-success" id="submit_button">Submit</button>*@
+</form>
+
+<div class="modal-footer">
+    @{
+        if (Model.fixedItemList.Count > 0)
+        {
+            <button type="button" class="btn btn-warning" id="update_button">Update</button>
+        }
+
+        else
+        {
+            <button type="button" class="btn btn-success" id="submit_button">Submit</button>
+        }
+    }
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+
+<script>
+    $("#add_button").on("click", function () {
+        var num = $('#item_table tr:last-child td:first-child').html();
+        var item_num = parseInt(num) + 1;
+        var inc_num = num;
+
+        $('#item_table tbody').append(`
+        <tr style="margin:auto; text-align: center">
+        <td>${item_num}</td>
+        <td><input type="text" name='item[${inc_num}].title'/></td>
+        <td><input type="text" name='item[${inc_num}].description' /></td>
+        <td><input type="checkbox" name='item[${inc_num}].document' value="true"/></td>
+        </tr>
+        `);
+    });
+
+    @*$("#checklistForm").submit(function (e) {
+        var formData = $("#checklistForm").serialize();
+
+        alert("asdf");
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("AddChecklist", "Admin")",
+            data: formData,
+            success: function (res) {
+
+            }
+        });
+    });*@
+
+    $("#submit_button").on("click", function (e) {
+        var formData = $("#checklistForm").serialize();
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("AddChecklist", "Admin")",
+            data: formData,
+            success: function (res) {
+
+            }
+        });
+        });
+
+        $("#update_button").on("click", function (e) {
+        var formData = $("#checklistForm").serialize();
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("AddChecklist", "Admin")",
+            data: formData,
+            success: function (res) {
+
+            }
+        });
+    });
+</script>

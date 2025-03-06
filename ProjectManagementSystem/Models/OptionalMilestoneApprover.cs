@@ -28,5 +28,6 @@ namespace ProjectManagementSystem.Models
         public Nullable<bool> is_removed { get; set; }
         public Nullable<System.DateTime> date_removed { get; set; }
         public string removed_by { get; set; }
+        public Nullable<int> employee_id { get; set; }
     }
 }
