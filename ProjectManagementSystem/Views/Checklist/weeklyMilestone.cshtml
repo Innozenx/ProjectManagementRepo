@@ -177,6 +177,16 @@
         margin-top: 15px;
     }
 
+    .btn-danger {
+        border: none;
+        padding: 10px 20px;
+        color: #fff;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        margin-top: 15px;
+    }
+
     #gantt_here {
         width: 100%;
         height: calc(100vh - 200px);
@@ -310,6 +320,99 @@
 
     .log-entry {
         margin-top: 5%;
+    }
+
+    .multi-select-dropdown {
+        position: relative;
+        background: #fff;
+        cursor: pointer;
+    }
+
+        .multi-select-dropdown .dropdown-header {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .multi-select-dropdown .dropdown-options {
+            display: none;
+            position: absolute;
+            z-index: 10;
+            width: 100%;
+            max-height: 250px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 5px 5px;
+            margin-top: 5px;
+            padding: 10px;
+        }
+
+        .multi-select-dropdown.open .dropdown-options {
+            display: block;
+        }
+
+    .dropdown-item {
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: 14px;
+        color: #333;
+        font-weight: normal;
+    }
+
+        .dropdown-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .dropdown-item label {
+            margin: 0;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+    .selected-members-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px;
+        background: #f4f6f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        min-height: 50px;
+        max-height: 150px;
+        overflow-y: auto;
+    }
+
+        .selected-members-chips .chip {
+            background-color: #66339A;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .selected-members-chips .chip .remove-chip {
+                margin-left: 10px;
+                cursor: pointer;
+                background: transparent;
+                border: none;
+                color: white;
+            }
+
+    tr, th, td {
+        margin: auto;
+        text-align: center;
     }
 </style>
 
@@ -700,7 +803,7 @@
                     <label class="input-group-text bg-purple text-white" for="milestoneDropdown">
                         <i class="fas fa-tasks"></i>
                     </label>
-                    <select id="milestoneDropdown" class="form-select shadow-sm" onchange="loadChecklist(this.value)">
+                    <select id="milestoneDropdown" class="form-select shadow-sm" @*onchange="loadChecklist(this.value)*@ ">
                         <option value="">Select a Milestone</option>
                     </select>
                 </div>
@@ -708,16 +811,176 @@
         </div>
         <!-- Checklist -->
         <div id="checklistContainer" class="mt-4">
-            <div class="text-center text-muted">Select a milestone to view tasks.</div>
+            <div class="text-center text-muted">Select a milestone to view tasks. <br /> <i><small>(LEGEND: <i class="fa-solid fa-check"></i>  = approved, <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> = pending approval, <i class="fas fa-ban"></i>= disapproved)</small></i> </div>
+        </div>
+
+        <!-- Checklist Table -->
+        <div class="table-responsive mt-4">
+            <table class="table table-bordered table-hover text-center align-middle" id="checklist_tbl">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Task</th>
+                        <th>Description</th>
+                        <th>Attachment</th>
+                        <th>Approver</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="checklistTableBody">
+                    <tr>
+                        <td colspan="5" class="text-center">Select a milestone to view tasks.</td>
+                    </tr>
+                </tbody>
+            </table>
+            @{
+                if (Model.userDetails.JobLevel == 4035 || User.IsInRole("PMS_DIVISION_HEAD"))
+                {
+                    <div style="margin: auto; text-align: center">
+                        <button class="btn-primary w-25" id="add_optional">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            Add Optional Task
+                        </button>
+                    </div>
+                }
+            }
+
+
+        </div>
+
+    </div>
+</div>
+
+<!--Add Optional Task Modal-->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog" style="margin: auto">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="width: 100%">
+            <div class="modal-header">
+                <label id="modal_title"></label>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="optionalForm">
+                    <input type="text" id="milestone_id" name="milestone_id" hidden readonly />
+                    <input type="text" id="project_id" name="project_id" hidden readonly />
+                    <table id="item_table">
+                        <tbody>
+                            <tr>
+                                <th>#</th>
+                                <th>Task</th>
+                                <th>Description</th>
+                            </tr>
+
+                            <tr>
+                                <td>1</td>
+                                <td><input type="text" name="item[0].title" /></td>
+                                <td><input type="text" name="item[0].description" /></td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+                </form>
+            </div>
+
+            <div style="margin: auto; text-align: center">
+                <button class="btn-primary w-100" id="add_row" onclick="AddRow()">Add Item</button>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="submit_button">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
 
+<!--Add approver for optional task modal-->
+<div class="modal fade" id="approverModal" role="dialog">
+    <div class="modal-dialog" style="margin: auto">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="width: 100%">
+            <div class="modal-header">
+                <label id="modal_title"></label>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="task_id" hidden readonly />
+                    <input type="text" id="approver_project_id" hidden readonly />
+                    <label for="multiSelectDropdown">Members</label>
+                    <div id="multiSelectDropdown" class="multi-select-dropdown">
+                        <div class="dropdown-header" onclick="toggleDropdown()">Select Members</div>
+                        <div class="dropdown-options" id="dropdown_options">
+                            <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" />
+                            @*@foreach (var user in Model.Users)
+                                {
+                                    <div class="dropdown-item">
+                                        <input type="checkbox" id="member_@user.Id" value="@user.Id" />
+                                        <label for="member_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
+                                    </div>
+                                }*@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>People with Access</label>
+                    <div id="selectedMembersChips" class="selected-members-chips"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="submit_approver">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Remove approver from optional task modal-->
+<div class="modal fade" id="removeModal" role="dialog">
+    <div class="modal-dialog" style="margin: auto; margin-left: 20%">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="width: 140%">
+            <div class="modal-header">
+                <label id="modal_title"></label>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="task_id_removal"  readonly />
+                    <input type="text" id="approver_project_id_removal"  readonly />
+                    <table id="approver_table" style="width: 100%">
+                        <thead class="table-primary">
+                            <tr style="margin:auto; text-align: center">
+                                <th>Name</th>
+                                <th>Date Added</th>
+                                <th>Added By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="approver_tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="submit_approver">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
 
     <script>
         //function loadActivityLogs() {
@@ -752,9 +1015,7 @@
 
             $.ajax({
 
-                url: "@Url.Action("UploadFile", "FileUpload")",
-
-
+                @*url: "@Url.Action("UploadFile", "FileUpload")",*@
                 url: "@Url.Action("UpdateStatus", "Checklist")",
 
                 type: 'POST',
@@ -885,6 +1146,20 @@
             activateButton("week-view");
 
             //loadActivityLogs();
+
+            var tab = localStorage.getItem('currentTab');
+            var dropdown = localStorage.getItem('currentDrop');
+
+            if (tab == "checklist") {
+                const element = document.getElementById("milestoneDropdown");
+                document.getElementById("checklist-tab").click();
+                setTimeout(function () {
+                    document.getElementById("milestoneDropdown").value = dropdown;
+                    document.getElementById("milestoneDropdown").dispatchEvent(new Event('change'));
+                },1000)
+                
+                localStorage.clear();
+            }
         });
 
     </script>
@@ -961,7 +1236,65 @@
                 $("#status_input_group").prop("class", "d-none");
             }
         });
-        
+
+        $(document).on("click", "#add_optional", function (e) {
+            e.preventDefault();
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const projectID = urlParams.get("id");
+            var milestone = $("#milestoneDropdown").val();
+
+            $("#modal_title").text("Checklist item for: " + milestone);
+            $("#milestone_id").val(milestone);
+            $("#project_id").val(projectID);
+
+            $(".modal-body").html();
+            $("#myModal").modal("show");
+
+        });
+
+        $(document).on("click", "#submit_button", function () {
+            var formData = $("#optionalForm").serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("AddOptional", "Checklist")",
+                data: formData,
+                success: function (res) {
+                    alert(res.message);
+                }
+            });
+        });
+
+        document.addEventListener('change', function (event) {
+            if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
+                updateSelectedChips();
+            }
+        });
+
+        $(document).on("click", "#submit_approver", function () {
+            const taskID = $("#task_id").val();
+            const projID = $("#approver_project_id").val();
+
+            const selectedMembers = [...document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked')].map(e => e.value);
+
+            console.log(selectedMembers);
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("AddApproverOpt", "Checklist")",
+                data: { "id": taskID, "proj_id": projID, "approvers": selectedMembers },
+                success: function (res) {
+                    var dropdown = $("#milestoneDropdown").val();
+
+                    localStorage.setItem('currentTab', 'checklist');
+                    localStorage.setItem('currentDrop', dropdown);
+
+                    window.location.reload();
+                }
+            });
+        });
+
     </script>
 
     <script>
@@ -1009,13 +1342,24 @@
                         response.data.forEach(task => {
                             checklistTableBody.append(`
                                         <tr>
-                                            <td id="${task.task_id}name">${task.taskname}</td>
+                                            <td id="${task.task_id}">${task.taskname}</td>
                                             <td>${task.approved ? "Approved" : task.reason != null ? "Disapproved" : "Pending"}</td>
                                             <td>${task.attachment != null
-                                                ? `<a href="${task.attachment}">View Attachment</a>` 
+                                                ? `<a href="${task.attachment}">View Attachment</a>`
                                                 : `<input type="file" class="form-control-file" id="${task.task_id}file">`}
                                             </td>
-                                            <td>${task.approvers.join(", ") || "N/A"}</td>
+                                            @*<td>${task.approver_status == true ? task.approvers + `<i class="fa-solid fa-check"></i>`
+                                                : task.approver_status == null ? task.approvers + `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
+                                                : task.approvers + `<i class="fas fa-ban"></i>`}</td>*@
+                                            <td>${task.approvers.length == 0 ? `<button class="btn-primary w-50" id="add_approverbtn" onclick="add_approverbtn(${task.task_id})">Add</button>` :
+                                `<div class="d-flex" style="margin: auto; text-align: center; margin-bottom: 5%;"><button class="btn-primary" id="add_approverbtn" style="width: 35%; margin-left:10%" onclick="add_approverbtn(${task.task_id})">Add</button> <button class="btn-danger" id="remove_approverbtn" style="width: 35%; margin-left:10%; font-size: 60%" onclick="removeApprover(${task.task_id})">Remove</button></div>` +
+                                                    Object.keys(task.approvers).map(function (key) {
+                                                    return task.approver_status[key] == true ? task.approvers[key] + ` <i class="fa-solid fa-check"></i>`
+                                                    : task.approver_status[key] == null ? task.approvers[key] + ` <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
+                                                    : task.approvers[key] + ` <i class="fas fa-ban"></i>`
+                                }).join("<br/>")}
+
+                                            </td>
                                             <td>
                                                 ${task.attachment != null
                                                 ? task.approved == true
@@ -1023,7 +1367,7 @@
                                                     : task.reason != null
                                                         ? `<button class="btn btn-sm btn-danger" disabled>Disapproved</button>`
                                                         : `<button class="btn btn-sm btn-warning" disabled>Pending Approval</button>`
-                                                    : `<button class="btn btn-sm btn-success" onclick="submitApproval(${task.task_id})">Submit</button>`}         
+                                                    : `<button class="btn btn-sm btn-success" onclick="submitApproval(${task.task_id})">Submit</button>`}
                                             </td>
                                             <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
                                             <td class="d-none" id="${task.task_id}project">${task.project_id}</td>
@@ -1092,5 +1436,145 @@
             });
         }
 
+        function AddRow() {
+            var num = $('#item_table tr:last-child td:first-child').html();
+            var item_num = parseInt(num) + 1;
+            var inc_num = num;
+
+            $('#item_table tbody').append(`
+        <tr style="margin:auto; text-align: center">
+        <td>${item_num}</td>
+        <td><input type="text" name='item[${inc_num}].title'/></td>
+        <td><input type="text" name='item[${inc_num}].description' /></td>
+        </tr>
+        `);
+        }
+
+        function add_approverbtn(id) {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const projectID = urlParams.get("id");
+
+            $(".modal-body").html();
+            $("#approverModal").modal("show");
+            $("#task_id").val(id);
+            $("#approver_project_id").val(projectID);
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetUserList", "Checklist")",
+                success: function (res) {
+                    const dropdown = document.getElementById("dropdown_options");
+
+                    res.data.forEach(function (element) {
+                        const approverDiv = document.createElement("div");
+                        approverDiv.classList.add("dropdown-item");
+
+                        const approverInput = document.createElement("input");
+                        approverInput.type = "checkbox";
+                        approverInput.id = "id_" + element.Id;
+                        approverInput.value = element.Id;
+
+                        const approverLabel = document.createElement("label");
+                        approverLabel.innerHTML = element.FirstName + " " + element.LastName + " ";
+
+                        dropdown.append(approverDiv);
+                        approverDiv.append(approverInput);
+                        approverDiv.append(approverLabel);
+                        //console.log(element.Id);
+                    });
+                }
+
+            });
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('multiSelectDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        function updateSelectedChips() {
+            const checkboxes = document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]');
+            const chipsContainer = document.getElementById('selectedMembersChips');
+            chipsContainer.innerHTML = '';
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const chip = document.createElement('div');
+                    chip.className = 'chip';
+
+                    chip.innerHTML = `
+                    ${checkbox.nextElementSibling.textContent}
+                    <button class="remove-chip" onclick="removeChip('${checkbox.id}')">&times;</button>
+                `;
+
+                    chipsContainer.appendChild(chip);
+                    chip.setAttribute("data-value", checkbox.value);
+                }
+            });
+        }
+
+        function removeChip(memberId) {
+            const checkbox = document.getElementById(memberId);
+            checkbox.checked = false;
+            updateSelectedChips();
+        }
+
+
+        function removeApprover(taskID) {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const projectID = urlParams.get("id");
+
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("GetApprover", "Checklist")",
+                data: { "main_id": projectID, "milestone_id": taskID },
+                success: function (res) {
+                    $(".modal-body").html();
+                    $("#removeModal").modal("show");
+
+                    //const table_body = document.getElementById("approver_tbody");
+                    const table_body = $("#approver_tbody");
+                    $("#task_id_removal").val(taskID);
+                    $("#approver_project_id_removal").val(projectID);
+
+                    table_body.empty();
+
+                    res.data.forEach(approver => {
+
+                        table_body.append(`
+    <tr>
+    <td>${approver.approver_name}</td>
+    <td>${moment(approver.date_added).format('MM-DD-yyyy')}</td>
+    <td>${approver.added_by.split("@@")[0]}</td>
+    <td><button type="button" class="bg-danger" onclick=dbRemoveApprover(${approver.employee_id})><i class="fa-solid fa-trash-can"></i></button></td>
+    </tr>
+    `)
+                    });
+
+                }
+            });
+        }
+
+        function dbRemoveApprover(userID) {
+            const projID = $("#approver_project_id_removal").val();
+            const milestoneID = $("#task_id_removal").val();
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("RemoveOptionalApprover", "Checklist")",
+                data: { "id": userID, "project_id":projID, "milestone_id":milestoneID },
+                success: function (res) {
+                    //var dropdown = $("#milestoneDropdown option:selected").html();
+                    var dropdown = $("#milestoneDropdown").val();
+
+                    localStorage.setItem('currentTab', 'checklist');
+                    localStorage.setItem('currentDrop', dropdown);
+                    window.location.reload();
+                    
+                }
+            });
+        }
     </script>
 }

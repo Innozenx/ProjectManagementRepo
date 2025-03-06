@@ -119,6 +119,8 @@ namespace ProjectManagementSystem.Models
         public DateTime? CompletionDate { get; set; } // Original Completion Date
         public DateTime? CurrentCompletionDate { get; set; } // Current Updated Completion Date
 
+        public UserModel userDetails { get; set; }
+
 
 
         public List<ApproverViewModel> Checklist { get; set; }
@@ -448,6 +450,7 @@ namespace ProjectManagementSystem.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+        public int? JobLevel { get; set; }
     }
 
     public class RoleViewModel
@@ -614,6 +617,7 @@ namespace ProjectManagementSystem.Models
         public int? project_id { get; set; }
         public string attachment { get; set; }
         public string reason { get; set; }
+        public List<bool?> approver_status { get; set; }
     }
 
     public class ApproverTaskViewModel
@@ -661,5 +665,57 @@ namespace ProjectManagementSystem.Models
         public List<string> Approvers { get; set; }
     }
 
+
+    public class ChecklistInfo
+    {
+        public string division { get; set; }
+        public int milestone_id { get; set; }
+        public List<FixedChecklistTbl> fixedItemList { get; set; }
+        public List<UserModel> userList { get; set; }
+    }
+
+    public class ChecklistForm
+    {
+        public string division { get; set; }
+        public int milestone_id { get; set; }
+        public int project_id { get; set; }
+        public List<ChecklistFormItemDetails> item { get; set; }
+    }
+
+    public class ChecklistFormItemDetails
+    {
+        public string title { get; set; }
+        public string description { get; set; }
+        public bool document { get; set; }
+    }
+
+    public class FixedChecklist
+    {
+        public int milestone_id { get; set; }
+        public DateTime date_created { get; set; }
+        public int main_id { get; set; }
+        public string title { get; set; }
+        public string description { get; set; }
+        public bool requires_documents { get; set; }
+        public string division { get; set; }
+    }
+
+    public class OptionalTaskApprover
+    {
+        public string approver_name { get; set; }
+        public string email { get; set; }
+        public int main_id { get; set; }
+        public int milestone_id { get; set; }
+        public DateTime date_added { get; set; }
+        public string added_by { get; set; }
+        public string division { get; set; }
+        public bool approved { get; set; }
+        public string remarks { get; set; }
+        public DateTime date_approved { get; set; }
+        public bool is_removed { get; set; }
+        public DateTime date_removed { get; set; }
+        public string removed_by { get; set; }
+        public int employee_id { get; set; }
+    }
 }
 

@@ -403,6 +403,9 @@
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
+    <Compile Include="Models\View_1.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\WeeklyChecklistTable.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
@@ -5073,6 +5076,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\notify.js" />
     <Content Include="Scripts\notify.min.js" />
     <Content Include="Scripts\respond.js" />

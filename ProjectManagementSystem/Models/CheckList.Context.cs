@@ -50,5 +50,12 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<TransactionTbl> TransactionTbls { get; set; }
         public virtual DbSet<WeeklyChecklistTable> WeeklyChecklistTables { get; set; }
         public virtual DbSet<WeeklyStatu> WeeklyStatus { get; set; }
+        public virtual DbSet<View_1> View_1 { get; set; }
+        public virtual DbSet<Division> Divisions { get; set; }
+        public virtual DbSet<OptionalMilestone> OptionalMilestones { get; set; }
+        public virtual DbSet<SavedDivision> SavedDivisions { get; set; }
+        public virtual DbSet<OptionalMilestoneApprover> OptionalMilestoneApprovers { get; set; }
+        public virtual DbSet<MilestoneRoot> MilestoneRoots { get; set; }
+        public virtual DbSet<PreSetMilestone> PreSetMilestones { get; set; }
     }
 }
