@@ -318,8 +318,12 @@ namespace ProjectManagementSystem.Models
         public string StatusUpdate { get; set; } = string.Empty;
         public List<TaskViewModel> Tasks { get; set; } = new List<TaskViewModel>(); 
         public int? MilestonePosition { get; set; } 
-        public List<ApproverViewModel> Approvers { get; set; } = new List<ApproverViewModel>();
+        //public List<ApproverViewModel> Approvers { get; set; } = new List<ApproverViewModel>();
         public DateTime? CurrentTaskEnd { get; set; }
+        public List<string> Requirements { get; set; } = new List<string>();
+        public List<string> Approvers { get; set; } = new List<string>();
+        public int Sorting { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 
 
@@ -649,6 +653,12 @@ namespace ProjectManagementSystem.Models
         public int DivisionId { get; set; }
         public DateTime CreatedDate { get; set; }
         public string DivisionName { get; set; }
+    }
+
+    public class TaskModel
+    {
+        public string Requirement { get; set; }
+        public List<string> Approvers { get; set; }
     }
 
 }

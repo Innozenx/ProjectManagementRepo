@@ -366,7 +366,16 @@
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\MilestoneRoot.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\MilestoneTbl.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\OptionalMilestone.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\OptionalMilestoneApprover.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PreSetMilestone.cs">

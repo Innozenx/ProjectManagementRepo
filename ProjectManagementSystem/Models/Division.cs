@@ -17,6 +17,7 @@ namespace ProjectManagementSystem.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Division()
         {
+            this.PreSetMilestones = new HashSet<PreSetMilestone>();
             this.SavedDivisions = new HashSet<SavedDivision>();
         }
     
@@ -24,7 +25,8 @@ namespace ProjectManagementSystem.Models
         public string DivisionName { get; set; }
         public Nullable<int> CMID_reference { get; set; }
     
-        public virtual PreSetMilestone PreSetMilestone { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PreSetMilestone> PreSetMilestones { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SavedDivision> SavedDivisions { get; set; }
     }

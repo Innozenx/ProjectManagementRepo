@@ -159,6 +159,20 @@
           <Property Name="user_id" Type="varchar" MaxLength="255" />
           <Property Name="isCompleted" Type="bit" />
         </EntityType>
+        <EntityType Name="MilestoneRoot">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="milestone_name" Type="nvarchar" MaxLength="100" />
+          <Property Name="division" Type="nvarchar" MaxLength="50" />
+          <Property Name="division_id" Type="int" />
+          <Property Name="date_created" Type="date" />
+          <Property Name="created_by" Type="nvarchar" MaxLength="100" />
+          <Property Name="is_removed" Type="bit" />
+          <Property Name="removed_by" Type="nvarchar" MaxLength="100" />
+          <Property Name="date_removed" Type="date" />
+        </EntityType>
         <EntityType Name="MilestoneTbl">
           <Key>
             <PropertyRef Name="milestone_id" />
@@ -178,15 +192,52 @@
           <Property Name="completion_date" Type="datetime" />
           <Property Name="current_completion_date" Type="datetime" />
         </EntityType>
+        <EntityType Name="OptionalMilestoneApprovers">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="approver_name" Type="nvarchar" MaxLength="100" />
+          <Property Name="approver_email" Type="nvarchar" MaxLength="100" />
+          <Property Name="main_id" Type="int" />
+          <Property Name="milestone_id" Type="int" />
+          <Property Name="date_added" Type="date" />
+          <Property Name="added_by" Type="nvarchar" MaxLength="100" />
+          <Property Name="division" Type="nvarchar" MaxLength="50" />
+          <Property Name="approved" Type="bit" />
+          <Property Name="remarks" Type="nvarchar" MaxLength="250" />
+          <Property Name="date_approved" Type="date" />
+          <Property Name="is_removed" Type="bit" />
+          <Property Name="date_removed" Type="date" />
+          <Property Name="removed_by" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="OptionalMilestones">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="main_id" Type="int" />
+          <Property Name="milestone_id" Type="int" />
+          <Property Name="division" Type="nvarchar" MaxLength="50" />
+          <Property Name="task" Type="nvarchar" MaxLength="100" />
+          <Property Name="description" Type="nvarchar" MaxLength="250" />
+          <Property Name="date_created" Type="date" />
+          <Property Name="created_by" Type="nvarchar" MaxLength="100" />
+          <Property Name="is_removed" Type="bit" />
+          <Property Name="removed_by" Type="nvarchar" MaxLength="100" />
+          <Property Name="date_removed" Type="date" />
+          <Property Name="approved" Type="bit" />
+        </EntityType>
         <EntityType Name="PreSetMilestone">
           <Key>
-            <PropertyRef Name="DivisionID" />
+            <PropertyRef Name="ID" />
           </Key>
-          <Property Name="DivisionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubID" Type="int" />
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DivisionID" Type="int" />
+          <Property Name="MilestoneID" Type="int" />
           <Property Name="MilestoneName" Type="varchar" MaxLength="255" />
-          <Property Name="Sorting" Type="bit" />
-          <Property Name="Requirements" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Sorting" Type="int" />
+          <Property Name="Requirements" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Approvers" Type="nvarchar(max)" />
           <Property Name="CreatedDate" Type="datetime" />
         </EntityType>
@@ -376,8 +427,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PreSetMilestone_Divisions">
-          <End Role="Divisions" Type="Self.Divisions" Multiplicity="1" />
-          <End Role="PreSetMilestone" Type="Self.PreSetMilestone" Multiplicity="0..1" />
+          <End Role="Divisions" Type="Self.Divisions" Multiplicity="0..1" />
+          <End Role="PreSetMilestone" Type="Self.PreSetMilestone" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Divisions">
               <PropertyRef Name="DivisionID" />
@@ -423,7 +474,10 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="Divisions" EntityType="Self.Divisions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FixedChecklistTbl" EntityType="Self.FixedChecklistTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MainTable" EntityType="Self.MainTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MilestoneRoot" EntityType="Self.MilestoneRoot" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MilestoneTbl" EntityType="Self.MilestoneTbl" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OptionalMilestoneApprovers" EntityType="Self.OptionalMilestoneApprovers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OptionalMilestones" EntityType="Self.OptionalMilestones" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PreSetMilestone" EntityType="Self.PreSetMilestone" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProjectMembersTbl" EntityType="Self.ProjectMembersTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RegistrationTbl" EntityType="Self.RegistrationTbl" Schema="dbo" store:Type="Tables" />
@@ -479,7 +533,10 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="Divisions" EntityType="ProjectManagementDBModel.Division" />
           <EntitySet Name="FixedChecklistTbls" EntityType="ProjectManagementDBModel.FixedChecklistTbl" />
           <EntitySet Name="MainTables" EntityType="ProjectManagementDBModel.MainTable" />
+          <EntitySet Name="MilestoneRoots" EntityType="ProjectManagementDBModel.MilestoneRoot" />
           <EntitySet Name="MilestoneTbls" EntityType="ProjectManagementDBModel.MilestoneTbl" />
+          <EntitySet Name="OptionalMilestoneApprovers" EntityType="ProjectManagementDBModel.OptionalMilestoneApprover" />
+          <EntitySet Name="OptionalMilestones" EntityType="ProjectManagementDBModel.OptionalMilestone" />
           <EntitySet Name="PreSetMilestones" EntityType="ProjectManagementDBModel.PreSetMilestone" />
           <EntitySet Name="ProjectMembersTbls" EntityType="ProjectManagementDBModel.ProjectMembersTbl" />
           <EntitySet Name="RegistrationTbls" EntityType="ProjectManagementDBModel.RegistrationTbl" />
@@ -643,7 +700,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="DivisionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="DivisionName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="CMID_reference" Type="Int32" />
-          <NavigationProperty Name="PreSetMilestone" Relationship="ProjectManagementDBModel.FK_PreSetMilestone_Divisions" FromRole="Division" ToRole="PreSetMilestone" />
+          <NavigationProperty Name="PreSetMilestones" Relationship="ProjectManagementDBModel.FK_PreSetMilestone_Divisions" FromRole="Division" ToRole="PreSetMilestone" />
           <NavigationProperty Name="SavedDivisions" Relationship="ProjectManagementDBModel.FK_SavedDivision_Divisions" FromRole="Division" ToRole="SavedDivision" />
         </EntityType>
         <EntityType Name="FixedChecklistTbl">
@@ -682,6 +739,20 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <NavigationProperty Name="FixedChecklistTbls" Relationship="ProjectManagementDBModel.FK_FixedChecklistTbl_MainTable" FromRole="MainTable" ToRole="FixedChecklistTbl" />
           <NavigationProperty Name="MilestoneTbls" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MainTable" ToRole="MilestoneTbl" />
         </EntityType>
+        <EntityType Name="MilestoneRoot">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="milestone_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="division_id" Type="Int32" />
+          <Property Name="date_created" Type="DateTime" Precision="0" />
+          <Property Name="created_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="is_removed" Type="Boolean" />
+          <Property Name="removed_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="date_removed" Type="DateTime" Precision="0" />
+        </EntityType>
         <EntityType Name="MilestoneTbl">
           <Key>
             <PropertyRef Name="milestone_id" />
@@ -703,15 +774,52 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <NavigationProperty Name="FixedChecklistTbls" Relationship="ProjectManagementDBModel.FK_FixedChecklistTbl_MilestoneTbl" FromRole="MilestoneTbl" ToRole="FixedChecklistTbl" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
         </EntityType>
+        <EntityType Name="OptionalMilestoneApprover">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="approver_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="approver_email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="main_id" Type="Int32" />
+          <Property Name="milestone_id" Type="Int32" />
+          <Property Name="date_added" Type="DateTime" Precision="0" />
+          <Property Name="added_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="approved" Type="Boolean" />
+          <Property Name="remarks" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="date_approved" Type="DateTime" Precision="0" />
+          <Property Name="is_removed" Type="Boolean" />
+          <Property Name="date_removed" Type="DateTime" Precision="0" />
+          <Property Name="removed_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="OptionalMilestone">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="main_id" Type="Int32" />
+          <Property Name="milestone_id" Type="Int32" />
+          <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="task" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="description" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="date_created" Type="DateTime" Precision="0" />
+          <Property Name="created_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="is_removed" Type="Boolean" />
+          <Property Name="removed_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="date_removed" Type="DateTime" Precision="0" />
+          <Property Name="approved" Type="Boolean" />
+        </EntityType>
         <EntityType Name="PreSetMilestone">
           <Key>
-            <PropertyRef Name="DivisionID" />
+            <PropertyRef Name="ID" />
           </Key>
-          <Property Name="DivisionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SubID" Type="Int32" />
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DivisionID" Type="Int32" />
+          <Property Name="MilestoneID" Type="Int32" />
           <Property Name="MilestoneName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Sorting" Type="Boolean" />
-          <Property Name="Requirements" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Sorting" Type="Int32" />
+          <Property Name="Requirements" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Approvers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Division" Relationship="ProjectManagementDBModel.FK_PreSetMilestone_Divisions" FromRole="PreSetMilestone" ToRole="Division" />
@@ -873,8 +981,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PreSetMilestone_Divisions">
-          <End Type="ProjectManagementDBModel.Division" Role="Division" Multiplicity="1" />
-          <End Type="ProjectManagementDBModel.PreSetMilestone" Role="PreSetMilestone" Multiplicity="0..1" />
+          <End Type="ProjectManagementDBModel.Division" Role="Division" Multiplicity="0..1" />
+          <End Type="ProjectManagementDBModel.PreSetMilestone" Role="PreSetMilestone" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Division">
               <PropertyRef Name="DivisionID" />
@@ -1103,6 +1211,21 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="MilestoneRoots">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.MilestoneRoot">
+              <MappingFragment StoreEntitySet="MilestoneRoot">
+                <ScalarProperty Name="date_removed" ColumnName="date_removed" />
+                <ScalarProperty Name="removed_by" ColumnName="removed_by" />
+                <ScalarProperty Name="is_removed" ColumnName="is_removed" />
+                <ScalarProperty Name="created_by" ColumnName="created_by" />
+                <ScalarProperty Name="date_created" ColumnName="date_created" />
+                <ScalarProperty Name="division_id" ColumnName="division_id" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="milestone_name" ColumnName="milestone_name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="MilestoneTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.MilestoneTbl">
               <MappingFragment StoreEntitySet="MilestoneTbl">
@@ -1123,6 +1246,44 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="OptionalMilestoneApprovers">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.OptionalMilestoneApprover">
+              <MappingFragment StoreEntitySet="OptionalMilestoneApprovers">
+                <ScalarProperty Name="removed_by" ColumnName="removed_by" />
+                <ScalarProperty Name="date_removed" ColumnName="date_removed" />
+                <ScalarProperty Name="is_removed" ColumnName="is_removed" />
+                <ScalarProperty Name="date_approved" ColumnName="date_approved" />
+                <ScalarProperty Name="remarks" ColumnName="remarks" />
+                <ScalarProperty Name="approved" ColumnName="approved" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="added_by" ColumnName="added_by" />
+                <ScalarProperty Name="date_added" ColumnName="date_added" />
+                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
+                <ScalarProperty Name="approver_email" ColumnName="approver_email" />
+                <ScalarProperty Name="approver_name" ColumnName="approver_name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OptionalMilestones">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.OptionalMilestone">
+              <MappingFragment StoreEntitySet="OptionalMilestones">
+                <ScalarProperty Name="approved" ColumnName="approved" />
+                <ScalarProperty Name="date_removed" ColumnName="date_removed" />
+                <ScalarProperty Name="removed_by" ColumnName="removed_by" />
+                <ScalarProperty Name="is_removed" ColumnName="is_removed" />
+                <ScalarProperty Name="created_by" ColumnName="created_by" />
+                <ScalarProperty Name="date_created" ColumnName="date_created" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="task" ColumnName="task" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="PreSetMilestones">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.PreSetMilestone">
               <MappingFragment StoreEntitySet="PreSetMilestone">
@@ -1131,8 +1292,9 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
                 <ScalarProperty Name="Requirements" ColumnName="Requirements" />
                 <ScalarProperty Name="Sorting" ColumnName="Sorting" />
                 <ScalarProperty Name="MilestoneName" ColumnName="MilestoneName" />
-                <ScalarProperty Name="SubID" ColumnName="SubID" />
+                <ScalarProperty Name="MilestoneID" ColumnName="MilestoneID" />
                 <ScalarProperty Name="DivisionID" ColumnName="DivisionID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

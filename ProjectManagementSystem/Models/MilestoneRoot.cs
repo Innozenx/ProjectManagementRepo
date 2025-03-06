@@ -12,17 +12,16 @@ namespace ProjectManagementSystem.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class PreSetMilestone
+    public partial class MilestoneRoot
     {
-        public int ID { get; set; }
-        public Nullable<int> DivisionID { get; set; }
-        public Nullable<int> MilestoneID { get; set; }
-        public string MilestoneName { get; set; }
-        public Nullable<int> Sorting { get; set; }
-        public string Requirements { get; set; }
-        public string Approvers { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
-    
-        public virtual Division Division { get; set; }
+        public int id { get; set; }
+        public string milestone_name { get; set; }
+        public string division { get; set; }
+        public Nullable<int> division_id { get; set; }
+        public Nullable<System.DateTime> date_created { get; set; }
+        public string created_by { get; set; }
+        public Nullable<bool> is_removed { get; set; }
+        public string removed_by { get; set; }
+        public Nullable<System.DateTime> date_removed { get; set; }
     }
 }

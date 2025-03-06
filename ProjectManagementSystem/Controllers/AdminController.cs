@@ -324,39 +324,75 @@ namespace ProjectManagementSystem.Controllers
             return Json(divisions, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetMilestones(int divisionId)
+        //public ActionResult GetMilestones(int divisionId)
+        //{
+        //    var milestones = db.PreSetMilestones
+        //        .Where(m => m.DivisionID == divisionId)
+        //        .Select(m => new
+        //        {
+        //            m.DivisionID,
+        //            m.MilestoneName,
+        //            m.Requirements,
+        //            m.Approvers
+        //        }).ToList();
+
+        //    return Json(milestones, JsonRequestBehavior.AllowGet);
+        //}
+
+        public ActionResult CreateChecklist(int divisionId)
         {
-            var milestones = db.PreSetMilestones
+            var division = db.Divisions.FirstOrDefault(d => d.DivisionID == divisionId);
+            ViewBag.DivisionName = division != null ? division.DivisionName : "Unknown Division";
+            ViewBag.DivisionId = divisionId;
+
+            var rawMilestones = db.PreSetMilestones
                 .Where(m => m.DivisionID == divisionId)
-                .Select(m => new
-                {
-                    m.DivisionID,
-                    m.MilestoneName,
-                    m.Requirements,
-                    m.Approvers
-                }).ToList();
+                .ToList(); 
+
+            var milestones = rawMilestones.Select(m => new MilestoneViewModel
+            {
+                Id = m.MilestoneID ?? 0, 
+                MilestoneName = m.MilestoneName,
+                Requirements = !string.IsNullOrEmpty(m.Requirements) ? m.Requirements.Split(';').ToList() : new List<string>(),
+                Approvers = !string.IsNullOrEmpty(m.Approvers) ? m.Approvers.Split(',').ToList() : new List<string>(),
+                Sorting = m.Sorting ?? 0,
+                CreatedDate = m.CreatedDate ?? DateTime.MinValue 
+            }).ToList();
+
+            return View(milestones);
+
+        }
+
+
+
+        public JsonResult GetMilestones(int divisionId)
+        {
+            var rawMilestones = db.PreSetMilestones
+                .Where(m => m.DivisionID == divisionId)
+                .ToList(); 
+
+            var milestones = rawMilestones.Select(m => new
+            {
+                m.MilestoneID,
+                m.MilestoneName,
+                Requirements = string.IsNullOrEmpty(m.Requirements)
+                    ? new List<string>()
+                    : m.Requirements.Split(';').Select(r => r.Trim()).ToList(),
+
+                Approvers = string.IsNullOrEmpty(m.Approvers)
+                    ? new List<string>()
+                    : m.Approvers.Split(',') 
+                        .Select(id => cmdb.AspNetUsers
+                            .Where(u => u.Id == id) 
+                            .Select(u => u.FirstName + " " + u.LastName)
+                            .FirstOrDefault() ?? "Unknown Approver")
+                        .ToList()
+            }).ToList();
 
             return Json(milestones, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult CreateChecklist(int? divisionId)
-        {
-            if (divisionId == null)
-            {
-                return new HttpStatusCodeResult(400, "Division ID is required.");
-            }
 
-            var division = db.Divisions.FirstOrDefault(d => d.DivisionID == divisionId);
-            if (division == null)
-            {
-                return HttpNotFound("Division not found.");
-            }
-
-            ViewBag.DivisionId = division.DivisionID;
-            ViewBag.DivisionName = division.DivisionName;
-
-            return View();
-        }
 
         public ActionResult AddMilestones(int? divisionId)
         {
@@ -377,50 +413,70 @@ namespace ProjectManagementSystem.Controllers
 
                 ViewBag.DivisionId = division.DivisionID;
                 ViewBag.DivisionName = division.DivisionName;
-                ViewBag.Users = users; 
+                ViewBag.Users = users;
             }
 
             return View();
         }
 
         [HttpPost]
-        public ActionResult SaveMilestone(int DivisionID, string MilestoneName, string TaskRequirement,List<string> Approvers)
+        public JsonResult SaveMilestone(int DivisionID, string MilestoneName, List<TaskModel> Tasks)
         {
-            if (string.IsNullOrWhiteSpace(MilestoneName) || string.IsNullOrWhiteSpace(TaskRequirement))
-            {
-                return Json(new { success = false, message = "Milestone Name and Task Requirement are required!" });
-            }
-
             try
             {
-                if (db.PreSetMilestones.Any(m => m.MilestoneName == MilestoneName && m.DivisionID == DivisionID))
+                Debug.WriteLine($"Received Data - DivisionID: {DivisionID}, MilestoneName: {MilestoneName}, Tasks Count: {Tasks.Count}");
+
+                if (Tasks == null || !Tasks.Any())
                 {
-                    return Json(new { success = false, message = "Milestone already exists for this division!" });
+                    return Json(new { success = false, message = "Error: At least one task is required!" });
                 }
-                
-                var newMilestone = new PreSetMilestone
+
+                string requirements = string.Join("; ", Tasks.Select(t => t.Requirement).Where(r => !string.IsNullOrWhiteSpace(r)));
+
+                if (string.IsNullOrWhiteSpace(requirements))
                 {
+                    return Json(new { success = false, message = "Error: Requirements cannot be empty!" });
+                }
+
+                string approverIds = string.Join(",", Tasks.SelectMany(t => t.Approvers));
+
+                int nextSorting = db.PreSetMilestones
+                    .Where(m => m.DivisionID == DivisionID)
+                    .Select(m => (int?)m.Sorting)
+                    .DefaultIfEmpty(0)
+                    .Max() ?? 0;
+
+                nextSorting += 1;
+
+                int nextMilestoneID = 1;
+                if (db.PreSetMilestones.Any())
+                {
+                    nextMilestoneID = db.PreSetMilestones.Max(m => (int?)m.MilestoneID).GetValueOrDefault() + 1;
+                }
+
+                var milestone = new PreSetMilestone
+                {
+                    MilestoneID = nextMilestoneID,  
                     DivisionID = DivisionID,
                     MilestoneName = MilestoneName,
-                    Requirements = TaskRequirement,
-                    
-                    Approvers = string.Join(",", Approvers), 
+                    Sorting = nextSorting,
+                    Requirements = requirements,
+                    Approvers = approverIds,
                     CreatedDate = DateTime.Now
                 };
 
-                db.PreSetMilestones.Add(newMilestone);
+                db.PreSetMilestones.Add(milestone);
                 db.SaveChanges();
 
-                return Json(new { success = true });
+                return Json(new { success = true, message = "Milestone saved successfully!" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Error saving milestone: " + ex.Message });
+                string errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                Debug.WriteLine($"Error saving milestone: {errorMessage}");
+                return Json(new { success = false, message = "Error saving milestone: " + errorMessage });
             }
         }
-
-
-
 
         public ActionResult PreviewMilestone(int id)
         {
