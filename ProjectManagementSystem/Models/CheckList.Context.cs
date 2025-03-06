@@ -36,7 +36,10 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<Division> Divisions { get; set; }
         public virtual DbSet<FixedChecklistTbl> FixedChecklistTbls { get; set; }
         public virtual DbSet<MainTable> MainTables { get; set; }
+        public virtual DbSet<MilestoneRoot> MilestoneRoots { get; set; }
         public virtual DbSet<MilestoneTbl> MilestoneTbls { get; set; }
+        public virtual DbSet<OptionalMilestoneApprover> OptionalMilestoneApprovers { get; set; }
+        public virtual DbSet<OptionalMilestone> OptionalMilestones { get; set; }
         public virtual DbSet<PreSetMilestone> PreSetMilestones { get; set; }
         public virtual DbSet<ProjectMembersTbl> ProjectMembersTbls { get; set; }
         public virtual DbSet<RegistrationTbl> RegistrationTbls { get; set; }
