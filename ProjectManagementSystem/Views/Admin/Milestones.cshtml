@@ -10,7 +10,7 @@
                 <div class="card-body">
 
                     <div class="text-center mb-4">
-                        <h3 class="fw-bold text-dark">
+                        <h3 class="title" style="color: #470A67">
                             📋 <br /> Checklist and Milestone Management
                         </h3>
                         <p class="text-muted">Create and manage milestones per Division.</p>
@@ -19,7 +19,7 @@
                     <div class="card shadow-sm bg-white rounded-3">
                         <div class="card-body">
                             <div class="mb-4">
-                                <h5 class="fw-bold text-dark">Select Division</h5>
+                                <h5 class="fw-bold text-dark">Division</h5>
                                 <div class="input-group">
                                     <select id="divisionDropdown" class="form-select custom-dropdown" required>
                                         <option value="">Choose Division</option>
@@ -37,8 +37,8 @@
                                 </div>
                             </div>
 
-                            <h5 class="fw-bold text-dark">Milestones</h5>
-                            <input type="text" id="searchMilestone" class="form-control mb-3" placeholder="Search milestones...">
+                            <h5 class="fw-bold text-dark">Checklist</h5>
+                            @*<input type="text" id="searchMilestone" class="form-control mb-3" placeholder="Search milestones...">*@
                             <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                                 <table class="table table-hover table-bordered" id="milestoneTable">
                                     <thead class="table-light sticky-header">
@@ -59,6 +59,20 @@
             </div> 
         </div> 
     </div> 
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark" id="previewModalLabel">Checklist Preview</h5>
+                    <button type="button" class="btn-r" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="previewModalBody">
+                    <p class="text-muted">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div> 
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
@@ -85,10 +99,27 @@
     }
 
     .custom-dropdown {
-        border-radius: 6px;
+        width: 85%;
         padding: 10px;
+        border-radius: 6px;
         border: 1px solid #ced4da;
         font-size: 16px;
+    }
+
+    #addMilestoneBtn {
+        height: 42px;
+        font-weight: 600;
+        border-radius: 6px;
+    }
+
+    .col-md-3 {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    #divisionDropdown {
+        margin-right: 10px; 
     }
 
     .table {
@@ -98,6 +129,7 @@
         .table thead {
             background: #f8f9fa;
             font-weight: 600;
+            vertical-align: middle;
         }
 
     .sticky-header {
@@ -167,83 +199,137 @@
             background: #17a2b8;
             color: white;
         }
+
 </style>
 
 <script>
     $(document).ready(function () {
-        $(document).ready(function () {
-            let table = $('#milestoneTable').DataTable({
-                "paging": false,
-                "searching": false,
-                "ordering": false,
-                "info": false
-            });
-
-            function loadDivisions() {
-                $.get('/Admin/GetSavedDivisions', function (data) {
-         
-                    if (!data || data.length === 0) {
-                        console.warn("No divisions found in the response.");
-                        return;
-                    }
-                    table.clear();
-                    data.forEach(function (division) {
-                        table.row.add([
-                            `<strong>${division.DivisionName}</strong>`,
-                            division.NumberOfMilestones || 0, 
-                            division.NumberOfRequirements || 0, 
-                            `<div class="action-btns">
-                    <a href="/Admin/CreateChecklist?divisionId=${division.DivisionID}" class="btn btn-outline-success btn-sm">
-                        <i class="fas fa-plus"></i>
-                    </a>
-                    <button class="btn btn-outline-info btn-sm previewMilestone" data-id="${division.DivisionID}">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn btn-outline-danger btn-sm removeMilestone" data-id="${division.DivisionID}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>`
-                        ]).draw(false);
-                    });
-                    $('[data-bs-toggle="tooltip"]').tooltip();
-                }).fail(function (xhr, status, error) {
-                    console.error("Error fetching divisions:", error);
-                });
-            }
-
-            loadDivisions();
+        let table = $('#milestoneTable').DataTable({
+            "paging": false,
+            "searching": false,
+            "ordering": false,
+            "info": false,
+            "columnDefs": [
+                { "className": "text-center align-middle", "targets": "_all" }
+            ]
         });
 
-        $('#addMilestoneBtn').click(function () {
-            let divisionId = $('#divisionDropdown').val();
+        function loadSavedDivisions() {
+            $.get('/Admin/GetSavedDivisions', function (response) {
+                console.log("API Response:", response);
+
+                if (!response || !response.success || !Array.isArray(response.data)) {
+                    console.error("Error: Invalid response from server", response);
+                    return;
+                }
+
+                let data = response.data;
+                table.clear();
+
+                data.forEach(function (division) {
+                    table.row.add([
+                        `<strong>${division.DivisionName}</strong>`,
+                        division.NumberOfMilestones || 0,
+                        division.NumberOfRequirements || 0,
+                        `<div class="action-btns">
+                            <a href="/Admin/CreateChecklist?divisionId=${division.DivisionID}"
+                                class="btn btn-outline-success btn-sm"
+                                data-bs-toggle="tooltip" title="Add Milestone">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                            <button class="btn btn-outline-info btn-sm previewMilestone"
+                                data-id="${division.DivisionID}"
+                                data-bs-toggle="tooltip" title="Preview Milestone">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm removeMilestone"
+                                data-id="${division.DivisionID}"
+                                data-bs-toggle="tooltip" title="Delete Milestone">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>`
+                    ]).draw(false);
+                });
+
+                $('[data-bs-toggle="tooltip"]').tooltip();
+            }).fail(function (xhr, status, error) {
+                console.error("Error fetching divisions:", error);
+            });
+        }
+
+        loadSavedDivisions();
+
+        $("#addMilestoneBtn").click(function () {
+            let divisionId = $("#divisionDropdown").val();
+            let divisionText = $("#divisionDropdown option:selected").text().trim();
 
             if (!divisionId) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Select a Division!',
-                    text: 'Please select a division before creating a milestone.',
-                    confirmButtonColor: '#470A67'
-                });
+                Swal.fire("Oops!", "Please select a division before proceeding.", "warning");
+                return;
+            }
+            let divisionExists = false;
+            table.rows().every(function () {
+                let rowData = this.data();
+                if (rowData[0].includes(divisionText)) {
+                    divisionExists = true;
+                }
+            });
+
+            if (divisionExists) {
+                Swal.fire("Duplicate", "Checklist for this division already exists!", "error");
                 return;
             }
 
-            $.post('/Admin/SaveDivision', { divisionId: divisionId }, function (response) {
-                if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message,
-                        confirmButtonColor: '#470A67'
-                    });
-                    loadDivisions();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: response.message,
-                        confirmButtonColor: '#470A67'
-                    });
+            let button = $("#addMilestoneBtn");
+            button.prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+            setTimeout(() => {
+                button.prop("disabled", false).html('<i class="fas fa-plus"></i> Create');
+            }, 2000);
+        });
+
+        $(document).on('click', '.previewMilestone', function () {
+            let divisionId = $(this).data('id');
+
+            $.get('/Admin/GetChecklistPreview', { divisionId: divisionId }, function (response) {
+                if (!response || !response.success || !Array.isArray(response.data)) {
+                    Swal.fire("Error!", "Failed to load checklist preview.", "error");
+                    return;
                 }
+
+                let checklistHtml = `
+                <h5 class="fw-bold text-dark">Checklist for: ${response.divisionName}</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Milestone</th>
+                                <th>Requirements</th>
+                                <th>Approvers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+                response.data.forEach(item => {
+                    let requirements = item.Requirements ? item.Requirements.replace(/;/g, "<br>") : "No requirements";
+                    let approvers = item.Approvers ? item.Approvers.replace(/,/g, "<br>") : "No approvers";
+
+                    checklistHtml += `
+                    <tr>
+                        <td>${item.MilestoneName}</td>
+                        <td>${requirements}</td>
+                        <td>${approvers}</td>
+                    </tr>
+                `;
+                });
+
+                checklistHtml += `</tbody></table></div>`;
+
+                $('#previewModalBody').html(checklistHtml);
+                $('#previewModal').modal('show');
+            }).fail(function () {
+                Swal.fire("Error!", "Failed to fetch checklist preview.", "error");
             });
         });
 
@@ -252,7 +338,7 @@
 
             Swal.fire({
                 title: 'Are you sure?',
-                text: "This will remove the division from the table",
+                text: "This will remove the division",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc3545',
@@ -262,11 +348,13 @@
                 if (result.isConfirmed) {
                     $.post('/Admin/HideDivision', { divisionId: divisionId }, function (response) {
                         if (response.success) {
-                            Swal.fire('Removed!', 'Successfully removed.', 'success');
-                            loadDivisions();
+                            Swal.fire('Deleted!', 'The milestone has been removed.', 'success');
+                            loadSavedDivisions();
                         } else {
-                            Swal.fire('Error!', response.message, 'error');
+                            Swal.fire("Error!", response.message, "error");
                         }
+                    }).fail(function (xhr, status, error) {
+                        console.error("Error deleting division:", error);
                     });
                 }
             });
@@ -278,3 +366,6 @@
     });
 
 </script>
+
+
+

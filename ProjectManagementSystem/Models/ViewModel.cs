@@ -717,5 +717,11 @@ namespace ProjectManagementSystem.Models
         public string removed_by { get; set; }
         public int employee_id { get; set; }
     }
+    public class SaveMilestoneRequest
+    {
+        public int DivisionID { get; set; }
+        public string MilestoneName { get; set; }
+        public List<TaskModel> Tasks { get; set; }
+    }
 }
 
