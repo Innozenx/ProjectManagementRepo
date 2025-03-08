@@ -32,6 +32,7 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
+        //[Authorize(Roles = "PMS_PROJECT_OWNER, PMS_ADMIN")]
         public JsonResult Register_Project(string name)
         {
             var message = "";
@@ -205,7 +206,9 @@ namespace ProjectManagementSystem.Controllers
 
             try
             {
-                var existingRole = db.Roles.FirstOrDefault(r => r.RoleName == roleName);
+                //var existingRole = db.Roles.FirstOrDefault(r => r.RoleName == roleName);
+                var existingRole = db.Roles.FirstOrDefault(r => r.RoleName.ToLower().Trim() == roleName.ToLower().Trim());
+
                 if (existingRole != null)
                 {
                     message = "Role already exists.";
@@ -224,8 +227,12 @@ namespace ProjectManagementSystem.Controllers
             }
             catch (Exception ex)
             {
-                message = "Failed to add role. Error: " + ex.Message;
-                Debug.WriteLine(ex.Message);
+                //message = "Failed to add role. Error: " + ex.Message;
+                //Debug.WriteLine(ex.Message);
+
+                Debug.WriteLine($"Error adding role: {ex.Message}");
+                message = "An error occurred while adding the role.";
+
             }
 
             return Json(new { message, status }, JsonRequestBehavior.AllowGet);
@@ -369,7 +376,15 @@ namespace ProjectManagementSystem.Controllers
         {
             var rawMilestones = db.PreSetMilestones
                 .Where(m => m.DivisionID == divisionId)
-                .ToList(); 
+                .Select(m => new
+                {
+                    m.MilestoneID,
+                    m.MilestoneName,
+                    Requirements = m.Requirements.Split(';'),
+                    Approvers = m.Approvers.Split(',')
+                })
+                .ToList();
+
 
             var milestones = rawMilestones.Select(m => new
             {
@@ -412,12 +427,13 @@ namespace ProjectManagementSystem.Controllers
                     }).ToList();
 
                 ViewBag.DivisionId = division.DivisionID;
-                ViewBag.DivisionName = division.DivisionName;
+                ViewBag.DivisionName = division.DivisionName; 
                 ViewBag.Users = users;
             }
 
             return View();
         }
+
 
         [HttpPost]
         public JsonResult SaveMilestone(int DivisionID, string MilestoneName, List<TaskModel> Tasks)
@@ -456,7 +472,7 @@ namespace ProjectManagementSystem.Controllers
 
                 var milestone = new PreSetMilestone
                 {
-                    MilestoneID = nextMilestoneID,  
+                    MilestoneID = nextMilestoneID,
                     DivisionID = DivisionID,
                     MilestoneName = MilestoneName,
                     Sorting = nextSorting,
@@ -477,6 +493,8 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Error saving milestone: " + errorMessage });
             }
         }
+
+
 
         public ActionResult PreviewMilestone(int id)
         {
@@ -537,20 +555,40 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Error adding division: " + ex.Message });
             }
         }
-
+        [HttpGet]
         public JsonResult GetSavedDivisions()
         {
-            var divisions = db.SavedDivisions
-                .Where(d => d.IsActive_ == true) 
-                .Select(d => new
+            try
+            {
+                var divisions = db.SavedDivisions
+                    .Select(d => new
+                    {
+                        DivisionID = d.DivisionID,
+                        DivisionName = d.DivisionName,
+
+                NumberOfMilestones = db.PreSetMilestones.Count(m => m.DivisionID == d.DivisionID),
+                Requirements = db.PreSetMilestones
+                            .Where(m => m.DivisionID == d.DivisionID && m.Requirements != null)
+                            .Select(m => m.Requirements)
+                            .ToList()
+                    })
+                    .ToList(); 
+
+                var result = divisions.Select(d => new
                 {
                     d.DivisionID,
                     d.DivisionName,
-                    d.NoOfMilestones,
-                    d.NoOfRequirements
+                    d.NumberOfMilestones,
+
+                    NumberOfRequirements = d.Requirements.Sum(req => req.Split(',').Length)
                 }).ToList();
 
-            return Json(divisions, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, data = result }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error fetching divisions: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         [HttpPost]
@@ -584,6 +622,58 @@ namespace ProjectManagementSystem.Controllers
 
             return Json(suggestions, JsonRequestBehavior.AllowGet);
         }
+
+
+        [HttpGet]
+        public JsonResult GetChecklistPreview(int divisionId)
+        {
+            try
+            {
+                var division = db.Divisions.FirstOrDefault(d => d.DivisionID == divisionId);
+                if (division == null)
+                {
+                    return Json(new { success = false, message = "Division not found." }, JsonRequestBehavior.AllowGet);
+                }
+
+                var milestones = db.PreSetMilestones
+                    .Where(m => m.DivisionID == divisionId)
+                    .Select(m => new
+                    {
+                        m.MilestoneName,
+                        m.Requirements,
+                        ApproverIDs = m.Approvers
+                    })
+                    .ToList();
+
+
+                //var allApprovers = cmdb.AspNetUsers.ToList(); 
+                var allApprovers = cmdb.AspNetUsers
+                .Select(u => new { u.Id, u.FirstName, u.LastName })
+                .ToList();
+
+
+                var milestonesWithApprovers = milestones.Select(m => new
+                {
+                    m.MilestoneName,
+                    m.Requirements,
+                    Approvers = string.Join(", ", m.ApproverIDs.Split(',')
+                        .Select(id =>
+                        {
+                            var user = allApprovers.FirstOrDefault(u => u.Id == id);
+                            return user != null ? user.FirstName + " " + user.LastName : "Unknown";
+                        }))
+                }).ToList();
+
+
+                return Json(new { success = true, divisionName = division.DivisionName, data = milestonesWithApprovers }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error fetching checklist: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
 
         //[Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER")]
         //[HttpGet]
