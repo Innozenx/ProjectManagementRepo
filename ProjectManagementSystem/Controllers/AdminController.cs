@@ -376,15 +376,7 @@ namespace ProjectManagementSystem.Controllers
         {
             var rawMilestones = db.PreSetMilestones
                 .Where(m => m.DivisionID == divisionId)
-                .Select(m => new
-                {
-                    m.MilestoneID,
-                    m.MilestoneName,
-                    Requirements = m.Requirements.Split(';'),
-                    Approvers = m.Approvers.Split(',')
-                })
                 .ToList();
-
 
             var milestones = rawMilestones.Select(m => new
             {
@@ -396,9 +388,9 @@ namespace ProjectManagementSystem.Controllers
 
                 Approvers = string.IsNullOrEmpty(m.Approvers)
                     ? new List<string>()
-                    : m.Approvers.Split(',') 
+                    : m.Approvers.Split(',')
                         .Select(id => cmdb.AspNetUsers
-                            .Where(u => u.Id == id) 
+                            .Where(u => u.Id == id)
                             .Select(u => u.FirstName + " " + u.LastName)
                             .FirstOrDefault() ?? "Unknown Approver")
                         .ToList()
@@ -406,6 +398,11 @@ namespace ProjectManagementSystem.Controllers
 
             return Json(milestones, JsonRequestBehavior.AllowGet);
         }
+
+
+
+
+
 
 
 
