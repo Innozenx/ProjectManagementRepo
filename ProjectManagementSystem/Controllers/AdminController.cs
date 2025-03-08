@@ -399,13 +399,6 @@ namespace ProjectManagementSystem.Controllers
             return Json(milestones, JsonRequestBehavior.AllowGet);
         }
 
-
-
-
-
-
-
-
         public ActionResult AddMilestones(int? divisionId)
         {
             using (var db = new ProjectManagementDBEntities())
