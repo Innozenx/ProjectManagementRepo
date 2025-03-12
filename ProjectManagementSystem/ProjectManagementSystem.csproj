@@ -406,9 +406,6 @@
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
-    <Compile Include="Models\View_1.cs">
-      <DependentUpon>CheckList.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\WeeklyChecklistTable.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>

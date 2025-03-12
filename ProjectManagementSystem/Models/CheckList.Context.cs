@@ -41,6 +41,7 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<OptionalMilestoneApprover> OptionalMilestoneApprovers { get; set; }
         public virtual DbSet<OptionalMilestone> OptionalMilestones { get; set; }
         public virtual DbSet<PreSetMilestone> PreSetMilestones { get; set; }
+        public virtual DbSet<PreSetMilestoneApprover> PreSetMilestoneApprovers { get; set; }
         public virtual DbSet<ProjectMembersTbl> ProjectMembersTbls { get; set; }
         public virtual DbSet<RegistrationTbl> RegistrationTbls { get; set; }
         public virtual DbSet<Report> Reports { get; set; }
@@ -50,6 +51,7 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<TransactionTbl> TransactionTbls { get; set; }
         public virtual DbSet<WeeklyChecklistTable> WeeklyChecklistTables { get; set; }
         public virtual DbSet<WeeklyStatu> WeeklyStatus { get; set; }
+
         public virtual DbSet<View_1> View_1 { get; set; }
         public virtual DbSet<PreSetMilestoneApprover> PreSetMilestoneApprovers { get; set; }
     }

@@ -355,6 +355,13 @@
           <Property Name="transaction_date" Type="datetime" />
           <Property Name="transaction_user" Type="nvarchar" MaxLength="100" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="UserRoles">
+          <Property Name="user_id" Type="int" />
+          <Property Name="role_id" Type="int" />
+          <Property Name="id" Type="int" />
+        </EntityType>-->
         <EntityType Name="WeeklyChecklistTable">
           <Key>
             <PropertyRef Name="localId" />
@@ -393,18 +400,6 @@
           <Property Name="user_id" Type="varchar" MaxLength="255" />
           <Property Name="milestone_name" Type="varchar" MaxLength="255" />
           <Property Name="delay" Type="int" />
-        </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="View_1">
-          <Key>
-            <PropertyRef Name="milestone_id" />
-          </Key>
-          <Property Name="milestone_name" Type="nvarchar" MaxLength="255" />
-          <Property Name="project_title" Type="nvarchar" MaxLength="255" />
-          <Property Name="end_date" Type="datetime" />
-          <Property Name="milestone_id" Type="int" Nullable="false" />
-          <Property Name="main_id" Type="int" />
         </EntityType>
         <Association Name="FK_FixedChecklistTbl_ChecklistSetup">
           <End Role="ChecklistSetup" Type="Self.ChecklistSetup" Multiplicity="0..1" />
@@ -517,15 +512,6 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
           <EntitySet Name="TransactionTbl" EntityType="Self.TransactionTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatus" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="View_1" EntityType="Self.View_1" store:Type="Views" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [View_1].[milestone_name] AS [milestone_name], 
-    [View_1].[project_title] AS [project_title], 
-    [View_1].[end_date] AS [end_date], 
-    [View_1].[milestone_id] AS [milestone_id], 
-    [View_1].[main_id] AS [main_id]
-    FROM [dbo].[View_1] AS [View_1]</DefiningQuery>
-          </EntitySet>
           <AssociationSet Name="FK_FixedChecklistTbl_ChecklistSetup" Association="Self.FK_FixedChecklistTbl_ChecklistSetup">
             <End Role="ChecklistSetup" EntitySet="ChecklistSetup" />
             <End Role="FixedChecklistTbl" EntitySet="FixedChecklistTbl" />
@@ -576,6 +562,7 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
           <EntitySet Name="OptionalMilestoneApprovers" EntityType="ProjectManagementDBModel.OptionalMilestoneApprover" />
           <EntitySet Name="OptionalMilestones" EntityType="ProjectManagementDBModel.OptionalMilestone" />
           <EntitySet Name="PreSetMilestones" EntityType="ProjectManagementDBModel.PreSetMilestone" />
+          <EntitySet Name="PreSetMilestoneApprovers" EntityType="ProjectManagementDBModel.PreSetMilestoneApprover" />
           <EntitySet Name="ProjectMembersTbls" EntityType="ProjectManagementDBModel.ProjectMembersTbl" />
           <EntitySet Name="RegistrationTbls" EntityType="ProjectManagementDBModel.RegistrationTbl" />
           <EntitySet Name="Reports" EntityType="ProjectManagementDBModel.Report" />
@@ -613,8 +600,11 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
             <End Role="MainTable" EntitySet="MainTables" />
             <End Role="MilestoneTbl" EntitySet="MilestoneTbls" />
           </AssociationSet>
+
+
           <EntitySet Name="View_1" EntityType="ProjectManagementDBModel.View_1" />
           <EntitySet Name="PreSetMilestoneApprovers" EntityType="ProjectManagementDBModel.PreSetMilestoneApprover" />
+
         </EntityContainer>
         <EntityType Name="Activity_Log">
           <Key>
@@ -811,6 +801,7 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
           <Property Name="target" Type="Int32" />
           <Property Name="completion_date" Type="DateTime" Precision="3" />
           <Property Name="current_completion_date" Type="DateTime" Precision="3" />
+          <Property Name="root_id" Type="Int32" />
           <NavigationProperty Name="FixedChecklistTbls" Relationship="ProjectManagementDBModel.FK_FixedChecklistTbl_MilestoneTbl" FromRole="MilestoneTbl" ToRole="FixedChecklistTbl" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
           <Property Name="root_id" Type="Int32" />
@@ -864,8 +855,29 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
           <Property Name="Requirements" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Approvers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="Draft" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Division" Relationship="ProjectManagementDBModel.FK_PreSetMilestone_Divisions" FromRole="PreSetMilestone" ToRole="Division" />
           <Property Name="Draft" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PreSetMilestoneApprover">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="approver_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="approver_email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="main_id" Type="Int32" />
+          <Property Name="milestone_id" Type="Int32" />
+          <Property Name="date_added" Type="DateTime" Precision="0" />
+          <Property Name="added_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="approved" Type="Boolean" />
+          <Property Name="remarks" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="date_approved" Type="DateTime" Precision="0" />
+          <Property Name="is_removed" Type="Boolean" />
+          <Property Name="date_removed" Type="DateTime" Precision="0" />
+          <Property Name="removed_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="employee_id" Type="Int32" />
         </EntityType>
         <EntityType Name="ProjectMembersTbl">
           <Key>
@@ -1083,6 +1095,7 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
+
         <EntityType Name="View_1">
           <Key>
             <PropertyRef Name="milestone_id" />
@@ -1113,6 +1126,7 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
           <Property Name="removed_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="employee_id" Type="Int32" />
         </EntityType>
+
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1374,6 +1388,27 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="PreSetMilestoneApprovers">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.PreSetMilestoneApprover">
+              <MappingFragment StoreEntitySet="PreSetMilestoneApprovers">
+                <ScalarProperty Name="employee_id" ColumnName="employee_id" />
+                <ScalarProperty Name="removed_by" ColumnName="removed_by" />
+                <ScalarProperty Name="date_removed" ColumnName="date_removed" />
+                <ScalarProperty Name="is_removed" ColumnName="is_removed" />
+                <ScalarProperty Name="date_approved" ColumnName="date_approved" />
+                <ScalarProperty Name="remarks" ColumnName="remarks" />
+                <ScalarProperty Name="approved" ColumnName="approved" />
+                <ScalarProperty Name="division" ColumnName="division" />
+                <ScalarProperty Name="added_by" ColumnName="added_by" />
+                <ScalarProperty Name="date_added" ColumnName="date_added" />
+                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
+                <ScalarProperty Name="approver_email" ColumnName="approver_email" />
+                <ScalarProperty Name="approver_name" ColumnName="approver_name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="ProjectMembersTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ProjectMembersTbl">
               <MappingFragment StoreEntitySet="ProjectMembersTbl">
@@ -1545,6 +1580,7 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
