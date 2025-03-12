@@ -7,57 +7,65 @@
     <div class="card shadow border-0 rounded-3 mx-auto" style="max-width: 900px; width: 100%;">
         <div class="card-body">
             <a href="@Url.Action("CreateChecklist", "Admin", new { divisionId = ViewBag.DivisionId })"
-               class="btn btn-light btn-back">
+               class="btn btn-light btn-back mb-3">
                 <i class="fas fa-arrow-left"></i>
             </a>
+
             <div class="row justify-content-center mb-4">
                 <div class="col-md-8 text-center">
-                    <h3>✔️ <br /> Add Milestone</h3>
+                    <h3 class="fw-bold text-purple">✔️ <br /> Add Milestone</h3>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-12 new-milestone-section">
-                    <div class="card shadow-sm bg-white rounded-3 mx-auto" style="max-width: 700px;">
-                        <div class="card-body">
-                            <form id="milestoneForm">
-                                <input type="hidden" name="DivisionID" value="@ViewBag.DivisionId" />
+            <div class="new-milestone-section">
+                <div class="card shadow-sm bg-white rounded-3 mx-auto" style="max-width: 700px;">
+                    <div class="card-body">
+                        <form id="milestoneForm">
+                            <input type="hidden" name="DivisionID" value="@ViewBag.DivisionId" />
 
-                                <div class="mb-3">
-                                    <label class="form-label text-muted">Milestone Name</label>
-                                    <input type="text" name="MilestoneName" id="milestoneName"
-                                           class="form-control rounded-2" placeholder="Enter milestone name" required />
-                                </div>
-
-                                <button type="button" id="showRequirementsBtn" class="btn btn-outline-primary w-100" style="font-weight:normal">
-                                    <i class="fas fa-plus"></i> Add Requirements
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-              
-                <div class="col-12 requirements-section" style="display: none;">
-                    <div class="card shadow-sm bg-white rounded-3 mx-auto" style="max-width: 700px;">
-                        <div class="card-body">
-                            <h4 id="requirementsTitle" class="mb-3 fw-bold text-dark text-center">Requirements</h4>
-                            <div id="taskList"></div>
-
-                            <button type="button" id="addTaskInsideBtn" class="btn btn-outline-success w-100" style="font-weight:normal">
-                                <i class="fas fa-plus"></i> Add Task
-                            </button>
-
-                            <div class="mt-3 d-flex justify-content-between">
-                                <button type="button" id="backToMilestone" class="btn btn-light">
-                                    Back
-                                </button>
-                                <button type="submit" id="saveMilestone" class="btn btn-primary" disabled>Save</button>
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Milestone Name</label>
+                                <select name="MilestoneName" id="milestoneName" class="form-control rounded-2" required>
+                                    <option value="">Select Milestone</option>
+                                    @if (ViewBag.MilestoneList != null)
+                                    {
+                                        foreach (var milestone in ViewBag.MilestoneList as List<SelectListItem>)
+                                        {
+        
+                                            <option value="@milestone.Text">@milestone.Text</option>
+                                        }
+                                    }
+                                </select>
                             </div>
+                            <button type="button" id="showRequirementsBtn" class="btn btn-outline-primary w-100 fw-bold">
+                                <i class="fas fa-plus"></i> Add Requirements
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="requirements-section mt-4" style="display: none;">
+                <div class="card shadow-sm bg-white rounded-3 mx-auto" style="max-width: 700px;">
+                    <div class="card-body">
+                        <h4 id="requirementsTitle" class="mb-3 fw-bold text-dark text-center">Requirements</h4>
+                        <div id="taskList"></div>
+
+                        <button type="button" id="addTaskInsideBtn" class="btn btn-outline-success w-100 fw-bold">
+                            <i class="fas fa-plus"></i> Add Task
+                        </button>
+
+                        <div class="mt-3 d-flex justify-content-between">
+                            <button type="button" id="backToMilestone" class="btn btn-light fw-bold">
+                                Back
+                            </button>
+                            <button type="submit" id="saveMilestone" class="btn btn-primary fw-bold" disabled>
+                                Save
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
     </div>
 </div>
@@ -268,12 +276,12 @@
 
         initializeSelect2(); 
 
-        function validateMilestoneName() {
-            let milestoneName = $('#milestoneName').val().trim();
-            let regex = /^[A-Za-z\s]+$/; 
-            if (!regex.test(milestoneName)) {
+        function validateMilestoneSelection() {
+            let milestoneName = $('#milestoneName').val(); // Get selected value (no need for .trim())
+
+            if (!milestoneName) { // If no milestone is selected
                 $('#milestoneName').addClass('is-invalid');
-                $('#milestoneError').text("Milestone name must only contain letters and spaces.").show();
+                $('#milestoneError').text("Please select a milestone before adding requirements.").show();
                 return false;
             } else {
                 $('#milestoneName').removeClass('is-invalid');
@@ -282,8 +290,9 @@
             }
         }
 
+
         function validateForm() {
-            let milestoneValid = validateMilestoneName();
+            let milestoneValid = validateMilestoneSelection();
             let milestoneName = $('#milestoneName').val().trim();
             let hasTasks = $('.task-item').length > 0;
             let hasTaskRequirements = $('.task-item input[name="TaskRequirement[]"]').filter(function () {
@@ -298,17 +307,18 @@
         });
 
         $('#showRequirementsBtn').click(function () {
-            if (!validateMilestoneName()) {
+            if (!validateMilestoneSelection()) {
                 return;
             }
 
-            let milestoneName = $('#milestoneName').val().trim();
+            let milestoneName = $('#milestoneName option:selected').text();
+
             $(".new-milestone-section").hide();
             $(".requirements-section").show();
-            $("#requirementsTitle").text(`Requirements for ${milestoneName}`);
 
-            validateForm();
+            $("#requirementsTitle").text(`Requirements for ${milestoneName}`);
         });
+
 
         $('#addTaskInsideBtn').click(function () {
             taskIndex++;

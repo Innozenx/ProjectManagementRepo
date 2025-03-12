@@ -381,6 +381,9 @@
     <Compile Include="Models\PreSetMilestone.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PreSetMilestoneApprover.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ProjectMembersTbl.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
@@ -403,9 +406,6 @@
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
-    <Compile Include="Models\View_1.cs">
-      <DependentUpon>CheckList.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\WeeklyChecklistTable.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
