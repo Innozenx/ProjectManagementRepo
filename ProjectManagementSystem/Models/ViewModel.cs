@@ -618,6 +618,7 @@ namespace ProjectManagementSystem.Models
         public string attachment { get; set; }
         public string reason { get; set; }
         public List<bool?> approver_status { get; set; }
+        public bool optFlag { get; set; }
     }
 
     public class ApproverTaskViewModel

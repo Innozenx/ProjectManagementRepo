@@ -472,15 +472,15 @@ namespace ProjectManagementSystem.Controllers
 
                 nextSorting += 1;
 
-                int nextMilestoneID = 1;
-                if (db.PreSetMilestones.Any())
-                {
-                    nextMilestoneID = db.PreSetMilestones.Max(m => (int?)m.MilestoneID).GetValueOrDefault() + 1;
-                }
+                //int nextMilestoneID = 1;
+                //if (db.PreSetMilestones.Any())
+                //{
+                //    nextMilestoneID = db.PreSetMilestones.Max(m => (int?)m.MilestoneID).GetValueOrDefault() + 1;
+                //}
 
                 var milestone = new PreSetMilestone
                 {
-                    MilestoneID = nextMilestoneID,
+                    MilestoneID = db.MilestoneRoots.Where(x => x.milestone_name.ToLower() == MilestoneName).Select(x => x.id).SingleOrDefault(),
                     DivisionID = DivisionID,
                     MilestoneName = MilestoneName,
                     Sorting = nextSorting,
@@ -488,6 +488,30 @@ namespace ProjectManagementSystem.Controllers
                     Approvers = approverIds,
                     CreatedDate = DateTime.Now
                 };
+
+                //---------------Preset Milestone Approver Insert -----------------------------
+                var approver_ids = approverIds.Split(',');
+                List<PreSetMilestoneApprover> approver_list = new List<PreSetMilestoneApprover>();
+
+                foreach(var item in approver_ids)
+                {
+                    var approver_details = cmdb.AspNetUsers.Where(x => x.Id == item).SingleOrDefault();
+                    var approver_container = new PreSetMilestoneApprover
+                    {
+                        approver_name = approver_details.FirstName + " " + approver_details.LastName,
+                        approver_email = approver_details.Email,
+                        milestone_id = db.MilestoneRoots.Where(x => x.milestone_name.ToLower() == MilestoneName).Select(x => x.id).SingleOrDefault(),
+                        date_added = DateTime.Now,
+                        added_by = User.Identity.Name,
+                        division = cmdb.Identity_Keywords.Where(x => x.Id == approver_details.JobLevel && x.Type == "Divisions").Select(x => x.Description).SingleOrDefault(),
+                        employee_id = Int32.Parse(approver_details.CMId)
+                    };
+
+                    approver_list.Add(approver_container);
+                }
+
+                db.PreSetMilestoneApprovers.AddRange(approver_list);
+                //-----------------------------------------------------------------------------
 
                 db.PreSetMilestones.Add(milestone);
                 db.SaveChanges();
