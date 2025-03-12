@@ -38,6 +38,7 @@
         <AssociationConnector Association="ProjectManagementDBModel.FK_FixedChecklistTbl_MilestoneTbl" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.View_1" Width="1.5" PointX="14.375" PointY="7.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.PreSetMilestoneApprover" Width="1.5" PointX="0.75" PointY="17.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

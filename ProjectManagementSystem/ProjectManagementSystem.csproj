@@ -381,6 +381,9 @@
     <Compile Include="Models\PreSetMilestone.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\PreSetMilestoneApprover.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ProjectMembersTbl.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>

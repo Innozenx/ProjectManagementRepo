@@ -22,6 +22,7 @@ namespace ProjectManagementSystem.Models
         public string Requirements { get; set; }
         public string Approvers { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
+        public string Draft { get; set; }
     
         public virtual Division Division { get; set; }
     }

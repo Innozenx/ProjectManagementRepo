@@ -571,7 +571,7 @@
                                 <label for="weeks_delayed" class="status-update d-block mb-2" id="delay_label">
                                     If delayed, by how many weeks? <span class="text-danger">*</span>
                                 </label>
-                                @Html.EditorFor(x => x.delay, new { htmlAttributes = new { @class = "form-control", @min = "1", @id = "weeks_delayed", @placeholder = "Enter number of weeks" } })
+                                @Html.EditorFor(x => x.delay, new { htmlAttributes = new { @class = "form-control", @min = "1", @id = "weeks_delayed", @placeholder = "Enter number of weeks", @style = "width: 50%;" } })
                                 <div class="input-group-append">
                                     <span class="input-group-text">Week/s</span>
                                 </div>
@@ -819,6 +819,8 @@
             <table class="table table-bordered table-hover text-center align-middle" id="checklist_tbl">
                 <thead class="table-primary">
                     <tr>
+                        <th></th>
+                        <th>Required By</th>
                         <th>Task</th>
                         <th>Description</th>
                         <th>Attachment</th>
@@ -828,7 +830,7 @@
                 </thead>
                 <tbody id="checklistTableBody">
                     <tr>
-                        <td colspan="5" class="text-center">Select a milestone to view tasks.</td>
+                        <td colspan="7" class="text-center">Select a milestone to view tasks.</td>
                     </tr>
                 </tbody>
             </table>
@@ -838,7 +840,7 @@
                     <div style="margin: auto; text-align: center">
                         <button class="btn-primary w-25" id="add_optional">
                             <i class="fa fa-plus" aria-hidden="true"></i>
-                            Add Optional Task
+                            Add Task
                         </button>
                     </div>
                 }
@@ -912,7 +914,7 @@
                     <input type="text" id="approver_project_id" hidden readonly />
                     <label for="multiSelectDropdown">Members</label>
                     <div id="multiSelectDropdown" class="multi-select-dropdown">
-                        <div class="dropdown-header" onclick="toggleDropdown()">Select Members</div>
+                        <div class="dropdown-header" onclick="toggleDropdown()">Select Approvers</div>
                         <div class="dropdown-options" id="dropdown_options">
                             <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" />
                             @*@foreach (var user in Model.Users)
@@ -927,7 +929,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>People with Access</label>
+                    <label>Selected Approvers</label>
                     <div id="selectedMembersChips" class="selected-members-chips"></div>
                 </div>
             </div>
@@ -952,8 +954,8 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <input type="text" id="task_id_removal"  readonly />
-                    <input type="text" id="approver_project_id_removal"  readonly />
+                    <input type="text" id="task_id_removal" hidden readonly />
+                    <input type="text" id="approver_project_id_removal" hidden readonly />
                     <table id="approver_table" style="width: 100%">
                         <thead class="table-primary">
                             <tr style="margin:auto; text-align: center">
@@ -969,7 +971,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="submit_approver">Submit</button>
+                @*<button type="button" class="btn btn-success" id="submit_approver">Submit</button>*@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -1157,7 +1159,7 @@
                     document.getElementById("milestoneDropdown").value = dropdown;
                     document.getElementById("milestoneDropdown").dispatchEvent(new Event('change'));
                 },1000)
-                
+
                 localStorage.clear();
             }
         });
@@ -1181,12 +1183,12 @@
         });
 
         $("#delayed_yes").on("click", function () {
-            $("#delay_div").removeClass("d-none");
-            $("#delay_div").prop("class", "form-group mb-4");
+            $("#delay_input_group").removeClass("d-none");
+            $("#delay_input_group").prop("class", "form-group mb-4");
         });
 
         $("#delayed_no").on("click", function () {
-            $("#delay_div").classList.add("d-none");
+            $("#delay_input_group").addClass("d-none");
         });
 
         $("#selectedMilestone").on("change", function () {
@@ -1244,26 +1246,83 @@
             const projectID = urlParams.get("id");
             var milestone = $("#milestoneDropdown").val();
 
-            $("#modal_title").text("Checklist item for: " + milestone);
-            $("#milestone_id").val(milestone);
-            $("#project_id").val(projectID);
 
-            $(".modal-body").html();
-            $("#myModal").modal("show");
+            if (milestone != "") {
+                $("#modal_title").text("Checklist item for: " + milestone);
+                $("#milestone_id").val(milestone);
+                $("#project_id").val(projectID);
+
+                $(".modal-body").html();
+                $("#myModal").modal("show");
+            }
+
+            else {
+                //alert("Please select a milestone first");
+                Swal.fire("Invalid Milestone", "Please select a milestone first", "error");
+            }
 
         });
 
         $(document).on("click", "#submit_button", function () {
             var formData = $("#optionalForm").serialize();
+            var incomplete = false;
+            var milestone = $("#milestoneDropdown").val();
 
-            $.ajax({
-                type: "POST",
-                url: "@Url.Action("AddOptional", "Checklist")",
-                data: formData,
-                success: function (res) {
-                    alert(res.message);
+            $('#optionalForm :input').each(function (index, el) {
+                //if ($(el).val().length == 0) incomplete = true;
+                //return false;
+                if ($(el).val().length == 0) {
+                    incomplete = true;
+                    return false;
                 }
+
             });
+
+            if (incomplete != true) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddOptional", "Checklist")",
+                    data: formData,
+                    success: function (res) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Form Submitted!',
+                        }).then(function () {
+                            localStorage.setItem('currentTab', 'checklist');
+                            localStorage.setItem('currentDrop', milestone);
+
+                            location.reload();
+
+                            //setTimeout(function () {
+                            //    location.reload();
+                            //}, 1000)
+                        });
+                    },
+
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Query failed, please retry',
+                        }).then(function () {
+                            localStorage.setItem('currentTab', 'checklist');
+                            localStorage.setItem('currentDrop', milestone);
+
+                            location.reload();
+
+                            //setTimeout(function () {
+                            //    location.reload();
+                            //}, 1000)
+                        });
+                    }
+                });
+            }
+
+            else {
+                Swal.fire("Incomplete Entry", "Please fill up the form.", "error");
+            }
+
         });
 
         document.addEventListener('change', function (event) {
@@ -1275,24 +1334,59 @@
         $(document).on("click", "#submit_approver", function () {
             const taskID = $("#task_id").val();
             const projID = $("#approver_project_id").val();
-
+            const approvers = document.getElementById("selectedMembersChips");
             const selectedMembers = [...document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked')].map(e => e.value);
-
+            const milestone = $("#milestoneDropdown").val();
             console.log(selectedMembers);
 
-            $.ajax({
-                type: "POST",
-                url: "@Url.Action("AddApproverOpt", "Checklist")",
-                data: { "id": taskID, "proj_id": projID, "approvers": selectedMembers },
-                success: function (res) {
-                    var dropdown = $("#milestoneDropdown").val();
+            if (approvers.hasChildNodes()) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddApproverOpt", "Checklist")",
+                    data: { "id": taskID, "proj_id": projID, "approvers": selectedMembers },
+                    success: function (res) {
+                        var dropdown = $("#milestoneDropdown").val();
 
+                        localStorage.setItem('currentTab', 'checklist');
+                        localStorage.setItem('currentDrop', dropdown);
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Approver/s Added!',
+                        }).then(function () {
+                            localStorage.setItem('currentTab', 'checklist');
+                            localStorage.setItem('currentDrop', milestone);
+
+                            location.reload();
+
+                            //setTimeout(function () {
+                            //    location.reload();
+                            //}, 1000)
+                            });
+
+                    }
+                });
+            }
+
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'No selected approvers',
+                    text: 'Please select an approver first',
+                }).then(function () {
                     localStorage.setItem('currentTab', 'checklist');
-                    localStorage.setItem('currentDrop', dropdown);
+                    localStorage.setItem('currentDrop', milestone);
 
-                    window.location.reload();
-                }
-            });
+                    location.reload();
+
+                    //setTimeout(function () {
+                    //    location.reload();
+                    //}, 1000)
+                });
+            }
+
+
         });
 
     </script>
@@ -1328,7 +1422,7 @@
             const checklistTableBody = $("#checklistTableBody");
 
             if (!milestoneId) {
-                checklistTableBody.html('<tr><td colspan="5" class="text-center">Select a milestone to view tasks.</td></tr>');
+                checklistTableBody.html('<tr><td colspan="7" class="text-center">Select a milestone to view tasks.</td></tr>');
                 return;
             }
 
@@ -1342,6 +1436,8 @@
                         response.data.forEach(task => {
                             checklistTableBody.append(`
                                         <tr>
+    <td>${task.optFlag == true ? `<button class="bg-red" onclick="removeTask(${task.task_id})"><i class="fa fa-trash" aria-hidden="true"></i></button>` : ``}</td>
+    <td>${task.optFlag == true ? `Project Manager` : `ODCP`}</td>
                                             <td id="${task.task_id}">${task.taskname}</td>
                                             <td>${task.approved ? "Approved" : task.reason != null ? "Disapproved" : "Pending"}</td>
                                             <td>${task.attachment != null
@@ -1351,12 +1447,19 @@
                                             @*<td>${task.approver_status == true ? task.approvers + `<i class="fa-solid fa-check"></i>`
                                                 : task.approver_status == null ? task.approvers + `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
                                                 : task.approvers + `<i class="fas fa-ban"></i>`}</td>*@
-                                            <td>${task.approvers.length == 0 ? `<button class="btn-primary w-50" id="add_approverbtn" onclick="add_approverbtn(${task.task_id})">Add</button>` :
-                                `<div class="d-flex" style="margin: auto; text-align: center; margin-bottom: 5%;"><button class="btn-primary" id="add_approverbtn" style="width: 35%; margin-left:10%" onclick="add_approverbtn(${task.task_id})">Add</button> <button class="btn-danger" id="remove_approverbtn" style="width: 35%; margin-left:10%; font-size: 60%" onclick="removeApprover(${task.task_id})">Remove</button></div>` +
-                                                    Object.keys(task.approvers).map(function (key) {
-                                                    return task.approver_status[key] == true ? task.approvers[key] + ` <i class="fa-solid fa-check"></i>`
-                                                    : task.approver_status[key] == null ? task.approvers[key] + ` <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
-                                                    : task.approvers[key] + ` <i class="fas fa-ban"></i>`
+                                            <td>${task.optFlag == true
+                                                    ? task.approvers.length == 0
+                                                        ? `<button class="btn-primary w-100" id="add_approverbtn" onclick="add_approverbtn(${task.task_id})">Add</button>`
+                                                        : `<div class="d-flex" style="margin: auto; text-align: center; margin-bottom: 5%;"><button class="btn-primary" id="add_approverbtn" style="width: 35%; margin-left:10%" onclick="add_approverbtn(${task.task_id})">Add</button> <button class="btn-danger" id="remove_approverbtn" style="width: 35%; margin-left:10%; font-size: 60%" onclick="removeApprover(${task.task_id})">Remove</button></div>`
+                                                            + Object.keys(task.approvers).map(function (key) {
+                                                            return task.approver_status[key] == true ? task.approvers[key] + ` <i class="fa-solid fa-check"></i>`
+                                                                : task.approver_status[key] == null ? task.approvers[key] + ` <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
+                                                                : task.approvers[key] + ` <i class="fas fa-ban"></i>`
+                                    }).join("<br/>")
+                                : Object.keys(task.approvers).map(function (key) {
+                                    return task.approver_status[key] == true ? task.approvers[key] + ` <i class="fa-solid fa-check"></i>`
+                                        : task.approver_status[key] == null ? task.approvers[key] + ` <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
+                                            : task.approvers[key] + ` <i class="fas fa-ban"></i>`
                                 }).join("<br/>")}
 
                                             </td>
@@ -1375,7 +1478,7 @@
                                     `);
                         });
                     } else {
-                        checklistTableBody.html('<tr><td colspan="5" class="text-center">No tasks found for this milestone.</td></tr>');
+                        checklistTableBody.html('<tr><td colspan="7" class="text-center">No tasks found for this milestone.</td></tr>');
                     }
                 },
                 error: function (xhr) {
@@ -1560,21 +1663,82 @@
         function dbRemoveApprover(userID) {
             const projID = $("#approver_project_id_removal").val();
             const milestoneID = $("#task_id_removal").val();
+            const milestone = $("#milestoneDropdown").val();
 
-            $.ajax({
+
+            Swal.fire({
+                title: "Are you sure?",
+                showDenyButton: true,
+                confirmButtonText: "Yes",
+                denyButtonText: `No`
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $.ajax({
                 type: "POST",
                 url: "@Url.Action("RemoveOptionalApprover", "Checklist")",
                 data: { "id": userID, "project_id":projID, "milestone_id":milestoneID },
                 success: function (res) {
-                    //var dropdown = $("#milestoneDropdown option:selected").html();
-                    var dropdown = $("#milestoneDropdown").val();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Approver Removed!',
+                    }).then(function () {
+                        localStorage.setItem('currentTab', 'checklist');
+                        localStorage.setItem('currentDrop', milestone);
 
-                    localStorage.setItem('currentTab', 'checklist');
-                    localStorage.setItem('currentDrop', dropdown);
-                    window.location.reload();
-                    
+                        location.reload();
+
+                        //setTimeout(function () {
+                        //    location.reload();
+                        //}, 1000)
+                        });
                 }
             });
+                } else if (result.isDenied) {
+                    Swal.fire("Changes are not saved", "", "info");
+                }
+                });
+
+
+        }
+
+        function removeTask(id) {
+
+            Swal.fire({
+                title: "Are you sure?",
+                showDenyButton: true,
+                confirmButtonText: "Yes",
+                denyButtonText: `No`
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $.ajax({
+                type: "POST",
+                url: "@Url.Action("RemoveOptionalTask", "Checklist")",
+                data: { "id": id },
+                success: function (res) {
+                    Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Task removed!',
+                    }).then(function () {
+                        var milestone = $("#milestoneDropdown").val();
+                            localStorage.setItem('currentTab', 'checklist');
+                            localStorage.setItem('currentDrop', milestone);
+
+                            location.reload();
+
+                            //setTimeout(function () {
+                            //    location.reload();
+                            //}, 1000)
+                        });
+                }
+            });
+                } else if (result.isDenied) {
+                    Swal.fire("Changes are not saved", "", "info");
+                }
+                });
         }
     </script>
 }
