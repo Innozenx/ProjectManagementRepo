@@ -120,6 +120,8 @@ namespace ProjectManagementSystem.Models
         public DateTime? CurrentCompletionDate { get; set; } // Current Updated Completion Date
 
         public UserModel userDetails { get; set; }
+        public bool IsProjectManager { get; set; }
+
 
 
 
@@ -159,6 +161,7 @@ namespace ProjectManagementSystem.Models
         public int MilestonePosition { get; set; }
         public List<ApproverViewModel> Approvers { get; set; }
         public List<string> Attachments { get; set; }
+        
 
     }
 
@@ -451,6 +454,7 @@ namespace ProjectManagementSystem.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public int? JobLevel { get; set; }
+        public int Role { get; set; }
     }
 
     public class RoleViewModel

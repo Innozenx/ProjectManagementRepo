@@ -2,7 +2,7 @@
 @model LoginViewModel
 @{
     ViewBag.Title = "Log in";
-    Layout = null;  // No layout for a clean login page
+    Layout = null;  
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
@@ -149,7 +149,7 @@
                     @Html.LabelFor(m => m.Password, "Password")
                     <div class="input-group" style="position: relative;">
                         @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "password-field", style = "padding-right: 40px;" })
-                        <span class="toggle-password fa fa-fw fa-eye" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></span>
+                        <span class="toggle-password fa fa-fw fa-eye-slash" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></span>
                     </div>
                     @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
                 </div>
@@ -175,7 +175,7 @@
 <script>
     $(document).ready(function () {
         $(".toggle-password").click(function () {
-            $(this).toggleClass("fa-eye fa-eye-slash");
+            $(this).toggleClass("fa-eye-slash fa-eye");
             var input = $(this).closest(".input-group").find("input");
             if (input.attr("type") === "password") {
                 input.attr("type", "text");
@@ -186,4 +186,3 @@
     });
 
 </script>
-

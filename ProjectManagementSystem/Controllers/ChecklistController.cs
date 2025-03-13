@@ -494,6 +494,7 @@ namespace ProjectManagementSystem.Controllers
                 var userEmail = User.Identity.GetUserName();
                 var userDetails = cmdb.AspNetUsers.Where(x => x.UserName == userEmail).SingleOrDefault();
 
+                // Fetch the list of projects the user is part of
                 var projectList = (from p in db.ProjectMembersTbls
                                    join m in db.MainTables on new { id = p.project_id } equals new { id = (int?)m.main_id }
                                    where p.email == userEmail && m.isCompleted != true
@@ -507,6 +508,10 @@ namespace ProjectManagementSystem.Controllers
                 {
                     return RedirectToAction("AccessDenied", "Error");
                 }
+
+                // if the user is a project manager (1004) for this project
+                bool isProjectManager = db.ProjectMembersTbls
+                    .Any(pm => pm.project_id == id && pm.email == userEmail && pm.role == 1004);
 
                 UserModel userInfo = new UserModel()
                 {
@@ -541,7 +546,6 @@ namespace ProjectManagementSystem.Controllers
                     return HttpNotFound("No milestones found.");
                 }
 
-                // fetch project details
                 var projectDetails = db.MainTables
                     .Where(p => p.main_id == id)
                     .Select(p => new ProjectDetailViewModel
@@ -558,7 +562,6 @@ namespace ProjectManagementSystem.Controllers
                     })
                     .ToList();
 
-                // fetch milestone for dropdown
                 var milestones = db.MilestoneTbls
                     .Where(m => m.main_id == id)
                     .Select(m => new SelectListItem
@@ -568,7 +571,6 @@ namespace ProjectManagementSystem.Controllers
                     })
                     .ToList();
 
-                // fetch tasks for dropdown
                 var tasks = db.DetailsTbls
                     .Where(t => t.main_id == id)
                     .Select(t => new SelectListItem
@@ -578,7 +580,7 @@ namespace ProjectManagementSystem.Controllers
                     })
                     .ToList();
 
-                // fetch status
+                
                 var statusLogs = db.WeeklyStatus
                      .Where(log => log.main_id == id)
                      .Select(log => new StatusLogsViewModel
@@ -594,12 +596,11 @@ namespace ProjectManagementSystem.Controllers
                             .Where(a => a.status_id == log.status_id)
                             .Select(a => a.path_file)
                             .FirstOrDefault()
-
                      })
                      .OrderByDescending(log => log.DateUpdated)
                      .ToList();
 
-                // fetch project members
+              
                 var projectMembers = db.ProjectMembersTbls
                     .Where(pm => pm.project_id == id)
                     .AsEnumerable()
@@ -610,12 +611,10 @@ namespace ProjectManagementSystem.Controllers
                         Initials = !string.IsNullOrEmpty(pm.name) && pm.name.Split(' ').Length > 2
                             ? pm.name.Split(' ')[0].Substring(0, 1) + pm.name.Split(' ')[1].Substring(0, 1)
                             : "N/A",
-            
-                    Email = pm.email
+                        Email = pm.email
                     })
                     .ToList();
 
-                // fetch tasks that requires approval
                 var projChecklist = db.ApproversTbls
                     .Where(a => a.Main_Id == id)
                     .Select(a => new ApproverViewModel
@@ -643,24 +642,19 @@ namespace ProjectManagementSystem.Controllers
                     Milestones = milestones,
                     StatusLogs = statusLogs,
                     ProjectMembers = projectMembers,
-                    //TaskTitle = taskDetails,
                     Checklist = projChecklist,
                     userDetails = userInfo,
-
-                    TaskTitle = tasks
+                    TaskTitle = tasks,
+                    IsProjectManager = isProjectManager 
                 };
 
                 return View(viewModel);
             }
-
             else
             {
                 return View("~/Views/Account/Login.cshtml");
             }
-
         }
-
-
 
         public JsonResult getGanttData(int id)
         {
