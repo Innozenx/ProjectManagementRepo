@@ -88,7 +88,7 @@
     }
 
     h3 {
-        font-weight: bold;
+        /*font-weight: bold;*/
         color: #66399A;
         text-align: left;
         font-size: 24px;
@@ -207,8 +207,8 @@
     }
 
     .modal-title {
-        color: #66399A;
-        font-weight: bold;
+        color: white;
+        
         font-size: 20px;
     }
 
@@ -402,18 +402,123 @@
             gap: 10px;
         }
 
-            .selected-members-chips .chip .remove-chip {
-                margin-left: 10px;
-                cursor: pointer;
-                background: transparent;
-                border: none;
-                color: white;
-            }
+    .selected-members-chips .chip .remove-chip {
+        margin-left: 10px;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        color: white;
+    }
 
     tr, th, td {
         margin: auto;
         text-align: center;
     }
+
+    /*.input-group-text {
+        border-radius: 6px 0 0 6px;
+        font-size: 16px;
+        padding: 8px 12px;
+    }*/
+
+    .form-select {
+        border-radius: 0 6px 6px 0;
+        font-size: 16px;
+        padding: 10px;
+    }
+
+
+    .checklist-table {
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+        width: 100%;
+    }
+
+    .checklist-table th {
+        background: #66399A;
+        color: white;
+        padding: 12px;
+        font-weight: normal; 
+    }
+
+    .checklist-table tbody tr {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .checklist-table tbody tr:hover {
+        background: #f5f5f5;
+    }
+
+
+    .btn-purple {
+        background-color: #6A0DAD;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        border-radius: 6px;
+        transition: all 0.3s ease-in-out;
+        width: 200px; 
+        display: block; 
+        margin: auto; 
+        text-align: center;
+        font-weight:normal
+    }
+
+        .btn-purple:hover {
+            background-color: #570D8A;
+            color: white;
+        }
+
+
+    .btn-purple:hover {
+        background-color: #4E0D8D;
+    }
+
+    .fa-check {
+        color: green;
+    }
+
+    .fa-exclamation-triangle {
+        color: orange;
+    }
+
+    .fa-ban {
+        color: red;
+    }
+
+    .milestone-dropdown-container {
+        display: flex;
+        justify-content: center; 
+        align-items: center;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+        width: auto;
+    }
+
+
+    .input-group-text {
+        background: #66399A;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+        height: 45px;
+    }
+
+
+    #milestoneDropdown {
+        width: 250px;
+        text-align: center;
+    }
+
 </style>
 
 <div class="project-header">
@@ -425,7 +530,7 @@
     </div>
 </div>
 
-<!-- Navigation Tabs -->
+
 <ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
     <li class="nav-item">
         <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
@@ -515,7 +620,6 @@
         </div>
     </div>
 
-    <!-- Update Status and Activity Log Tiles -->
     <div class="action-tiles-container">
         <div class="action-tile">
             <button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title">
@@ -529,87 +633,81 @@
         </div>
     </div>
 
-
-    <!-- Update Status Modal -->
     <div class="modal fade" id="updateMilestoneModal" tabindex="-1" role="dialog" aria-labelledby="updateMilestoneLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content shadow-lg rounded">
-                <div class="modal-header bg-white">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content shadow-lg rounded-3 border-0">
+                <div class="modal-header bg-purple text-white">
                     <h5 class="modal-title" id="updateMilestoneLabel">
-                        Status Update
+                        </i> Update Task Status
                     </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body bg-white p-4">
+
+                <div class="modal-body bg-light p-4">
                     <form id="updateStatusForm" action="@Url.Action("UpdateStatus", "Checklist")" method="post" enctype="multipart/form-data">
 
-                        <div class="form-group mb-4">
-                            <label for="milestone" class="milestone-text">
+                        <div class="mb-3">
+                            <label for="selectedMilestone" class="form-label fw-semibold">
                                 Select Task <span class="text-danger">*</span>
                             </label>
-                            @Html.DropDownListFor(m => m.SelectedMilestone, Model.TaskTitle, "Choose a Task", new { @class = "form-control rounded border-light", id = "selectedMilestone" })
+                            @Html.DropDownListFor(m => m.SelectedMilestone, Model.TaskTitle, "Choose a Task",
+                        new { @class = "form-select shadow-sm", id = "selectedMilestone" })
                         </div>
 
-                        <div class="form-group mb-4 d-none" id="delay_div">
-                            <div class="form-group mb-4">
-                                <label for="isDelayed" class="status-update d-block mb-2">
-                                    Is your task delayed? <span class="text-danger">*</span>
-                                </label>
-                                <div class="form-check form-check-inline">
+   
+                        <div class="mb-3 d-none" id="delay_div">
+                            <label class="fw-semibold">Is your task delayed? <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
                                     @Html.RadioButtonFor(x => x.isDelayed, false, new { id = "delayed_no", @class = "form-check-input" })
-                                    <label for="delayed_no" class="form-check-label">No</label>
+                                    <label for="delayed_no" class="form-check-label">No</label> 
                                 </div>
-                                <div class="form-check form-check-inline">
+                                <div class="form-check">
                                     @Html.RadioButtonFor(x => x.isDelayed, true, new { id = "delayed_yes", @class = "form-check-input" })
                                     <label for="delayed_yes" class="form-check-label">Yes</label>
                                 </div>
                             </div>
 
-                            <div class="input-group d-none" id="delay_input_group">
-                                <label for="weeks_delayed" class="status-update d-block mb-2" id="delay_label">
+        
+                            <div class="mt-3 d-none" id="delay_input_group">
+                                <label for="weeks_delayed" class="fw-semibold">
                                     If delayed, by how many weeks? <span class="text-danger">*</span>
                                 </label>
-                                @Html.EditorFor(x => x.delay, new { htmlAttributes = new { @class = "form-control", @min = "1", @id = "weeks_delayed", @placeholder = "Enter number of weeks", @style = "width: 50%;" } })
-                                <div class="input-group-append">
-                                    <span class="input-group-text">Week/s</span>
+                                <div class="input-group">
+                                    @Html.EditorFor(x => x.delay, new { htmlAttributes = new { @class = "form-control shadow-sm", @min = "1", @id = "weeks_delayed", @placeholder = "Enter number of weeks" } })
+                                    <span class="input-group-text">Week(s)</span>
                                 </div>
-                                <div id="delay_note_div" style="width: 100%">
-                                    <p style="color: red; font-style: italic"><small id="delay_note"></small></p>
-                                </div>
+                                <small class="text-danger fst-italic" id="delay_note"></small>
                             </div>
-
-                            <div class="form-group mb-4">
-                                <label for="statusUpdate" class="status-update">
-                                    Description <span class="text-danger">*</span>
-                                </label>
-                                @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control rounded border-light", placeholder = "Add more detailed description...", rows = 3, id = "statusUpdate" })
-                            </div>
-
-                            <div class="form-group mb-4">
-                                <label for="fileUpload" class="select-attach">
-                                    Attachment <span class="text-danger">*</span>
-                                </label>
-                                <input type="file" name="fileUpload" id="fileUpload" class="form-control-file" />
-                            </div>
-
                         </div>
 
-                        <div id="validationMessage" class="text-danger" style="display:none; margin-bottom:10px;">
+                        <div class="mb-3">
+                            <label for="statusUpdate" class="fw-semibold">
+                                Description <span class="text-danger">*</span>
+                            </label>
+                            @Html.TextAreaFor(m => m.StatusUpdate, new { @class = "form-control shadow-sm", placeholder = "Add more details...", rows = 3, id = "statusUpdate" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fileUpload" class="fw-semibold">Attachment <span class="text-danger">*</span></label>
+                            <input type="file" name="fileUpload" id="fileUpload" class="form-control shadow-sm" />
+                        </div>
+
+                        <div id="validationMessage" class="text-danger fw-semibold" style="display: none;">
                             Please fill out all required fields.
                         </div>
 
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Submit</button>
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            @*<button type="button" class="btn btn-light border shadow-sm" data-dismiss="modal">Cancel</button>*@
+                            <button type="button" class="btn btn-outline-primary text-white shadow-sm px-4" onclick="validateAndSubmit()">Submit</button>
                         </div>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Project Members Section -->
     <div class="table-container" id="detailsContainer">
         <h3>Project Members</h3>
         @if (Model.ProjectMembers.Any())
@@ -658,8 +756,6 @@
         }
     </div>
 
-
-    <!-- Status Successfully Updated Modal -->
     <div class="modal fade" id="statusUpdatedModal" tabindex="-1" role="dialog" aria-labelledby="statusUpdatedLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -679,7 +775,6 @@
         </div>
     </div>
 
-    <!-- Activity Logs Modal -->
     <div class="modal fade" id="activityLogModal" tabindex="-1" role="dialog" aria-labelledby="activityLogLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content shadow-lg rounded">
@@ -744,7 +839,6 @@
         </div>
     </div>
 
-    <!-- Attachment Viewing Modal -->
     <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -762,9 +856,9 @@
     </div>
 </div>
 
-<!-- Timeline Tab -->
+
 <div class="tab-pane fade" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
-    <!-- Gantt Chart Section -->
+
     <div class="card-container" id="gantt_container">
         <div class="table-container">
             <div class="gantt-header">
@@ -790,65 +884,72 @@
     </div>
 </div>
 
-<!--Checklist Tab-->
-<!--ON GOING CHECKLIST TAB-->
+
 <div class="tab-pane fade" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">
     <div class="card shadow-sm p-4">
-        <h3 class="text-center text-purple">Checklist</h3>
-        <p class="text-center text-muted">Manage checklist for each milestone.</p>
-        <!-- Milestone Dropdown -->
-        <div class="row mt-4 justify-content-center align-items-center">
-            <div class="col-md-6">
-                <div class="input-group">
-                    <label class="input-group-text bg-purple text-white" for="milestoneDropdown">
-                        <i class="fas fa-tasks"></i>
-                    </label>
-                    <select id="milestoneDropdown" class="form-select shadow-sm" @*onchange="loadChecklist(this.value)*@ ">
-                        <option value="">Select a Milestone</option>
-                    </select>
-                </div>
+        <h3 class="text-center text-purple fw-bold">Checklist</h3>
+        @*<p class="text-center text-muted">Manage checklist for each milestone.</p>*@
+
+        <div class="milestone-dropdown-container">
+            <div class="input-group">
+                <span class="input-group-text bg-purple text-white">
+                    <i class="fas fa-tasks"></i>
+                </span>
+                <select id="milestoneDropdown" class="form-select shadow-sm">
+                    <option value="">Select a Milestone</option>
+                </select>
             </div>
         </div>
-        <!-- Checklist -->
-        <div id="checklistContainer" class="mt-4">
-            <div class="text-center text-muted">Select a milestone to view tasks. <br /> <i><small>(LEGEND: <i class="fa-solid fa-check"></i>  = approved, <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> = pending approval, <i class="fas fa-ban"></i>= disapproved)</small></i> </div>
-        </div>
 
-        <!-- Checklist Table -->
+
+        <!-- Checklist Instructions -->
+        @*<div id="checklistContainer" class="mt-4 text-center text-muted">
+            Select a milestone to view checklist items. <br />
+            <small>
+                <i class="fa-solid fa-check text-success"></i> = Approved,
+                <i class="fa fa-exclamation-triangle text-warning"></i> = Pending,
+                <i class="fas fa-ban text-danger"></i> = Disapproved
+            </small>
+        </div>*@
+
         <div class="table-responsive mt-4">
-            <table class="table table-bordered table-hover text-center align-middle" id="checklist_tbl">
-                <thead class="table-primary">
+            <table class="table table-hover align-middle checklist-table">
+                <thead class="table-purple text-white">
                     <tr>
                         <th></th>
                         <th>Required By</th>
-                        <th>Task</th>
-                        <th>Description</th>
-                        <th>Attachment</th>
-                        <th>Approver</th>
-                        <th>Actions</th>
+                        <th>Checklist Items</th>
+                        <th>Attachments</th>
+                        <th>Approvers</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="checklistTableBody">
                     <tr>
-                        <td colspan="7" class="text-center">Select a milestone to view tasks.</td>
+                        <td colspan="7" class="text-center">Select a milestone to view checklist items. <br />
+                        <small>
+                            <i class="fa fa-exclamation-triangle text-warning"></i> = Pending,
+                            <i class="fa-solid fa-check text-success"></i> = Approved,
+                            <i class="fas fa-ban text-danger"></i> = Rejected
+                        </small></td>
                     </tr>
                 </tbody>
             </table>
+
             @{
-                if (Model.userDetails.JobLevel == 4035 || User.IsInRole("PMS_DIVISION_HEAD"))
+                //if (Model.userDetails.JobLevel == 4035 || User.IsInRole("PMS_DIVISION_HEAD"))
+                if (Model.ProjectDetails != null && Model.IsProjectManager)
                 {
-                    <div style="margin: auto; text-align: center">
-                        <button class="btn-primary w-25" id="add_optional">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
-                            Add Task
-                        </button>
-                    </div>
-                }
+                <div class="text-center mt-3">
+                    <button class="btn btn-purple btn-lg" id="add_optional">
+                        <i class="fa fa-plus"></i> Checklist Item
+                    </button>
+                </div>
+               }
+
             }
-
-
         </div>
-
     </div>
 </div>
 
@@ -1258,7 +1359,7 @@
 
             else {
                 //alert("Please select a milestone first");
-                Swal.fire("Invalid Milestone", "Please select a milestone first", "error");
+                Swal.fire("Oops", "Please select a milestone first.", "error");
             }
 
         });
@@ -1287,7 +1388,7 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
-                            text: 'Form Submitted!',
+                            text: 'Checklist item added!',
                         }).then(function () {
                             localStorage.setItem('currentTab', 'checklist');
                             localStorage.setItem('currentDrop', milestone);
@@ -1346,7 +1447,6 @@
                     data: { "id": taskID, "proj_id": projID, "approvers": selectedMembers },
                     success: function (res) {
                         var dropdown = $("#milestoneDropdown").val();
-
                         localStorage.setItem('currentTab', 'checklist');
                         localStorage.setItem('currentDrop', dropdown);
 
@@ -1422,7 +1522,19 @@
             const checklistTableBody = $("#checklistTableBody");
 
             if (!milestoneId) {
-                checklistTableBody.html('<tr><td colspan="7" class="text-center">Select a milestone to view tasks.</td></tr>');
+                checklistTableBody.html(`
+            <tr>
+                <td colspan="7" class="text-center">
+                    Select a milestone to view checklist items. <br />
+                    <small>
+                        <i class="fa fa-exclamation-triangle text-warning"></i> = Pending, 
+                        <i class="fa-solid fa-check text-success"></i> = Approved, 
+                        <i class="fas fa-ban text-danger"></i> = Rejected
+                    </small>
+                </td>
+            </tr>
+        `);
+                $("#add_optional").remove();
                 return;
             }
 
@@ -1432,53 +1544,64 @@
                 data: { milestoneId, mainId },
                 success: function (response) {
                     checklistTableBody.empty();
+
                     if (response.success && response.data.length > 0) {
                         response.data.forEach(task => {
                             checklistTableBody.append(`
-                                        <tr>
-    <td>${task.optFlag == true ? `<button class="bg-red" onclick="removeTask(${task.task_id})"><i class="fa fa-trash" aria-hidden="true"></i></button>` : ``}</td>
-    <td>${task.optFlag == true ? `Project Manager` : `ODCP`}</td>
-                                            <td id="${task.task_id}">${task.taskname}</td>
-                                            <td>${task.approved ? "Approved" : task.reason != null ? "Disapproved" : "Pending"}</td>
-                                            <td>${task.attachment != null
-                                                ? `<a href="${task.attachment}">View Attachment</a>`
-                                                : `<input type="file" class="form-control-file" id="${task.task_id}file">`}
-                                            </td>
-                                            @*<td>${task.approver_status == true ? task.approvers + `<i class="fa-solid fa-check"></i>`
-                                                : task.approver_status == null ? task.approvers + `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
-                                                : task.approvers + `<i class="fas fa-ban"></i>`}</td>*@
-                                            <td>${task.optFlag == true
-                                                    ? task.approvers.length == 0
-                                                        ? `<button class="btn-primary w-100" id="add_approverbtn" onclick="add_approverbtn(${task.task_id})">Add</button>`
-                                                        : `<div class="d-flex" style="margin: auto; text-align: center; margin-bottom: 5%;"><button class="btn-primary" id="add_approverbtn" style="width: 35%; margin-left:10%" onclick="add_approverbtn(${task.task_id})">Add</button> <button class="btn-danger" id="remove_approverbtn" style="width: 35%; margin-left:10%; font-size: 60%" onclick="removeApprover(${task.task_id})">Remove</button></div>`
-                                                            + Object.keys(task.approvers).map(function (key) {
-                                                            return task.approver_status[key] == true ? task.approvers[key] + ` <i class="fa-solid fa-check"></i>`
-                                                                : task.approver_status[key] == null ? task.approvers[key] + ` <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
-                                                                : task.approvers[key] + ` <i class="fas fa-ban"></i>`
-                                    }).join("<br/>")
-                                : Object.keys(task.approvers).map(function (key) {
-                                    return task.approver_status[key] == true ? task.approvers[key] + ` <i class="fa-solid fa-check"></i>`
-                                        : task.approver_status[key] == null ? task.approvers[key] + ` <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
-                                            : task.approvers[key] + ` <i class="fas fa-ban"></i>`
+                        <tr>
+                            <td>
+                                ${task.optFlag ? `<button class="bg-red" onclick="removeTask(${task.task_id})">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </button>` : ""}
+                            </td>
+                            <td>${task.optFlag ? `Project Manager` : `ODCP`}</td>
+                            <td id="${task.task_id}">${task.taskname}</td>
+                            <td>
+                                ${task.attachment ? `<a href="${task.attachment}">View Attachment</a>`
+                                    : `<input type="file" class="form-control-file" id="${task.task_id}file">`}
+                            </td>
+                            <td>
+                                ${Object.keys(task.approvers).map(key => {
+                                    return task.approver_status[key] == true
+                                        ? `<i class="fa-solid fa-check text-success"></i> ${task.approvers[key]}`
+                                        : task.approver_status[key] == null
+                                            ? `<i class="fa fa-exclamation-triangle text-warning"></i> ${task.approvers[key]}`
+                                            : `<i class="fas fa-ban text-danger"></i> ${task.approvers[key]}`;
                                 }).join("<br/>")}
-
-                                            </td>
-                                            <td>
-                                                ${task.attachment != null
-                                                ? task.approved == true
-                                                    ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
-                                                    : task.reason != null
-                                                        ? `<button class="btn btn-sm btn-danger" disabled>Disapproved</button>`
-                                                        : `<button class="btn btn-sm btn-warning" disabled>Pending Approval</button>`
-                                                    : `<button class="btn btn-sm btn-success" onclick="submitApproval(${task.task_id})">Submit</button>`}
-                                            </td>
-                                            <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
-                                            <td class="d-none" id="${task.task_id}project">${task.project_id}</td>
-                                        </tr>
-                                    `);
+                            </td>
+                            <td>${task.approved ? "Approved" : task.reason ? "Disapproved" : "Pending"}</td>
+                            <td>
+                                ${task.attachment
+                                    ? task.approved
+                                        ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
+                                        : task.reason
+                                            ? `<button class="btn btn-sm btn-danger" disabled>Disapproved</button>`
+                                            : `<button class="btn btn-sm btn-warning" disabled>Pending Approval</button>`
+                                    : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Submit</button>`}
+                            </td>
+                            <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
+                            <td class="d-none" id="${task.task_id}project">${task.project_id}</td>
+                        </tr>
+                    `);
                         });
+
+
+                    //    if ($("#add_optional").length === 0 && isProjectManager) {
+                    //        $("#checklistContainer").append(`
+                    //    <div class="text-center mt-3">
+                    //        <button class="btn btn-purple btn-lg" id="add_optional">
+                    //            <i class="fa fa-plus"></i> Add Checklist Item
+                    //        </button>
+                    //    </div>
+                    //`);
+                    //    }
                     } else {
-                        checklistTableBody.html('<tr><td colspan="7" class="text-center">No tasks found for this milestone.</td></tr>');
+                        checklistTableBody.html(`
+                    <tr>
+                        <td colspan="7" class="text-center">No tasks found for this milestone.</td>
+                    </tr>
+                `);
+                        $("#add_optional").remove();
                     }
                 },
                 error: function (xhr) {
@@ -1486,6 +1609,9 @@
                 }
             });
         }
+
+
+
 
         function submitApproval(task_id) {
             var inputFile = $("#" + task_id + "file");
@@ -1647,13 +1773,13 @@
                     res.data.forEach(approver => {
 
                         table_body.append(`
-    <tr>
-    <td>${approver.approver_name}</td>
-    <td>${moment(approver.date_added).format('MM-DD-yyyy')}</td>
-    <td>${approver.added_by.split("@@")[0]}</td>
-    <td><button type="button" class="bg-danger" onclick=dbRemoveApprover(${approver.employee_id})><i class="fa-solid fa-trash-can"></i></button></td>
-    </tr>
-    `)
+                        <tr>
+                        <td>${approver.approver_name}</td>
+                        <td>${moment(approver.date_added).format('MM-DD-yyyy')}</td>
+                        <td>${approver.added_by.split("@@")[0]}</td>
+                        <td><button type="button" class="bg-danger" onclick=dbRemoveApprover(${approver.employee_id})><i class="fa-solid fa-trash-can"></i></button></td>
+                        </tr>
+                        `)
                     });
 
                 }
@@ -1706,11 +1832,11 @@
         function removeTask(id) {
 
             Swal.fire({
-                title: "Are you sure?",
+                title: "Do you want to delete this Checklist Item?",
                 showDenyButton: true,
                 confirmButtonText: "Yes",
                 denyButtonText: `No`
-            }).then((result) => {
+            }).then((result) => {WORD
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                     $.ajax({
@@ -1721,7 +1847,7 @@
                     Swal.fire({
                             icon: 'success',
                             title: 'Success',
-                            text: 'Task removed!',
+                            text: 'Checklist item removed!',
                     }).then(function () {
                         var milestone = $("#milestoneDropdown").val();
                             localStorage.setItem('currentTab', 'checklist');

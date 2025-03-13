@@ -38,7 +38,7 @@
                                 </select>
                             </div>
                             <button type="button" id="showRequirementsBtn" class="btn btn-outline-primary w-100 fw-bold">
-                                <i class="fas fa-plus"></i> Add Requirements
+                                <i class="fas fa-plus"></i> Add Checklist Items
                             </button>
                         </form>
                     </div>
@@ -48,11 +48,11 @@
             <div class="requirements-section mt-4" style="display: none;">
                 <div class="card shadow-sm bg-white rounded-3 mx-auto" style="max-width: 700px;">
                     <div class="card-body">
-                        <h4 id="requirementsTitle" class="mb-3 fw-bold text-dark text-center">Requirements</h4>
+                        <h4 id="requirementsTitle" class="mb-3 fw-bold text-dark text-center">Checklist Item</h4>
                         <div id="taskList"></div>
 
                         <button type="button" id="addTaskInsideBtn" class="btn btn-outline-success w-100 fw-bold">
-                            <i class="fas fa-plus"></i> Add Task
+                            <i class="fas fa-plus"></i> Add Item
                         </button>
 
                         <div class="mt-3 d-flex justify-content-between">
@@ -316,7 +316,7 @@
             $(".new-milestone-section").hide();
             $(".requirements-section").show();
 
-            $("#requirementsTitle").text(`Requirements for ${milestoneName}`);
+            $("#requirementsTitle").text(`Checklist Items for ${milestoneName}`);
         });
 
 
@@ -325,8 +325,8 @@
             let taskHtml = `
             <div class="task-item p-3 mb-2 border rounded position-relative" id="task-${taskIndex}">
                 <button type="button" class="remove-task" data-task-id="task-${taskIndex}">&times;</button>
-                <label class="fw-bold text-dark">Task</label>
-                <input type="text" name="TaskRequirement[]" class="form-control mb-2 task-input" placeholder="Task description" required />
+                <label class="fw-bold text-dark">Checklist item</label>
+                <input type="text" name="TaskRequirement[]" class="form-control mb-2 task-input" placeholder="Item description" required />
 
                 <label class="fw-bold text-muted">Approvers</label>
                 <select name="Approvers[${taskIndex}][]" class="form-select select-approvers" multiple="multiple" required>
