@@ -1,0 +1,171 @@
+﻿@{
+    ViewBag.Title = "Gantt Chart • Project Management System";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var projectName = Request.QueryString["title"];
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gantt Chart - @projectName</title>
+
+    <link rel="stylesheet" href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css">
+    <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: #F9F9FB;
+            overflow: hidden;
+        }
+
+        .gantt-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .gantt-sidebar {
+            width: 300px;
+            background: #FFF;
+            border-right: 1px solid #ddd;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+            .gantt-sidebar h3 {
+                font-size: 18px;
+                color: #66399A;
+                margin-bottom: 10px;
+            }
+
+        #taskList {
+            list-style: none;
+            padding: 0;
+        }
+
+            #taskList li {
+                padding: 8px;
+                border-radius: 5px;
+                margin-bottom: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                background: #F1F1F1;
+                transition: 0.3s;
+            }
+
+                #taskList li:hover {
+                    background: #ddd;
+                }
+
+
+        .gantt-content {
+            flex: 1;
+            background: white;
+        }
+
+        #gantt_here {
+            width: 100%;
+            height: 100%;
+        }
+
+        .task-in-progress {
+            background: #FFA500 !important;
+        }
+
+        .task-completed {
+            background: #28A745 !important;
+        }
+        .task-delayed {
+            background: #DC3545 !important;
+        }
+
+        .gantt_milestone {
+            background: #FFCC00 !important;
+            border-radius: 50%;
+        }
+
+        .gantt_grid_scale, .gantt_task_scale {
+            background: #f8f8f8 !important;
+        }
+
+        .gantt_grid_head_cell, .gantt_task_head_cell {
+            font-weight: bold !important;
+            padding: 8px !important;
+        }
+
+        .gantt_link_arrow {
+            stroke: #555;
+        }
+        .gantt_task_line {
+            color: transparent !important;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+        <div class="gantt-content">
+            <div id="gantt_here"></div>
+        </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            gantt.config.xml_date = "%Y-%m-%d %H:%i";
+            gantt.config.readonly = true;
+            gantt.config.autosize = true;
+
+            gantt.config.columns = [
+                { name: "text", label: "Milestone", tree: true, width: 250 },
+                { name: "start_date", label: "Start Date", align: "center", width: 100 },
+                { name: "duration", label: "Duration (days)", align: "center", width: 100 }
+            ];
+
+            gantt.config.scales = [
+                { unit: "month", step: 1, format: "%F %Y" },
+                { unit: "week", step: 1, format: "Week %W" },
+                { unit: "day", step: 1, format: "%d %M" }
+            ];
+
+            gantt.templates.task_text = function () {
+                return "";
+            };
+
+            gantt.templates.task_class = function (start, end, task) {
+                if (task.status === "in-progress") return "task-in-progress";
+                if (task.status === "completed") return "task-completed";
+                if (task.status === "delayed") return "task-delayed";
+                return "";
+            };
+
+            gantt.templates.task_class = function (start, end, task) {
+                if (task.type === "milestone") return "gantt_milestone";
+                return "";
+            };
+
+            gantt.init("gantt_here");
+            gantt.load("/Checklist/getGanttData?id=@Request.QueryString["id"]", "json");
+
+            fetch("/Checklist/getTaskList?id=@Request.QueryString["id"]")
+                .then(response => response.json())
+                .then(data => {
+                    let taskList = document.getElementById("taskList");
+                    taskList.innerHTML = "";
+
+                    data.forEach(task => {
+                        let listItem = document.createElement("li");
+                        listItem.textContent = task.text;
+                        taskList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error("Error fetching tasks:", error));
+        });
+    </script>
+
+</body>
+</html>

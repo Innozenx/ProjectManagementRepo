@@ -689,8 +689,10 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="fileUpload" class="fw-semibold">Attachment <span class="text-danger">*</span></label>
-                            <input type="file" name="fileUpload" id="fileUpload" class="form-control shadow-sm" />
+                            <label for="fileUpload" class="fw-semibold">Attachments <span class="text-danger">*</span></label>
+                            <input type="file" name="fileUpload" id="fileUpload" class="form-control shadow-sm" multiple />
+
+                            <div id="uploadedFilesList"></div> 
                         </div>
 
                         <div id="validationMessage" class="text-danger fw-semibold" style="display: none;">
@@ -867,18 +869,12 @@
                     <button id="week-view" class="gantt-view-btn">Week</button>
                     <button id="month-view" class="gantt-view-btn">Month</button>
                 </div>
-                @*<div class="gantt-date-controls">
-                        <button id="prev-date" class="gantt-nav-btn">«</button>
-                        <span id="date-range"></span>
-                        <button id="today-btn" class="gantt-today-btn">Today</button>
-                        <button id="next-date" class="gantt-nav-btn">»</button>
-                    </div>*@
-
                 <div>
                     <button id="maximize-btn" class="gantt-nav-btn"><i class="fa-solid fa-maximize"></i></button>
-                    <button id="minimize-btn" class="gantt-nav-btn" style="display: none;">Minimize</button>
+                    @*<button id="export-pdf-btn" class="gantt-nav-btn"><i class="fa-solid fa-file-export"></i> Export</button>*@
                 </div>
             </div>
+            <div id="gantt_here" style="width:100%; height:60vh;"></div>
             <div id="gantt_here" style="width:100%; height:60vh;"></div>
         </div>
     </div>
@@ -1170,7 +1166,7 @@
                 return "";
             };
 
-             gantt.init("gantt_here");
+            gantt.init("gantt_here");
             gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json");
 
 
@@ -1222,6 +1218,12 @@
             });
             document.getElementById(buttonId).classList.add("active");
         };
+
+        document.querySelector("#maximize-btn").addEventListener("click", function () {
+        const projectId = "@TempData["entry"]";
+        window.open(`/Checklist/GanttChart?id=${projectId}`, "_blank");
+        });
+
 
             $("#timeline-tab").on("click", function () {
                 $("#detailsContainer").css("display", "none");
@@ -1575,7 +1577,7 @@
                                     ? task.approved
                                         ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
                                         : task.reason
-                                            ? `<button class="btn btn-sm btn-danger" disabled>Disapproved</button>`
+                                            ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
                                             : `<button class="btn btn-sm btn-warning" disabled>Pending Approval</button>`
                                     : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Submit</button>`}
                             </td>
@@ -1609,9 +1611,6 @@
                 }
             });
         }
-
-
-
 
         function submitApproval(task_id) {
             var inputFile = $("#" + task_id + "file");
@@ -1647,8 +1646,8 @@
                     if (res.message == "success") {
                         Swal.fire({
                             icon: 'success',
-                            title: 'File Upload Successful!',
-                            text: 'File successfully submitted to the server!',
+                            title: 'Uploaded',
+                            text: 'File Uploaded Successfully!',
                         }).then(function () {
                             location.reload();
                         });
@@ -1657,8 +1656,8 @@
                     else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Upload Failed',
-                            text: 'An error occurred while uploading.',
+                            title: 'Failed',
+                            text: 'File Upload Failed!',
                         });
                     }
                 }
@@ -1836,7 +1835,7 @@
                 showDenyButton: true,
                 confirmButtonText: "Yes",
                 denyButtonText: `No`
-            }).then((result) => {WORD
+            }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                     $.ajax({
