@@ -494,7 +494,6 @@ namespace ProjectManagementSystem.Controllers
                 var userEmail = User.Identity.GetUserName();
                 var userDetails = cmdb.AspNetUsers.Where(x => x.UserName == userEmail).SingleOrDefault();
 
-                // Fetch the list of projects the user is part of
                 var projectList = (from p in db.ProjectMembersTbls
                                    join m in db.MainTables on new { id = p.project_id } equals new { id = (int?)m.main_id }
                                    where p.email == userEmail && m.isCompleted != true
@@ -1283,7 +1282,6 @@ namespace ProjectManagementSystem.Controllers
                             milestoneChild = db.MilestoneTbls.Where(x => x.main_id == milestoneChild.main_id && x.milestone_id != milestoneChild.milestone_id && x.source == milestoneChild.milestone_id).SingleOrDefault();
 
                         }
-
                     }
 
                     var statusUpdate = new WeeklyStatu
@@ -2081,6 +2079,13 @@ namespace ProjectManagementSystem.Controllers
 
             return Json(new { message = message }, JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult GanttChart(int id)
+        {
+            ViewBag.ProjectId = id;
+            return View();
+        }
+
 
         //public JsonResult GetStatusUpdates()
         //{
