@@ -480,7 +480,7 @@
         color: green;
     }
 
-    .fa-exclamation-triangle {
+    .fa-exclamation-circle {
         color: orange;
     }
 
@@ -925,8 +925,8 @@
                     <tr>
                         <td colspan="7" class="text-center">Select a milestone to view checklist items. <br />
                         <small>
-                            <i class="fa fa-exclamation-triangle text-warning"></i> = Pending,
-                            <i class="fa-solid fa-check text-success"></i> = Approved,
+                            <i class="fa fa-exclamation-circle text-warning"></i> = Pending,
+                            <i class="fa-solid fa-circle-check text-success"></i> = Approved,
                             <i class="fas fa-ban text-danger"></i> = Rejected
                         </small></td>
                     </tr>
@@ -1529,8 +1529,8 @@
                 <td colspan="7" class="text-center">
                     Select a milestone to view checklist items. <br />
                     <small>
-                        <i class="fa fa-exclamation-triangle text-warning"></i> = Pending, 
-                        <i class="fa-solid fa-check text-success"></i> = Approved, 
+                        <i class="fa fa-exclamation-circle text-warning"></i> = Pending, 
+                        <i class="fa-solid fa-circle-check text-success"></i> = Approved, 
                         <i class="fas fa-ban text-danger"></i> = Rejected
                     </small>
                 </td>
@@ -1567,7 +1567,7 @@
                                     return task.approver_status[key] == true
                                         ? `<i class="fa-solid fa-check text-success"></i> ${task.approvers[key]}`
                                         : task.approver_status[key] == null
-                                            ? `<i class="fa fa-exclamation-triangle text-warning"></i> ${task.approvers[key]}`
+                                            ? `<i class="fa fa-exclamation-circle text-warning"></i> ${task.approvers[key]}`
                                             : `<i class="fas fa-ban text-danger"></i> ${task.approvers[key]}`;
                                 }).join("<br/>")}
                             </td>
