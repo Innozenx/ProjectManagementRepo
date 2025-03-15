@@ -128,8 +128,8 @@
         <img src="~/AdminLTE-3.2.0/dist/img/30thEK.jpg" alt="PMS" />
         <!-- Title and subtitle -->
         <h1>Project Management System</h1>
-        <h3>Login to your Account</h3>
-        <p>Enter your email and password to login</p>
+        <h3>Login to your account</h3>
+        @*<p>Enter your email and password to login</p>*@
 
         <section id="loginForm">
             @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
