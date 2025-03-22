@@ -490,7 +490,8 @@ namespace ProjectManagementSystem.Controllers
         {
             try
             {
-                Debug.WriteLine($"Received Data - DivisionID: {DivisionID}, MilestoneName: {MilestoneName}, Tasks Count: {Tasks?.Count ?? 0}");
+                Debug.WriteLine($"Received Data - DivisionID: {DivisionID}, MilestoneName: {MilestoneName}, Tasks Count: {Tasks.Count}");
+                var division_string = db.Divisions.Where(x => x.DivisionID == DivisionID).Select(x => x.DivisionName).SingleOrDefault();
 
                 if (Tasks == null || !Tasks.Any())
                 {
@@ -561,32 +562,27 @@ namespace ProjectManagementSystem.Controllers
 
                 foreach (var item in approver_ids)
                 {
-                    var approver_details = cmdb.AspNetUsers.FirstOrDefault(x => x.Id == item);
-                    if (approver_details == null)
+                    var approver_details = cmdb.AspNetUsers.Where(x => x.Id == item).SingleOrDefault();
+
+                    var project_list = db.MainTables.Where(x => x.division == division_string).ToList();
+
+                    foreach(var project in project_list)
                     {
-                        Debug.WriteLine($"Approver not found for ID: {item}");
-                        continue;
+                        var approver_container = new PreSetMilestoneApprover
+                        {
+                            approver_name = approver_details.FirstName + " " + approver_details.LastName,
+                            approver_email = approver_details.Email,
+                            milestone_id = db.MilestoneRoots.Where(x => x.milestone_name.ToLower() == MilestoneName).Select(x => x.id).SingleOrDefault(),
+                            date_added = DateTime.Now,
+                            added_by = User.Identity.Name,
+                            division = cmdb.Identity_Keywords.Where(x => x.Id == approver_details.JobId && x.Type == "Divisions").Select(x => x.Description).SingleOrDefault(),
+                            employee_id = Int32.Parse(approver_details.CMId),
+                            main_id = project.main_id
+                        };
+
+                        approver_list.Add(approver_container);
                     }
-
-                    int.TryParse(approver_details.CMId, out int employeeId);
-
-                    var divisionName = cmdb.Identity_Keywords
-                        .Where(x => x.Id == approver_details.JobLevel && x.Type == "Divisions")
-                        .Select(x => x.Description)
-                        .FirstOrDefault() ?? "Unknown Division";
-
-                    var approver_container = new PreSetMilestoneApprover
-                    {
-                        approver_name = approver_details.FirstName + " " + approver_details.LastName,
-                        approver_email = approver_details.Email,
-                        milestone_id = milestoneId,
-                        date_added = DateTime.Now,
-                        added_by = User.Identity.Name,
-                        division = divisionName,
-                        employee_id = employeeId
-                    };
-
-                    approver_list.Add(approver_container);
+                    
                 }
 
                 db.PreSetMilestoneApprovers.AddRange(approver_list);

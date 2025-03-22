@@ -49,6 +49,7 @@ namespace ProjectManagementSystem.Controllers
                         fname = Path.Combine(Server.MapPath("~/Uploads/"), fname);
                         file.SaveAs(fname);
 
+                        var sample = Request.Form.GetValues("name")[0];
                         var submission = new ChecklistSubmission()
                         {
                             submission_description = "test",

@@ -898,6 +898,21 @@ namespace ProjectManagementSystem.Controllers
             var department = "";
             var ownerName = "";
 
+            var userDetails = (from u in cmdb.AspNetUsers
+                               join j in cmdb.Identity_JobDescription on new { jId = u.JobId } equals new { jId = j.Id }
+                               join k in cmdb.Identity_Keywords.Where(x => x.Type == "Departments") on new { department = j.DeptId } equals new { department = k.Id }
+                               join kd in cmdb.Identity_Keywords.Where(x => x.Type == "Divisions") on new { division = j.DivisionId } equals new { division = kd.Id }
+                               select new
+                               {
+                                   email = u.Email,
+                                   name = u.FirstName + " " + u.MiddleName + " " + u.LastName,
+                                   emp_id = u.CMId,
+                                   designation = j.PositionDescription,
+                                   job_level = u.JobLevel,
+                                   department = k.Description,
+                                   division = kd.Description
+                               }).Where(x => x.email == User.Identity.Name).OrderByDescending(x => x.emp_id).FirstOrDefault();
+
             if (attachment == null || attachment.ContentLength <= 0)
             {
                 return Json(new { message = "File is empty", status = false }, JsonRequestBehavior.AllowGet);
@@ -988,6 +1003,28 @@ namespace ProjectManagementSystem.Controllers
                                 };
 
                                 db.MainTables.Add(addWeeklyChecklist);
+                                var temp_mainID =  db.SaveChanges();
+
+                                var approver_list = db.PreSetMilestoneApprovers.Where(x => x.division == userDetails.division).ToList();
+
+                                foreach (var approver in approver_list)
+                                {
+                                    PreSetMilestoneApprover presets = new PreSetMilestoneApprover()
+                                    {
+                                        approver_name = approver.approver_name,
+                                        approver_email = approver.approver_email,
+                                        main_id = temp_mainID,
+                                        milestone_id = approver.milestone_id,
+                                        date_added = DateTime.Now,
+                                        added_by = User.Identity.Name,
+                                        division = userDetails.division,
+                                        employee_id = Int32.Parse(userDetails.emp_id)
+
+                                    };
+
+                                    db.PreSetMilestoneApprovers.Add(presets);
+                                }
+
                                 db.SaveChanges();
 
                                 var mainIDfordetails = addWeeklyChecklist.main_id;
@@ -1095,6 +1132,8 @@ namespace ProjectManagementSystem.Controllers
                                     var upd_rgstr = db.RegistrationTbls.Where(x => x.registration_id == projectId).Single();
                                     upd_rgstr.is_file_uploaded = true;
                                     db.SaveChanges();
+
+                                    
 
                                     Activity_Log logs = new Activity_Log
                                     {
@@ -1733,88 +1772,6 @@ namespace ProjectManagementSystem.Controllers
 
         public JsonResult GetTasksForMilestone(int milestoneId, int mainId)
         {
-            //try
-            //{
-            //    List<TaskContainerModel> container = new List<TaskContainerModel>();
-
-            //    var tasks = db.DetailsTbls.Where(x => x.milestone_id == milestoneId && x.RequiresApproval == true).ToList();
-
-            //    var submissions = db.ChecklistSubmissions.Where(x => x.main_id == mainId && x.milestone_id == milestoneId).ToList();
-
-            //    foreach (var item in tasks)
-            //    {
-
-            //        if (submissions.Any(x => x.main_id == item.main_id && x.task_id == item.details_id))
-            //        {
-
-            //            var submissionContainer = submissions.Where(x => x.main_id == item.main_id && x.task_id == item.details_id).OrderByDescending(x => x.submission_date).Select(x => new
-            //            {
-            //                taskname = x.task_name,
-            //                approved = x.is_approved,
-            //                approver_status = db.ApproversTbls.Where(y => y.Details_Id == x.task_id).Select(y => y.IsApproved_).ToList(),
-            //                approvers = db.ApproversTbls.Where(y => y.Details_Id == x.task_id).Select(y => y.Approver_Name).ToList(),
-            //                task_id = x.task_id,
-            //                milestone_id = x.milestone_id,
-            //                project_id = x.main_id,
-            //                attachment = x.filepath,
-            //                reason = x.disapproval_reason
-            //            }).First();
-
-            //            TaskContainerModel temporary = new TaskContainerModel()
-            //            {
-            //                taskname = submissionContainer.taskname,
-            //                approved = submissionContainer.approved,
-            //                approvers = submissionContainer.approvers,
-            //                task_id = submissionContainer.task_id,
-            //                milestone_id = submissionContainer.milestone_id,
-            //                project_id = submissionContainer.project_id,
-            //                attachment = submissionContainer.attachment,
-            //                reason = submissionContainer.reason,
-            //                approver_status = submissionContainer.approver_status
-            //            };
-
-            //            container.Add(temporary);
-
-            //        }
-            //        else
-            //        {
-            //            var detailsTbl_elements = db.DetailsTbls
-            //                .Where(x => x.milestone_id == item.milestone_id && x.RequiresApproval == true && x.details_id == item.details_id)
-            //                .Select(x => new
-            //                {
-            //                    taskname = x.process_title,
-            //                    approved = x.IsApproved,
-            //                    approvers = db.ApproversTbls.Where(y => y.Details_Id == x.details_id).Select(y => y.Approver_Name).ToList(),
-            //                    approver_status = db.ApproversTbls.Where(y => y.Details_Id == x.details_id).Select(y => y.IsApproved_).ToList(),
-            //                    task_id = x.details_id,
-            //                    milestone_id = x.milestone_id,
-            //                    project_id = x.main_id
-            //                }).Single();
-
-
-            //            TaskContainerModel temporary = new TaskContainerModel()
-            //            {
-            //                taskname = detailsTbl_elements.taskname,
-            //                approved = detailsTbl_elements.approved,
-            //                approvers = detailsTbl_elements.approvers,
-            //                task_id = detailsTbl_elements.task_id,
-            //                milestone_id = detailsTbl_elements.milestone_id,
-            //                project_id = detailsTbl_elements.project_id,
-            //                attachment = null,
-            //                reason = null,
-            //                approver_status = detailsTbl_elements.approver_status
-            //            };
-
-            //            container.Add(temporary);
-            //        }
-            //    }
-
-            //    return Json(new { success = true, data = container }, JsonRequestBehavior.AllowGet);
-            //}
-            //catch (Exception ex)
-            //{
-            //    return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
-            //}
 
             try
             {
@@ -1834,7 +1791,7 @@ namespace ProjectManagementSystem.Controllers
                         {
                             taskname = x.task_name,
                             approved = x.is_approved,
-                            approver_status = db.ApproversTbls.Where(y => y.Details_Id == x.task_id).Select(y => y.IsApproved_).ToList(),
+                            approver_status = db.OptionalMilestoneApprovers.Where(y => y.milestone_id == x.task_id).Select(y => y.approved).ToList(),
                             approvers = db.OptionalMilestoneApprovers.Where(y => y.milestone_id == x.task_id).Select(y => y.approver_name).ToList(),
                             task_id = x.task_id,
                             milestone_id = x.milestone_id,
@@ -1853,7 +1810,8 @@ namespace ProjectManagementSystem.Controllers
                             project_id = submissionContainer.project_id,
                             attachment = submissionContainer.attachment,
                             reason = submissionContainer.reason,
-                            approver_status = submissionContainer.approver_status
+                            approver_status = submissionContainer.approver_status,
+                            optFlag = true
                         };
 
                         container.Add(temporary);
@@ -1898,20 +1856,55 @@ namespace ProjectManagementSystem.Controllers
 
                 foreach (var preset in presetTasks)
                 {
-                    TaskContainerModel preset_container = new TaskContainerModel()
+                    if (submissions.Any(x => x.task_id == preset.ID))
                     {
-                        taskname = preset.Requirements,
-                        approvers = db.PreSetMilestoneApprovers.Where(x => x.milestone_id == milestoneId).Select(x => x.approver_name).ToList(),
-                        task_id = preset.ID,
-                        milestone_id = preset.MilestoneID,
-                        //attachment = null,
-                        //reason = null,
-                        //approver_status = new List<bool?> { null, null},
-                        approver_status = db.ChecklistSubmissions.Where(x => x.task_id == milestoneId).Select(x => x.is_approved).ToList(),
-                        optFlag = false
-                    };
 
-                    container.Add(preset_container);
+                        var submissionContainer = submissions.Where(x => x.task_id == preset.ID).OrderByDescending(x => x.submission_date).Select(x => new
+                        {
+                            taskname = x.task_name,
+                            approved = x.is_approved,
+                            approver_status = db.PreSetMilestoneApprovers.Where(y => y.main_id == x.main_id && y.milestone_id == x.milestone_id).Select(y => y.approved).ToList(),
+                            approvers = db.PreSetMilestoneApprovers.Where(y => y.milestone_id == x.task_id).Select(y => y.approver_name).ToList(),
+                            task_id = x.task_id,
+                            milestone_id = x.milestone_id,
+                            project_id = x.main_id,
+                            attachment = x.filepath,
+                            reason = x.disapproval_reason
+                        }).First();
+
+                        TaskContainerModel temporary = new TaskContainerModel()
+                        {
+                            taskname = submissionContainer.taskname,
+                            approved = submissionContainer.approved,
+                            approvers = submissionContainer.approvers,
+                            task_id = submissionContainer.task_id,
+                            milestone_id = submissionContainer.milestone_id,
+                            project_id = submissionContainer.project_id,
+                            attachment = submissionContainer.attachment,
+                            reason = submissionContainer.reason,
+                            approver_status = submissionContainer.approver_status,
+                            optFlag = false
+                        };
+
+                        container.Add(temporary);
+
+                    }
+
+                    else
+                    {
+                        TaskContainerModel preset_container = new TaskContainerModel()
+                        {
+                            taskname = preset.Requirements,
+                            approvers = db.PreSetMilestoneApprovers.Where(x => x.milestone_id == milestoneId).Select(x => x.approver_name).ToList(),
+                            task_id = preset.ID,
+                            milestone_id = preset.MilestoneID,
+                            approver_status = db.ChecklistSubmissions.Where(x => x.task_id == milestoneId).Select(x => x.is_approved).ToList(),
+                            optFlag = false
+                        };
+
+                        container.Add(preset_container);
+                    }
+                    
                 }
 
 

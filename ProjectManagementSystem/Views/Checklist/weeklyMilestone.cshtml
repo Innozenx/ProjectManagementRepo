@@ -1577,6 +1577,10 @@
                 type: "GET",
                 data: { milestoneId, mainId },
                 success: function (response) {
+                    const queryString = window.location.search;
+                    const urlParams = new URLSearchParams(queryString);
+                    const pId = urlParams.get("id");
+
                     checklistTableBody.empty();
 
                     if (response.success && response.data.length > 0) {
@@ -1674,6 +1678,7 @@
 
             var fileupload = inputFile.get(0);
             var taskname = inputName.text();
+            alert(taskname);
             var taskmilestone = inputMilestone.text();
             var taskproject = inputProject.text();
 
