@@ -24,6 +24,7 @@ namespace ProjectManagementSystem.Models
         public int DivisionID { get; set; }
         public string DivisionName { get; set; }
         public Nullable<int> CMID_reference { get; set; }
+        public string DivisionCode { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PreSetMilestone> PreSetMilestones { get; set; }

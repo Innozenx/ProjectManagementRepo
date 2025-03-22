@@ -121,11 +121,9 @@ namespace ProjectManagementSystem.Models
 
         public UserModel userDetails { get; set; }
         public bool IsProjectManager { get; set; }
-
-
-
-
+        public string ProjectStatus { get; set; }
         public List<ApproverViewModel> Checklist { get; set; }
+        public string MilestoneStatus { get; set; }
     }
 
     public class StatusLogsViewModel
@@ -329,6 +327,8 @@ namespace ProjectManagementSystem.Models
         public List<string> Approvers { get; set; } = new List<string>();
         public int Sorting { get; set; }
         public DateTime CreatedDate { get; set; }
+        public string ChecklistNumber { get; set; }
+        public string DivisionCodeNumber { get; set; }
     }
 
 

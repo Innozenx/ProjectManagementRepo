@@ -29,6 +29,7 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<AdminList> AdminLists { get; set; }
         public virtual DbSet<ApproversTbl> ApproversTbls { get; set; }
         public virtual DbSet<AttachmentTable> AttachmentTables { get; set; }
+        public virtual DbSet<ChecklistReference> ChecklistReferences { get; set; }
         public virtual DbSet<ChecklistSetup> ChecklistSetups { get; set; }
         public virtual DbSet<ChecklistSubmission> ChecklistSubmissions { get; set; }
         public virtual DbSet<ChecklistTable> ChecklistTables { get; set; }
@@ -51,6 +52,5 @@ namespace ProjectManagementSystem.Models
         public virtual DbSet<TransactionTbl> TransactionTbls { get; set; }
         public virtual DbSet<WeeklyChecklistTable> WeeklyChecklistTables { get; set; }
         public virtual DbSet<WeeklyStatu> WeeklyStatus { get; set; }
-        public virtual DbSet<View_1> View_1 { get; set; }
     }
 }
