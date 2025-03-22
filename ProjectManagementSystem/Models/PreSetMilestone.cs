@@ -23,6 +23,8 @@ namespace ProjectManagementSystem.Models
         public string Approvers { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }
         public string Draft { get; set; }
+        public string ChecklistNumber { get; set; }
+        public string DivisionCodeNumber { get; set; }
     
         public virtual Division Division { get; set; }
     }

@@ -518,6 +518,28 @@
         width: 250px;
         text-align: center;
     }
+    .badge {
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+    }
+
+
+    .badge-active {
+        background-color: #f1c40f; 
+        color: #66399A;
+    }
+
+    .badge-completed {
+        background-color: #27ae60; 
+        color: #fff;
+    }
+
+    .badge-delayed {
+        background-color: #e74c3c; 
+        color: #fff;
+    }
+
 
 </style>
 
@@ -564,11 +586,27 @@
                                 <tr>
                                     <th>Title:</th>
                                     <td>
-                                        <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = data.Id, title = data.ProjectTitle, projectId = data.DetailsID })">
+                                        <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = data.Id, title = data.ProjectTitle, projectId = data.DetailsID })" class="fw-bold text-purple">
                                             @data.ProjectTitle
                                         </a>
+                                        <div class="mt-1">
+                                            @if (Model.ProjectStatus == "Active")
+                                            {
+                                                <span class="badge badge-active">Active</span>
+                                            }
+                                            else if (Model.ProjectStatus == "Completed")
+                                            {
+                                                <span class="badge badge-completed">Completed</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-delayed">Delayed</span>
+                                            }
+                                        </div>
                                     </td>
                                 </tr>
+
+
                                 <tr>
                                     <th>Start Date:</th>
                                     <td>@DateTime.Parse(data.ProjectStart).ToString("MMMM dd, yyyy")</td>
@@ -812,7 +850,7 @@
                                         <p class="text-muted mb-0" style="font-size: 0.9em;">No Date</p>
                                     }
                                 </div>
-                                <!-- Milestone, Description, and Attachment Link -->
+                   
                                 <div class="log-details ml-5">
                                     <p class="mb-1 ml-2"><strong>Milestone:</strong> @log.MilestoneName</p>
                                     <p class="mb-1 ml-2"><strong>Description:</strong> @log.Description</p>
@@ -949,11 +987,9 @@
     </div>
 </div>
 
-<!--Add Optional Task Modal-->
 <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog" style="margin: auto">
 
-        <!-- Modal content-->
         <div class="modal-content" style="width: 100%">
             <div class="modal-header">
                 <label id="modal_title"></label>
@@ -966,8 +1002,8 @@
                     <table id="item_table">
                         <tbody>
                             <tr>
-                                <th>#</th>
-                                <th>Task</th>
+                                <th>No.</th>
+                                <th>Checklist Item</th>
                                 <th>Description</th>
                             </tr>
 
@@ -984,22 +1020,20 @@
             </div>
 
             <div style="margin: auto; text-align: center">
-                <button class="btn-primary w-100" id="add_row" onclick="AddRow()">Add Item</button>
+                <button class="btn-primary w-100" id="add_row" onclick="AddRow()">Add</button>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="submit_button">Submit</button>
+                <button type="button" class="btn btn-success" id="submit_button">Save</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
-<!--Add approver for optional task modal-->
 <div class="modal fade" id="approverModal" role="dialog">
     <div class="modal-dialog" style="margin: auto">
 
-        <!-- Modal content-->
         <div class="modal-content" style="width: 100%">
             <div class="modal-header">
                 <label id="modal_title"></label>
@@ -1039,11 +1073,10 @@
     </div>
 </div>
 
-<!--Remove approver from optional task modal-->
+
 <div class="modal fade" id="removeModal" role="dialog">
     <div class="modal-dialog" style="margin: auto; margin-left: 20%">
 
-        <!-- Modal content-->
         <div class="modal-content" style="width: 140%">
             <div class="modal-header">
                 <label id="modal_title"></label>
@@ -1539,7 +1572,6 @@
                 $("#add_optional").remove();
                 return;
             }
-
             $.ajax({
                 url: "/Checklist/GetTasksForMilestone",
                 type: "GET",
@@ -1548,61 +1580,81 @@
                     checklistTableBody.empty();
 
                     if (response.success && response.data.length > 0) {
-                        response.data.forEach(task => {
+                        response.data.forEach((task, index) => {
+
+                            let approversArray = Object.keys(task.approvers).map(key => {
+                                let status = task.approver_status[key];
+                                let icon;
+
+                                if (status === true) {
+                                    icon = '<i class="fa fa-check text-success"></i>';  
+                                } else if (status === false) {
+                                    icon = '<i class="fa fa-ban text-danger"></i>';    
+                                } else {
+                                    icon = '<i class="fa fa-exclamation-circle text-warning"></i>'; 
+                                }
+
+                                return `${icon} ${task.approvers[key]}`;
+                            });
+
+
+                            let collapsedApprovers = approversArray.slice(0, 2).join("<br/>");
+                            let remainingApprovers = approversArray.slice(2).join("<br/>");
+
+                            let approverHtml = `
+                    <div class="approver-list">
+                        <div class="collapsed-approvers">${collapsedApprovers}</div>
+                        ${approversArray.length > 2 ? `
+                            <div class="more-approvers d-none">${remainingApprovers}</div>
+                            <a href="javascript:void(0);" class="toggle-approvers text-purple small">See More</a>
+                        ` : ''}
+                    </div>
+                `;
+
                             checklistTableBody.append(`
-                        <tr>
-                            <td>
-                                ${task.optFlag ? `<button class="bg-red" onclick="removeTask(${task.task_id})">
-                                    <i class="fa fa-trash" aria-hidden="true"></i>
-                                </button>` : ""}
-                            </td>
-                            <td>${task.optFlag ? `Project Manager` : `ODCP`}</td>
-                            <td id="${task.task_id}">${task.taskname}</td>
-                            <td>
-                                ${task.attachment ? `<a href="${task.attachment}">View Attachment</a>`
+                    <tr>
+                        <td>
+                            ${task.optFlag ? `<button class="bg-red" onclick="removeTask(${task.task_id})">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>` : ""}
+                        </td>
+                        <td>${task.optFlag ? `Project Manager` : `ODCP`}</td>
+                        <td id="${task.task_id}">${task.taskname}</td>
+                        <td>
+                            ${task.attachment ? `<a href="${task.attachment}">View Attachment</a>`
                                     : `<input type="file" class="form-control-file" id="${task.task_id}file">`}
-                            </td>
-                            <td>
-                                ${Object.keys(task.approvers).map(key => {
-                                    return task.approver_status[key] == true
-                                        ? `<i class="fa-solid fa-check text-success"></i> ${task.approvers[key]}`
-                                        : task.approver_status[key] == null
-                                            ? `<i class="fa fa-exclamation-circle text-warning"></i> ${task.approvers[key]}`
-                                            : `<i class="fas fa-ban text-danger"></i> ${task.approvers[key]}`;
-                                }).join("<br/>")}
-                            </td>
-                            <td>${task.approved ? "Approved" : task.reason ? "Disapproved" : "Pending"}</td>
-                            <td>
-                                ${task.attachment
+                        </td>
+                        <td>${approverHtml}</td>
+                        <td>${task.approved ? "Approved" : task.reason ? "Disapproved" : "Pending"}</td>
+                        <td>
+                            ${task.attachment
                                     ? task.approved
                                         ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
                                         : task.reason
                                             ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
                                             : `<button class="btn btn-sm btn-warning" disabled>Pending Approval</button>`
                                     : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Submit</button>`}
-                            </td>
-                            <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
-                            <td class="d-none" id="${task.task_id}project">${task.project_id}</td>
-                        </tr>
-                    `);
-                        });
-
-
-                    //    if ($("#add_optional").length === 0 && isProjectManager) {
-                    //        $("#checklistContainer").append(`
-                    //    <div class="text-center mt-3">
-                    //        <button class="btn btn-purple btn-lg" id="add_optional">
-                    //            <i class="fa fa-plus"></i> Add Checklist Item
-                    //        </button>
-                    //    </div>
-                    //`);
-                    //    }
-                    } else {
-                        checklistTableBody.html(`
-                    <tr>
-                        <td colspan="7" class="text-center">No tasks found for this milestone.</td>
+                        </td>
+                        <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
+                        <td class="d-none" id="${task.task_id}project">${task.project_id}</td>
                     </tr>
                 `);
+                        });
+
+                      
+                        checklistTableBody.off('click', '.toggle-approvers').on('click', '.toggle-approvers', function () {
+                            const parent = $(this).closest('.approver-list');
+                            parent.find('.more-approvers').toggleClass('d-none');
+                            const linkText = $(this).text() === 'See More' ? 'See Less' : 'See More';
+                            $(this).text(linkText);
+                        });
+
+                    } else {
+                        checklistTableBody.html(`
+                <tr>
+                    <td colspan="7" class="text-center">No tasks found for this milestone.</td>
+                </tr>
+            `);
                         $("#add_optional").remove();
                     }
                 },
@@ -1610,6 +1662,8 @@
                     console.error("Error fetching tasks:", xhr.responseText);
                 }
             });
+
+
         }
 
         function submitApproval(task_id) {

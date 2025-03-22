@@ -56,8 +56,9 @@
                                         <table class="table table-hover table-bordered" id="milestoneTable">
                                             <thead class="table-light sticky-header">
                                                 <tr>
-                                                    <th>Milestone Name</th>
-                                                    <th>Requirements</th>
+                            
+                                                    <th>Milestone</th>
+                                                    <th>Checklist Item</th>
                                                     <th>Approvers</th>
                                                     <th>Actions</th>
                                                 </tr>
@@ -68,6 +69,7 @@
                                                     foreach (var milestone in Model)
                                                     {
                                                         <tr>
+           
                                                             <td>@milestone.MilestoneName</td>
                                                             <td>@milestone.Requirements.Count Items</td>
                                                             <td>@milestone.Approvers.Count</td>
@@ -96,6 +98,11 @@
                                     @*<div class="mt-3 d-flex justify-content-end">
                                         <button id="saveMilestones" class="btn btn-primary">Save Checklist</button>
                                     </div>*@
+                                    <div class="mt-4 d-flex justify-content-end">
+                                        <button id="finalizeChecklist" class="btn btn-success">
+                                            <i class="fas fa-check-circle"></i> Finalize Checklist
+                                        </button>
+                                    </div>
 
                                 </div>
                             </div>
@@ -206,141 +213,189 @@ body {
     $(document).ready(function () {
         let divisionId = '@ViewBag.DivisionId';
 
+        function loadMilestones() {
+            $.ajax({
+                url: '/Admin/GetMilestones?divisionId=' + divisionId,
+                type: 'GET',
+                success: function (data) {
+                    let tableBody = $("#milestoneTable tbody");
+                    tableBody.empty();
 
-    function loadMilestones() {
-        $.ajax({
-            url: '/Admin/GetMilestones?divisionId=' + divisionId,
-            type: 'GET',
-            success: function (data) {
-                let tableBody = $("#milestoneTable tbody");
-                tableBody.empty();
+                    if (data.length === 0) {
+                        tableBody.append(`<tr><td colspan="4" class="text-center text-muted">No milestones found.</td></tr>`);
+                    } else {
+                        data.forEach(milestone => {
+                            let requirementsList = milestone.Requirements.length > 0
+                                ? `<ul class="list-unstyled">${milestone.Requirements.map(req => `<li>• ${req}</li>`).join('')}</ul>`
+                                : "No requirements";
 
-                if (data.length === 0) {
-                    tableBody.append(`<tr><td colspan="4" class="text-center text-muted">No milestones found.</td></tr>`);
-                } else {
-                    data.forEach(milestone => {
-                        let requirementsList = milestone.Requirements.length > 0
-                            ? `<ul class="list-unstyled">${milestone.Requirements.map(req => `<li>• ${req}</li>`).join('')}</ul>`
-                            : "No requirements";
+                            let approversList = milestone.Approvers.length > 0
+                                ? `<ul class="list-unstyled">${milestone.Approvers.map(appr => `<li>• ${appr}</li>`).join('')}</ul>`
+                                : "No approvers assigned";
 
-                        let approversList = milestone.Approvers.length > 0
-                            ? `<ul class="list-unstyled">${milestone.Approvers.map(appr => `<li>• ${appr}</li>`).join('')}</ul>`
-                            : "No approvers assigned";
-
-                        tableBody.append(`
-                        <tr>
-                            <td>${milestone.MilestoneName}</td>
-                            <td>${requirementsList}</td>
-                            <td>${approversList}</td>
-                            <td>
-                                <button class="btn btn-outline-primary btn-sm viewRow" data-id="${milestone.MilestoneID}" data-bs-toggle="tooltip" title="View Milestone">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn btn-outline-warning btn-sm editRow" data-id="${milestone.MilestoneID}" data-bs-toggle="tooltip" title="Edit Milestone">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-outline-danger btn-sm removeRow" data-id="${milestone.MilestoneID}" data-bs-toggle="tooltip" title="Delete Milestone">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `);
-                    });
+                            tableBody.append(`
+                                <tr>
+                                    <td>${milestone.MilestoneName}</td>
+                                    <td>${requirementsList}</td>
+                                    <td>${approversList}</td>
+                                    <td>
+                                        <button class="btn btn-outline-primary btn-sm viewRow" data-id="${milestone.MilestoneID}" data-bs-toggle="tooltip" title="View Milestone">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-warning btn-sm editRow" data-id="${milestone.MilestoneID}" data-bs-toggle="tooltip" title="Edit Milestone">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm removeRow" data-id="${milestone.MilestoneID}" data-bs-toggle="tooltip" title="Delete Milestone">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    }
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to load milestones: ", error);
                 }
-                $('[data-bs-toggle="tooltip"]').tooltip();
-            },
-            error: function (xhr, status, error) {
-                console.error("Failed to load milestones: ", error);
-            }
-        });
-    }
-    loadMilestones();
+            });
+        }
+        loadMilestones();
 
-    $("#searchMilestone").on("keyup", function () {
-        let value = $(this).val().toLowerCase();
-        $("#milestoneTable tbody tr").filter(function () {
-            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-        });
-    });
-
-    $('#addMilestoneRow').click(function () {
-        $('#milestoneTable tbody').append(`
-            <tr>
-                <td><input type="text" class="form-control milestone-name" placeholder="Enter milestone name" required></td>
-                <td><textarea class="form-control milestone-requirements" placeholder="Enter requirements"></textarea></td>
-                <td><input type="number" class="form-control milestone-approvers" placeholder="No. of Approvers" required></td>
-                <td>
-                    <button class="btn btn-outline-primary btn-sm viewRow" data-bs-toggle="tooltip" title="View Milestone">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn btn-outline-warning btn-sm editRow" data-bs-toggle="tooltip" title="Edit Milestone">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-outline-danger btn-sm removeRow" data-bs-toggle="tooltip" title="Delete Milestone">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `);
-
-        $('[data-bs-toggle="tooltip"]').tooltip();
-    });
-
-    $(document).on('click', '.removeRow', function () {
-        $(this).closest('tr').remove();
-    });
-
-    $('#saveMilestones').click(function () {
-        let milestones = [];
-        $('#milestoneTable tbody tr').each(function () {
-            let milestone = {
-                DivisionId: '@ViewBag.DivisionId',
-                Name: $(this).find('.milestone-name').val(),
-                Requirements: $(this).find('.milestone-requirements').val(),
-                Approvals: $(this).find('.milestone-approvers').val()
-            };
-            milestones.push(milestone);
+        $("#searchMilestone").on("keyup", function () {
+            let value = $(this).val().toLowerCase();
+            $("#milestoneTable tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
         });
 
-        $.ajax({
-            url: '/Admin/SaveMilestones',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(milestones),
-            success: function (response) {
-                if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Checklist Created!',
-                        text: 'Your checklist has been successfully saved.',
-                        confirmButtonColor: '#470A67'
-                    }).then(() => {
-                        window.location.href = "/Admin/Milestones";
-                    });
-                } else {
+        $('#addMilestoneRow').click(function () {
+            $('#milestoneTable tbody').append(`
+                <tr>
+                    <td><input type="text" class="form-control milestone-name" placeholder="Enter >" required></td>
+                    <td><textarea class="form-control milestone-requirements" placeholder="Enter requirements"></textarea></td>
+                    <td><input type="number" class="form-control milestone-approvers" placeholder="No. of Approvers" required></td>
+                    <td>
+                        <button class="btn btn-outline-primary btn-sm viewRow" data-bs-toggle="tooltip" title="View Milestone">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm editRow" data-bs-toggle="tooltip" title="Edit Milestone">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm removeRow" data-bs-toggle="tooltip" title="Delete Milestone">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `);
+
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+
+        $(document).on('click', '.removeRow', function () {
+            $(this).closest('tr').remove();
+        });
+
+        $('#saveMilestones').click(function () {
+            let milestones = [];
+            $('#milestoneTable tbody tr').each(function () {
+                let milestone = {
+                    DivisionId: '@ViewBag.DivisionId',
+                    Name: $(this).find('.milestone-name').val(),
+                    Requirements: $(this).find('.milestone-requirements').val(),
+                    Approvals: $(this).find('.milestone-approvers').val()
+                };
+                milestones.push(milestone);
+            });
+
+            $.ajax({
+                url: '/Admin/SaveMilestones',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(milestones),
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Checklist Created!',
+                            text: 'Your checklist has been successfully saved.',
+                            confirmButtonColor: '#470A67'
+                        }).then(() => {
+                            window.location.href = "/Admin/Milestones";
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: response.message,
+                            confirmButtonColor: '#470A67'
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to save milestones: ", error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
-                        text: response.message,
+                        text: 'An unexpected error occurred while saving the milestone.',
                         confirmButtonColor: '#470A67'
                     });
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error("Failed to save milestones: ", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'An unexpected error occurred while saving the milestone.',
-                    confirmButtonColor: '#470A67'
-                });
-            }
+            });
         });
-    });
 
-    $(document).tooltip({
-        selector: '[data-bs-toggle="tooltip"]'
-    });
-});
+        $(document).tooltip({
+            selector: '[data-bs-toggle="tooltip"]'
+        });
 
+       
+        $('#finalizeChecklist').click(function () {
+            Swal.fire({
+                title: 'Finalize Checklist?',
+                text: "Are you sure you want to finalize this checklist?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#470A67',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Admin/FinalizeChecklist',
+                        type: 'POST',
+                        data: { divisionId: divisionId },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Checklist Finalized Successfully!',
+                                    text: `Reference #: ${response.message}`,
+                                    confirmButtonColor: '#470A67'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops!',
+                                    text: response.message,
+                                    confirmButtonColor: '#470A67'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Server Error',
+                                text: 'Could not finalize checklist.',
+                                confirmButtonColor: '#470A67'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+    });
 </script>
+

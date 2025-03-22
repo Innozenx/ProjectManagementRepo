@@ -249,6 +249,81 @@
         margin-top: 50px;
         padding: 20px 0;
     }
+    .badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .badge-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .badge-warning {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .badge-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+    .tooltip-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .status-badge {
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-block;
+        min-width: 110px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .custom-tooltip {
+        visibility: hidden;
+        opacity: 0;
+        background-color: rgba(0, 0, 0, 0.85);
+        color: white;
+        text-align: left;
+        border-radius: 6px;
+        padding: 8px 10px;
+        position: absolute;
+        z-index: 999;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+        max-width: 200px;
+        font-size: 12px;
+        transition: opacity 0.3s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .tooltip-container:hover .custom-tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
+
+
 </style>
 
 
@@ -327,38 +402,71 @@
                                         @projectGroup.Key
                                     </a>
                                 </td>
-                                @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                {
-                                    var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName);
 
-                                    // OS
-                                    var latestEndDate = milestoneTasks.Any(pm => pm.EndDate.HasValue)
-                                        ? milestoneTasks.Max(pm => pm.EndDate.Value)
-                                        : (DateTime?)null;
-                                    var osFormatted = latestEndDate.HasValue
-                                        ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00} os"
-                                        : "-";
+                               @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                               {
+                                   var milestoneTasks = projectGroup.Where(pm => pm.MilestoneName == milestoneName);
 
-                                    // CS
-                                    var currentEndDate = milestoneTasks.Any(pm => pm.CurrentCompletionDate.HasValue)
-                                        ? milestoneTasks.Max(pm => pm.CurrentCompletionDate.Value)
-                                        : latestEndDate;
-                                    var csFormatted = currentEndDate.HasValue
-                                        ? $"WW{currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00} cs"
-                                        : "-";
+                                   var latestEndDate = milestoneTasks.Any(pm => pm.EndDate.HasValue)
+                                       ? milestoneTasks.Max(pm => pm.EndDate.Value)
+                                       : (DateTime?)null;
 
-                                    // kunyari foresee na nilang madedelay project, hindi muna sya mag display sa dashboard
+                                   var currentEndDate = milestoneTasks.Any(pm => pm.CurrentCompletionDate.HasValue)
+                                       ? milestoneTasks.Max(pm => pm.CurrentCompletionDate.Value)
+                                       : latestEndDate;
 
-                                    // OS / CS Combined
-                                    var combinedFormatted = osFormatted != csFormatted && csFormatted != "-"
-                                        ? $"{osFormatted} / {csFormatted}"
-                                        : osFormatted;
+                                   var osWeek = latestEndDate.HasValue
+                                       ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
+                                       : "-";
 
-                                    <td class="duedate-colors">@combinedFormatted</td>
-                                }
+                                   var csWeek = currentEndDate.HasValue
+                                       ? $"WW{currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Sunday):00}"
+                                       : "-";
+
+                                   string combinedFormatted;
+
+                                   if (osWeek != "-" && csWeek != "-" && osWeek != csWeek)
+                                   {
+                                       combinedFormatted = $"{osWeek} os / {csWeek} cs";
+                                   }
+                                   else if (osWeek != "-")
+                                   {
+                                       combinedFormatted = osWeek;
+                                   }
+                                   else
+                                   {
+                                       combinedFormatted = "-";
+                                   }
+
+                                   var milestoneStatus = milestoneTasks.FirstOrDefault()?.MilestoneStatus ?? "";
+                                   string cellColor = "";
+
+                                   switch (milestoneStatus)
+                                   {
+                                       case "Completed": cellColor = "#28a745"; break;
+                                       case "Active": cellColor = "#007bff"; break;
+                                       case "Due Today": cellColor = "#ffc107"; break;
+                                       case "Delayed": cellColor = "#dc3545"; break;
+                                       case "Pending": cellColor = "#6c757d"; break;
+                                       default: cellColor = "#ffffff"; break;
+                                   }
+
+                                <td style="text-align: center; position: relative;">
+                                    <div class="tooltip-container">
+                                        <span class="status-badge" style="background-color:@cellColor;">
+                                            @combinedFormatted
+                                        </span>
+                                        <div class="custom-tooltip">
+                                            <strong>Status:</strong> @milestoneStatus<br />
+                                            <strong>Due:</strong> @(currentEndDate?.ToString("MMM dd, yyyy") ?? "N/A")
+                                        </div>
+                                    </div>
+                                </td>
+                               }
                             </tr>
                         }
                     </tbody>
+
                 </table>
             </div>
         }
