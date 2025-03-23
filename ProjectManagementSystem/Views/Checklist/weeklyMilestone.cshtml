@@ -1623,7 +1623,7 @@
                             </button>` : ""}
                         </td>
                         <td>${task.optFlag ? `Project Manager` : `ODCP`}</td>
-                        <td id="${task.task_id}">${task.taskname}</td>
+                        <td id="${task.task_id}name">${task.taskname}</td>
                         <td>
                             ${task.attachment ? `<a href="${task.attachment}">View Attachment</a>`
                                     : `<input type="file" class="form-control-file" id="${task.task_id}file">`}
@@ -1640,7 +1640,7 @@
                                     : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Submit</button>`}
                         </td>
                         <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
-                        <td class="d-none" id="${task.task_id}project">${task.project_id}</td>
+                        <td class="d-none" id="${task.task_id}project">${pId}</td>
                     </tr>
                 `);
                         });
@@ -1677,8 +1677,9 @@
             var inputProject = $("#" + task_id + "project");
 
             var fileupload = inputFile.get(0);
+
             var taskname = inputName.text();
-            alert(taskname);
+
             var taskmilestone = inputMilestone.text();
             var taskproject = inputProject.text();
 
