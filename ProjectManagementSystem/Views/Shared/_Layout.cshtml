@@ -3,15 +3,26 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Project Management System</title>
+    <link rel="icon" href="https://home.enchantedkingdom.ph/intranet/Images/ek_logo.png" type="image/x-icon" />
+
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.0.0/css/fixedColumns.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colvis/1.5.0/css/colVis.dataTables.min.css">
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
-    <title>@ViewBag.Title - Project Management System</title>
+
+    <!-- FullCalendar CSS (NEW) -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+
+    <!-- Bundle styles -->
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-   
 
     <style>
         body {
@@ -23,54 +34,53 @@
             height: 100vh;
             margin: 0;
         }
+
         .navbar-light {
-            background-color: #f8f9fa; 
+            background-color: #f8f9fa;
             border-bottom: 2px solid #e0e0e0;
             font-family: 'Poppins', sans-serif;
         }
 
             .navbar-light .navbar-nav > li > a {
-                color: #6b5b95; 
+                color: #6b5b95;
                 font-weight: bold;
             }
 
-        .navbar-light .navbar-nav > li > a:hover,
-        .navbar-light .navbar-nav > li > a:focus {
-            color: #ffcc00; 
-            background-color: transparent;
-        }
+                .navbar-light .navbar-nav > li > a:hover,
+                .navbar-light .navbar-nav > li > a:focus {
+                    color: #ffcc00;
+                    background-color: transparent;
+                }
 
         .navbar-toggle {
-            border-color: #6b5b95; 
+            border-color: #6b5b95;
         }
 
             .navbar-toggle .icon-bar {
-                background-color: #6b5b95; 
+                background-color: #6b5b95;
             }
 
         .navbar-light .navbar-nav > li.active > a,
         .navbar-light .navbar-nav > li.active > a:hover,
         .navbar-light .navbar-nav > li.active > a:focus {
             color: #ffffff;
-            background-color: #6b5b95; 
+            background-color: #6b5b95;
         }
 
         .navbar-light .navbar-collapse {
-            border-color: #6b5b95; 
+            border-color: #6b5b95;
         }
 
         .navbar-light .container {
             border-color: #6b5b95;
         }
 
-
         .navbar-light .navbar-right {
-            color: #6b5b95; 
+            color: #6b5b95;
         }
-
     </style>
-
 </head>
+
 <body>
     @Html.Partial("_Navbar")
     <div class="container-fluid body-content">
@@ -81,20 +91,21 @@
         </footer>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+
     <script src="~/Scripts/jquery.validate.min.js"></script>
     <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/Scripts/notify.js"></script>
     <script src="~/FrontEnd/plugins/datatables/jquery.dataTables.js"></script>
-    <script src="~/FrontEnd/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/4.0.0/js/dataTables.fixedColumns.min.js"></script>
     <script src="https://cdn.datatables.net/colvis/1.5.0/js/dataTables.colVis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    
 </body>
 </html>

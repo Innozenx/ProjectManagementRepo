@@ -30,9 +30,13 @@
                                             }
                                         }
                                     </select>
+                                    @*<button id="addMilestoneBtn" class="btn btn-outline-primary" style="font-weight:normal">
+                                        <i class="fas fa-plus"></i> Add to Checklist
+                                    </button>*@
                                     <button id="addMilestoneBtn" class="btn btn-outline-primary" style="font-weight:normal">
-                                        <i class="fas fa-plus"></i> Create
+                                        <i class="fas fa-plus"></i> Add to Checklist
                                     </button>
+
                                 </div>
                             </div>
 
@@ -215,6 +219,9 @@
             color: white;
         }
 
+    .input-group > .form-select {
+        margin-right: 10px;
+    }
 
 </style>
 
@@ -230,7 +237,16 @@
             ]
         });
 
-        function loadSavedDivisions() {
+        // it disables the 'Add to Checklist' button until a division is selected
+        $("#divisionDropdown").on("change", function () {
+            const hasSelection = $(this).val() !== "";
+            $("#addMilestoneBtn").prop("disabled", !hasSelection);
+        });
+        $("#divisionDropdown").trigger("change"); // Trigger on load in case it's pre-filled
+
+
+
+        function loadSavedDivisions(callback) {
             $.get('/Admin/GetSavedDivisions', function (response) {
                 console.log("API Response:", response);
 
@@ -273,6 +289,10 @@
                 });
 
                 $('[data-bs-toggle="tooltip"]').tooltip();
+
+                if (typeof callback === "function") {
+                    callback();
+                }
             }).fail(function (xhr, status, error) {
                 console.error("Error fetching divisions:", error);
             });
@@ -288,26 +308,66 @@
                 Swal.fire("Oops!", "Please select a division before proceeding.", "warning");
                 return;
             }
-            let divisionExists = false;
-            table.rows().every(function () {
-                let rowData = this.data();
-                if (rowData[0].includes(divisionText)) {
-                    divisionExists = true;
+
+            // check if already in table to avoid duplicates
+            let exists = false;
+            $('#milestoneTable').DataTable().rows().every(function () {
+                let $row = $(this.node());
+                let id = $row.find('.removeMilestone').data('id');
+                if (id == divisionId) {
+                    exists = true;
+                    return false;
                 }
             });
 
-            if (divisionExists) {
+            if (exists) {
                 Swal.fire("Duplicate", "Checklist for this division already exists!", "error");
                 return;
             }
 
-            let button = $("#addMilestoneBtn");
-            button.prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+            $("#addMilestoneBtn").prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
 
-            setTimeout(() => {
-                button.prop("disabled", false).html('<i class="fas fa-plus"></i> Create');
-            }, 2000);
+            $.post('/Admin/SaveDivision', { divisionId: divisionId }, function (response) {
+                $("#addMilestoneBtn").prop('disabled', false).html('<i class="fas fa-plus"></i> Add Division');
+
+                if (response.success) {
+                    Swal.fire("Added!", `${divisionText} is now ready for checklist setup.`, "success");
+
+                    $("#divisionDropdown").val("").trigger("change"); 
+                    $("#divisionDropdown").blur(); 
+
+                    loadSavedDivisions(function () {
+                        let $newRow = $(`#milestoneTable .removeMilestone[data-id='${divisionId}']`).closest('tr');
+                        $newRow.addClass('table-success');
+
+                        // OLD
+                        //$('html, body').animate({
+                        //    scrollTop: $newRow.offset().top
+                        //}, 600);
+
+
+                        // NEW
+                        let $container = $('.table-responsive');
+                        $container.animate({
+                            scrollTop: $newRow.position().top + $container.scrollTop()
+                        }, 600);
+
+                        setTimeout(() => {
+                            $newRow.removeClass('table-success');
+                        }, 2000);
+                    });
+
+                } else {
+                    Swal.fire("Error!", response.message, "error");
+                   
+
+                }
+            }).fail(function () {
+                $("#addMilestoneBtn").prop('disabled', false).html('<i class="fas fa-plus"></i> Add Division');
+                Swal.fire("Error!", "Failed to add division. Please try again.", "error");
+            });
         });
+
 
         $(document).on('click', '.previewMilestone', function () {
             let divisionId = $(this).data('id');
@@ -321,18 +381,18 @@
                 }
 
                 let checklistHtml = `
-                <h5 class="fw-bold text-dark">Checklist for ${divisionName}</h5>
-                <p class="text-muted mb-2">Reference No. ${checklistRef}</p>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Milestone</th>
-                                <th>Requirements</th>
-                                <th>Approvers</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <h5 class="fw-bold text-dark">Checklist for ${divisionName}</h5>
+                    <p class="text-muted mb-2">Reference No. ${checklistRef}</p>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Milestone</th>
+                                    <th>Requirements</th>
+                                    <th>Approvers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                 `;
 
                 response.data.forEach(item => {
@@ -340,11 +400,11 @@
                     let approvers = item.Approvers ? item.Approvers.replace(/,/g, "<br>") : "No approvers";
 
                     checklistHtml += `
-                    <tr>
-                        <td>${item.MilestoneName}</td>
-                        <td>${requirements}</td>
-                        <td>${approvers}</td>
-                    </tr>`;
+                        <tr>
+                            <td>${item.MilestoneName}</td>
+                            <td>${requirements}</td>
+                            <td>${approvers}</td>
+                        </tr>`;
                 });
 
                 checklistHtml += `</tbody></table></div>`;
@@ -383,8 +443,16 @@
             });
         });
 
+        
+        let newDivision = sessionStorage.getItem("newDivision");
+        if (newDivision) {
+            Swal.fire("Success!", `Checklist initialized for ${newDivision}`, "success");
+            sessionStorage.removeItem("newDivision");
+        }
+
         $(document).tooltip({
             selector: '[data-bs-toggle="tooltip"]'
         });
     });
 </script>
+

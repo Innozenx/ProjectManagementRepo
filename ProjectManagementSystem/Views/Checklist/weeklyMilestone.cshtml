@@ -617,18 +617,16 @@
                                 </tr>
                                 <tr>
                                     <th>Duration:</th>
+                                    @{
+                                        var startDate = DateTime.Parse(data.ProjectStart);
+                                        var endDate = DateTime.Parse(data.ProjectEnd);
+                                        var duration = (endDate - startDate).TotalDays + 1;
+                                    }
                                     <td>
-                                        @data.ProjectDuration
-                                        @if (data.ProjectDuration == 1)
-                                        {
-                                            @:day
-                                        }
-                                        else
-                                        {
-                                            @:days
-                                        }
+                                        @duration @((duration == 1) ? "day" : "days")
                                     </td>
                                 </tr>
+
 
                             </table>
                         </td>
@@ -728,7 +726,7 @@
 
                         <div class="mb-3">
                             <label for="fileUpload" class="fw-semibold">Attachments <span class="text-danger">*</span></label>
-                            <input type="file" name="fileUpload" id="fileUpload" class="form-control shadow-sm" multiple />
+                            <input type="file" name="fileUpload" id="fileUpload"  accept=".pdf,.docx,.jpg"  class="form-control shadow-sm" multiple />
 
                             <div id="uploadedFilesList"></div> 
                         </div>
@@ -913,7 +911,7 @@
                 </div>
             </div>
             <div id="gantt_here" style="width:100%; height:60vh;"></div>
-            <div id="gantt_here" style="width:100%; height:60vh;"></div>
+            @*<div id="gantt_here" style="width:100%; height:60vh;"></div>*@
         </div>
     </div>
 </div>
@@ -1142,6 +1140,7 @@
                 validationMessage.text('Please fill out all required fields.').show();
                 return;
             }
+            $('button[type="submit"]').prop('disabled', true);
 
             const formData = new FormData($('#updateStatusForm')[0]);
 
