@@ -15,5 +15,7 @@ namespace ProjectManagementSystem.Models
     public partial class ChecklistTable
     {
         public int checklist_id { get; set; }
+        public Nullable<int> main_id { get; set; }
+        public Nullable<int> milestone_id { get; set; }
     }
 }

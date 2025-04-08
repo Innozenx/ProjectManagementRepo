@@ -32,6 +32,7 @@ namespace ProjectManagementSystem.Models
         public string project_owner { get; set; }
         public string user_id { get; set; }
         public Nullable<bool> isCompleted { get; set; }
+        public Nullable<bool> IsArchived { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FixedChecklistTbl> FixedChecklistTbls { get; set; }

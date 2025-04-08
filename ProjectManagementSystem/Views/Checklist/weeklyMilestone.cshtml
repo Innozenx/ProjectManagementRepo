@@ -552,6 +552,13 @@
     </div>
 </div>
 
+@if (Model.IsArchived)
+{
+    <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 20px auto; text-align: center; font-weight: 600; border-radius: 5px; max-width: 1000px;">
+        <i class="fas fa-lock mr-2 text-warning"></i>
+        This project is <strong>archived</strong> and is in <span style="color: #d63384;">view-only</span> mode.
+    </div>
+}
 
 <ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
     <li class="nav-item">
@@ -658,7 +665,8 @@
 
     <div class="action-tiles-container">
         <div class="action-tile">
-            <button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title">
+            @*<button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title">*@
+            <button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title" @(Model.IsArchived ? "disabled style='opacity:0.5; cursor:not-allowed;'" : "")>
                 <i class="fas fa-edit"></i> Status
             </button>
         </div>
@@ -737,7 +745,10 @@
 
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             @*<button type="button" class="btn btn-light border shadow-sm" data-dismiss="modal">Cancel</button>*@
-                            <button type="button" class="btn btn-outline-primary text-white shadow-sm px-4" onclick="validateAndSubmit()">Submit</button>
+                            @*<button type="button" class="btn btn-outline-primary text-white shadow-sm px-4" onclick="validateAndSubmit()">*@
+                            <button type="button" class="btn btn-outline-primary text-white shadow-sm px-4" onclick="validateAndSubmit()" @(Model.IsArchived ? "disabled style='opacity:0.5; cursor:not-allowed;'" : "")>
+                                Submit
+                            </button>
                         </div>
 
                     </form>

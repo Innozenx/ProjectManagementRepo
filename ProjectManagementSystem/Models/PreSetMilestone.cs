@@ -25,6 +25,7 @@ namespace ProjectManagementSystem.Models
         public string Draft { get; set; }
         public string ChecklistNumber { get; set; }
         public string DivisionCodeNumber { get; set; }
+        public string division_string { get; set; }
     
         public virtual Division Division { get; set; }
     }

@@ -124,6 +124,10 @@ namespace ProjectManagementSystem.Models
         public string ProjectStatus { get; set; }
         public List<ApproverViewModel> Checklist { get; set; }
         public string MilestoneStatus { get; set; }
+        public List<string> SelectedMilestones { get; set; }
+        public bool AreCompleted { get; set; }
+        public bool IsArchived { get; set; }
+
     }
 
     public class StatusLogsViewModel

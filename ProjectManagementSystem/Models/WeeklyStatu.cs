@@ -15,7 +15,7 @@ namespace ProjectManagementSystem.Models
     public partial class WeeklyStatu
     {
         public int status_id { get; set; }
-        public Nullable<int> milestone_id { get; set; }
+        public Nullable<int> details_id { get; set; }
         public string project_owner { get; set; }
         public string description { get; set; }
         public Nullable<System.DateTime> date_updated { get; set; }

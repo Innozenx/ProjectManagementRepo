@@ -1,0 +1,207 @@
+﻿@model IEnumerable<ProjectManagementSystem.Models.MainTable>
+
+@{
+    ViewBag.Title = "Archived Projects";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">📁 <br /> Archived Projects</h2>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success text-center rounded-pill py-2 px-4 shadow-sm mx-auto" style="max-width: 400px;">
+            @TempData["Message"]
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center text-muted fs-5">No archived projects found.</div>
+    }
+    else
+    {
+        <div class="card-container wide-card-container mt-4 p-4 shadow-sm rounded-4" style="background-color: #fff;">
+
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                <div class="d-flex align-items-center" style="font-size: 14px;">
+                    Show
+                    <select name="entriesLength" id="entriesLength" class="form-select mx-2"
+                            style="width: 80px; font-size: 14px; border-radius: 6px;">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                    entries
+                </div>
+                <input type="text" id="customSearchBox" class="form-control" placeholder="Search project title..." style="width: 250px;" />
+            </div>
+
+            <table class="table table-hover align-middle checklist-table" id="archivedProjectsTable">
+                <thead class="table-purple text-white">
+                    <tr>
+                        <th>Project Title</th>
+                        <th>Division</th>
+                        <th>Category</th>
+                        <th>Project Owner</th>
+                        <th>Date Archived</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var project in Model)
+                    {
+                        <tr>
+                            <td class="text-purple fw-semibold">@project.project_title</td>
+                            <td>@project.division</td>
+                            <td>@project.category</td>
+                            <td>@project.project_owner</td>
+                            <td>
+                                <span class="badge bg-light text-dark border rounded-pill px-3 py-1">
+                                    @*@(project.DateUnregistered?.ToString("MMM dd, yyyy") ?? "N/A")*@
+                                </span>
+                            </td>
+                            <td>
+                                <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.main_id, title = project.project_title, projectId = project.main_id })"
+                                   class="btn btn-outline-secondary btn-sm rounded-pill me-2">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+
+                                @using (Html.BeginForm("RestoreProject", "Checklist", FormMethod.Post, new { @class = "d-inline" }))
+                                {
+                                    @Html.Hidden("id", project.main_id)
+                                    <button type="submit" class="btn btn-success btn-sm rounded-pill">
+                                        <i class="fas fa-undo"></i> Restore
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<style>
+    .text-purple {
+        color: #66399A;
+    }
+
+    .table-purple {
+        background-color: #66399A;
+    }
+
+    .checklist-table th {
+        font-weight: 600;
+    }
+
+    .checklist-table td, .checklist-table th {
+        vertical-align: middle;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #f0f0f0;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+    .badge {
+        font-size: 0.8rem;
+    }
+
+    .rounded-pill {
+        border-radius: 50rem !important;
+    }
+
+    .dataTables_wrapper {
+        margin-top: 20px;
+    }
+
+    .dataTables_paginate {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+        .dataTables_paginate .paginate_button {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            color: #66399A;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+        }
+
+            .dataTables_paginate .paginate_button:hover {
+                background-color: #f3e8ff;
+                border-color: #66399A;
+                color: #66399A;
+                box-shadow: 0 2px 5px rgba(102, 57, 154, 0.15);
+            }
+
+            .dataTables_paginate .paginate_button.current {
+                background-color: #66399A;
+                color: white !important;
+                border-color: #66399A;
+                font-weight: bold;
+                box-shadow: 0 2px 6px rgba(102, 57, 154, 0.2);
+            }
+
+    .dataTables_filter input {
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 8px 14px;
+        width: 240px;
+        font-size: 14px;
+    }
+
+        .dataTables_filter input:focus {
+            border-color: #66399A;
+            outline: none;
+            box-shadow: 0 0 5px rgba(102, 57, 154, 0.3);
+        }
+</style>
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $('#archivedProjectsTable').DataTable({
+                responsive: true,
+                pagingType: 'full_numbers',
+                pageLength: 5,
+                lengthMenu: [[5, 10, 20], [5, 10, 20]],
+                language: {
+                    paginate: {
+                        first: '<<',
+                        last: '>>',
+                        next: '>',
+                        previous: '<'
+                    },
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries"
+                },
+                dom: 't<"custom-footer d-flex flex-column align-items-center gap-2"ip><"clear">'
+            });
+
+            $('#customSearchBox').on('keyup', function () {
+                table.search(this.value).draw();
+            });
+
+            $('#entriesLength').on('change', function () {
+                table.page.len($(this).val()).draw();
+            });
+        });
+    </script>
+}

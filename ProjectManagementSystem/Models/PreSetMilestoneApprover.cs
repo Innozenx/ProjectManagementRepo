@@ -23,6 +23,7 @@ namespace ProjectManagementSystem.Models
         public string added_by { get; set; }
         public string division { get; set; }
         public Nullable<bool> approved { get; set; }
+        public Nullable<bool> pending { get; set; }
         public string remarks { get; set; }
         public Nullable<System.DateTime> date_approved { get; set; }
         public Nullable<bool> is_removed { get; set; }
