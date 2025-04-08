@@ -157,6 +157,7 @@
         margin-bottom: 50px;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
         border: 1px solid #e0e0e0;
+        width: 95%
     }
 
     .table {
@@ -426,7 +427,7 @@
         border-top-left-radius: 8px;
     }
 
-    .project-title-cell {
+    /*.project-title-cell {
         max-width: 160px;
         white-space: nowrap;
         overflow: hidden;
@@ -440,7 +441,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
+    }*/
 
     .table td:first-child {
         max-width: 180px; 
@@ -460,6 +461,104 @@
         margin-top: 50px;
         padding: 20px 0;
     }
+    .project-title-cell {
+        padding: 0 !important;
+        position: relative;
+        max-width: 260px;
+        width: 260px;
+    }
+    .project-cell-wrapper {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        gap: 10px;
+        width: 100%;
+        height: 100%;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .project-options {
+        visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+
+    .project-title-cell:hover .project-options {
+        visibility: visible;
+    }
+
+
+    .ellipsis-icon {
+        cursor: pointer;
+        font-size: 16px;
+        color: #555;
+    }
+
+    .dropdown-options {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 25px; 
+        transform: translateY(-50%);
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        min-width: 100px;
+        padding: 5px 0;
+    }
+
+
+    .dropdown-options a {
+        display: block;
+        padding: 8px 12px;
+        font-size: 13px;
+        color: #333;
+        text-decoration: none;
+    }
+
+        .dropdown-options a:hover {
+            background-color: #f5f5f5;
+            color: #000;
+        }
+    .project-link {
+        display: inline-block;
+        color: #007bff;
+        font-size: 14px;
+        text-decoration: none;
+        white-space: normal;
+        line-height: 1.4;
+        flex: 1;
+    }
+    .table th:first-child,
+    .table td:first-child {
+        min-width: 250px;
+        max-width: 300px;
+        width: 250px;
+    }
+    .dropdown-item:hover:not(.disabled) {
+        background-color: #f5f5f5;
+    }
+
+    .dropdown-item.disabled {
+        color: #aaa;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    .dropdown-item.disabled {
+        pointer-events: auto; 
+        color: #aaa;
+        cursor: not-allowed;
+    }
+
 </style>
 
 
@@ -503,6 +602,7 @@
         <h3>@Model.TotalTasks</h3>
 
     </div>
+
     <div class="top-card">
         <i class="fas fa-calendar-week"></i>
         <p>Current Week</p>
@@ -562,13 +662,82 @@
                     @foreach (var projectGroup in Model.ProjectsMilestones.GroupBy(pm => pm.ProjectTitle))
                     {
                         <tr>
-                            <td class="project-title-cell">
-                                <a href="javascript:void(0);"
-                                   title="@projectGroup.Key"
-                                   onclick="toDetailedView('@projectGroup.First().MainId', '@projectGroup.Key')"
-                                   style="font-size:14px;">
-                                    @projectGroup.Key
-                                </a>
+
+                            @*<td class="project-title-cell">
+                                <div class="project-cell-wrapper">
+                                    <div class="project-options">
+                                        <i class="fas fa-ellipsis-h ellipsis-icon" onclick="toggleDropdown(this)"></i>
+                                        <div class="dropdown-options">
+                                            <a href="javascript:void(0);" onclick="archiveProject('@projectGroup.First().MainId')">Archive</a>
+                                        </div>
+                                    </div>
+
+                                    <a href="javascript:void(0);"
+                                       title="@projectGroup.Key"
+                                       onclick="toDetailedView('@projectGroup.First().MainId', '@projectGroup.Key')"
+                                       class="project-link">
+                                        @projectGroup.Key
+                                    </a>
+                                </div>
+                            </td>*@
+
+                            @*<td class="project-title-cell" style="position: relative;">
+                                @{
+                                    var isCompleted = projectGroup.All(p => p.MilestoneStatus == "Completed");
+                                }
+                                <div class="project-cell-wrapper">
+                                    <span class="project-options">
+                                        <i class="fas fa-ellipsis-h ellipsis-icon" onclick="toggleDropdown(this)"></i>
+                                        <div class="dropdown-options">
+                                            @if (isCompleted)
+                                            {
+                                                <a href="javascript:void(0);"
+                                                   onclick="archiveProject('@projectGroup.First().MainId')"
+                                                   class="dropdown-item">
+                                                    Archive
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="dropdown-item disabled tooltip-container">
+                                                    Archive
+                                                    <span class="custom-tooltip">Project must be completed first to mark as archived</span>
+                                                </span>
+
+
+
+                                            }
+                                        </div>
+                                    </span>
+
+                                    <a href="javascript:void(0);"
+                                       title="@projectGroup.Key"
+                                       onclick="toDetailedView('@projectGroup.First().MainId', '@projectGroup.Key')"
+                                       class="project-link">
+                                        @projectGroup.Key
+                                    </a>
+                                </div>
+                            </td>*@
+                            <td class="project-title-cell" style="position: relative;">
+                                <div class="project-cell-wrapper">
+                                    <span class="project-options">
+                                        <i class="fas fa-ellipsis-h ellipsis-icon" onclick="toggleDropdown(this)"></i>
+                                        <div class="dropdown-options">
+                                            <a href="javascript:void(0);"
+                                               onclick="archiveProject('@projectGroup.First().MainId')"
+                                               class="dropdown-item">
+                                                Archive
+                                            </a>
+                                        </div>
+                                    </span>
+
+                                    <a href="javascript:void(0);"
+                                       title="@projectGroup.Key"
+                                       onclick="toDetailedView('@projectGroup.First().MainId', '@projectGroup.Key')"
+                                       class="project-link">
+                                        @projectGroup.Key
+                                    </a>
+                                </div>
                             </td>
 
 
@@ -775,6 +944,47 @@
                 box-shadow: none !important;
                 border: 1px solid #eee !important;
             }
+
+        .ellipsis-icon {
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            display: inline-block;
+            transform: rotate(0deg); 
+            line-height: 1;
+        }
+
+            .ellipsis-icon:hover {
+                color: #000;
+            }
+
+        .dropdown-options {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 20px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            min-width: 100px;
+            z-index: 10;
+            left: 35px;
+        }
+
+            .dropdown-options a {
+                display: block;
+                padding: 8px 12px;
+                color: #333;
+                text-decoration: none;
+                font-size: 13px;
+            }
+
+                .dropdown-options a:hover {
+                    background-color: #f5f5f5;
+                    color: #000;
+                }
+
     </style>
 
 <script>
@@ -819,6 +1029,34 @@
     function toDetailedView(mainId, projectTitle) {
         window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${projectTitle}`;
     }
+
+    function toggleDropdown(icon) {
+        $('.project-options').not($(icon).parent()).removeClass('show');
+        $(icon).parent().toggleClass('show');
+    }
+
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.project-options').length) {
+            $('.dropdown-options').hide();
+            $('.project-options').removeClass('show');
+        }
+    });
+
+    $(document).on('click', '.ellipsis-icon', function (e) {
+        e.stopPropagation();
+        var $dropdown = $(this).siblings('.dropdown-options');
+        $('.dropdown-options').not($dropdown).hide();
+        $dropdown.toggle();
+    });
+
+    function archiveProject(mainId) {
+        if (confirm("Are you sure you want to archive this project?")) {
+            window.location.href = `/Checklist/ArchiveProject?id=${mainId}`;
+        }
+    }
+
+
+
 </script>
 
 }

@@ -1,34 +1,41 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@ViewBag.Title</title>
-    <link rel="icon" href="https://home.enchantedkingdom.ph/intranet/Images/ek_logo.png" type="image/x-icon" />
-
     <!-- Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome Icons -->
+    <!-- Font Awesome -->
     <link href="~/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.css" rel="stylesheet" />
 
     <!-- IonIcons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 
-    <!-- Theme style -->
+    <!-- AdminLTE Theme style -->
     <link rel="stylesheet" href="~/AdminLTE-3.2.0/dist/css/adminlte.min.css">
 
-    <!-- Gantt Charts -->
-    <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet" type="text/css" />
+    <!-- Gantt Chart -->
+    <link href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css" rel="stylesheet" />
 
+    <!-- ✅ jQuery must be first -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-
-
-    <!-- Add Select2 JS -->
+    <!-- ✅ jQuery-based plugins -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
+
+    <!-- ✅ Bootstrap JS (must come after jQuery) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+
+    <!-- Only keep one version of Select2 and jQuery -->
+
+
 
 
     <style>
@@ -220,8 +227,7 @@
     <!-- ./wrapper -->
     <!-- REQUIRED SCRIPTS -->
     @RenderSection("scripts", required: false)
-    <!-- jQuery (ONLY LOAD ONCE) -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <!-- jQuery UI (Autocomplete Support) -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>

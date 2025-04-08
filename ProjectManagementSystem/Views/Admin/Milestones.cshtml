@@ -34,7 +34,7 @@
                                         <i class="fas fa-plus"></i> Add to Checklist
                                     </button>*@
                                     <button id="addMilestoneBtn" class="btn btn-outline-primary" style="font-weight:normal">
-                                        <i class="fas fa-plus"></i> Add to Checklist
+                                        <i class="fas fa-plus"></i> Add
                                     </button>
 
                                 </div>
@@ -222,6 +222,59 @@
     .input-group > .form-select {
         margin-right: 10px;
     }
+    .action-group {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .action-group {
+        display: inline-flex;
+        border: 1.5px solid #ddd;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .action-group .action-btn {
+        padding: 6px 10px;
+        border: none;
+        background: white;
+        font-size: 14px;
+        border-left: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s ease-in-out;
+    }
+
+        .action-group .action-btn:first-child {
+            border-left: none;
+        }
+
+        .action-group .action-btn:hover {
+            background-color: #f1f3f5;
+        }
+
+    .action-group i {
+        pointer-events: none;
+    }
+    .action-btn i {
+        color: #666;
+        transition: color 0.3s ease;
+    }
+
+    .action-btn.createRow:hover i {
+        color: #28a745; 
+    }
+
+    .action-btn.viewRow:hover i {
+        color: #470A67; 
+    }
+
+    .action-btn.removeRow:hover i {
+        color: #dc3545; 
+    }
+
 
 </style>
 
@@ -242,7 +295,7 @@
             const hasSelection = $(this).val() !== "";
             $("#addMilestoneBtn").prop("disabled", !hasSelection);
         });
-        $("#divisionDropdown").trigger("change"); // Trigger on load in case it's pre-filled
+        $("#divisionDropdown").trigger("change"); 
 
 
 
@@ -251,7 +304,7 @@
                 console.log("API Response:", response);
 
                 if (!response || !response.success || !Array.isArray(response.data)) {
-                    console.error("Error: Invalid response from server", response);
+                    console.error("Sorry, division not saved", response);
                     return;
                 }
 
@@ -260,31 +313,53 @@
 
                 data.forEach(function (division) {
                     let checklistReference = division.ChecklistReference || "N/A";
+                    let actionButtons = `
+                               <div class="action-group">
+                    <a href="/Admin/CreateChecklist?divisionId=${division.DivisionID}"
+                       class="action-btn createRow"
+                       data-bs-toggle="tooltip" title="Create Checklist">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    <button class="action-btn viewRow previewMilestone"
+                            data-id="${division.DivisionID}"
+                            data-ref="${checklistReference}"
+                            data-name="${division.DivisionName}"
+                            data-bs-toggle="tooltip" title="Preview Checklist">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="action-btn removeRow"
+                            data-id="${division.DivisionID}"
+                            data-bs-toggle="tooltip" title="Delete Checklist">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>`;
+
 
                     table.row.add([
                         `<strong>${division.DivisionName}</strong>`,
                         checklistReference,
                         division.NumberOfMilestones || 0,
                         division.NumberOfRequirements || 0,
-                        `<div class="action-btns">
-                            <a href="/Admin/CreateChecklist?divisionId=${division.DivisionID}"
-                                class="btn btn-outline-success btn-sm"
-                                data-bs-toggle="tooltip" title="Add Milestone">
-                                <i class="fas fa-plus"></i>
-                            </a>
-                            <button class="btn btn-outline-info btn-sm previewMilestone"
-                                data-id="${division.DivisionID}"
-                                data-ref="${checklistReference}"
-                                data-name="${division.DivisionName}"
-                                data-bs-toggle="tooltip" title="Preview Milestone">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-outline-danger btn-sm removeMilestone"
-                                data-id="${division.DivisionID}"
-                                data-bs-toggle="tooltip" title="Delete Milestone">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>`
+                        actionButtons
+                        //`<div class="action-btns">
+                        //    <a href="/Admin/CreateChecklist?divisionId=${division.DivisionID}"
+                        //        class="btn btn-outline-success btn-sm"
+                        //        data-bs-toggle="tooltip" title="Create Checklist">
+                        //        <i class="fas fa-plus"></i>
+                        //    </a>
+                        //    <button class="btn btn-outline-info btn-sm previewMilestone"
+                        //        data-id="${division.DivisionID}"
+                        //        data-ref="${checklistReference}"
+                        //        data-name="${division.DivisionName}"
+                        //        data-bs-toggle="tooltip" title="Preview Checklist">
+                        //        <i class="fas fa-eye"></i>
+                        //    </button>
+                        //    <button class="btn btn-outline-danger btn-sm removeMilestone"
+                        //        data-id="${division.DivisionID}"
+                        //        data-bs-toggle="tooltip" title="Delete Checklist">
+                        //        <i class="fas fa-trash"></i>
+                        //    </button>
+                        //</div>`
                     ]).draw(false);
                 });
 
@@ -331,31 +406,57 @@
                 $("#addMilestoneBtn").prop('disabled', false).html('<i class="fas fa-plus"></i> Add Division');
 
                 if (response.success) {
-                    Swal.fire("Added!", `${divisionText} is now ready for checklist setup.`, "success");
+                    if (response.success) {
+                        Swal.fire("Added!", `${divisionText} is now ready for checklist setup.`, "success").then(() => {
+                       
+                            loadSavedDivisions(function () {
+                                let $newRow = $(`#milestoneTable .removeMilestone[data-id='${divisionId}']`).closest('tr');
+                                $newRow.addClass('table-success');
 
-                    $("#divisionDropdown").val("").trigger("change"); 
-                    $("#divisionDropdown").blur(); 
+                                let $container = $('.table-responsive');
+                                $container.animate({
+                                    scrollTop: $newRow.position().top + $container.scrollTop()
+                                }, 600);
 
-                    loadSavedDivisions(function () {
-                        let $newRow = $(`#milestoneTable .removeMilestone[data-id='${divisionId}']`).closest('tr');
-                        $newRow.addClass('table-success');
+                                setTimeout(() => {
+                                    $newRow.removeClass('table-success');
+                                }, 2000);
 
-                        // OLD
-                        //$('html, body').animate({
-                        //    scrollTop: $newRow.offset().top
-                        //}, 600);
+                                setTimeout(() => {
+                                    sessionStorage.setItem("newDivision", divisionText);
+                                    window.location.href = `/Admin/CreateChecklist?divisionId=${divisionId}`;
+                                }, 2000); 
+                            });
+                        });
+
+                        $("#divisionDropdown").val("").trigger("change");
+                        $("#divisionDropdown").blur();
+                    }
 
 
-                        // NEW
-                        let $container = $('.table-responsive');
-                        $container.animate({
-                            scrollTop: $newRow.position().top + $container.scrollTop()
-                        }, 600);
+                    $("#divisionDropdown").val("").trigger("change");
+                    $("#divisionDropdown").blur();
+                
+                    //loadSavedDivisions(function () {
+                    //    let $newRow = $(`#milestoneTable .removeMilestone[data-id='${divisionId}']`).closest('tr');
+                    //    $newRow.addClass('table-success');
 
-                        setTimeout(() => {
-                            $newRow.removeClass('table-success');
-                        }, 2000);
-                    });
+                    //    // OLD
+                    //    //$('html, body').animate({
+                    //    //    scrollTop: $newRow.offset().top
+                    //    //}, 600);
+
+
+                    //    // NEW
+                    //    let $container = $('.table-responsive');
+                    //    $container.animate({
+                    //        scrollTop: $newRow.position().top + $container.scrollTop()
+                    //    }, 600);
+
+                    //    setTimeout(() => {
+                    //        $newRow.removeClass('table-success');
+                    //    }, 2000);
+                    //});
 
                 } else {
                     Swal.fire("Error!", response.message, "error");

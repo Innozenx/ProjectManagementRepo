@@ -675,10 +675,6 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
-
-
-
-
         public ActionResult PreviewMilestone(int id)
         {
             var milestone = db.PreSetMilestones.Find(id);
@@ -695,7 +691,6 @@ namespace ProjectManagementSystem.Controllers
             db.PreSetMilestones.Remove(milestone);
             db.SaveChanges();
             return Json(new { success = true });
-
         }
 
         [HttpPost]

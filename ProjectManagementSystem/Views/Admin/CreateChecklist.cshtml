@@ -11,33 +11,35 @@
             <div class="card shadow border-0 rounded-3">
                 <div class="card-body">
 
-                    <div class="row justify-content-center mb-4">
-                        <div class="col-md-6 text-center">
-                            <h3 class="title" style="color: #470A67">
-                                📝 <br /> Create Checklist
-                            </h3>
-                        </div>
+                    @*<div class="mb-4 text-center">
+                        <h3 class="title" style="color: #470A67;">
+                            📝 Create Checklist
+                        </h3>
+                        <p class="division-highlight">for <span style="color: #007bff">@ViewBag.DivisionName</span></p>
+                    </div>*@
+
+                    @*<a href="@Url.Action("Milestones", "Admin")" class="btn btn-back shadow-sm">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </a>*@
+
+                    <a href="@Url.Action("Milestones", "Admin")" class="btn-circle" data-bs-toggle="tooltip" title="Back to Milestones">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+
+                    <div class="text-center w-100" style="margin-left: -60px;">
+                        <h3 class="title mb-0" style="color: #470A67;">
+                            📝 Create Checklist
+                        </h3>
+                        <p class="division-highlight small-division">for <span>@ViewBag.DivisionName</span></p>
                     </div>
+
 
                     <div class="row">
                         <div class="col-md-4">
                             <div class="card shadow-sm bg-white rounded-3">
-                                <div class="card-body">
-                                    <h4 class="mb-3 fw-bold text-dark">Division</h4>
-
-                                    @if (!string.IsNullOrEmpty(ViewBag.DivisionName))
-                                    {
-                                        <p class="fw-bold text-muted">@ViewBag.DivisionName</p>
-                                    }
-                                    else
-                                    {
-                                        <div class="alert alert-danger text-center fw-bold">
-                                            No division selected! Please go back and select a division.
-                                        </div>
-                                    }
-
+                                <div class="card-body text-center">
                                     <a href="@Url.Action("AddMilestones", "Admin", new { divisionId = ViewBag.DivisionId })"
-                                       class="btn btn-outline-primary w-100 mt-3" style="font-weight:normal">
+                                       class="btn btn-outline-success w-100 mt-2">
                                         <i class="fas fa-plus"></i> Add Milestone
                                     </a>
                                 </div>
@@ -47,8 +49,7 @@
                         <div class="col-md-8">
                             <div class="card shadow-sm bg-white rounded-3">
                                 <div class="card-body">
-                                    <h4 class="mb-3 fw-bold text-dark">Milestones</h4>
-
+                                    <h5 class="fw-bold text-dark mb-3">Milestones</h5>
 
                                     <input type="text" id="searchMilestone" class="form-control mb-3" placeholder="Search milestones...">
 
@@ -56,7 +57,6 @@
                                         <table class="table table-hover table-bordered" id="milestoneTable">
                                             <thead class="table-light sticky-header">
                                                 <tr>
-                            
                                                     <th>Milestone</th>
                                                     <th>Checklist Item</th>
                                                     <th>Approvers</th>
@@ -69,15 +69,14 @@
                                                     foreach (var milestone in Model)
                                                     {
                                                         <tr>
-           
                                                             <td>@milestone.MilestoneName</td>
                                                             <td>@milestone.Requirements.Count Items</td>
                                                             <td>@milestone.Approvers.Count</td>
                                                             <td>
-                                                                <button class="btn btn-primary btn-sm viewRow" data-id="@milestone.Id">
+                                                                <button class="btn btn-outline-primary btn-sm viewRow" data-id="@milestone.Id" data-bs-toggle="tooltip" title="View Milestone">
                                                                     <i class="fas fa-eye"></i>
                                                                 </button>
-                                                                <button class="btn btn-danger btn-sm removeRow" data-id="@milestone.Id">
+                                                                <button class="btn btn-outline-danger btn-sm removeRow" data-id="@milestone.Id" data-bs-toggle="tooltip" title="Delete Milestone">
                                                                     <i class="fas fa-trash"></i>
                                                                 </button>
                                                             </td>
@@ -87,131 +86,281 @@
                                                 else
                                                 {
                                                     <tr>
-                                                        <td colspan="4" class="text-center text-muted">No milestones found.</td>
+                                                        <td colspan="4" class="text-center text-muted">
+                                                            No milestones yet! Click <strong>"Add Milestone"</strong> to begin.
+                                                        </td>
                                                     </tr>
                                                 }
                                             </tbody>
-
                                         </table>
                                     </div>
 
-                                    @*<div class="mt-3 d-flex justify-content-end">
-                                        <button id="saveMilestones" class="btn btn-primary">Save Checklist</button>
-                                    </div>*@
-                                    <div class="mt-4 d-flex justify-content-end">
-                                        <button id="finalizeChecklist" class="btn btn-success">
-                                            <i class="fas fa-check-circle"></i> Finalize Checklist
+                                    <div class="mt-4 d-flex justify-content-center">
+                                        <button id="finalizeChecklist" class="btn btn-success btn-save">
+                                            <i></i>Save Checklist
                                         </button>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div> 
+
+                </div>
             </div>
         </div>
     </div>
 </div> 
 
 <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #f4f6f9;
+        color: #333;
+    }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #f4f6f9;
-    color: #333;
-}
+    .container-fluid {
+        max-width: 1400px;
+    }
 
-.container-fluid {
-    max-width: 1400px;
-}
+    .card {
+        background: #ffffff;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
+        padding: 24px;
+        animation: fadeIn 0.8s ease-in-out;
+    }
 
-.card {
-    background: #ffffff;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
-    border-radius: 8px;
-    padding: 20px;
-}
+    .card-body {
+        padding: 20px;
+    }
 
-.card-body {
-    padding: 20px;
-}
+    #searchMilestone {
+        border-radius: 6px;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        font-size: 14px;
+    }
 
-#searchMilestone {
-    border-radius: 6px;
-    padding: 10px;
-    border: 1px solid #ced4da;
-}
+    .table {
+        font-size: 14px;
+    }
 
-.table {
-    font-size: 14px;
-}
+        .table thead {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
 
-.table thead {
-    background: #f8f9fa;
-    font-weight: 600;
-}
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        background: #f8f9fa;
+        z-index: 2;
+    }
 
-.sticky-header {
-    position: sticky;
-    top: 0;
-    background: #f8f9fa;
-    z-index: 2;
-}
+    .table-hover tbody tr:hover {
+        background: #f1f3f5;
+    }
 
-.table-hover tbody tr:hover {
-    background: #f1f3f5;
-}
+    .btn-primary {
+        background-color: #470A67;
+        border-color: #470A67;
+        font-weight: 600;
+        transition: all 0.3s ease-in-out;
+    }
 
-
-.btn-primary {
-    background: #470A67;
-    border-color: #470A67;
-    font-weight: 600;
-    transition: all 0.3s ease-in-out;
-}
-
-.btn-primary:hover {
-    background: #3b0555;
-    border-color: #3b0555;
-}
-
-.btn-outline-primary {
-    border-color: #470A67;
-    color: #470A67;
-    font-weight: 600;
-}
-
-.btn-outline-primary:hover {
-    background: #470A67;
-    color: white;
-}
-
-.btn-light {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    font-weight: 600;
-}
-
-.btn-light:hover {
-    background: #e2e6ea;
-}
+        .btn-primary:hover {
+            background-color: #3b0555;
+            border-color: #3b0555;
+        }
 
     .btn-outline-primary {
+        border-color: #470A67;
+        color: #470A67;
+        font-weight: 600;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #470A67;
+            color: #fff;
+        }
+
+    .btn-outline-success {
         border-color: #28a745;
         color: #28a745;
         font-weight: 600;
     }
 
-        .btn-outline-primary:hover {
-            background: #28a745;
-            color: white;
+        .btn-outline-success:hover {
+            background-color: #28a745;
+            color: #fff;
         }
+
+    .btn-light {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        font-weight: 600;
+    }
+
+        .btn-light:hover {
+            background-color: #e2e6ea;
+        }
+
+    .col-md-4 {
+        border-right: 1px solid #eee;
+    }
+
+    .division-highlight {
+        font-size: 18px;
+        color: #888;
+        font-weight: 500;
+        margin-top: -10px;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .btn-circle {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 2px solid #470A67;
+        background-color: white;
+        color: #470A67;
+        transition: 0.3s ease-in-out;
+        text-decoration: none;
+    }
+
+        .btn-circle:hover {
+            background-color: #470A67;
+            color: white;
+            box-shadow: 0 0 6px rgba(71, 10, 103, 0.4);
+        }
+
+    .btn-outline-view {
+        border: 1.5px solid #7c4dff; 
+        color: #7c4dff;
+        background: transparent;
+    }
+
+        .btn-outline-view:hover {
+            background-color: #ede7f6;
+            color: #470A67;
+        }
+    .btn-outline-edit {
+        border: 1.5px solid #ffca28;
+        color: #ffca28;
+        background: transparent;
+    }
+
+        .btn-outline-edit:hover {
+            background-color: #fff8e1;
+            color: #9e7700;
+        }
+
+
+    .btn-outline-delete {
+        border: 1.5px solid #ef5350;
+        color: #ef5350;
+        background: transparent;
+    }
+
+        .btn-outline-delete:hover {
+            background-color: #ffebee;
+            color: #b71c1c;
+        }
+    .small-division {
+        font-size: 16px;
+        margin-top: 4px;
+        color: #888;
+    }
+    .btn-save {
+        min-width: 180px;
+        height: 45px;
+        font-weight: 600;
+        font-size: 16px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .action-group {
+        display: flex;
+        gap: 4px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .action-btn {
+        flex: 1;
+        padding: 6px 10px;
+        border: none;
+        background: transparent;
+        font-size: 14px;
+        color: #333;
+        transition: background 0.2s ease;
+        border-left: 1px solid #ccc;
+    }
+        .action-btn.viewRow:hover i {
+            color: #6f42c1;
+        }
+        /* purple */
+        .action-btn.editRow:hover i {
+            color: #ff9800;
+        }
+        /* orange */
+        .action-btn.removeRow:hover i {
+            color: #e53935;
+        }
+        /* red */
+
+
+        .action-btn:first-child {
+            border-left: none;
+        }
+
+        .action-btn:hover {
+            background: #f1f1f1;
+            cursor: pointer;
+        }
+
 </style>
+
 
 <script>
     $(document).ready(function () {
         let divisionId = '@ViewBag.DivisionId';
+
+        let newDivision = sessionStorage.getItem("newDivision");
+        if (newDivision) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'bottom-end',
+                icon: 'success',
+                title: `Checklist setup started for ${newDivision}`,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            Toast.fire();
+            sessionStorage.removeItem("newDivision");
+        }
+
 
         function loadMilestones() {
             $.ajax({
@@ -222,7 +371,10 @@ body {
                     tableBody.empty();
 
                     if (data.length === 0) {
-                        tableBody.append(`<tr><td colspan="4" class="text-center text-muted">No milestones found.</td></tr>`);
+                        tableBody.append(`<tr><td colspan="4" class="text-center text-muted">
+                            <i></i> No milestones yet! Click <strong>"Add Milestone"</strong> to begin.
+                        </td>
+                        </tr>`);
                     } else {
                         data.forEach(milestone => {
                             let requirementsList = milestone.Requirements.length > 0
@@ -239,17 +391,20 @@ body {
                                     <td>${requirementsList}</td>
                                     <td>${approversList}</td>
                                     <td>
-                                        <button class="btn btn-outline-primary btn-sm viewRow" data-id="${milestone.MilestoneID}" data-bs-toggle="tooltip" title="View Milestone">
+                                    <div class="action-group">
+                                        <button class="action-btn viewRow" data-id="${milestone.MilestoneID}" title="View">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button class="btn btn-outline-warning btn-sm editRow" data-id="${milestone.MilestoneID}" data-bs-toggle="tooltip" title="Edit Milestone">
-                                            <i class="fas fa-edit"></i>
+                                        <button class="action-btn editRow" data-id="${milestone.MilestoneID}" title="Edit">
+                                            <i class="fas fa-pen"></i>
                                         </button>
-                                        <button class="btn btn-outline-danger btn-sm removeRow" data-id="${milestone.MilestoneID}" data-bs-toggle="tooltip" title="Delete Milestone">
+                                        <button class="action-btn removeRow" data-id="${milestone.MilestoneID}" title="Delete">
                                             <i class="fas fa-trash"></i>
                                         </button>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </td>
+
+                               </tr>
                             `);
                         });
                     }
@@ -270,26 +425,30 @@ body {
         });
 
         $('#addMilestoneRow').click(function () {
-            $('#milestoneTable tbody').append(`
-                <tr>
-                    <td><input type="text" class="form-control milestone-name" placeholder="Enter >" required></td>
-                    <td><textarea class="form-control milestone-requirements" placeholder="Enter requirements"></textarea></td>
-                    <td><input type="number" class="form-control milestone-approvers" placeholder="No. of Approvers" required></td>
-                    <td>
-                        <button class="btn btn-outline-primary btn-sm viewRow" data-bs-toggle="tooltip" title="View Milestone">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-outline-warning btn-sm editRow" data-bs-toggle="tooltip" title="Edit Milestone">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-outline-danger btn-sm removeRow" data-bs-toggle="tooltip" title="Delete Milestone">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `);
+            const $tableBody = $('#milestoneTable tbody');
+            const newRow = $(`
+            <tr class="table-light">
+                <td><input type="text" class="form-control milestone-name" placeholder="Enter milestone title" required></td>
+                <td><textarea class="form-control milestone-requirements" placeholder="Enter requirements (semicolon-separated)"></textarea></td>
+                <td><input type="number" class="form-control milestone-approvers" placeholder="No. of Approvers" required></td>
+                <td>
+                    <button class="btn btn-outline-primary btn-sm viewRow" data-bs-toggle="tooltip" title="View Milestone">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm editRow" data-bs-toggle="tooltip" title="Edit Milestone">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm removeRow" data-bs-toggle="tooltip" title="Delete Milestone">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `);
 
+            $tableBody.prepend(newRow.hide());
+            newRow.fadeIn(300);
             $('[data-bs-toggle="tooltip"]').tooltip();
+
         });
 
         $(document).on('click', '.removeRow', function () {

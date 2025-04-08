@@ -173,7 +173,7 @@ namespace ProjectManagementSystem.Controllers
                     userRole = userDetails.JobLevel.Value,
                     userDivision = userDivision
                 };
-            }
+            } 
             else
             {
                 var projectsByDivision = db.MainTables
@@ -263,7 +263,6 @@ namespace ProjectManagementSystem.Controllers
             return View(viewModel);
         }
 
-
         [Authorize(Roles = "PMS_PROJECT_MANAGER, PMS_ODCP_ADMIN, PMS_Management, PMS_PROJECT_OWNER, PMS_DIVISION_HEAD, PMS_USER")]
         public ActionResult Dashboard()
         {
@@ -276,15 +275,22 @@ namespace ProjectManagementSystem.Controllers
 
             if (User.Identity.IsAuthenticated)
             {
-                //START OF MY CODE FOR DASHBOARD -TROY
                 var userEmail = User.Identity.GetUserName();
 
+                // OLD
+                //var projectList = (from p in db.ProjectMembersTbls
+                //                   join m in db.MainTables on new { id = p.project_id } equals new { id = (int?)m.main_id }
+                //                   where p.email == userEmail && m.isCompleted != true 
+                //                   select m.main_id).ToList();
+
+                // NEW WITH ARCHIVED
                 var projectList = (from p in db.ProjectMembersTbls
                                    join m in db.MainTables on new { id = p.project_id } equals new { id = (int?)m.main_id }
-                                   where p.email == userEmail && m.isCompleted != true
+                                   where p.email == userEmail
+                                         && m.isCompleted != true
+                                         && (m.IsArchived == false || m.IsArchived == null)
                                    select m.main_id).ToList();
 
-                //END
 
                 var currentYear = DateTime.Now.Year;
                 var calendar = CultureInfo.InvariantCulture.Calendar;
@@ -301,8 +307,34 @@ namespace ProjectManagementSystem.Controllers
                    })
                    .ToList();
 
+                //OLD
+                //var rawProjectsAndMilestones = (from m in db.MilestoneTbls
+                //                                join p in db.MainTables on m.main_id equals p.main_id
+                //                                join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
+                //                                from task in tasks.DefaultIfEmpty()
+                //                                group new { m, task } by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position, m.milestone_id }
+                //                                into g
+                //                                select new
+                //                                {
+                //                                    MainId = g.Key.main_id,
+                //                                    ProjectTitle = g.Key.project_title,
+                //                                    MilestoneName = g.Key.milestone_name,
+                //                                    MilestonePosition = g.Key.milestone_position,
+                //                                    MilestoneId = g.Key.milestone_id,
+                //                                    Tasks = g.Select(x => new TempTask
+                //                                    {
+                //                                        task_start = x.task.task_start,
+                //                                        task_duration = x.task.task_duration,
+                //                                        isCompleted = x.task.isCompleted,
+                //                                        CurrentCompletionDate = x.m.current_completion_date,
+                //                                        CompletionDate = x.m.completion_date
+                //                                    }).ToList()
+                //                                }).ToList();
+
+                // NEW WITH ARCHIVE
                 var rawProjectsAndMilestones = (from m in db.MilestoneTbls
                                                 join p in db.MainTables on m.main_id equals p.main_id
+                                                where p.IsArchived == false || p.IsArchived == null 
                                                 join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
                                                 from task in tasks.DefaultIfEmpty()
                                                 group new { m, task } by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position, m.milestone_id }
@@ -313,39 +345,62 @@ namespace ProjectManagementSystem.Controllers
                                                     ProjectTitle = g.Key.project_title,
                                                     MilestoneName = g.Key.milestone_name,
                                                     MilestonePosition = g.Key.milestone_position,
-                                                    MilestoneId = g.Key.milestone_id, 
-                                                    Tasks = g.Select(x => new
+                                                    MilestoneId = g.Key.milestone_id,
+                                                    Tasks = g.Select(x => new TempTask
                                                     {
-                                                        x.task.task_start,
-                                                        x.task.task_duration,
-                                                        x.task.isCompleted,
+                                                        task_start = x.task.task_start,
+                                                        task_duration = x.task.task_duration,
+                                                        isCompleted = x.task.isCompleted,
                                                         CurrentCompletionDate = x.m.current_completion_date,
                                                         CompletionDate = x.m.completion_date
                                                     }).ToList()
                                                 }).ToList();
 
 
-                // OLDDD
-                //var projectsAndMilestones = rawProjectsAndMilestones
-                //    .Where(g => projectList.Contains(g.MainId))
-                //    .OrderBy(g => g.MilestonePosition)
-                //    .Select(g => new ProjectMilestoneViewModel
-                //    {
-                //        MainId = g.MainId,
-                //        ProjectTitle = g.ProjectTitle,
-                //        MilestoneName = g.MilestoneName,
-                //        CurrentCompletionDate = g.Tasks.Max(t => t.CurrentCompletionDate ?? t.CompletionDate),
-                //        Tasks = g.Tasks.Select(t => new TaskViewModel
-                //        {
-                //            TaskStart = t.task_start,
-                //            Duration = t.task_duration ?? 0,
-                //            IsCompleted = t.isCompleted ?? false
-                //        }).ToList(),
-                //        EndDate = g.Tasks.Any(t => t.task_start.HasValue && t.task_duration > 0)
-                //                 ? g.Tasks.Where(t => t.task_start.HasValue && t.task_duration > 0)
-                //                          .Max(t => t.task_start.Value.AddDays((double)t.task_duration))
-                //                 : (DateTime?)null
-                //    }).ToList();
+                var milestoneDict = rawProjectsAndMilestones
+                    .Where(m => projectList.Contains(m.MainId))
+                    .GroupBy(m => m.MainId)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.OrderBy(m => m.MilestonePosition).ToList()
+                    );
+
+                foreach (var project in milestoneDict)
+                {
+                    DateTime? previousMaxDate = null;
+
+                    foreach (var milestone in project.Value)
+                    {
+                        var maxOriginalDate = milestone.Tasks
+                            .Max(t => t.CompletionDate ?? t.CurrentCompletionDate ?? DateTime.MinValue);
+
+                        var maxCurrentDate = milestone.Tasks
+                            .Max(t => t.CurrentCompletionDate ?? t.CompletionDate ?? DateTime.MinValue);
+
+                        if (previousMaxDate.HasValue && maxCurrentDate < previousMaxDate.Value)
+                        {
+                            var delayDays = (previousMaxDate.Value - maxCurrentDate).Days;
+
+                            for (int i = 0; i < milestone.Tasks.Count; i++)
+                            {
+                                var task = milestone.Tasks[i];
+
+                                milestone.Tasks[i] = new TempTask
+                                {
+                                    task_start = task.task_start?.AddDays(delayDays),
+                                    task_duration = task.task_duration,
+                                    isCompleted = task.isCompleted,
+                                    CurrentCompletionDate = task.CurrentCompletionDate?.AddDays(delayDays),
+                                    CompletionDate = task.CompletionDate?.AddDays(delayDays)
+                                };
+                            }
+
+                            maxCurrentDate = maxCurrentDate.AddDays(delayDays);
+                        }
+
+                        previousMaxDate = maxCurrentDate > previousMaxDate ? maxCurrentDate : previousMaxDate;
+                    }
+                }
 
                 var projectsAndMilestones = rawProjectsAndMilestones
                     .Where(g => projectList.Contains(g.MainId))
@@ -407,10 +462,28 @@ namespace ProjectManagementSystem.Controllers
                     }).ToList();
 
 
+                // OLD
+                //var completedTasks = projectsAndMilestones.Sum(x => x.Tasks.Count(t => t.IsCompleted));
+                //var totalTasks = projectsAndMilestones.Sum(x => x.Tasks.Count());
+                //var pendingTasks = totalTasks - completedTasks;
 
-                var completedTasks = projectsAndMilestones.Sum(x => x.Tasks.Count(t => t.IsCompleted));
-                var totalTasks = projectsAndMilestones.Sum(x => x.Tasks.Count());
+                // NEW 
+                // combine checklist items count from preset and optional milestones
+                var checklistMain = db.PreSetMilestoneApprovers
+                    .Select(x => new { IsApproved = x.approved })
+                    .ToList();
+
+                var checklistOptional = db.OptionalMilestoneApprovers
+                    .Select(x => new { IsApproved = x.approved })
+                    .ToList();
+
+                var allChecklistItems = checklistMain.Concat(checklistOptional).ToList();
+
+                
+                var totalTasks = allChecklistItems.Count;
+                var completedTasks = allChecklistItems.Count(x => x.IsApproved == true);
                 var pendingTasks = totalTasks - completedTasks;
+
 
                 var upcomingDeliverables = db.DetailsTbls
                     .Where(t => t.isCompleted == false && t.task_start.HasValue && t.task_duration.HasValue)
@@ -445,13 +518,68 @@ namespace ProjectManagementSystem.Controllers
 
                 return View(viewModel);
             }
-
             else
             {
                 return View("~/Views/Account/Login.cshtml");
             }
-
         }
+
+        public class TempTask
+        {
+            public DateTime? task_start { get; set; }
+            public int? task_duration { get; set; }
+            public bool? isCompleted { get; set; }
+            public DateTime? CurrentCompletionDate { get; set; }
+            public DateTime? CompletionDate { get; set; }
+        }
+
+        public ActionResult ArchiveProject(int id)
+        {
+            var project = db.MainTables.FirstOrDefault(p => p.main_id == id);
+
+            if (project == null)
+                return HttpNotFound();
+
+            // temporarily removed condition for testing
+            // if (project.isCompleted != true)
+            // {
+            //     TempData["ArchiveError"] = "This project is not yet completed.";
+            //     return RedirectToAction("Dashboard");
+            // }
+
+            project.IsArchived = true;
+            db.SaveChanges();
+
+            TempData["ArchiveSuccess"] = "Project archived successfully.";
+            return RedirectToAction("Dashboard");
+        }
+
+
+
+
+        public ActionResult ArchivedProjects()
+        {
+            var archivedProjects = db.MainTables
+                .Where(p => p.IsArchived == true)
+                .ToList();
+
+            return View(archivedProjects); 
+        }
+        [HttpPost]
+        public ActionResult RestoreProject(int id)
+        {
+            var project = db.MainTables.FirstOrDefault(p => p.main_id == id);
+            if (project != null)
+            {
+                project.IsArchived = false;
+                db.SaveChanges();
+                TempData["Message"] = "Project restored successfully.";
+            }
+
+            return RedirectToAction("ArchivedProjects");
+        }
+
+
 
         private List<string> GetUniqueMilestoneNames()
         {
@@ -548,6 +676,7 @@ namespace ProjectManagementSystem.Controllers
         //    return View(viewModel);
         //}
 
+
         public ActionResult weeklyMilestone(int id, string title, string projectId)
         {
             if (User.Identity.IsAuthenticated)
@@ -561,16 +690,22 @@ namespace ProjectManagementSystem.Controllers
                                    where p.email == userEmail && m.isCompleted != true
                                    select m.main_id).ToList();
 
-                var userProject = db.MainTables
-                    .Where(m => m.main_id == id && projectList.Contains(m.main_id))
-                    .FirstOrDefault();
+                var userProject = db.MainTables.FirstOrDefault(m => m.main_id == id);
 
-                if (userProject == null && userDetails.JobLevel != 4035 && userDetails.JobLevel != 4036)
+                bool isUserAssigned = projectList.Contains(id);
+                bool isArchived = userProject?.IsArchived == true;
+                bool isPrivilegedUser = userDetails.JobLevel == 4035 || userDetails.JobLevel == 4036;
+
+                if (!isUserAssigned && !isArchived && !isPrivilegedUser)
                 {
                     return RedirectToAction("AccessDenied", "Error");
                 }
 
-                // if the user is a project manager (1004) for this project
+                if (userProject == null && !isPrivilegedUser)
+                {
+                    return RedirectToAction("AccessDenied", "Error");
+                }
+
                 bool isProjectManager = db.ProjectMembersTbls
                     .Any(pm => pm.project_id == id && pm.email == userEmail && pm.role == 1004);
 
@@ -598,7 +733,8 @@ namespace ProjectManagementSystem.Controllers
                         ProjectYear = m.year ?? 0,
                         Division = m.division,
                         Category = m.category,
-                        ProjectOwner = m.project_owner
+                        ProjectOwner = m.project_owner,
+                        IsArchived = m.IsArchived ?? false
                     })
                     .FirstOrDefault();
 
@@ -640,27 +776,25 @@ namespace ProjectManagementSystem.Controllers
                         Text = t.process_title
                     })
                     .ToList();
-                                    
+
                 var statusLogs = db.WeeklyStatus
-                     .Where(log => log.main_id == id)
-                     .Select(log => new StatusLogsViewModel
-                     {
-                         StatusId = log.status_id,
-                         MilestoneId = log.milestone_id,
-                         ProjectOwner = log.project_owner,
-                         Description = log.description,
-                         DateUpdated = log.date_updated.ToString(),
-                         Username = log.user_id,
-                         MilestoneName = log.milestone_name,
-                         Attachment = db.AttachmentTables
+                    .Where(log => log.main_id == id)
+                    .Select(log => new StatusLogsViewModel
+                    {
+                        StatusId = log.status_id,
+                        ProjectOwner = log.project_owner,
+                        Description = log.description,
+                        DateUpdated = log.date_updated.ToString(),
+                        Username = log.user_id,
+                        MilestoneName = log.milestone_name,
+                        Attachment = db.AttachmentTables
                             .Where(a => a.status_id == log.status_id)
                             .Select(a => a.path_file)
                             .FirstOrDefault()
-                     })
-                     .OrderByDescending(log => log.DateUpdated)
-                     .ToList();
+                    })
+                    .OrderByDescending(log => log.DateUpdated)
+                    .ToList();
 
-              
                 var projectMembers = db.ProjectMembersTbls
                     .Where(pm => pm.project_id == id)
                     .AsEnumerable()
@@ -675,7 +809,6 @@ namespace ProjectManagementSystem.Controllers
                     })
                     .ToList();
 
-
                 var projChecklist = db.ApproversTbls
                     .Where(a => a.Main_Id == id)
                     .Select(a => new ApproverViewModel
@@ -688,22 +821,17 @@ namespace ProjectManagementSystem.Controllers
                     })
                     .ToList();
 
-
-                // fetch all milestone id for the project
                 var milestoneIds = db.MilestoneTbls
                     .Where(m => m.main_id == id)
                     .Select(m => m.milestone_id)
                     .ToList();
 
-                // fetch all checklist submissions for the project
                 var submissions = db.ChecklistSubmissions
                     .Where(cs => cs.main_id == id)
                     .ToList();
 
-                // determine if all submissions are approved
                 bool allApproved = submissions.Count > 0 && submissions.All(cs => cs.is_approved == true);
 
-              
                 DateTime? projectEndDate = db.MainTables
                     .Where(p => p.main_id == id)
                     .Select(p => p.project_end)
@@ -711,7 +839,6 @@ namespace ProjectManagementSystem.Controllers
 
                 DateTime today = DateTime.Today;
 
-       
                 string projectStatus;
                 if (allApproved)
                 {
@@ -725,7 +852,6 @@ namespace ProjectManagementSystem.Controllers
                 {
                     projectStatus = "Delayed";
                 }
-
 
                 var viewModel = new ProjectMilestoneViewModel
                 {
@@ -746,17 +872,229 @@ namespace ProjectManagementSystem.Controllers
                     userDetails = userInfo,
                     TaskTitle = tasks,
                     IsProjectManager = isProjectManager,
-                    ProjectStatus = projectStatus
+                    ProjectStatus = projectStatus,
+                    IsArchived = projects.IsArchived
                 };
 
                 return View(viewModel);
-
             }
             else
             {
                 return View("~/Views/Account/Login.cshtml");
             }
         }
+
+
+        // new old 
+        //public ActionResult weeklyMilestone(int id, string title, string projectId)
+        //{
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        var userId = User.Identity.GetUserId();
+        //        var userEmail = User.Identity.GetUserName();
+        //        var userDetails = cmdb.AspNetUsers.Where(x => x.UserName == userEmail).SingleOrDefault();
+
+        //        var projectList = (from p in db.ProjectMembersTbls
+        //                           join m in db.MainTables on new { id = p.project_id } equals new { id = (int?)m.main_id }
+        //                           where p.email == userEmail && m.isCompleted != true
+        //                           select m.main_id).ToList();
+
+        //        var userProject = db.MainTables
+        //            .Where(m => m.main_id == id && projectList.Contains(m.main_id))
+        //            .FirstOrDefault();
+
+        //        if (userProject == null && userDetails.JobLevel != 4035 && userDetails.JobLevel != 4036)
+        //        {
+        //            return RedirectToAction("AccessDenied", "Error");
+        //        }
+
+        //        // if the user is a project manager (1004) for this project
+        //        bool isProjectManager = db.ProjectMembersTbls
+        //            .Any(pm => pm.project_id == id && pm.email == userEmail && pm.role == 1004);
+
+        //        UserModel userInfo = new UserModel()
+        //        {
+        //            Email = userDetails.Email,
+        //            JobLevel = userDetails.JobLevel,
+        //            FirstName = userDetails.FirstName,
+        //            LastName = userDetails.LastName
+        //        };
+
+        //        TempData["entry"] = id;
+        //        TempData["title"] = title;
+        //        TempData["project"] = projectId;
+
+        //        var projects = db.MainTables
+        //            .Where(m => m.main_id == id)
+        //            .Select(m => new ProjectMilestoneViewModel
+        //            {
+        //                MainId = m.main_id,
+        //                ProjectTitle = m.project_title,
+        //                StartDate = m.project_start,
+        //                EndDate = m.project_end,
+        //                Duration = m.duration ?? 0,
+        //                ProjectYear = m.year ?? 0,
+        //                Division = m.division,
+        //                Category = m.category,
+        //                ProjectOwner = m.project_owner
+        //            })
+        //            .FirstOrDefault();
+
+        //        if (projects == null)
+        //        {
+        //            return HttpNotFound("No milestones found.");
+        //        }
+
+        //        var projectDetails = db.MainTables
+        //            .Where(p => p.main_id == id)
+        //            .Select(p => new ProjectDetailViewModel
+        //            {
+        //                Id = p.main_id,
+        //                ProjectTitle = p.project_title,
+        //                ProjectStart = p.project_start.ToString(),
+        //                ProjectEnd = p.project_end.ToString(),
+        //                ProjectDuration = p.duration ?? 0,
+        //                ProjectYear = p.year ?? 0,
+        //                Division = p.division,
+        //                Category = p.category,
+        //                ProjectOwner = p.project_owner,
+        //            })
+        //            .ToList();
+
+        //        var milestones = db.MilestoneTbls
+        //            .Where(m => m.main_id == id)
+        //            .Select(m => new SelectListItem
+        //            {
+        //                Value = m.milestone_id.ToString(),
+        //                Text = m.milestone_name
+        //            })
+        //            .ToList();
+
+        //        var tasks = db.DetailsTbls
+        //            .Where(t => t.main_id == id)
+        //            .Select(t => new SelectListItem
+        //            {
+        //                Value = t.details_id.ToString(),
+        //                Text = t.process_title
+        //            })
+        //            .ToList();
+
+        //        var statusLogs = db.WeeklyStatus
+        //             .Where(log => log.main_id == id)
+        //             .Select(log => new StatusLogsViewModel
+        //             {
+        //                 StatusId = log.status_id,
+        //                // MilestoneId = log.milestone_id,
+        //                 ProjectOwner = log.project_owner,
+        //                 Description = log.description,
+        //                 DateUpdated = log.date_updated.ToString(),
+        //                 Username = log.user_id,
+        //                 MilestoneName = log.milestone_name,
+        //                 Attachment = db.AttachmentTables
+        //                    .Where(a => a.status_id == log.status_id)
+        //                    .Select(a => a.path_file)
+        //                    .FirstOrDefault()
+        //             })
+        //             .OrderByDescending(log => log.DateUpdated)
+        //             .ToList();
+
+
+        //        var projectMembers = db.ProjectMembersTbls
+        //            .Where(pm => pm.project_id == id)
+        //            .AsEnumerable()
+        //            .Select(pm => new ProjectMemberViewModel
+        //            {
+        //                Name = pm.name,
+        //                Role = pm.role.Value,
+        //                Initials = !string.IsNullOrEmpty(pm.name) && pm.name.Split(' ').Length > 2
+        //                    ? pm.name.Split(' ')[0].Substring(0, 1) + pm.name.Split(' ')[1].Substring(0, 1)
+        //                    : "N/A",
+        //                Email = pm.email
+        //            })
+        //            .ToList();
+
+
+        //        var projChecklist = db.ApproversTbls
+        //            .Where(a => a.Main_Id == id)
+        //            .Select(a => new ApproverViewModel
+        //            {
+        //                DetailsId = (int)a.Details_Id,
+        //                MilestoneId = (int)a.Milestone_Id,
+        //                TaskName = db.DetailsTbls.Where(d => d.details_id == a.Details_Id).Select(d => d.process_title).FirstOrDefault(),
+        //                ApproverName = a.Approver_Name,
+        //                IsRemoved = a.IsRemoved_ ?? false
+        //            })
+        //            .ToList();
+
+
+        //        // fetch all milestone id for the project
+        //        var milestoneIds = db.MilestoneTbls
+        //            .Where(m => m.main_id == id)
+        //            .Select(m => m.milestone_id)
+        //            .ToList();
+
+        //        // fetch all checklist submissions for the project
+        //        var submissions = db.ChecklistSubmissions
+        //            .Where(cs => cs.main_id == id)
+        //            .ToList();
+
+        //        // determine if all submissions are approved
+        //        bool allApproved = submissions.Count > 0 && submissions.All(cs => cs.is_approved == true);
+
+
+        //        DateTime? projectEndDate = db.MainTables
+        //            .Where(p => p.main_id == id)
+        //            .Select(p => p.project_end)
+        //            .FirstOrDefault();
+
+        //        DateTime today = DateTime.Today;
+
+
+        //        string projectStatus;
+        //        if (allApproved)
+        //        {
+        //            projectStatus = "Completed";
+        //        }
+        //        else if (projectEndDate.HasValue && today <= projectEndDate.Value.Date)
+        //        {
+        //            projectStatus = "Active";
+        //        }
+        //        else
+        //        {
+        //            projectStatus = "Delayed";
+        //        }
+
+
+        //        var viewModel = new ProjectMilestoneViewModel
+        //        {
+        //            MainId = projects.MainId,
+        //            ProjectTitle = projects.ProjectTitle,
+        //            StartDate = projects.StartDate,
+        //            EndDate = projects.EndDate,
+        //            Duration = projects.Duration,
+        //            ProjectYear = projects.ProjectYear,
+        //            Division = projects.Division,
+        //            Category = projects.Category,
+        //            ProjectOwner = projects.ProjectOwner,
+        //            ProjectDetails = projectDetails,
+        //            Milestones = milestones,
+        //            StatusLogs = statusLogs,
+        //            ProjectMembers = projectMembers,
+        //            Checklist = projChecklist,
+        //            userDetails = userInfo,
+        //            TaskTitle = tasks,
+        //            IsProjectManager = isProjectManager,
+        //            ProjectStatus = projectStatus
+        //        };
+
+        //        return View(viewModel);
+
+        //    }
+        //    else
+        //    {
+        //        return View("~/Views/Account/Login.cshtml");
+        //    }
+        //}
 
         public JsonResult getGanttData(int id)
         {
@@ -818,7 +1156,7 @@ namespace ProjectManagementSystem.Controllers
 
             return Json(jsonData, JsonRequestBehavior.AllowGet);
         }
-
+        
         private string GetTaskColor(DetailsTbl task)
         {
             if (task.task_start == null)
@@ -1389,7 +1727,7 @@ namespace ProjectManagementSystem.Controllers
 
                     var statusUpdate = new WeeklyStatu
                     {
-                        milestone_id = taskId,
+                        //milestone_id = taskId,
                         description = model.StatusUpdate,
                         date_updated = DateTime.Now,
                         main_id = projectId,
@@ -1450,7 +1788,7 @@ namespace ProjectManagementSystem.Controllers
         }
 
 
-        //------------------------Activity Log Viewing----------------------------//
+       //  ------------------------Activity Log Viewing----------------------------//
         public ActionResult ActivityView()
         {
             return View();
@@ -1857,7 +2195,6 @@ namespace ProjectManagementSystem.Controllers
                         };
 
                         container.Add(temporary);
-
                     }
                     else
                     {
@@ -1873,7 +2210,6 @@ namespace ProjectManagementSystem.Controllers
                                 milestone_id = x.milestone_id,
                                 project_id = x.main_id
                             }).Single();
-
 
                         TaskContainerModel temporary = new TaskContainerModel()
                         {
@@ -2189,7 +2525,6 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
-
         //public JsonResult GetStatusUpdates()
         //{
         //    var message = "";
@@ -2364,5 +2699,4 @@ namespace ProjectManagementSystem.Controllers
 
         //    return View(groupedMilestones);
     }
-
 }

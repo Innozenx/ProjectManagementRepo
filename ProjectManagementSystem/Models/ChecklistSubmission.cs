@@ -27,5 +27,8 @@ namespace ProjectManagementSystem.Models
         public string approved_by { get; set; }
         public Nullable<System.DateTime> approval_date { get; set; }
         public string disapproval_reason { get; set; }
+        public Nullable<bool> is_removed { get; set; }
+        public Nullable<bool> approval_enabled { get; set; }
+        public string type { get; set; }
     }
 }
