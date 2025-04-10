@@ -31,6 +31,8 @@
         <EntityTypeShape EntityType="ProjectManagementDBModel.TaskApproval" Width="1.5" PointX="10" PointY="10.875" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.TransactionTbl" Width="1.5" PointX="14.75" PointY="15.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyChecklistTable" Width="1.5" PointX="16.75" PointY="0.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyStatu" Width="1.5" PointX="16.75" PointY="6.75" />
+        <EntityTypeShape EntityType="ProjectManagementDBModel.View_1" Width="1.5" PointX="16.75" PointY="10.75" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_FixedChecklistTbl_ChecklistSetup" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_TaskApproval_DetailsTbl" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_PreSetMilestone_Divisions" />
@@ -38,8 +40,6 @@
         <AssociationConnector Association="ProjectManagementDBModel.FK_FixedChecklistTbl_MainTable" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_FixedChecklistTbl_MilestoneTbl" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.View_1" Width="1.5" PointX="0.75" PointY="17.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyStatu" Width="1.5" PointX="17.375" PointY="6.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

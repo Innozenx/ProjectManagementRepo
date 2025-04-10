@@ -43,7 +43,6 @@ namespace ProjectManagementSystem.Models
         public Nullable<int> excel_id { get; set; }
         public Nullable<System.DateTime> current_task_start { get; set; }
         public Nullable<System.DateTime> current_task_end { get; set; }
-        public Nullable<System.DateTime> current_task_start { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TaskApproval> TaskApprovals { get; set; }
