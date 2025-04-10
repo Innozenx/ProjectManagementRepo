@@ -405,8 +405,8 @@ namespace ProjectManagementSystem.Controllers
                                      pm.Approvers,
                                      pm.Sorting,
                                      pm.CreatedDate,
-                                     pm.ChecklistNumber,        
-                                     pm.DivisionCodeNumber       
+                                     pm.ChecklistNumber,
+                                     pm.DivisionCodeNumber
                                  }).ToList();
 
             var milestones = rawMilestones.Select(m => new MilestoneViewModel
@@ -493,6 +493,23 @@ namespace ProjectManagementSystem.Controllers
                 Debug.WriteLine($"Received Data - DivisionID: {DivisionID}, MilestoneName: {MilestoneName}, Tasks Count: {Tasks.Count}");
                 var division_string = db.Divisions.Where(x => x.DivisionID == DivisionID).Select(x => x.DivisionName).SingleOrDefault();
 
+                var userDetails = (from u in cmdb.AspNetUsers
+                                   join j in cmdb.Identity_JobDescription on new { jId = u.JobId } equals new { jId = j.Id }
+                                   join k in cmdb.Identity_Keywords.Where(x => x.Type == "Departments") on new { department = j.DeptId } equals new { department = k.Id }
+                                   join kd in cmdb.Identity_Keywords.Where(x => x.Type == "Divisions") on new { division = j.DivisionId } equals new { division = kd.Id }
+                                   select new
+                                   {
+                                       email = u.Email,
+                                       name = u.FirstName + " " + u.MiddleName + " " + u.LastName,
+                                       emp_id = u.CMId,
+                                       designation = j.PositionDescription,
+                                       job_level = u.JobLevel,
+                                       department = k.Description,
+                                       division = kd.Description,
+                                       id = u.Id
+                                   }).ToList();
+
+
                 if (Tasks == null || !Tasks.Any())
                 {
                     return Json(new { success = false, message = "Error: At least one task is required!" });
@@ -553,8 +570,9 @@ namespace ProjectManagementSystem.Controllers
                     Requirements = requirements,
                     Approvers = approverIds,
                     CreatedDate = DateTime.Now,
-                    ChecklistNumber = "", 
-                    DivisionCodeNumber = divisionCodeNumber
+                    ChecklistNumber = "",
+                    DivisionCodeNumber = divisionCodeNumber,
+                    division_string = db.Divisions.Where(x => x.DivisionID == DivisionID).Select(x => x.DivisionName).FirstOrDefault()
                 };
 
                 var approver_ids = approverIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -575,7 +593,8 @@ namespace ProjectManagementSystem.Controllers
                             milestone_id = db.MilestoneRoots.Where(x => x.milestone_name.ToLower() == MilestoneName).Select(x => x.id).SingleOrDefault(),
                             date_added = DateTime.Now,
                             added_by = User.Identity.Name,
-                            division = cmdb.Identity_Keywords.Where(x => x.Id == approver_details.JobId && x.Type == "Divisions").Select(x => x.Description).SingleOrDefault(),
+                            //division = cmdb.Identity_Keywords.Where(x => x.Id == approver_details.JobId && x.Type == "Divisions").Select(x => x.Description).SingleOrDefault(),
+                            division = userDetails.Where(x => x.id == approver_details.Id).Select(x => x.division).FirstOrDefault(),
                             employee_id = Int32.Parse(approver_details.CMId),
                             main_id = project.main_id
                         };

@@ -279,7 +279,6 @@
           <Property Name="added_by" Type="nvarchar" MaxLength="100" />
           <Property Name="division" Type="nvarchar" MaxLength="50" />
           <Property Name="approved" Type="bit" />
-          <Property Name="pending" Type="bit" />
           <Property Name="remarks" Type="nvarchar" MaxLength="250" />
           <Property Name="date_approved" Type="date" />
           <Property Name="is_removed" Type="bit" />
@@ -424,6 +423,18 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="milestone_name" Type="varchar" MaxLength="255" />
           <Property Name="delay" Type="int" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="View_1">
+          <Key>
+            <PropertyRef Name="milestone_id" />
+          </Key>
+          <Property Name="milestone_name" Type="nvarchar" MaxLength="255" />
+          <Property Name="project_title" Type="nvarchar" MaxLength="255" />
+          <Property Name="end_date" Type="datetime" />
+          <Property Name="milestone_id" Type="int" Nullable="false" />
+          <Property Name="main_id" Type="int" />
+        </EntityType>
         <Association Name="FK_FixedChecklistTbl_ChecklistSetup">
           <End Role="ChecklistSetup" Type="Self.ChecklistSetup" Multiplicity="0..1" />
           <End Role="FixedChecklistTbl" Type="Self.FixedChecklistTbl" Multiplicity="*" />
@@ -536,6 +547,15 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="TransactionTbl" EntityType="Self.TransactionTbl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyChecklistTable" EntityType="Self.WeeklyChecklistTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="WeeklyStatus" EntityType="Self.WeeklyStatus" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="View_1" EntityType="Self.View_1" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [View_1].[milestone_name] AS [milestone_name], 
+    [View_1].[project_title] AS [project_title], 
+    [View_1].[end_date] AS [end_date], 
+    [View_1].[milestone_id] AS [milestone_id], 
+    [View_1].[main_id] AS [main_id]
+    FROM [dbo].[View_1] AS [View_1]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_FixedChecklistTbl_ChecklistSetup" Association="Self.FK_FixedChecklistTbl_ChecklistSetup">
             <End Role="ChecklistSetup" EntitySet="ChecklistSetup" />
             <End Role="FixedChecklistTbl" EntitySet="FixedChecklistTbl" />
@@ -596,7 +616,6 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySet Name="TaskApprovals" EntityType="ProjectManagementDBModel.TaskApproval" />
           <EntitySet Name="TransactionTbls" EntityType="ProjectManagementDBModel.TransactionTbl" />
           <EntitySet Name="WeeklyChecklistTables" EntityType="ProjectManagementDBModel.WeeklyChecklistTable" />
-          <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
           <AssociationSet Name="FK_FixedChecklistTbl_ChecklistSetup" Association="ProjectManagementDBModel.FK_FixedChecklistTbl_ChecklistSetup">
             <End Role="ChecklistSetup" EntitySet="ChecklistSetups" />
             <End Role="FixedChecklistTbl" EntitySet="FixedChecklistTbls" />
@@ -625,6 +644,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             <End Role="MainTable" EntitySet="MainTables" />
             <End Role="MilestoneTbl" EntitySet="MilestoneTbls" />
           </AssociationSet>
+          <EntitySet Name="View_1" EntityType="ProjectManagementDBModel.View_1" />
+          <EntitySet Name="WeeklyStatus" EntityType="ProjectManagementDBModel.WeeklyStatu" />
         </EntityContainer>
         <EntityType Name="Activity_Log">
           <Key>
@@ -756,9 +777,9 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="RequiresApproval" Type="Boolean" />
           <Property Name="task_delay" Type="Int32" />
           <Property Name="excel_id" Type="Int32" />
-          <Property Name="current_task_start" Type="DateTime" Precision="3" />
           <Property Name="current_task_end" Type="DateTime" Precision="3" />
           <NavigationProperty Name="TaskApprovals" Relationship="ProjectManagementDBModel.FK_TaskApproval_DetailsTbl" FromRole="DetailsTbl" ToRole="TaskApproval" />
+          <Property Name="current_task_start" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Division">
           <Key>
@@ -804,9 +825,9 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="project_owner" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="user_id" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="isCompleted" Type="Boolean" />
-          <Property Name="IsArchived" Type="Boolean" />
           <NavigationProperty Name="FixedChecklistTbls" Relationship="ProjectManagementDBModel.FK_FixedChecklistTbl_MainTable" FromRole="MainTable" ToRole="FixedChecklistTbl" />
           <NavigationProperty Name="MilestoneTbls" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MainTable" ToRole="MilestoneTbl" />
+          <Property Name="IsArchived" Type="Boolean" />
         </EntityType>
         <EntityType Name="MilestoneRoot">
           <Key>
@@ -896,8 +917,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="Draft" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="ChecklistNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="DivisionCodeNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="division_string" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Division" Relationship="ProjectManagementDBModel.FK_PreSetMilestone_Divisions" FromRole="PreSetMilestone" ToRole="Division" />
+          <Property Name="division_string" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="PreSetMilestoneApprover">
           <Key>
@@ -912,7 +933,6 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="added_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="division" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="approved" Type="Boolean" />
-          <Property Name="pending" Type="Boolean" />
           <Property Name="remarks" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="date_approved" Type="DateTime" Precision="0" />
           <Property Name="is_removed" Type="Boolean" />
@@ -1037,21 +1057,6 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <Property Name="WeeklyDay" Type="Int32" />
           <Property Name="isCompleted" Type="Boolean" />
         </EntityType>
-        <EntityType Name="WeeklyStatu">
-          <Key>
-            <PropertyRef Name="status_id" />
-          </Key>
-          <Property Name="status_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="details_id" Type="Int32" />
-          <Property Name="project_owner" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="date_updated" Type="DateTime" Precision="3" />
-          <Property Name="attachment" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="main_id" Type="Int32" />
-          <Property Name="user_id" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="milestone_name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="delay" Type="Int32" />
-        </EntityType>
         <Association Name="FK_FixedChecklistTbl_ChecklistSetup">
           <End Type="ProjectManagementDBModel.ChecklistSetup" Role="ChecklistSetup" Multiplicity="0..1" />
           <End Type="ProjectManagementDBModel.FixedChecklistTbl" Role="FixedChecklistTbl" Multiplicity="*" />
@@ -1136,6 +1141,31 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="View_1">
+          <Key>
+            <PropertyRef Name="milestone_id" />
+          </Key>
+          <Property Name="milestone_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="project_title" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="end_date" Type="DateTime" Precision="3" />
+          <Property Name="milestone_id" Type="Int32" Nullable="false" />
+          <Property Name="main_id" Type="Int32" />
+        </EntityType>
+        <EntityType Name="WeeklyStatu">
+          <Key>
+            <PropertyRef Name="status_id" />
+          </Key>
+          <Property Name="status_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="details_id" Type="Int32" />
+          <Property Name="project_owner" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="date_updated" Type="DateTime" Precision="3" />
+          <Property Name="attachment" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="main_id" Type="Int32" />
+          <Property Name="user_id" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="milestone_name" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="delay" Type="Int32" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1257,8 +1287,8 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
           <EntitySetMapping Name="DetailsTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.DetailsTbl">
               <MappingFragment StoreEntitySet="DetailsTbl">
-                <ScalarProperty Name="current_task_end" ColumnName="current_task_end" />
                 <ScalarProperty Name="current_task_start" ColumnName="current_task_start" />
+                <ScalarProperty Name="current_task_end" ColumnName="current_task_end" />
                 <ScalarProperty Name="excel_id" ColumnName="excel_id" />
                 <ScalarProperty Name="task_delay" ColumnName="task_delay" />
                 <ScalarProperty Name="RequiresApproval" ColumnName="RequiresApproval" />
@@ -1429,7 +1459,6 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
                 <ScalarProperty Name="is_removed" ColumnName="is_removed" />
                 <ScalarProperty Name="date_approved" ColumnName="date_approved" />
                 <ScalarProperty Name="remarks" ColumnName="remarks" />
-                <ScalarProperty Name="pending" ColumnName="pending" />
                 <ScalarProperty Name="approved" ColumnName="approved" />
                 <ScalarProperty Name="division" ColumnName="division" />
                 <ScalarProperty Name="added_by" ColumnName="added_by" />
@@ -1562,6 +1591,17 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a
                 <ScalarProperty Name="sequenceId" ColumnName="sequenceId" />
                 <ScalarProperty Name="weeklyID" ColumnName="weeklyID" />
                 <ScalarProperty Name="localId" ColumnName="localId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="View_1">
+            <EntityTypeMapping TypeName="ProjectManagementDBModel.View_1">
+              <MappingFragment StoreEntitySet="View_1">
+                <ScalarProperty Name="main_id" ColumnName="main_id" />
+                <ScalarProperty Name="milestone_id" ColumnName="milestone_id" />
+                <ScalarProperty Name="end_date" ColumnName="end_date" />
+                <ScalarProperty Name="project_title" ColumnName="project_title" />
+                <ScalarProperty Name="milestone_name" ColumnName="milestone_name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
