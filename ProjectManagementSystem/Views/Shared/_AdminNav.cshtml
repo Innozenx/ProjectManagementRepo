@@ -1,7 +1,33 @@
-﻿@{
+﻿@using ProjectManagementSystem.Models 
+@*@{
     // Retrieve logged-in user's name and email
     var userName = User.Identity.Name ?? "Guest";
+    var avatarInitial = userName.Substring(0, 1).ToUpper();
+}*@
+
+@{
+    var userEmail = User.Identity?.Name ?? "guest@example.com";
+
+    var db = new ProjectManagementDBEntities();
+    var cmdb = new CMIdentityDBEntities();
+    var user = cmdb.AspNetUsers.FirstOrDefault(u => u.Email == userEmail);
+
+    var firstName = user?.FirstName;
+    var lastName = user?.LastName;
+
+    var fullName = (!string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName))
+        ? $"{firstName} {lastName}"
+        : userEmail;
+
+    var avatarInitial = !string.IsNullOrWhiteSpace(firstName)
+        ? firstName.Substring(0, 1).ToUpper()
+        : userEmail.Substring(0, 1).ToUpper(); 
+
+    ViewBag.FullName = fullName;
+    ViewBag.AvatarInitial = avatarInitial;
 }
+
+
 
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -15,56 +41,56 @@
 
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown" id="adminDropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#" role="button" data-toggle="tooltip" data-placement="bottom" title="@userName 
+            <a class="nav-link" data-toggle="dropdown" href="#" role="button" data-toggle="tooltip" data-placement="bottom" title="@ViewBag.FullName
                My workspace">
                 <div style="display: flex; align-items: center;">
                     <span class="avatar-circle" style="background-color: #66339A; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; margin-right: 5px;">
-                        @userName.Substring(0, 1).ToUpper()
+                 @((ViewBag.FirstName as string)?.Substring(0, 1).ToUpper() ?? User.Identity.Name.Substring(0, 1).ToUpper())
+
                     </span>
                     <i class="fas fa-angle-down ml-1"></i>
                 </div>
             </a>
-            <div class="dropdown-menu dropdown-menu-right" style="width: 250px; padding: 10px;">
+            @*<div class="dropdown-menu dropdown-menu-right" style="width: 250px; padding: 10px;">*@
+            <div class="dropdown-menu dropdown-menu-right p-3" style="width: 260px;">
                 <div class="text-center mb-3">
-                    <div class="avatar-circle" style="background-color: #66339A; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; margin: auto;">
-                        @userName.Substring(0, 1).ToUpper()
+                    <div class="avatar-circle mx-auto" style="background-color: #66339A; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;">
+                        @ViewBag.AvatarInitial
                     </div>
-                    <small class="d-block mt-2">@userName</small>
+                    <small class="d-block mt-2 text-break" style="font-size: 0.85rem;">
+                       @ViewBag.FullName
+                    </small>
+                    <p class="text-muted text-center mb-1" style="font-size: 0.75rem;">My Workspace</p>
                 </div>
-                @*<div class="dropdown-divider"></div>*@
+                <hr class="my-2" />
+
+                <a href="@Url.Action("InviteTeammates", "Checklist")" class="dropdown-item">
+                    <i class="fas fa-user-plus mr-2"></i> Invite Teammates
+                </a>
+                <a href="@Url.Action("Milestones", "Admin")" class="dropdown-item">
+                    <i class="fas fa-tasks mr-2"></i> Milestones
+                </a>
+                <a href="@Url.Action("Register", "Admin")" class="dropdown-item">
+                    <i class="fas fa-cogs mr-2"></i> Project Registration
+                </a>
+                <a href="@Url.Action("AddProject", "Checklist")" class="dropdown-item">
+                    <i class="fas fa-plus-circle mr-2"></i> Project Onboarding
+                </a>
+                <a href="@Url.Action("RoleConfiguration", "Admin")" class="dropdown-item">
+                    <i class="fas fa-user mr-2"></i> Role Configuration
+                </a>
+                <a href="@Url.Action("ChecklistSettings", "Admin")" class="dropdown-item">
+                    <i class="fas fa-pen-square mr-2"></i> Checklist Settings
+                </a>
 
                 <div class="dropdown-divider"></div>
-                      @if (User.IsInRole("PMS_PROJECT_OWNER") || User.IsInRole("PMS_PROJECT_MANAGER") || User.IsInRole("PMS_ODCP_ADMIN"))
-                      {
 
-                        <a href="@Url.Action("InviteTeammates", "Checklist")" class="dropdown-item">
-                            <i class="fas fa-user-plus mr-2"></i> Invite Teammates
-                        </a>
-                        <a href="@Url.Action("Milestones", "Admin")" class="dropdown-item">
-                            <i class="fas fa-tasks mr-2"></i>Milestones
-                        </a>
-                        <a href="@Url.Action("Register", "Admin")" class="dropdown-item">
-                            <i class="fas fa-cogs mr-2"></i>Project Registration
-                        </a>
-                        <a href="@Url.Action("AddProject", "Checklist")" class="dropdown-item">
-                            <i class="fas fa-plus-circle mr-2"></i>Project Onboarding
-                        </a>
-                        <a href="@Url.Action("RoleConfiguration", "Admin")" class="dropdown-item">
-                            <i class="fas fa-user mr-2"></i> Role Configuration
-                        </a>
-                        <a href="@Url.Action("ChecklistSettings", "Admin")" class="dropdown-item">
-                            <i class="fas fa-pen-square mr-2"></i> Checklist Settings
-                        </a>
-                        <div class="dropdown-divider"></div>
-
-                      }
-
-
-             
                 <a href="@Url.Action("Logout", "Account")" class="dropdown-item">
                     <i class="fas fa-sign-out-alt mr-2"></i> Log out
                 </a>
             </div>
+
+
         </li>
     </ul>
 </nav>
@@ -78,21 +104,41 @@
         transition: background-color 0.2s;
     }
 
-    .dropdown-menu .dropdown-item:hover {
-        background-color: #f5f5f5;
-    }
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #e3d6f4;
+            font-weight: 500;
+            /*transition: background-color 0.2s ease, color 0.2s ease;*/
+            box-shadow: inset 2px 2px 8px rgba(102, 51, 154, 0.05);
+        }
 
     .avatar-circle {
         background-color: #470A67;
         width: 50px;
         height: 50px;
-        border-radius: 50%;
+        border-radius: 50% !important;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: bold;
         color: #fff;
     }
+    .dropdown-item i {
+        width: 20px;
+        text-align: center;
+        margin-right: 8px;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        /*color: #66339A;*/
+    }
+    .text-break {
+        word-break: break-word;
+    }
+    .dropdown-menu {
+        border-radius: 12px !important;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+
 </style>
 
 @*<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>*@

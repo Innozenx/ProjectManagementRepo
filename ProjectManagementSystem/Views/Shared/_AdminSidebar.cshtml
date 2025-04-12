@@ -67,13 +67,18 @@
                                 <i class="fas fa-archive nav-icon"></i>
                                 <p>Archived Projects</p>
                             </a>
-                        </li>            
-                        <li class="nav-item">
-                                <a href="@Url.Action("PendingApprovals","Admin")" class="nav-link">
+                        </li>
+
+
+                            if (ViewBag.IsApprover == true)
+                            {
+                            <li class="nav-item">
+                                <a href="@Url.Action("PendingApprovals", "Admin")" class="nav-link">
                                     <i class="nav-icon fas fa-check-square"></i>
                                     <p>Approval</p>
                                 </a>
                             </li>
+                            }
 
 
 

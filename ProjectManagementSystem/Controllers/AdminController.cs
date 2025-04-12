@@ -890,7 +890,6 @@ namespace ProjectManagementSystem.Controllers
                 .Where(a => a.User_Id == userId && a.IsRemoved_ == false)
                 .ToList();
 
-
             var taskIds = approverTasks.Select(a => a.Details_Id).ToList();
             var projectIds = approverTasks.Select(a => a.Main_Id).ToList();
 
