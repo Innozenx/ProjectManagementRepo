@@ -410,6 +410,9 @@
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
+    <Compile Include="Models\View_1.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\WeeklyChecklistTable.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
@@ -2524,6 +2527,8 @@
     <Content Include="AdminLTE-3.2.0\starter.html" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\jquery-ui.css" />
+    <Content Include="Content\select2.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="FrontEnd\build\config\postcss.config.js" />
@@ -5075,6 +5080,8 @@
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-3.7.1.min.js" />
+    <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -5085,6 +5092,8 @@
     <Content Include="Scripts\notify.min.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\select2.min.js" />
+    <Content Include="Scripts\sweetalert2%4011.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

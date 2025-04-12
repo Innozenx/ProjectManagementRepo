@@ -42,13 +42,15 @@ namespace ProjectManagementSystem.Controllers
                     for (int i = 0; i < files.Count; i++)
                     {
                         HttpPostedFileBase file = files[i];
-                        string fname;
+                        string fname, path;
 
                         fname = file.FileName;
 
                         fname = Path.Combine(Server.MapPath("~/Uploads/"), fname);
                         file.SaveAs(fname);
 
+                        path = fname.Replace("c:\\users\\jyparraguirre\\source\\repos\\ProjectManagementSystem\\ProjectManagementSystem", "");
+                        var sample = Request.Form.GetValues("name")[0];
                         var submission = new ChecklistSubmission()
                         {
                             submission_description = "test",
@@ -57,9 +59,10 @@ namespace ProjectManagementSystem.Controllers
                             submitted_by = User.Identity.Name,
                             submission_date = DateTime.Now,
                             is_approved = false,
-                            filepath = fname,
+                            filepath = path,
                             milestone_id = Int32.Parse(Request.Form.GetValues("milestone_id")[0]),
-                            main_id = Int32.Parse(Request.Form.GetValues("project_id")[0])
+                            main_id = Int32.Parse(Request.Form.GetValues("project_id")[0]),
+                            type = "optional"
 
                         };
 
