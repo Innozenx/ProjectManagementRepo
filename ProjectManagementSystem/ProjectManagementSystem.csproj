@@ -259,6 +259,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ChecklistController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FileUploadController.cs" />
@@ -5159,6 +5160,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Base\" />
     <Folder Include="Views\DataTable\" />
     <Folder Include="Views\Products\" />
   </ItemGroup>

@@ -558,30 +558,41 @@
         color: #aaa;
         cursor: not-allowed;
     }
+    .top-card:hover {
+        box-shadow: 0 4px 10px rgba(102, 57, 154, 0.2);
+        transform: translateY(-3px);
+        transition: 0.3s ease;
+    }
 
 </style>
 
 
-
 <div class="header-container">
-    @*<div class="header-left">
-        <a href="@Url.Action("Dashboard","Checklist")" class="home-link">Dashboard</a></div>*@
     <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
-    <h3>Hello, @userName! 👋🏼</h3>
 
-    @*@if (Model.PendingTasks > 0)
+    @{
+        var hour = DateTime.Now.Hour;
+        string greeting;
+
+        if (hour <= 11)
         {
-            <p style="font-size: 1.1rem; color: white; animation: fadeIn 1.5s ease-in-out;">
-                Let’s make progress today—your tasks are waiting for you!
-            </p>
+            greeting = "Good morning";
+        }
+        else if (hour <= 17)
+        {
+            greeting = "Good afternoon";
         }
         else
         {
-            <p style="font-size: 1.1rem; color:white; animation: fadeIn 1.5s ease-in-out;">
-                No tasks yet? Let's start your project journey today!
-            </p>
-        }*@
+            greeting = "Good evening";
+        }
+
+        ViewBag.Greeting = $"{greeting}, {ViewBag.FirstName}";
+    }
+
+    <h3>@ViewBag.Greeting! 👋🏼</h3>
 </div>
+
 
 <div class="top-card-row">
     <div class="top-card">
@@ -739,7 +750,6 @@
                                     </a>
                                 </div>
                             </td>
-
 
 
                             @foreach (var milestoneName in Model.UniqueMilestoneNames)
@@ -937,13 +947,13 @@
                 box-shadow: none !important;
             }
 
-            button.dt-paging-button:disabled {
-                background-color: #f5f5f5 !important;
-                color: #ccc !important;
-                cursor: default !important;
-                box-shadow: none !important;
-                border: 1px solid #eee !important;
-            }
+        button.dt-paging-button:disabled {
+            background-color: #f5f5f5 !important;
+            color: #ccc !important;
+            cursor: default !important;
+            box-shadow: none !important;
+            border: 1px solid #eee !important;
+        }
 
         .ellipsis-icon {
             cursor: pointer;
@@ -954,9 +964,9 @@
             line-height: 1;
         }
 
-            .ellipsis-icon:hover {
-                color: #000;
-            }
+        .ellipsis-icon:hover {
+            color: #000;
+        }
 
         .dropdown-options {
             display: none;
@@ -972,18 +982,18 @@
             left: 35px;
         }
 
-            .dropdown-options a {
-                display: block;
-                padding: 8px 12px;
-                color: #333;
-                text-decoration: none;
-                font-size: 13px;
-            }
+    .dropdown-options a {
+        display: block;
+        padding: 8px 12px;
+        color: #333;
+        text-decoration: none;
+        font-size: 13px;
+    }
 
-                .dropdown-options a:hover {
-                    background-color: #f5f5f5;
-                    color: #000;
-                }
+    .dropdown-options a:hover {
+        background-color: #f5f5f5;
+        color: #000;
+    }
 
     </style>
 
@@ -1027,7 +1037,8 @@
     });
 
     function toDetailedView(mainId, projectTitle) {
-        window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${projectTitle}`;
+        //window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${projectTitle}`;
+        window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${projectTitle}&tab=timeline`;
     }
 
     function toggleDropdown(icon) {

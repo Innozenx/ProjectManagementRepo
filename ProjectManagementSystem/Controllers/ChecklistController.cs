@@ -20,7 +20,7 @@ using System.Net;
 
 namespace ProjectManagementSystem.Controllers
 {
-    public class ChecklistController : Controller
+    public class ChecklistController : BaseController
     {
         ProjectManagementDBEntities db = new ProjectManagementDBEntities();
         CMIdentityDBEntities cmdb = new CMIdentityDBEntities();
@@ -82,7 +82,7 @@ namespace ProjectManagementSystem.Controllers
                 if (item.division.Contains(userDivision))
                 {
                     userProjectList.Add(item.projectId);
-                }
+                }   
             }
 
             var currentYear = DateTime.Now.Year;
@@ -276,6 +276,11 @@ namespace ProjectManagementSystem.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var userEmail = User.Identity.GetUserName();
+                var userInfo = cmdb.AspNetUsers.FirstOrDefault(u => u.Email == userEmail);
+                ViewBag.FirstName = userInfo != null ? userInfo.FirstName : "User";
+
+                //ViewBag.FirstName = userFirstName;
+
 
                 // OLD
                 //var projectList = (from p in db.ProjectMembersTbls
@@ -415,7 +420,12 @@ namespace ProjectManagementSystem.Controllers
                         var checklistApprovalsQuery = db.ChecklistSubmissions
                             .Where(cs => cs.main_id == g.MainId && cs.milestone_id == g.MilestoneId);
 
-                        bool allApproved = checklistApprovalsQuery.Any() && checklistApprovalsQuery.All(cs => cs.is_approved == true);
+                        //var checklistApprovalsQuery = db.ChecklistSubmissions
+                        //.Where(cs => cs.main_id == g.MainId && cs.milestone_id == g.MilestoneId);
+
+                        //bool allApproved = checklistApprovalsQuery.Any() && checklistApprovalsQuery.All(cs => cs.is_approved == true);
+
+                        bool allApproved = checklistApprovalsQuery.Any() && checklistApprovalsQuery.All(cs => cs.is_approved == true); 
 
                         string status;
                         var today = DateTime.Today;
@@ -441,7 +451,7 @@ namespace ProjectManagementSystem.Controllers
                         }
                         else
                         {
-                            status = "Pending";
+                            status = "Pending"; 
                         }
 
                         return new ProjectMilestoneViewModel
@@ -553,9 +563,6 @@ namespace ProjectManagementSystem.Controllers
             TempData["ArchiveSuccess"] = "Project archived successfully.";
             return RedirectToAction("Dashboard");
         }
-
-
-
 
         public ActionResult ArchivedProjects()
         {
@@ -677,7 +684,7 @@ namespace ProjectManagementSystem.Controllers
         //}
 
 
-        public ActionResult weeklyMilestone(int id, string title, string projectId)
+        public ActionResult weeklyMilestone(int id, string title, string projectId, string tab = "overview")
         {
             if (User.Identity.IsAuthenticated)
             {
@@ -861,7 +868,7 @@ namespace ProjectManagementSystem.Controllers
                     EndDate = projects.EndDate,
                     Duration = projects.Duration,
                     ProjectYear = projects.ProjectYear,
-                    Division = projects.Division,
+                    Division = projects.Division,   
                     Category = projects.Category,
                     ProjectOwner = projects.ProjectOwner,
                     ProjectDetails = projectDetails,
@@ -876,6 +883,7 @@ namespace ProjectManagementSystem.Controllers
                     IsArchived = projects.IsArchived
                 };
 
+                ViewBag.SelectedTab = tab;
                 return View(viewModel);
             }
             else
@@ -1713,7 +1721,8 @@ namespace ProjectManagementSystem.Controllers
                         while (milestoneChild != null)
                         {
 
-                            milestoneChild.current_completion_date = milestoneChild.completion_date.Value.AddDays(model.delay);
+                            //milestoneChild.current_completion_date = milestoneChild.completion_date.Value.AddDays(model.delay);
+                            milestoneChild.current_completion_date = milestoneChild.completion_date.Value.AddDays(model.delay * 7);
 
                             foreach (var milestoneTasks in db.DetailsTbls.Where(x => x.milestone_id == milestoneChild.milestone_id))
                             {

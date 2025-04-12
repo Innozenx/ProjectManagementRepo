@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Milestone • Project Management System";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var selectedTab = Request.QueryString["tab"] ?? "overview";
 }
 
 <head>
@@ -560,9 +561,10 @@
     </div>
 }
 
-<ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
+@*<ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
     <li class="nav-item">
-        <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
+        <a class="nav-link @(selectedTab == "overview" ? "active" : "")" id="overview-tab"
+           data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
             <i class="fas fa-info-circle"></i> Overview
         </a>
     </li>
@@ -576,9 +578,49 @@
             <i class="fa-solid fa-list-check"></i> Checklist
         </a>
     </li>
+</ul>*@
+
+<ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link @(selectedTab == "overview" ? "active" : "")"
+           id="overview-tab"
+           data-toggle="tab"
+           href="#overview"
+           role="tab"
+           aria-controls="overview"
+           aria-selected="@(selectedTab == "overview" ? "true" : "false")">
+            <i class="fas fa-info-circle"></i> Overview
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(selectedTab == "timeline" ? "active" : "")"
+           id="timeline-tab"
+           data-toggle="tab"
+           href="#timeline"
+           role="tab"
+           aria-controls="timeline"
+           aria-selected="@(selectedTab == "timeline" ? "true" : "false")">
+            <i class="fas fa-project-diagram"></i> Timeline
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(selectedTab == "checklist" ? "active" : "")"
+           id="checklist-tab"
+           data-toggle="tab"
+           href="#checklist"
+           role="tab"
+           aria-controls="checklist"
+           aria-selected="@(selectedTab == "checklist" ? "true" : "false")">
+            <i class="fa-solid fa-list-check"></i> Checklist
+        </a>
+    </li>
 </ul>
 
-<div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+
+
+@*<div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">*@
+<div class="tab-pane fade @(selectedTab == "overview" ? "show active" : "")" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+
     <div class="pop-container">
         <div class="table-container">
             <h3>Project Details</h3>
@@ -644,7 +686,7 @@
                                     <td>@data.ProjectYear</td>
                                 </tr>
                                 <tr>
-                                    <th>Business Unit:</th>
+                                    <th>Division:</th>
                                     <td>@data.Division</td>
                                 </tr>
                                 <tr>
@@ -659,7 +701,7 @@
                         </td>
                     </tr>
                 </table>
-            }
+                                        }
         </div>
     </div>
 
@@ -698,13 +740,13 @@
                         new { @class = "form-select shadow-sm", id = "selectedMilestone" })
                         </div>
 
-   
+
                         <div class="mb-3 d-none" id="delay_div">
                             <label class="fw-semibold">Is your task delayed? <span class="text-danger">*</span></label>
                             <div class="d-flex gap-3">
                                 <div class="form-check">
                                     @Html.RadioButtonFor(x => x.isDelayed, false, new { id = "delayed_no", @class = "form-check-input" })
-                                    <label for="delayed_no" class="form-check-label">No</label> 
+                                    <label for="delayed_no" class="form-check-label">No</label>
                                 </div>
                                 <div class="form-check">
                                     @Html.RadioButtonFor(x => x.isDelayed, true, new { id = "delayed_yes", @class = "form-check-input" })
@@ -712,7 +754,7 @@
                                 </div>
                             </div>
 
-        
+
                             <div class="mt-3 d-none" id="delay_input_group">
                                 <label for="weeks_delayed" class="fw-semibold">
                                     If delayed, by how many weeks? <span class="text-danger">*</span>
@@ -734,9 +776,9 @@
 
                         <div class="mb-3">
                             <label for="fileUpload" class="fw-semibold">Attachments <span class="text-danger">*</span></label>
-                            <input type="file" name="fileUpload" id="fileUpload"  accept=".pdf,.docx,.jpg"  class="form-control shadow-sm" multiple />
+                            <input type="file" name="fileUpload" id="fileUpload" accept=".pdf,.docx,.jpg" class="form-control shadow-sm" multiple />
 
-                            <div id="uploadedFilesList"></div> 
+                            <div id="uploadedFilesList"></div>
                         </div>
 
                         <div id="validationMessage" class="text-danger fw-semibold" style="display: none;">
@@ -859,7 +901,7 @@
                                         <p class="text-muted mb-0" style="font-size: 0.9em;">No Date</p>
                                     }
                                 </div>
-                   
+
                                 <div class="log-details ml-5">
                                     <p class="mb-1 ml-2"><strong>Milestone:</strong> @log.MilestoneName</p>
                                     <p class="mb-1 ml-2"><strong>Description:</strong> @log.Description</p>
@@ -906,8 +948,8 @@
 </div>
 
 
-<div class="tab-pane fade" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
-
+@*<div class="tab-pane fade" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">*@
+<div class="tab-pane fade @(selectedTab == "timeline" ? "show active" : "")" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
     <div class="card-container" id="gantt_container">
         <div class="table-container">
             <div class="gantt-header">
@@ -928,7 +970,9 @@
 </div>
 
 
-<div class="tab-pane fade" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">
+@*<div class="tab-pane fade" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">*@
+<div class="tab-pane fade @(selectedTab == "checklist" ? "show active" : "")" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">
+
     <div class="card shadow-sm p-4">
         <h3 class="text-center text-purple fw-bold">Checklist</h3>
         @*<p class="text-center text-muted">Manage checklist for each milestone.</p>*@
@@ -947,13 +991,13 @@
 
         <!-- Checklist Instructions -->
         @*<div id="checklistContainer" class="mt-4 text-center text-muted">
-            Select a milestone to view checklist items. <br />
-            <small>
-                <i class="fa-solid fa-check text-success"></i> = Approved,
-                <i class="fa fa-exclamation-triangle text-warning"></i> = Pending,
-                <i class="fas fa-ban text-danger"></i> = Disapproved
-            </small>
-        </div>*@
+                Select a milestone to view checklist items. <br />
+                <small>
+                    <i class="fa-solid fa-check text-success"></i> = Approved,
+                    <i class="fa fa-exclamation-triangle text-warning"></i> = Pending,
+                    <i class="fas fa-ban text-danger"></i> = Disapproved
+                </small>
+            </div>*@
 
         <div class="table-responsive mt-4">
             <table class="table table-hover align-middle checklist-table">
@@ -970,12 +1014,14 @@
                 </thead>
                 <tbody id="checklistTableBody">
                     <tr>
-                        <td colspan="7" class="text-center">Select a milestone to view checklist items. <br />
-                        <small>
-                            <i class="fa fa-exclamation-circle text-warning"></i> = Pending,
-                            <i class="fa-solid fa-circle-check text-success"></i> = Approved,
-                            <i class="fas fa-ban text-danger"></i> = Rejected
-                        </small></td>
+                        <td colspan="7" class="text-center">
+                            Select a milestone to view checklist items. <br />
+                            <small>
+                                <i class="fa fa-exclamation-circle text-warning"></i> = Pending,
+                                <i class="fa-solid fa-circle-check text-success"></i> = Approved,
+                                <i class="fas fa-ban text-danger"></i> = Rejected
+                            </small>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -984,12 +1030,12 @@
                 //if (Model.userDetails.JobLevel == 4035 || User.IsInRole("PMS_DIVISION_HEAD"))
                 if (Model.ProjectDetails != null && Model.IsProjectManager)
                 {
-                <div class="text-center mt-3">
-                    <button class="btn btn-purple btn-lg" id="add_optional">
-                        <i class="fa fa-plus"></i> Checklist Item
-                    </button>
-                </div>
-               }
+                    <div class="text-center mt-3">
+                        <button class="btn btn-purple btn-lg" id="add_optional">
+                            @*<i class="fa fa-plus"></i>*@ Add Checklist Item
+                        </button>
+                    </div>
+                }
 
             }
         </div>
@@ -1213,8 +1259,6 @@
             gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json");
 
 
-
-
         const setDayView = () => {
             gantt.config.scales = [
                     { unit: "day", step: 1, date: "%d" },
@@ -1310,10 +1354,42 @@
             }
         });
 
+        const selectedTab = new URLSearchParams(window.location.search).get("tab");
+
+        if (selectedTab === "timeline") {
+            $("#timeline").addClass("show active").css("display", "block");
+            $("#overview").removeClass("show active").css("display", "none");
+            $("#checklist").removeClass("show active").css("display", "none");
+            $("#detailsContainer").css("display", "none");
+
+            setTimeout(() => {
+                gantt.render();
+                document.getElementById("gantt_here").scrollIntoView({ behavior: "smooth" });
+            }, 200);
+        }
+
+        const urlTab = new URLSearchParams(window.location.search).get("tab");
+
+        if (urlTab === "timeline" || urlTab === "checklist" || urlTab === "overview") {
+     
+            $(".tab-pane").removeClass("show active").hide();
+            $("#" + urlTab).addClass("show active").show();
+
+            $(".nav-link").removeClass("active");
+            $("#" + urlTab + "-tab").addClass("active");
+
+            if (urlTab === "checklist") {
+                $("#detailsContainer").hide();
+            } else if (urlTab === "timeline") {
+                $("#detailsContainer").hide();
+                setTimeout(() => gantt.render(), 200);
+            } else {
+                $("#detailsContainer").show();
+            }
+        }
     </script>
 
     <script>
-
         $(document).ready(function () {
         const mainId = '@(TempData["entry"] ?? "null")';
 
@@ -1930,4 +2006,20 @@
                 });
         }
     </script>
+
+    <script>
+        $(function () {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                const selectedTab = $(e.target).attr('href').substring(1); 
+                const url = new URL(window.location);
+                url.searchParams.set('tab', selectedTab);
+                window.history.replaceState({}, '', url);
+            });
+        });
+        $('#timeline-tab').on('shown.bs.tab', function () {
+            gantt.render();  
+        });
+
+</script>
+
 }

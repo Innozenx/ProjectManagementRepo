@@ -4,11 +4,12 @@
     ViewBag.Title = "Approvals";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
+
     <div class="container mt-5">
         <div class="text-center mb-4">
             <h2 class="fw-bold text-purple">Approvals</h2>
         </div>
-
+       
         <ul class="nav nav-tabs custom-tabs" id="approvalsTab" role="tablist">
             <li class="nav-item">
                 <a class="nav-link active" id="pending-tab" data-bs-toggle="tab" href="#pending" role="tab">Pending</a>
@@ -79,7 +80,8 @@
                     pendingContainer.append(taskCard);
                 });
             } else {
-                pendingContainer.append(`<p class="text-center text-muted">No pending approvals</p>`);
+                //pendingContainer.append(`<p class="text-center text-muted">No pending approvals</p>`);
+                pendingContainer.append(`<p class="text-center text-muted">No pending approvals.`);
             }
         }).fail(() => {
             Swal.fire("Error", "Failed to load pending approvals.", "error");
@@ -140,7 +142,6 @@
     });
     </script>
 
-
 <style>
     .custom-tabs {
         border-bottom: 1px solid #ddd;
@@ -150,22 +151,22 @@
         padding-bottom: 5px;
     }
 
-        .custom-tabs .nav-link {
-            font-size: 16px;
-            font-weight: 500;
-            color: #9c9c9c;
-            background: none;
-            border: none;
-            padding: 10px 15px;
-            transition: all 0.3s ease-in-out;
-        }
+    .custom-tabs .nav-link {
+        font-size: 16px;
+        font-weight: 500;
+        color: #9c9c9c;
+        background: none;
+        border: none;
+        padding: 10px 15px;
+        transition: all 0.3s ease-in-out;
+    }
 
-            .custom-tabs .nav-link.active {
-                color: #6f42c1;
-                font-weight: 600;
-                border-bottom: 2px solid #6f42c1;
-                transition: all 0.3s ease-in-out;
-            }
+    .custom-tabs .nav-link.active {
+        color: #6f42c1;
+        font-weight: 600;
+        border-bottom: 2px solid #6f42c1;
+        transition: all 0.3s ease-in-out;
+    }
 
     .task-card {
         border-radius: 12px;
@@ -177,5 +178,3 @@
         gap: 10px;
     }
 </style>
-
-
