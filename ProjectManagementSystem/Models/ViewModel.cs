@@ -127,6 +127,7 @@ namespace ProjectManagementSystem.Models
         public List<string> SelectedMilestones { get; set; }
         public bool AreCompleted { get; set; }
         public bool IsArchived { get; set; }
+        public int MilestonePosition { get; set; }
 
     }
 
@@ -333,6 +334,7 @@ namespace ProjectManagementSystem.Models
         public DateTime CreatedDate { get; set; }
         public string ChecklistNumber { get; set; }
         public string DivisionCodeNumber { get; set; }
+        public string MilestoneStatus { get; set; }
     }
 
 
@@ -352,6 +354,7 @@ namespace ProjectManagementSystem.Models
         public int PendingTasks { get; set; }
         public int TotalTasks { get; set; }
         public int CurrentWeek { get; set; }
+        public bool ShowBothDashboards { get; set; }
     }
     public class ProjectWithMilestonesViewModel
     {

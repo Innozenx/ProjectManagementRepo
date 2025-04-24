@@ -1,0 +1,107 @@
+﻿@model ProjectManagementSystem.Models.DashboardManagementViewModel
+@using System.Globalization;
+
+<div class="tab-content" id="divisionTabContent">
+    @foreach (var division in Model.Divisions)
+    {
+        var divisionId = division.Replace(" ", "");
+        <div class="tab-pane fade @(Model.Divisions.First() == division ? "show active" : "")"
+             id="panel-@divisionId"
+             role="tabpanel"
+             aria-labelledby="tab-@divisionId">
+
+            <div class="table-container wide-table-container">
+                <h5>@division <br />Projects</h5>
+                <div class="status-legend d-flex flex-wrap gap-2 justify-content-end mt-1">
+                    <label style="font-size: 12px; font-weight: 500; color: #555; margin-top: 8px;">Legend:</label>
+                    <span class="legend-badge" style="background:#D4EDDA; color:#155724;">Completed</span>
+                    <span class="legend-badge" style="background:#D6E4FF; color:#004085;">Active</span>
+                    <span class="legend-badge" style="background:#FFF9DB; color:#856404;">Due Today</span>
+                    <span class="legend-badge" style="background:#F8D7DA; color:#b30000;">Delayed</span>
+                    <span class="legend-badge" style="background:#E2E3E5; color:#383d41;">Pending</span>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Projects</th>
+                            @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                            {
+                                <th>@milestoneName</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var project in Model.ProjectsByDivision[division])
+                        {
+                            <tr>
+                                <td class="project-title-cell" style="position: relative; word-break: break-word; overflow-wrap: break-word;">
+                                    <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId })" class="text-decoration-none text-primary">
+                                        @project.ProjectTitle
+                                    </a>
+                                </td>
+                                @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                {
+                                    var milestoneTasks = Model.ProjectsMilestones
+                                        .Where(pm => pm.ProjectTitle == project.ProjectTitle && pm.MilestoneName == milestoneName)
+                                        .ToList();
+
+                                    var latestEndDate = milestoneTasks.Any(pm => pm.EndDate.HasValue) ? milestoneTasks.Max(pm => pm.EndDate.Value) : (DateTime?)null;
+                                    var currentEndDate = milestoneTasks.Any(pm => pm.CurrentCompletionDate.HasValue) ? milestoneTasks.Max(pm => pm.CurrentCompletionDate.Value) : latestEndDate;
+
+                                    var osWeek = latestEndDate.HasValue ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}" : "-";
+                                    var csWeek = currentEndDate.HasValue ? $"WW{currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}" : "-";
+
+                                    string combinedFormatted = "-";
+                                    if (osWeek != "-" && csWeek != "-" && osWeek != csWeek)
+                                    {
+                                        combinedFormatted = $"{osWeek} os / {csWeek} cs";
+                                    }
+                                    else if (osWeek != "-")
+                                    {
+                                        combinedFormatted = osWeek;
+                                    }
+
+                                    var milestoneStatus = milestoneTasks.FirstOrDefault()?.MilestoneStatus ?? "";
+                                    string cellColor = "", textColor = "";
+                                    switch (milestoneStatus)
+                                    {
+                                        case "Completed": cellColor = "#E6F4EA"; textColor = "#4C8C6B"; break;
+                                        case "Active": cellColor = "#E8F0FE"; textColor = "#4A6ED8"; break;
+                                        case "Due Today": cellColor = "#FFFAE6"; textColor = "#B99E4C"; break;
+                                        case "Delayed": cellColor = "#FCE9EC"; textColor = "#D25567"; break;
+                                        case "Pending": cellColor = "#F0F0F0"; textColor = "#7A7A7A"; break;
+                                        default: cellColor = "#ffffff"; textColor = "#000000"; break;
+                                    }
+
+                                    <td style="text-align: center; position: relative;">
+                                        <div class="tooltip-container">
+                                            <span class="status-badge" style="background-color:@cellColor; color:@textColor;">
+                                                @combinedFormatted
+                                            </span>
+                                            <div class="custom-tooltip">
+                                                <strong>Status:</strong> @milestoneStatus
+                                                @if (milestoneStatus == "Completed")
+                                                { <span>✅</span> }
+                                                else if (milestoneStatus == "Active")
+                                                { <span>🟢</span> }
+                                                else if (milestoneStatus == "Due Today")
+                                                { <span>⏳</span> }
+                                                else if (milestoneStatus == "Delayed")
+                                                { <span>⚠️</span> }
+                                                else if (milestoneStatus == "Pending")
+                                                { <span>🕒</span> }
+                                                <br />
+                                                <strong>Due:</strong> @(currentEndDate?.ToString("MMM dd, yyyy") ?? "N/A")
+                                            </div>
+                                        </div>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
