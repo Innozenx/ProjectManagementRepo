@@ -36,13 +36,11 @@ namespace ProjectManagementSystem.Controllers
             return View(checklist);
         }
 
-
         [Authorize(Roles = "PMS_Management, PMS_ODCP_ADMIN, PMS_DIVISION_HEAD")]
         public ActionResult DashboardManagement()
         {
             var userName = User.Identity.Name;
             var userDetails = cmdb.AspNetUsers.FirstOrDefault(x => x.UserName == userName);
-
             var userDivision = (from u in cmdb.AspNetUsers
                                 join j in cmdb.Identity_JobDescription on u.JobId equals j.Id
                                 join i in cmdb.Identity_Keywords on j.DivisionId equals i.Id

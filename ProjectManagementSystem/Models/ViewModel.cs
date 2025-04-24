@@ -120,9 +120,10 @@ namespace ProjectManagementSystem.Models
         public bool AreCompleted { get; set; }
         public bool IsArchived { get; set; }
         public int MilestonePosition { get; set; }
-
-
         public List<ChecklistTable> checklist_id { get; set; }
+        public bool IsODCPAdminAndDivisionHead { get; set; }
+
+
     }
 
     public class StatusLogsViewModel
