@@ -5166,6 +5166,8 @@
     <Content Include="Views\Admin\AddMilestones.cshtml" />
     <Content Include="Views\Checklist\GanttChart.cshtml" />
     <Content Include="Views\Checklist\ArchivedProjects.cshtml" />
+    <Content Include="Views\Checklist\_DivisionDashboard.cshtml" />
+    <Content Include="Views\Checklist\_ManagementDashboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

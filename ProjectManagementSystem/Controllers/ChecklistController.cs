@@ -36,229 +36,198 @@ namespace ProjectManagementSystem.Controllers
             return View(checklist);
         }
 
+
         [Authorize(Roles = "PMS_Management, PMS_ODCP_ADMIN, PMS_DIVISION_HEAD")]
         public ActionResult DashboardManagement()
         {
-
-            var projectList = db.MainTables.Select(x => x.main_id).ToList();
             var userName = User.Identity.Name;
-            var userDetails = cmdb.AspNetUsers.Where(x => x.UserName == userName).SingleOrDefault();
+            var userDetails = cmdb.AspNetUsers.FirstOrDefault(x => x.UserName == userName);
+
             var userDivision = (from u in cmdb.AspNetUsers
-                                 join j in cmdb.Identity_JobDescription on new { jobid = u.JobId, uname = u.UserName } equals new { jobid = j.Id, uname = userName }
-                                 join i in cmdb.Identity_Keywords on j.DivisionId equals i.Id
-                                 where i.Type == "Divisions"
-                                 select i.Description).FirstOrDefault();
-
-
-            //List<int> userProjectList = new List<int>();
-            //List<projectDivisionModel>
-
-            List<int> userProjectList = new List<int>();
-
-            List<projectDivisionModel> divisionProjects = new List<projectDivisionModel>();
-
-            foreach (var item in projectList)
-            {
-                var projectsMembersDivision = db.ProjectMembersTbls.Where(x => x.project_id == item)
-                    .Select(x => x.division)
-                    .Distinct()
-                    .ToList();
-
-                projectDivisionModel container = new projectDivisionModel
-                {
-                    projectId = item,
-                    division = projectsMembersDivision
-                };
-
-                if (projectsMembersDivision != null)
-                {
-                    divisionProjects.Add(container);
-                }
-
-            }
-
-            foreach (var item in divisionProjects)
-            {
-                if (item.division.Contains(userDivision))
-                {
-                    userProjectList.Add(item.projectId);
-                }   
-            }
-
-            var currentYear = DateTime.Now.Year;
-            var calendar = CultureInfo.InvariantCulture.Calendar;
-            var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+                                join j in cmdb.Identity_JobDescription on u.JobId equals j.Id
+                                join i in cmdb.Identity_Keywords on j.DivisionId equals i.Id
+                                where u.UserName == userName && i.Type == "Divisions"
+                                select i.Description).FirstOrDefault();
 
             db.Database.CommandTimeout = 120;
 
-            var allProjects = db.MainTables
-                .Select(p => new ProjectChecklistGroupViewModel
-                {
-                    MainId = p.main_id,
-                    ProjectName = p.project_title
-                })
+            var mainProjects = db.MainTables
+                .Where(p => !string.IsNullOrEmpty(p.division) && (p.IsArchived == false || p.IsArchived == null))
                 .ToList();
 
-            var rawProjectsAndMilestones = (from m in db.MilestoneTbls
-                                            join p in db.MainTables on m.main_id equals p.main_id
-                                            join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
-                                            from task in tasks.DefaultIfEmpty()
-                                            group new { m, task } by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position }
-                                            into g
-                                            select new
-                                            {
-                                                MainId = g.Key.main_id,
-                                                ProjectTitle = g.Key.project_title,
-                                                MilestoneName = g.Key.milestone_name,
-                                                MilestonePosition = g.Key.milestone_position,
-                                                Tasks = g.Select(x => new
-                                                {
-                                                    x.task.task_start,
-                                                    x.task.task_duration,
-                                                    x.task.isCompleted,
-                                                    CurrentCompletionDate = x.m.current_completion_date,
-                                                    CompletionDate = x.m.completion_date
-                                                }).ToList()
-                                            }).ToList();
+            var allMilestonesRaw = (from m in db.MilestoneTbls
+                                    join p in db.MainTables on m.main_id equals p.main_id
+                                    where p.IsArchived == false || p.IsArchived == null
+                                    join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
+                                    from task in tasks.DefaultIfEmpty()
+                                    group new { m, task } by new
+                                    {
+                                        p.main_id,
+                                        p.project_title,
+                                        p.division,
+                                        m.milestone_name,
+                                        m.milestone_position,
+                                        m.milestone_id
+                                    }
+                                    into g
+                                    select new
+                                    {
+                                        g.Key.main_id,
+                                        g.Key.project_title,
+                                        g.Key.division,
+                                        g.Key.milestone_name,
+                                        g.Key.milestone_position,
+                                        g.Key.milestone_id,
+                                        Tasks = g.Select(x => new TempTask
+                                        {
+                                            task_start = x.task.task_start,
+                                            task_duration = x.task.task_duration,
+                                            isCompleted = x.task.isCompleted,
+                                            CurrentCompletionDate = x.m.current_completion_date,
+                                            CompletionDate = x.m.completion_date
+                                        }).ToList()
+                                    }).ToList();
 
-            var divisions = db.MainTables
-                .Where(p => !string.IsNullOrEmpty(p.division))
-                .Select(p => p.division)
-                .Distinct()
-                .ToList() ?? new List<string>();
-
-            var viewModel = new DashboardManagementViewModel();
-
-            if (userDetails.JobLevel == 4035)
-            {
-                var projectsByDivision = db.MainTables
-                .Where(p => !string.IsNullOrEmpty(p.division) && userProjectList.Contains(p.main_id))
-                .Select(p => new MainTableViewModel
-                {
-                    MainId = p.main_id,
-                    ProjectTitle = p.project_title ?? "Untitled Project",
-                    //ProjectStart = p.project_start.Value.ToString("yyyy-MM-dd") ?? "Not Set",
-                    //ProjectEnd = p.project_end.Value.ToString("yyyy-MM-dd") ?? "Not Set",
-                    ProjectStart = p.project_start.ToString(),
-                    ProjectEnd = p.project_end.ToString(),
-                    //Duration = p.duration.Value.ToString() ?? "0",
-                    Duration = p.duration.Value.ToString(),
-                    //Year = p.year.Value.ToString() ?? "Unknown Year",
-                    Year = p.year.Value.ToString(),
-                    Division = p.division,
-                    Category = p.category ?? "Uncategorized",
-                    ProjectOwner = p.project_owner ?? "No Owner",
-                    Milestones = db.MilestoneTbls
-                            .Where(m => m.main_id == p.main_id)
-                            .Select(m => new MilestoneViewModel
-                            {
-                                MilestoneName = m.milestone_name ?? "Unnamed Milestone",
-                                CurrentTaskEnd = m.current_completion_date
-                            })
-                            .OrderBy(m => m.MilestoneName)
-                            .ToList()
-                }).ToList();
-
-                var uniqueMilestoneNames = db.MilestoneTbls
-                .Select(m => m.milestone_name)
-                .Distinct()
-                .Where(name => !string.IsNullOrEmpty(name))
-                .ToList() ?? new List<string>();
-
-                viewModel = new DashboardManagementViewModel
-                {
-                    Divisions = divisions,
-                    IndividualProjects = projectsByDivision,
-                    UniqueMilestoneNames = uniqueMilestoneNames,
-                    userRole = userDetails.JobLevel.Value,
-                    userDivision = userDivision
-                };
-            } 
-            else
-            {
-                var projectsByDivision = db.MainTables
-                .Where(p => !string.IsNullOrEmpty(p.division))
-                .GroupBy(p => p.division)
+            var milestoneDict = allMilestonesRaw
+                .GroupBy(m => m.main_id)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.Select(p => new MainTableViewModel
-                    {
-                        MainId = p.main_id,
-                        ProjectTitle = p.project_title ?? "Untitled Project",
-                        ProjectStart = p.project_start?.ToString("yyyy-MM-dd") ?? "Not Set",
-                        ProjectEnd = p.project_end?.ToString("yyyy-MM-dd") ?? "Not Set",
-                        Duration = p.duration?.ToString() ?? "0",
-                        Year = p.year?.ToString() ?? "Unknown Year",
-                        Division = p.division,
-                        Category = p.category ?? "Uncategorized",
-                        ProjectOwner = p.project_owner ?? "No Owner",
-                        Milestones = db.MilestoneTbls
-                            .Where(m => m.main_id == p.main_id)
-                            .Select(m => new MilestoneViewModel
-                            {
-                                MilestoneName = m.milestone_name ?? "Unnamed Milestone",
-                                CurrentTaskEnd = m.current_completion_date
-                            })
-                            .OrderBy(m => m.MilestoneName)
-                            .ToList()
-                    }).ToList()
+                    g => g.OrderBy(m => m.milestone_position).ToList()
                 );
 
-                var uniqueMilestoneNames = db.MilestoneTbls
-                .Select(m => m.milestone_name)
-                .Distinct()
-                .Where(name => !string.IsNullOrEmpty(name))
-                .ToList() ?? new List<string>();
+            foreach (var project in milestoneDict)
+            {
+                DateTime? previousMaxDate = null;
 
-                viewModel = new DashboardManagementViewModel
+                foreach (var milestone in project.Value)
                 {
-                    Divisions = divisions,
-                    ProjectsByDivision = projectsByDivision,
-                    UniqueMilestoneNames = uniqueMilestoneNames,
-                    userRole = userDetails.JobLevel.Value
-                };
+                    var maxOriginalDate = milestone.Tasks.Max(t => t.CompletionDate ?? t.CurrentCompletionDate ?? DateTime.MinValue);
+                    var maxCurrentDate = milestone.Tasks.Max(t => t.CurrentCompletionDate ?? t.CompletionDate ?? DateTime.MinValue);
+
+                    if (previousMaxDate.HasValue && maxCurrentDate < previousMaxDate.Value)
+                    {
+                        var delayDays = (previousMaxDate.Value - maxCurrentDate).Days;
+
+                        for (int i = 0; i < milestone.Tasks.Count; i++)
+                        {
+                            var task = milestone.Tasks[i];
+                            milestone.Tasks[i] = new TempTask
+                            {
+                                task_start = task.task_start?.AddDays(delayDays),
+                                task_duration = task.task_duration,
+                                isCompleted = task.isCompleted,
+                                CurrentCompletionDate = task.CurrentCompletionDate?.AddDays(delayDays),
+                                CompletionDate = task.CompletionDate?.AddDays(delayDays)
+                            };
+                        }
+
+                        maxCurrentDate = maxCurrentDate.AddDays(delayDays);
+                    }
+
+                    previousMaxDate = maxCurrentDate > previousMaxDate ? maxCurrentDate : previousMaxDate;
+                }
             }
 
-            //var projectsByDivision = db.MainTables
-            //    .Where(p => !string.IsNullOrEmpty(p.division))
-            //    .GroupBy(p => p.division)
-            //    .ToDictionary(
-            //        g => g.Key,
-            //        g => g.Select(p => new MainTableViewModel
-            //        {
-            //            MainId = p.main_id,
-            //            ProjectTitle = p.project_title ?? "Untitled Project",
-            //            ProjectStart = p.project_start?.ToString("yyyy-MM-dd") ?? "Not Set",
-            //            ProjectEnd = p.project_end?.ToString("yyyy-MM-dd") ?? "Not Set",
-            //            Duration = p.duration?.ToString() ?? "0",
-            //            Year = p.year?.ToString() ?? "Unknown Year",
-            //            Division = p.division,
-            //            Category = p.category ?? "Uncategorized",
-            //            ProjectOwner = p.project_owner ?? "No Owner",
-            //            Milestones = db.MilestoneTbls
-            //                .Where(m => m.main_id == p.main_id)
-            //                .Select(m => new MilestoneViewModel
-            //                {
-            //                    MilestoneName = m.milestone_name ?? "Unnamed Milestone",
-            //                    CurrentTaskEnd = m.current_completion_date
-            //                })
-            //                .OrderBy(m => m.MilestoneName)
-            //                .ToList()
-            //        }).ToList()
-            //    );
+            var allMilestoneViewModels = allMilestonesRaw.Select(g =>
+            {
+                var dueDate = g.Tasks.Max(t => t.CurrentCompletionDate ?? t.CompletionDate ?? DateTime.MinValue);
+                var today = DateTime.Today;
 
-            //var uniqueMilestoneNames = db.MilestoneTbls
-            //    .Select(m => m.milestone_name)
-            //    .Distinct()
-            //    .Where(name => !string.IsNullOrEmpty(name))
-            //    .ToList() ?? new List<string>();
+                var checklistApprovalsQuery = db.ChecklistSubmissions
+                    .Where(cs => cs.main_id == g.main_id && cs.milestone_id == g.milestone_id);
 
-            //var viewModel = new DashboardManagementViewModel
-            //{
-            //    Divisions = divisions,
-            //    ProjectsByDivision = projectsByDivision,
-            //    UniqueMilestoneNames = uniqueMilestoneNames
-            //};
+                bool allApproved = checklistApprovalsQuery.Any() && checklistApprovalsQuery.All(cs => cs.is_approved == true);
+
+                string status = "Pending";
+                if (allApproved) status = "Completed";
+                else if (dueDate != DateTime.MinValue)
+                {
+                    if (dueDate < today) status = "Delayed";
+                    else if (dueDate == today) status = "Due Today";
+                    else status = "Active";
+                }
+
+                return new ProjectMilestoneViewModel
+                {
+                    MainId = g.main_id,
+                    ProjectTitle = g.project_title,
+                    MilestoneName = g.milestone_name,
+                    EndDate = dueDate != DateTime.MinValue ? (DateTime?)dueDate : null,
+                    CurrentCompletionDate = dueDate != DateTime.MinValue ? (DateTime?)dueDate : null,
+                    MilestoneStatus = status,
+                    MilestonePosition = g.milestone_position ?? 0,
+                    Tasks = g.Tasks.Select(t => new TaskViewModel
+                    {
+                        TaskStart = t.task_start,
+                        Duration = t.task_duration ?? 0,
+                        IsCompleted = t.isCompleted ?? false
+                    }).ToList()
+                };
+            }).ToList();
+
+            var projectMilestoneGroups = allMilestoneViewModels
+                .GroupBy(p => p.MainId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            int totalProjects = projectMilestoneGroups.Count();
+            int completedProjects = projectMilestoneGroups.Count(x => x.Value.All(m => m.MilestoneStatus == "Completed"));
+            int pendingProjects = totalProjects - completedProjects;
+
+            var groupedByDivision = allMilestoneViewModels
+                .GroupBy(pm => mainProjects.FirstOrDefault(p => p.main_id == pm.MainId)?.division?.Trim().ToUpper() ?? $"NoDivision_{pm.MainId}")
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var viewModel = new DashboardManagementViewModel
+            {
+                ProjectsByDivision = groupedByDivision.ToDictionary(
+                    g => g.Key,
+                    g => g.Value
+                        .GroupBy(m => m.MainId)
+                        .Select(group => new MainTableViewModel
+                        {
+                            MainId = group.Key,
+                            ProjectTitle = group.First().ProjectTitle,
+                            Milestones = group.Select(m => new MilestoneViewModel
+                            {
+                                MilestoneName = m.MilestoneName,
+                                CurrentTaskEnd = m.CurrentCompletionDate
+                            }).ToList()
+                        }).ToList()
+                ),
+
+                ProjectsMilestones = allMilestoneViewModels,
+
+                UniqueMilestoneNames = allMilestoneViewModels
+                    .GroupBy(m => m.MilestoneName)
+                    .OrderBy(g => allMilestoneViewModels
+                        .Where(x => x.MilestoneName == g.Key)
+                        .Min(x => x.MilestonePosition))
+                    .Select(g => g.Key)
+                    .ToList(),
+
+                userRole = userDetails?.JobLevel ?? 0,
+                userDivision = userDivision,
+                Divisions = groupedByDivision.Keys.ToList(),
+                CompletedTasks = completedProjects,
+                PendingTasks = pendingProjects,
+                TotalTasks = totalProjects,
+                CurrentWeek = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Sunday),
+
+            IndividualProjects = allMilestoneViewModels
+            .GroupBy(m => m.MainId)
+            .Select(group => new MainTableViewModel
+            {
+                MainId = group.Key,
+                ProjectTitle = group.First().ProjectTitle,
+                Milestones = group.Select(m => new MilestoneViewModel
+                {
+                    MilestoneName = m.MilestoneName,
+                    CurrentTaskEnd = m.CurrentCompletionDate
+                }).ToList()
+            }).ToList(),
+             ShowBothDashboards = (User.IsInRole("PMS_ODCP_ADMIN") && userDetails?.JobLevel == 4035),
+
+            };
 
             return View(viewModel);
         }
@@ -273,266 +242,286 @@ namespace ProjectManagementSystem.Controllers
                 return RedirectToAction("DashboardManagement");
             }
 
-            if (User.Identity.IsAuthenticated)
-            {
-                var userEmail = User.Identity.GetUserName();
-                var userInfo = cmdb.AspNetUsers.FirstOrDefault(u => u.Email == userEmail);
-                ViewBag.FirstName = userInfo != null ? userInfo.FirstName : "User";
-
-                //ViewBag.FirstName = userFirstName;
-
-
-                // OLD
-                //var projectList = (from p in db.ProjectMembersTbls
-                //                   join m in db.MainTables on new { id = p.project_id } equals new { id = (int?)m.main_id }
-                //                   where p.email == userEmail && m.isCompleted != true 
-                //                   select m.main_id).ToList();
-
-                // NEW WITH ARCHIVED
-                var projectList = (from p in db.ProjectMembersTbls
-                                   join m in db.MainTables on new { id = p.project_id } equals new { id = (int?)m.main_id }
-                                   where p.email == userEmail
-                                         && m.isCompleted != true
-                                         && (m.IsArchived == false || m.IsArchived == null)
-                                   select m.main_id).ToList();
-
-
-                var currentYear = DateTime.Now.Year;
-                var calendar = CultureInfo.InvariantCulture.Calendar;
-                var currentWeek = calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
-
-                db.Database.CommandTimeout = 120;
-
-                var projects = db.MainTables
-                   .Where(p => projectList.Contains(p.main_id))
-                   .Select(p => new ProjectChecklistGroupViewModel
-                   {
-                       MainId = p.main_id,
-                       ProjectName = p.project_title
-                   })
-                   .ToList();
-
-                //OLD
-                //var rawProjectsAndMilestones = (from m in db.MilestoneTbls
-                //                                join p in db.MainTables on m.main_id equals p.main_id
-                //                                join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
-                //                                from task in tasks.DefaultIfEmpty()
-                //                                group new { m, task } by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position, m.milestone_id }
-                //                                into g
-                //                                select new
-                //                                {
-                //                                    MainId = g.Key.main_id,
-                //                                    ProjectTitle = g.Key.project_title,
-                //                                    MilestoneName = g.Key.milestone_name,
-                //                                    MilestonePosition = g.Key.milestone_position,
-                //                                    MilestoneId = g.Key.milestone_id,
-                //                                    Tasks = g.Select(x => new TempTask
-                //                                    {
-                //                                        task_start = x.task.task_start,
-                //                                        task_duration = x.task.task_duration,
-                //                                        isCompleted = x.task.isCompleted,
-                //                                        CurrentCompletionDate = x.m.current_completion_date,
-                //                                        CompletionDate = x.m.completion_date
-                //                                    }).ToList()
-                //                                }).ToList();
-
-                // NEW WITH ARCHIVE
-                var rawProjectsAndMilestones = (from m in db.MilestoneTbls
-                                                join p in db.MainTables on m.main_id equals p.main_id
-                                                where p.IsArchived == false || p.IsArchived == null 
-                                                join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
-                                                from task in tasks.DefaultIfEmpty()
-                                                group new { m, task } by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position, m.milestone_id }
-                                                into g
-                                                select new
-                                                {
-                                                    MainId = g.Key.main_id,
-                                                    ProjectTitle = g.Key.project_title,
-                                                    MilestoneName = g.Key.milestone_name,
-                                                    MilestonePosition = g.Key.milestone_position,
-                                                    MilestoneId = g.Key.milestone_id,
-                                                    Tasks = g.Select(x => new TempTask
-                                                    {
-                                                        task_start = x.task.task_start,
-                                                        task_duration = x.task.task_duration,
-                                                        isCompleted = x.task.isCompleted,
-                                                        CurrentCompletionDate = x.m.current_completion_date,
-                                                        CompletionDate = x.m.completion_date
-                                                    }).ToList()
-                                                }).ToList();
-
-
-                var milestoneDict = rawProjectsAndMilestones
-                    .Where(m => projectList.Contains(m.MainId))
-                    .GroupBy(m => m.MainId)
-                    .ToDictionary(
-                        g => g.Key,
-                        g => g.OrderBy(m => m.MilestonePosition).ToList()
-                    );
-
-                foreach (var project in milestoneDict)
-                {
-                    DateTime? previousMaxDate = null;
-
-                    foreach (var milestone in project.Value)
-                    {
-                        var maxOriginalDate = milestone.Tasks
-                            .Max(t => t.CompletionDate ?? t.CurrentCompletionDate ?? DateTime.MinValue);
-
-                        var maxCurrentDate = milestone.Tasks
-                            .Max(t => t.CurrentCompletionDate ?? t.CompletionDate ?? DateTime.MinValue);
-
-                        if (previousMaxDate.HasValue && maxCurrentDate < previousMaxDate.Value)
-                        {
-                            var delayDays = (previousMaxDate.Value - maxCurrentDate).Days;
-
-                            for (int i = 0; i < milestone.Tasks.Count; i++)
-                            {
-                                var task = milestone.Tasks[i];
-
-                                milestone.Tasks[i] = new TempTask
-                                {
-                                    task_start = task.task_start?.AddDays(delayDays),
-                                    task_duration = task.task_duration,
-                                    isCompleted = task.isCompleted,
-                                    CurrentCompletionDate = task.CurrentCompletionDate?.AddDays(delayDays),
-                                    CompletionDate = task.CompletionDate?.AddDays(delayDays)
-                                };
-                            }
-
-                            maxCurrentDate = maxCurrentDate.AddDays(delayDays);
-                        }
-
-                        previousMaxDate = maxCurrentDate > previousMaxDate ? maxCurrentDate : previousMaxDate;
-                    }
-                }
-
-                var projectsAndMilestones = rawProjectsAndMilestones
-                    .Where(g => projectList.Contains(g.MainId))
-                    .OrderBy(g => g.MilestonePosition)
-                    .Select(g =>
-                    {
-                        var dueDate = g.Tasks
-                            .Max(t => t.CurrentCompletionDate ?? t.CompletionDate ?? DateTime.MinValue);
-
-                        bool hasDueDate = dueDate != DateTime.MinValue;
-
-                        var checklistApprovalsQuery = db.ChecklistSubmissions
-                            .Where(cs => cs.main_id == g.MainId && cs.milestone_id == g.MilestoneId);
-
-                        //var checklistApprovalsQuery = db.ChecklistSubmissions
-                        //.Where(cs => cs.main_id == g.MainId && cs.milestone_id == g.MilestoneId);
-
-                        //bool allApproved = checklistApprovalsQuery.Any() && checklistApprovalsQuery.All(cs => cs.is_approved == true);
-
-                        bool allApproved = checklistApprovalsQuery.Any() && checklistApprovalsQuery.All(cs => cs.is_approved == true); 
-
-                        string status;
-                        var today = DateTime.Today;
-
-                        if (allApproved)
-                        {
-                            status = "Completed";
-                        }
-                        else if (hasDueDate)
-                        {
-                            if (dueDate.Date > today)
-                            {
-                                status = "Active";
-                            }
-                            else if (dueDate.Date == today)
-                            {
-                                status = "Due Today";
-                            }
-                            else
-                            {
-                                status = "Delayed";
-                            }
-                        }
-                        else
-                        {
-                            status = "Pending"; 
-                        }
-
-                        return new ProjectMilestoneViewModel
-                        {
-                            MainId = g.MainId,
-                            ProjectTitle = g.ProjectTitle,
-                            MilestoneName = g.MilestoneName,
-                            CurrentCompletionDate = hasDueDate ? (DateTime?)dueDate : null,
-                            Tasks = g.Tasks.Select(t => new TaskViewModel
-                            {
-                                TaskStart = t.task_start,
-                                Duration = t.task_duration ?? 0,
-                                IsCompleted = t.isCompleted ?? false
-                            }).ToList(),
-                            EndDate = hasDueDate ? (DateTime?)dueDate : null,
-                            MilestoneStatus = status
-                        };
-                    }).ToList();
-
-
-                // OLD
-                //var completedTasks = projectsAndMilestones.Sum(x => x.Tasks.Count(t => t.IsCompleted));
-                //var totalTasks = projectsAndMilestones.Sum(x => x.Tasks.Count());
-                //var pendingTasks = totalTasks - completedTasks;
-
-                // NEW 
-                // combine checklist items count from preset and optional milestones
-                var checklistMain = db.PreSetMilestoneApprovers
-                    .Select(x => new { IsApproved = x.approved })
-                    .ToList();
-
-                var checklistOptional = db.OptionalMilestoneApprovers
-                    .Select(x => new { IsApproved = x.approved })
-                    .ToList();
-
-                var allChecklistItems = checklistMain.Concat(checklistOptional).ToList();
-
-                
-                var totalTasks = allChecklistItems.Count;
-                var completedTasks = allChecklistItems.Count(x => x.IsApproved == true);
-                var pendingTasks = totalTasks - completedTasks;
-
-
-                var upcomingDeliverables = db.DetailsTbls
-                    .Where(t => t.isCompleted == false && t.task_start.HasValue && t.task_duration.HasValue)
-                    .Select(t => new
-                    {
-                        Tasks = t.process_title,
-                        TaskStart = t.task_start.Value,
-                        TaskDuration = t.task_duration.Value
-                    })
-                    .ToList()
-                    .Select(t => new Deliverable
-                    {
-                        Tasks = t.Tasks,
-                        DueDate = t.TaskStart.AddDays(t.TaskDuration)
-                    })
-                    .Where(d => d.DueDate >= DateTime.Now)
-                    .OrderBy(d => d.DueDate)
-                    .ToList();
-
-                var viewModel = new DashboardViewModel
-                {
-                    CompletedTasks = completedTasks,
-                    PendingTasks = pendingTasks,
-                    TotalTasks = totalTasks,
-                    CurrentWeek = currentWeek,
-                    ProjectsMilestones = projectsAndMilestones,
-                    UniqueMilestoneNames = projectsAndMilestones.Select(m => m.MilestoneName).Distinct().ToList(),
-                    ProjectTitles = projectsAndMilestones.Select(pm => pm.ProjectTitle).Distinct().ToList(),
-                    Projects = projects,
-                    UpcomingDeliverables = upcomingDeliverables
-                };
-
-                return View(viewModel);
-            }
-            else
+            if (!User.Identity.IsAuthenticated)
             {
                 return View("~/Views/Account/Login.cshtml");
             }
+
+            var userEmail = User.Identity.GetUserName();
+            var userInfo = cmdb.AspNetUsers.FirstOrDefault(u => u.Email == userEmail);
+            ViewBag.FirstName = userInfo?.FirstName ?? "User";
+
+            // get the projects where the user is a member, excluding archived/completed
+            var projectList = (from p in db.ProjectMembersTbls
+                               join m in db.MainTables on new { id = p.project_id } equals new { id = (int?)m.main_id }
+                               where p.email == userEmail
+                                     && m.isCompleted != true
+                                     && (m.IsArchived == false || m.IsArchived == null)
+                               select m.main_id).ToList();
+
+            var currentWeek = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(
+                DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+
+            db.Database.CommandTimeout = 120;
+
+            // get project titles for summary 
+            var projects = db.MainTables
+                .Where(p => projectList.Contains(p.main_id))
+                .Select(p => new ProjectChecklistGroupViewModel
+                {
+                    MainId = p.main_id,
+                    ProjectName = p.project_title
+                }).ToList();
+
+            // fetch raw milestone data
+            var rawProjectsAndMilestones = (from m in db.MilestoneTbls
+                                            join p in db.MainTables on m.main_id equals p.main_id
+                                            where p.IsArchived == false || p.IsArchived == null
+                                            join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
+                                            from task in tasks.DefaultIfEmpty()
+                                            group new { m, task } by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position, m.milestone_id }
+                                            into g
+                                            select new
+                                            {
+                                                MainId = g.Key.main_id,
+                                                ProjectTitle = g.Key.project_title,
+                                                MilestoneName = g.Key.milestone_name,
+                                                MilestonePosition = g.Key.milestone_position,
+                                                MilestoneId = g.Key.milestone_id,
+                                                Tasks = g.Select(x => new TempTask
+                                                {
+                                                    task_start = x.task.task_start,
+                                                    task_duration = x.task.task_duration,
+                                                    isCompleted = x.task.isCompleted,
+                                                    CurrentCompletionDate = x.m.current_completion_date,
+                                                    CompletionDate = x.m.completion_date
+                                                }).ToList()
+                                            }).ToList();
+
+            // delay logic per milestone
+            var milestoneDict = rawProjectsAndMilestones
+                .Where(m => projectList.Contains(m.MainId))
+                .GroupBy(m => m.MainId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderBy(m => m.MilestonePosition).ToList()
+                );
+
+            foreach (var project in milestoneDict)
+            {
+                DateTime? previousMaxDate = null;
+
+                foreach (var milestone in project.Value)
+                {
+                    var maxOriginalDate = milestone.Tasks
+                        .Max(t => t.CompletionDate ?? t.CurrentCompletionDate ?? DateTime.MinValue);
+
+                    var maxCurrentDate = milestone.Tasks
+                        .Max(t => t.CurrentCompletionDate ?? t.CompletionDate ?? DateTime.MinValue);
+
+                    if (previousMaxDate.HasValue && maxCurrentDate < previousMaxDate.Value)
+                    {
+                        var delayDays = (previousMaxDate.Value - maxCurrentDate).Days;
+
+                        for (int i = 0; i < milestone.Tasks.Count; i++)
+                        {
+                            var task = milestone.Tasks[i];
+
+                            milestone.Tasks[i] = new TempTask
+                            {
+                                task_start = task.task_start?.AddDays(delayDays),
+                                task_duration = task.task_duration,
+                                isCompleted = task.isCompleted,
+                                CurrentCompletionDate = task.CurrentCompletionDate?.AddDays(delayDays),
+                                CompletionDate = task.CompletionDate?.AddDays(delayDays)
+                            };
+                        }
+
+                        maxCurrentDate = maxCurrentDate.AddDays(delayDays);
+                    }
+
+                    previousMaxDate = maxCurrentDate > previousMaxDate ? maxCurrentDate : previousMaxDate;
+                }
+            }
+
+            // milestones with status
+            var projectsAndMilestones = rawProjectsAndMilestones
+                .Where(g => projectList.Contains(g.MainId))
+                .OrderBy(g => g.MilestonePosition)
+                .Select(g =>
+                {
+                    var dueDate = g.Tasks
+                        .Max(t => t.CurrentCompletionDate ?? t.CompletionDate ?? DateTime.MinValue);
+
+                    bool hasDueDate = dueDate != DateTime.MinValue;
+
+                    var checklistApprovalsQuery = db.ChecklistSubmissions
+                        .Where(cs => cs.main_id == g.MainId && cs.milestone_id == g.MilestoneId);
+
+                    bool allApproved = checklistApprovalsQuery.Any() && checklistApprovalsQuery.All(cs => cs.is_approved == true);
+
+                    string status;
+                    var today = DateTime.Today;
+
+                    if (allApproved)
+                    {
+                        status = "Completed";
+                    }
+                    else if (hasDueDate)
+                    {
+                        if (dueDate.Date > today)
+                        {
+                            status = "Active";
+                        }
+                        else if (dueDate.Date == today)
+                        {
+                            status = "Due Today";
+                        }
+                        else
+                        {
+                            status = "Delayed";
+                        }
+                    }
+                    else
+                    {
+                        status = "Pending";
+                    }
+
+                    return new ProjectMilestoneViewModel
+                    {
+                        MainId = g.MainId,
+                        ProjectTitle = g.ProjectTitle,
+                        MilestoneName = g.MilestoneName,
+                        CurrentCompletionDate = hasDueDate ? (DateTime?)dueDate : null,
+                        Tasks = g.Tasks.Select(t => new TaskViewModel
+                        {
+                            TaskStart = t.task_start,
+                            Duration = t.task_duration ?? 0,
+                            IsCompleted = t.isCompleted ?? false
+                        }).ToList(),
+                        EndDate = hasDueDate ? (DateTime?)dueDate : null,
+                        MilestoneStatus = status
+                    };
+                }).ToList();
+
+            // approval task count (preset + optional)
+            var checklistMain = db.PreSetMilestoneApprovers
+                .Select(x => new { IsApproved = x.approved })
+                .ToList();
+
+            var checklistOptional = db.OptionalMilestoneApprovers
+                .Select(x => new { IsApproved = x.approved })
+                .ToList();
+
+            var allChecklistItems = checklistMain.Concat(checklistOptional).ToList();
+            var totalTasks = allChecklistItems.Count;
+            var completedTasks = allChecklistItems.Count(x => x.IsApproved == true);
+            var pendingTasks = totalTasks - completedTasks;
+
+            // upcoming deliverables
+            var upcomingDeliverables = db.DetailsTbls
+                .Where(t => t.isCompleted == false && t.task_start.HasValue && t.task_duration.HasValue)
+                .Select(t => new
+                {
+                    Tasks = t.process_title,
+                    TaskStart = t.task_start.Value,
+                    TaskDuration = t.task_duration.Value
+                })
+                .ToList()
+                .Select(t => new Deliverable
+                {
+                    Tasks = t.Tasks,
+                    DueDate = t.TaskStart.AddDays(t.TaskDuration)
+                })
+                .Where(d => d.DueDate >= DateTime.Now)
+                .OrderBy(d => d.DueDate)
+                .ToList();
+
+            var viewModel = new DashboardViewModel
+            {
+                CompletedTasks = completedTasks,
+                PendingTasks = pendingTasks,
+                TotalTasks = totalTasks,
+                CurrentWeek = currentWeek,
+                ProjectsMilestones = projectsAndMilestones,
+                UniqueMilestoneNames = projectsAndMilestones.Select(m => m.MilestoneName).Distinct().ToList(),
+                ProjectTitles = projectsAndMilestones.Select(pm => pm.ProjectTitle).Distinct().ToList(),
+                Projects = projects,
+                UpcomingDeliverables = upcomingDeliverables
+            };
+
+            return View(viewModel);
         }
+
+
+        private List<ProjectMilestoneViewModel> GetProjectsAndMilestones(List<int> projectIds)
+        {
+            var rawProjectsAndMilestones = (from m in db.MilestoneTbls
+                                            join p in db.MainTables on m.main_id equals p.main_id
+                                            where projectIds.Contains(p.main_id)
+                                                  && (p.IsArchived == false || p.IsArchived == null)
+                                            join t in db.DetailsTbls on m.milestone_id equals t.milestone_id into tasks
+                                            from task in tasks.DefaultIfEmpty()
+                                            group new { m, task } by new { p.main_id, p.project_title, m.milestone_name, m.milestone_position, m.milestone_id }
+                                            into g
+                                            select new
+                                            {
+                                                MainId = g.Key.main_id,
+                                                ProjectTitle = g.Key.project_title,
+                                                MilestoneName = g.Key.milestone_name,
+                                                MilestonePosition = g.Key.milestone_position,
+                                                MilestoneId = g.Key.milestone_id,
+                                                Tasks = g.Select(x => new TempTask
+                                                {
+                                                    task_start = x.task.task_start,
+                                                    task_duration = x.task.task_duration,
+                                                    isCompleted = x.task.isCompleted,
+                                                    CurrentCompletionDate = x.m.current_completion_date,
+                                                    CompletionDate = x.m.completion_date
+                                                }).ToList()
+                                            }).ToList();
+
+            return rawProjectsAndMilestones
+                .OrderBy(m => m.MilestonePosition)
+                .Select(g =>
+                {
+                    var dueDate = g.Tasks
+                        .Max(t => t.CurrentCompletionDate ?? t.CompletionDate ?? DateTime.MinValue);
+
+                    var today = DateTime.Today;
+                    bool allApproved = db.ChecklistSubmissions
+                        .Where(cs => cs.main_id == g.MainId && cs.milestone_id == g.MilestoneId)
+                        .All(cs => cs.is_approved == true);
+
+                    string status = "Pending";
+                    if (allApproved)
+                        status = "Completed";
+                    else if (dueDate > today)
+                        status = "Active";
+                    else if (dueDate == today)
+                        status = "Due Today";
+                    else if (dueDate != DateTime.MinValue)
+                        status = "Delayed";
+
+                    return new ProjectMilestoneViewModel
+                    {
+                        MainId = g.MainId,
+                        ProjectTitle = g.ProjectTitle,
+                        MilestoneName = g.MilestoneName,
+                        CurrentCompletionDate = dueDate != DateTime.MinValue ? (DateTime?)dueDate : null,
+                        EndDate = dueDate != DateTime.MinValue ? (DateTime?)dueDate : null,
+                        MilestoneStatus = status,
+                        Tasks = g.Tasks.Select(t => new TaskViewModel
+                        {
+                            TaskStart = t.task_start,
+                            Duration = t.task_duration ?? 0,
+                            IsCompleted = t.isCompleted ?? false
+                        }).ToList()
+                    };
+                }).ToList();
+        }
+
+
 
         public class TempTask
         {

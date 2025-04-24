@@ -170,11 +170,73 @@
         margin-top: 10px;
         padding: 10px 0;
     }
+    .status-badge {
+        font-weight: 600;
+        font-size: 13px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        display: inline-block;
+        min-width: 100px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all 0.2s ease-in-out;
+    }
+
+
+    .tooltip-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .tooltip-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .custom-tooltip {
+        visibility: hidden;
+        opacity: 0;
+        background-color: rgba(0, 0, 0, 0.85);
+        color: white;
+        text-align: left;
+        border-radius: 6px;
+        padding: 8px 10px;
+        position: absolute;
+        z-index: 999;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+        max-width: 200px;
+        font-size: 12px;
+        transition: opacity 0.3s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .tooltip-container:hover .custom-tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .table-container {
+        margin-top: 30px;
+        overflow-x: auto;
+        border-radius: 10px;
+        background-color: #fff;
+        padding: 30px;
+        width: 95%;
+        max-width: 1200px;
+        min-height: 250px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: fadeIn 1.8s ease-in-out;
+        margin-left: auto;
+        margin-right: auto;
+    }
 
 
 </style>
 
-<div class="header-container">
+@*<div class="header-container">
     @if (User.IsInRole("PMS_DIVISION_HEAD"))
     {
         <h1>💻</h1>
@@ -189,47 +251,196 @@
         <h1>Dashboard Management Overview</h1>
         <p>View all projects across divisions.</p>
     }
-</div>
+</div>*@
+
+@{
+    string bgColor = "#e7dff3"; 
+    string completedIcon = "<i class='fas fa-check-circle'></i>";
+    string pendingIcon = "<i class='fas fa-exclamation-circle'></i>";
+    string totalIcon = "<i class='fas fa-tasks'></i>";
+    string weekIcon = "<i class='fas fa-calendar-week'></i>";
+
+    if (Model.userRole == 4035) 
+    {
+        bgColor = "#f3e5f5"; 
+        completedIcon = "<i class='fas fa-briefcase'></i>";
+    }
+    else if (Model.userRole == 4036) 
+    {
+        bgColor = "#e0f7fa";
+        pendingIcon = "<i class='fas fa-info-circle'></i>";
+    }
+    else if (Model.userRole == 4037) 
+    {
+        bgColor = "#fff3cd"; 
+        completedIcon = "<i class='fas fa-user-check'></i>";
+        totalIcon = "<i class='fas fa-layer-group'></i>";
+    }
+}
+@*<div class="top-card-row">
+    <div class="top-card" style="background-color:@bgColor;">
+        @Html.Raw(completedIcon)
+        <p>Completed Projects</p>
+        <h3>@Model.CompletedTasks</h3>
+    </div>
+    <div class="top-card" style="background-color:@bgColor;">
+        @Html.Raw(pendingIcon)
+        <p>Pending Projects</p>
+        <h3>@Model.PendingTasks</h3>
+    </div>
+    <div class="top-card" style="background-color:@bgColor;">
+        @Html.Raw(totalIcon)
+        <p>Total Projects</p>
+        <h3>@Model.TotalTasks</h3>
+    </div>
+    <div class="top-card" style="background-color:@bgColor;">
+        @Html.Raw(weekIcon)
+        <p>Current Week</p>
+        <h3>Week @Model.CurrentWeek</h3>
+    </div>
+</div>*@
+
+@if (Model.ShowBothDashboards)
+{
+    <ul class="nav nav-tabs justify-content-center mt-5" id="dualViewTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="management-tab" data-toggle="tab" href="#managementView" role="tab" aria-controls="managementView" aria-selected="true">
+                @*📊*@ Management Dashboard
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="division-tab" data-toggle="tab" href="#divisionView" role="tab" aria-controls="divisionView" aria-selected="false">
+                @*💻*@ @Model.userDivision Dashboard
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-4" id="dualViewTabsContent">
+
+        <!-- management view -->
+        <div class="tab-pane fade show active" id="managementView" role="tabpanel" aria-labelledby="management-tab">
+            <div class="header-container">
+                <h1>📊</h1>
+                <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
+                <h1>Dashboard Management Overview</h1>
+                <p>View all projects across divisions.</p>
+            </div>
+
+            <div class="top-card-row">
+                <div class="top-card">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Completed Projects</p>
+                    <h3>@Model.CompletedTasks</h3>
+                </div>
+                <div class="top-card">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Pending Projects</p>
+                    <h3>@Model.PendingTasks</h3>
+                </div>
+                <div class="top-card">
+                    <i class="fas fa-tasks"></i>
+                    <p>Total Projects</p>
+                    <h3>@Model.TotalTasks</h3>
+                </div>
+                <div class="top-card">
+                    <i class="fas fa-calendar-week"></i>
+                    <p>Current Week</p>
+                    <h3>Week @Model.CurrentWeek</h3>
+                </div>
+            </div>
+
+            @Html.Partial("_ManagementDashboard", Model)
+        </div>
+
+        <!-- div head View -->
+        <div class="tab-pane fade" id="divisionView" role="tabpanel" aria-labelledby="division-tab">
+            <div class="header-container">
+                <h1>💻</h1>
+                <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
+                <h1>@Model.userDivision <br />Project Overview</h1>
+                <p>Track and manage your division's projects.</p>
+            </div>
+
+            <div class="top-card-row">
+                <div class="top-card" style="background-color:#f3e5f5;">
+                    <i class="fas fa-briefcase"></i>
+                    <p>Completed Projects</p>
+                    <h3>@Model.CompletedTasks</h3>
+                </div>
+                <div class="top-card" style="background-color:#f3e5f5;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Pending Projects</p>
+                    <h3>@Model.PendingTasks</h3>
+                </div>
+                <div class="top-card" style="background-color:#f3e5f5;">
+                    <i class="fas fa-tasks"></i>
+                    <p>Total Projects</p>
+                    <h3>@Model.TotalTasks</h3>
+                </div>
+                <div class="top-card" style="background-color:#f3e5f5;">
+                    <i class="fas fa-calendar-week"></i>
+                    <p>Current Week</p>
+                    <h3>Week @Model.CurrentWeek</h3>
+                </div>
+            </div>
+
+            @Html.Partial("_DivisionDashboard", Model)
+        </div>
+
+    </div>
+}
+else if (Model.userRole == 4035)
+{
+    <div class="header-container">
+        <h1>💻</h1>
+        <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
+        <h1>@Model.userDivision Division's Project Overview</h1>
+        <p>Track and manage your division's projects.</p>
+    </div>
+    <div class="top-card-row">
+    </div>
+    @Html.Partial("_DivisionDashboard", Model)
+}
+else if (User.IsInRole("PMS_Management") || User.IsInRole("PMS_ODCP_ADMIN"))
+{
+    <div class="header-container">
+        <h1>📊</h1>
+        <p>@DateTime.Now.ToString("ddd, MMMM dd, yyyy")</p>
+        <h1>Dashboard Management Overview</h1>
+        <p>View all projects across divisions.</p>
+    </div>
+    <div class="top-card-row">
+    </div>
+    @Html.Partial("_ManagementDashboard", Model)
+}
+
 
 <!--search bar-->
-<div class="container">
+@*<div class="container">
     @if (User.IsInRole("PMS_Management") || (User.IsInRole("PMS_ODCP_ADMIN")))
     {
-    <div class="mb-3">
-        <input type="text" id="divisionSearch" class="form-control" placeholder="Search Divisions...">
-    </div>
+        <div class="mb-3">
+            <input type="text" id="divisionSearch" class="form-control" placeholder="Search Divisions...">
+        </div>
     }
-
     <ul class="nav nav-tabs" id="divisionTabs" role="tablist">
-        @if (Model.userRole == 4035) //IF DIVISION HEAD
+        @if (Model.userRole == 4035)
         {
             var divisionId = Model.userDivision.Split(' ').Select(x => x[0]);
             var divisionInitials = string.Join("", divisionId);
             <li class="nav-item division-tab" data-division="@divisionInitials">
-                <a class="nav-link @divisionInitials active"
-                   id="tab-@divisionInitials"
-                   data-toggle="tab"
-                   href="#panel-@divisionInitials"
-                   role="tab"
-                   aria-controls="panel-@divisionInitials"
-                   aria-selected="true">
+                <a class="nav-link @divisionInitials active" id="tab-@divisionInitials" data-toggle="tab" href="#panel-@divisionInitials" role="tab" aria-controls="panel-@divisionInitials" aria-selected="true">
                     @divisionInitials Division
                 </a>
             </li>
         }
-        else if (Model.userRole == 4036) //IF STEERCOM
+        else if (Model.userRole == 4036)
         {
             foreach (var division in Model.Divisions)
             {
                 var divisionId = division.Replace(" ", "");
                 <li class="nav-item division-tab" data-division="@division">
-                    <a class="nav-link @((Model.Divisions.First() == division) ? "active" : "")"
-                       id="tab-@divisionId"
-                       data-toggle="tab"
-                       href="#panel-@divisionId"
-                       role="tab"
-                       aria-controls="panel-@divisionId"
-                       aria-selected="true">
+                    <a class="nav-link @((Model.Divisions.First() == division) ? "active" : "")" id="tab-@divisionId" data-toggle="tab" href="#panel-@divisionId" role="tab" aria-controls="panel-@divisionId" aria-selected="true">
                         @division Division
                     </a>
                 </li>
@@ -238,140 +449,113 @@
     </ul>
 
     <div class="tab-content" id="divisionTabContent">
-        @if (Model.userRole == 4035) //IF DIVISION HEAD
+        @if (Model.userRole == 4035)
         {
-            <!-- Top Cards Row -->
-            <div class="top-card-row">
-                <div class="top-card">
-                    <i class="fas fa-check-circle"></i>
-                    <p>Completed Projects</p>
-                    @*<h3>@Model.CompletedTasks</h3>*@
-
-                </div>
-                <div class="top-card">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <p>Pending Projects</p>
-                    @*<h3>@Model.PendingTasks</h3>*@
-
-                </div>
-                <div class="top-card">
-                    <i class="fas fa-tasks"></i>
-                    <p>Total Projects</p>
-                    @*<h3>@Model.TotalTasks</h3>*@
-
-                </div>
-                <div class="top-card">
-                    <i class="fas fa-calendar-week"></i>
-                    <p>Current Week</p>
-                    <h3>Week @currentWeek</h3>
-
-                </div>
-            </div>
-
-            var divisionId = Model.userDivision;
-            <div class="tab-pane fade"
-                 id="panel-@divisionId"
-                 role="tabpanel"
-                 aria-labelledby="tab-@divisionId">
-            </div>
-
-            <div class="content-section">
-                <div class="card-container wide-card-container">
-                    @if (Model.IndividualProjects != null && Model.IndividualProjects.Any())
-                    {
-                        <div class="table-container wide-table-container">
-                            <h3>Project Summary List</h3>
-                            <h5>Total Number of Projects: </h5> <!-- Add logic to compute total projects per department -->
-                            <br />
-
-                            <table id="projectSummaryTable" class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Projects</th>
-                                        <th>Business Units</th>
-                                        @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                        {
-                                            <th>@milestoneName</th>
-                                        }
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var divisionGroup in Model.IndividualProjects)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = divisionGroup.MainId })" class="text-decoration-none text-primary">
-                                                    @divisionGroup.ProjectTitle
-                                                </a>
-                                            </td>
-                                            @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                            {
-                                                var milestone = divisionGroup.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
-                                                var endDateFormatted = milestone?.EndDate.HasValue == true
-                                                    ? $"WW{milestone.EndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
-                                                    : "-";
-                                                <td>@endDateFormatted</td>
-                                            }
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                     
-                    }
-                </div>
-            </div>
-
-        }
-        else if (Model.userRole == 4036) //IF STEERCOM
-        {
-            foreach (var divisionGroup in Model.ProjectsByDivision)
-            {
-                var divisionId = divisionGroup.Key.Replace(" ", "");
-                <div class="tab-pane fade @((Model.ProjectsByDivision.First().Key == divisionGroup.Key) ? "show active" : "")"
-                     id="panel-@divisionId"
-                     role="tabpanel"
-                     aria-labelledby="tab-@divisionId">
-                    <div class="table-container">
-                        <h5>@divisionGroup.Key Division's Projects</h5>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Projects</th>
-                                    @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                    {
-                                        <th>@milestoneName (OS/CS)</th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var project in divisionGroup.Value)
+            <div class="tab-pane fade show active" id="panel-@Model.userDivision" role="tabpanel" aria-labelledby="tab-@Model.userDivision">
+                <div class="table-container wide-table-container">
+                    <h5>@Model.userDivision Division's Projects</h5>
+                    <div class="status-legend d-flex flex-wrap gap-2 justify-content-end mt-1">
+                        <label style="font-size: 12px; font-weight: 500; color: #555; margin-top: 8px;">Legend:</label>
+                        <span class="legend-badge" style="background:#D4EDDA; color:#155724;">Completed</span>
+                        <span class="legend-badge" style="background:#D6E4FF; color:#004085;">Active</span>
+                        <span class="legend-badge" style="background:#FFF9DB; color:#856404;">Due Today</span>
+                        <span class="legend-badge" style="background:#F8D7DA; color:#b30000;">Delayed</span>
+                        <span class="legend-badge" style="background:#E2E3E5; color:#383d41;">Pending</span>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Projects</th>
+                                @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                {
+                                    <th>@milestoneName</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.IndividualProjects != null && Model.IndividualProjects.Any())
+                            {
+                                foreach (var project in Model.IndividualProjects)
                                 {
                                     <tr>
-                                        <td>
+                                        <td class="project-title-cell" style="position: relative; word-break: break-word; overflow-wrap: break-word;">
                                             <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId })" class="text-decoration-none text-primary">
                                                 @project.ProjectTitle
                                             </a>
                                         </td>
-                                      @foreach (var milestoneName in Model.UniqueMilestoneNames)
-                                      {
-                                          @*var milestone = divisionGroup.Milestones?.FirstOrDefault(m => m.MilestoneName == milestoneName);
-                                          var endDateFormatted = milestone?.EndDate.HasValue == true
-                                              ? $"WW{milestone.EndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(milestone.EndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
-                                              : "-";
-                                        <td>@endDateFormatted</td>*@
-                                      }
+                                        @foreach (var milestoneName in Model.UniqueMilestoneNames)
+                                        {
+                                            var milestoneTasks = Model.ProjectsMilestones.Where(pm => pm.ProjectTitle == project.ProjectTitle && pm.MilestoneName == milestoneName).ToList();
 
+                                            var latestEndDate = milestoneTasks.Any(pm => pm.EndDate.HasValue) ? milestoneTasks.Max(pm => pm.EndDate.Value) : (DateTime?)null;
+                                            var currentEndDate = milestoneTasks.Any(pm => pm.CurrentCompletionDate.HasValue) ? milestoneTasks.Max(pm => pm.CurrentCompletionDate.Value) : latestEndDate;
+
+                                            var osWeek = latestEndDate.HasValue ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}" : "-";
+                                            var csWeek = currentEndDate.HasValue ? $"WW{currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}" : "-";
+
+                                            string combinedFormatted = "-";
+                                            if (osWeek != "-" && csWeek != "-" && osWeek != csWeek)
+                                            {
+                                                combinedFormatted = $"{osWeek} os / {csWeek} cs";
+                                            }
+                                            else if (osWeek != "-")
+                                            {
+                                                combinedFormatted = osWeek;
+                                            }
+
+                                            var milestoneStatus = milestoneTasks.FirstOrDefault()?.MilestoneStatus ?? "";
+                                            string cellColor = "", textColor = "";
+                                            switch (milestoneStatus)
+                                            {
+                                                case "Completed": cellColor = "#E6F4EA"; textColor = "#4C8C6B"; break;
+                                                case "Active": cellColor = "#E8F0FE"; textColor = "#4A6ED8"; break;
+                                                case "Due Today": cellColor = "#FFFAE6"; textColor = "#B99E4C"; break;
+                                                case "Delayed": cellColor = "#FCE9EC"; textColor = "#D25567"; break;
+                                                case "Pending": cellColor = "#F0F0F0"; textColor = "#7A7A7A"; break;
+                                                default: cellColor = "#ffffff"; textColor = "#000000"; break;
+                                            }
+
+                                            <td style="text-align: center; position: relative;">
+                                                <div class="tooltip-container">
+                                                    <span class="status-badge" style="background-color:@cellColor; color:@textColor;">
+                                                        @combinedFormatted
+                                                    </span>
+                                                    <div class="custom-tooltip">
+                                                        <strong>Status:</strong> @milestoneStatus
+                                                        @if (milestoneStatus == "Completed")
+                                                        { <span>✅</span> }
+                                                        else if (milestoneStatus == "Active")
+                                                        { <span>🟢</span> }
+                                                        else if (milestoneStatus == "Due Today")
+                                                        { <span>⏳</span> }
+                                                        else if (milestoneStatus == "Delayed")
+                                                        { <span>⚠️</span> }
+                                                        else if (milestoneStatus == "Pending")
+                                                        { <span>🕒</span> }
+                                                        <br />
+                                                        <strong>Due:</strong> @(currentEndDate?.ToString("MMM dd, yyyy") ?? "N/A")
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        }
                                     </tr>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="@Model.UniqueMilestoneNames.Count() + 1" class="text-center text-muted">
+                                        No projects found for your division.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-            }
+            </div>
         }
     </div>
-</div>
+</div>*@
 
 @section Scripts {
 <script>
@@ -395,7 +579,6 @@
             },
             dom: '<"top d-flex justify-content-between align-items-center"lfr>t<"bottom d-flex justify-content-between align-items-center"ip><"clear">',
             initComplete: function () {
-                // ✅ Search Box Styling (Soft, Rounded)
                 $('.dataTables_filter input').addClass('form-control').css({
                     'font-size': '14px',
                     'width': '280px',
