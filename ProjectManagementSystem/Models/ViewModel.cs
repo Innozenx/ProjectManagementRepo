@@ -18,17 +18,9 @@ namespace ProjectManagementSystem.Models
 
     public class Checklist
     {
-        public string checkListID { get; set; }
-        public string title { get; set; }
-        public string duration { get; set; }
-        public DateTime startDate { get; set; }
-        public DateTime endDate { get; set; }
-        public int parent { get; set; }
-        public int weeklyReference { get; set; }
-        public string project_owner { get; set; }
-        public string division { get; set; }
-        public string project_name { get; set; }
-
+        public int checklist_id { get; set; }
+        public int main_id { get; set; }
+        public int milestone_id { get; set; }
     }
 
 
@@ -129,6 +121,8 @@ namespace ProjectManagementSystem.Models
         public bool IsArchived { get; set; }
         public int MilestonePosition { get; set; }
 
+
+        public List<ChecklistTable> checklist_id { get; set; }
     }
 
     public class StatusLogsViewModel
@@ -248,10 +242,6 @@ namespace ProjectManagementSystem.Models
         public string comments { get; set; }
         public string milestoneActual { get; set; }
         public string milestoneTarget { get; set; }
-
-
-        /*Extension from checklist to be used for the report*/
-        public List<Checklist> listCheckList { get; set; }
     }
 
     public class ProjectRegister

@@ -48,9 +48,9 @@
             </div>
         </div>
 
-      
+
         <div class="button-container">
-            <button id="inviteButton" type="button" class="btn-primary" onclick="submitInvitations()">Send Invites</button>
+            <button id="inviteButton" type="button" class="btn-primary" @*onclick="submitInvitations()"*@>Send Invites</button>
         </div>
     </div>
 </div>
@@ -231,10 +231,12 @@
             border-color: #470A67;
             background-color: #f9f4ff;
         }
+
     .icon img {
         width: 200px;
         /*margin-bottom: 20px;*/
     }
+
     .form-select {
         width: 100%;
         padding: 10px;
@@ -271,21 +273,22 @@
             font-weight: bold;
         }
 
-        @@keyframes fadeIn {
+    @@keyframes fadeIn {
         from {
             opacity: 0;
             transform: translateY(10px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
         }
-        
     }
 </style>
 
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="~/FrontEnd/plugins/jquery/jquery.min.js"></script>
 
 <script>
     let availableRoles = @Html.Raw(Json.Encode(Model.Roles));
@@ -371,14 +374,14 @@
             return;
         }
 
-        const notify = document.getElementById('notifyCheckbox').checked;
-        const message = document.getElementById('messageBox').value;
+        //const notify = document.getElementById('notifyCheckbox').checked;
+        //const message = document.getElementById('messageBox').value;
 
         const payload = {
             projectId: selectedProject,
             members: selectedMembers,
-            notify: notify,
-            message: message
+            //notify: notify,
+            //message: message
         };
 
         $.ajax({

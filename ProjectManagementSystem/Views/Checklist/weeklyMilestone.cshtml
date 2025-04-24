@@ -907,11 +907,12 @@
                                     <p class="mb-1 ml-2"><strong>Description:</strong> @log.Description</p>
                                     @if (!string.IsNullOrEmpty(log.Attachment))
                                     {
-                                        <p class="mb-0">
-                                            <a href="javascript:void(0);" onclick="@Url.Content(log.Attachment)" class="attachment-link">
+                                        <p class="mb-0 mt-2" style="border: solid; border-width: thick">
+                                            <a style="display: inline-block; margin-bottom: 5%;" href="@log.Attachment" target="_blank" class="attachment-link">
                                                 <i class="fas fa-paperclip"></i> View Attachment
                                             </a>
-                                            <img runat="server" src="@log.Attachment" width="150px" height="150px" />
+                                            <br />
+                                            <img runat="server" src="@log.Attachment" width="500px" height="150px" />
                                         </p>
                                     }
                                 </div>
@@ -974,7 +975,7 @@
 <div class="tab-pane fade @(selectedTab == "checklist" ? "show active" : "")" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">
 
     <div class="card shadow-sm p-4">
-        <h3 class="text-center text-purple fw-bold">Checklist</h3>
+        <h3 class="text-center text-purple fw-bold">Checklist <span id="checklist_id_container"></span></h3>
         @*<p class="text-center text-muted">Manage checklist for each milestone.</p>*@
 
         <div class="milestone-dropdown-container">
@@ -1000,7 +1001,7 @@
             </div>*@
 
         <div class="table-responsive mt-4">
-            <table class="table table-hover align-middle checklist-table">
+            <table class="table table-hover align-middle checklist-table" id="checklist_table">
                 <thead class="table-purple text-white">
                     <tr>
                         <th></th>
@@ -1030,12 +1031,21 @@
                 //if (Model.userDetails.JobLevel == 4035 || User.IsInRole("PMS_DIVISION_HEAD"))
                 if (Model.ProjectDetails != null && Model.IsProjectManager)
                 {
+
                     <div class="text-center mt-3">
                         <button class="btn btn-purple btn-lg" id="add_optional">
                             @*<i class="fa fa-plus"></i>*@ Add Checklist Item
                         </button>
                     </div>
                 }
+
+                <div class="text-center mt-3">
+                    <button class="btn btn-purple btn-lg d-none" id="add_optional">
+                        <i class="fa fa-plus"></i> Checklist Item
+                    </button>
+                </div>
+               }
+
 
             }
         </div>
@@ -1102,7 +1112,7 @@
                     <div id="multiSelectDropdown" class="multi-select-dropdown">
                         <div class="dropdown-header" onclick="toggleDropdown()">Select Approvers</div>
                         <div class="dropdown-options" id="dropdown_options">
-                            <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" />
+                            <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" style="width: 100%" />
                             @*@foreach (var user in Model.Users)
                                 {
                                     <div class="dropdown-item">
@@ -1200,6 +1210,10 @@
             $('button[type="submit"]').prop('disabled', true);
 
             const formData = new FormData($('#updateStatusForm')[0]);
+            for (const value of formData.values()) {
+                console.log(value);
+            }
+            formData.append("attachment", fileUpload.files[0]);
 
             $.ajax({
 
@@ -1401,6 +1415,16 @@
 
         $("#milestoneDropdown").on("change", function () {
             const milestoneId = $(this).val();
+            $("#checklist_id_container").empty();
+
+            if ($("#milestoneDropdown").val() != "") {
+                $("#add_optional").removeClass("d-none");
+            }
+
+            else {
+                $("#add_optional").addClass("d-none");
+            }
+
             loadTasksForMilestone(milestoneId, @(TempData["entry"]));
         });
 
@@ -1411,6 +1435,7 @@
 
         $("#delayed_no").on("click", function () {
             $("#delay_input_group").addClass("d-none");
+            $("#weeks_delayed").val(0);
         });
 
         $("#selectedMilestone").on("change", function () {
@@ -1655,7 +1680,7 @@
                 </td>
             </tr>
         `);
-                $("#add_optional").remove();
+                //$("#add_optional").remove();
                 return;
             }
             $.ajax({
@@ -1663,12 +1688,27 @@
                 type: "GET",
                 data: { milestoneId, mainId },
                 success: function (response) {
+                    const queryString = window.location.search;
+                    const urlParams = new URLSearchParams(queryString);
+                    const pId = urlParams.get("id");
+
                     checklistTableBody.empty();
 
                     if (response.success && response.data.length > 0) {
+
+                        $("#checklist_id_container").text("ID # " + response.id);
+                        var item_ctr = response.data.length;
+                        var saved_ctr = 0;
+
                         response.data.forEach((task, index) => {
+                            if (task.attachment
+                                ? task.reason == null
+                                    ? saved_ctr++
+                                    : saved_ctr
+                                : saved_ctr);
 
                             let approversArray = Object.keys(task.approvers).map(key => {
+
                                 let status = task.approver_status[key];
                                 let icon;
 
@@ -1677,7 +1717,7 @@
                                 } else if (status === false) {
                                     icon = '<i class="fa fa-ban text-danger"></i>';    
                                 } else {
-                                    icon = '<i class="fa fa-exclamation-circle text-warning"></i>'; 
+                                    icon = '<i class="fa fa-exclamation-circle text-warning"></i>';
                                 }
 
                                 return `${icon} ${task.approvers[key]}`;
@@ -1705,29 +1745,33 @@
                             </button>` : ""}
                         </td>
                         <td>${task.optFlag ? `Project Manager` : `ODCP`}</td>
-                        <td id="${task.task_id}">${task.taskname}</td>
+                        <td id="${task.task_id}name">${task.taskname}</td>
                         <td>
-                            ${task.attachment ? `<a href="${task.attachment}">View Attachment</a>`
+                            ${task.attachment ? `<a href="${task.attachment}" target="_blank" ">View Attachment</a>`
                                     : `<input type="file" class="form-control-file" id="${task.task_id}file">`}
                         </td>
-                        <td>${approverHtml}</td>
-                        <td>${task.approved ? "Approved" : task.reason ? "Disapproved" : "Pending"}</td>
+                        <td>${task.optFlag
+                                ? task.approvers.length > 0
+                                    ? task.approvers + `<button class="btn btn-primary w-50" onclick="add_approverbtn(${task.task_id})">Add Approver</button> <button class="btn btn-danger w-50" onclick="removeApprover(${task.task_id})">Remove Approver</button>`
+                                    : `<button class="btn btn-primary w-50" onclick="add_approverbtn(${task.task_id})">Add Approver</button>`
+                                : approverHtml
+                                }</td>
+                        <td>${task.approved ? "Approved" : task.reason ? "Disapproved" :  task.attachment ? "Saved" : "Pending"}</td>
                         <td>
                             ${task.attachment
                                     ? task.approved
                                         ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
                                         : task.reason
                                             ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
-                                            : `<button class="btn btn-sm btn-warning" disabled>Pending Approval</button>`
-                                    : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Submit</button>`}
+                                            : `<button class="btn btn-sm btn-warning" disabled>Saved</button>`
+                                    : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Save</button>`}
                         </td>
                         <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
-                        <td class="d-none" id="${task.task_id}project">${task.project_id}</td>
+                        <td class="d-none" id="${task.task_id}project">${pId}</td>
                     </tr>
                 `);
                         });
 
-                      
                         checklistTableBody.off('click', '.toggle-approvers').on('click', '.toggle-approvers', function () {
                             const parent = $(this).closest('.approver-list');
                             parent.find('.more-approvers').toggleClass('d-none');
@@ -1741,7 +1785,11 @@
                     <td colspan="7" class="text-center">No tasks found for this milestone.</td>
                 </tr>
             `);
-                        $("#add_optional").remove();
+                        //$("#add_optional").remove();
+                    }
+
+                    if (item_ctr == saved_ctr) {
+                        $("#checklistTableBody ").append(`<tr><td colspan="7"><button class="btn btn-success w-25" onclick="notifyApprovers()">Submit for Approval</button></td></tr>`)
                     }
                 },
                 error: function (xhr) {
@@ -1759,7 +1807,9 @@
             var inputProject = $("#" + task_id + "project");
 
             var fileupload = inputFile.get(0);
+
             var taskname = inputName.text();
+
             var taskmilestone = inputMilestone.text();
             var taskproject = inputProject.text();
 
@@ -2004,6 +2054,10 @@
                     Swal.fire("Changes are not saved", "", "info");
                 }
                 });
+        }
+
+        function notifyApprovers() {
+            alert("IN");
         }
     </script>
 

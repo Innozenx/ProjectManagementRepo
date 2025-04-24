@@ -100,7 +100,7 @@
             padding: 6px 12px;
             margin: 2px;
             transition: all 0.3s ease-in-out;
-            width: 100px; 
+            width: 100px;
             text-align: center;
         }
 
@@ -114,6 +114,7 @@
                 background-color: #5a32a3 !important;
                 border-color: #5a32a3 !important;
             }
+
         .btn-add {
             background-color: #6f42c1 !important;
             color: white !important;
@@ -137,6 +138,7 @@
             color: white !important;
             border: none;
         }
+
         .btn-add:hover {
             background-color: #5a32a3 !important;
         }
@@ -152,22 +154,24 @@
         .btn-preview:hover {
             background-color: #138496 !important;
         }
+
         .action-buttons {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 5px;
         }
+
         .division-container {
             display: flex;
             align-items: center;
-            gap: 15px; 
+            gap: 15px;
             flex-wrap: wrap;
         }
 
         .add-btn {
-            width: 120px; 
-            height: 40px; 
+            width: 120px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -180,10 +184,11 @@
             transition: all 0.3s ease-in-out;
         }
 
-            .create-btn:hover {
-                background: linear-gradient(135deg, #5a32a3, #7a47e0);
-                color: white;
-            }
+        .create-btn:hover {
+            background: linear-gradient(135deg, #5a32a3, #7a47e0);
+            color: white;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f4f6f9;
@@ -229,11 +234,15 @@
     @RenderSection("scripts", required: false)
 
     <!-- jQuery UI (Autocomplete Support) -->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui.min.js"></script>
+    @*<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>*@
     <!-- Select2 (For Multi-Select Dropdown) -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    @*<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>*@
+    <link href="~/Content/select2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/select2.min.js"></script>
     <!-- Bootstrap -->
     <script src="~/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE -->
@@ -247,7 +256,8 @@
     <!-- DataTables -->
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
     <!-- SweetAlert2 (For Alerts) -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/Scripts/sweetalert2@11.js"></script>
+    @*<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>*@
 
 </body>
 </html>
