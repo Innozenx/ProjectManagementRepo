@@ -122,8 +122,8 @@ namespace ProjectManagementSystem.Models
         public int MilestonePosition { get; set; }
         public List<ChecklistTable> checklist_id { get; set; }
         public bool IsODCPAdminAndDivisionHead { get; set; }
-
-
+        public bool IsODCPAdmin { get; set; }
+        public bool IsReadOnlyChecklistView { get; set; }
     }
 
     public class StatusLogsViewModel
