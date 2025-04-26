@@ -686,9 +686,31 @@ namespace ProjectManagementSystem.Controllers
 
                 var userProject = db.MainTables.FirstOrDefault(m => m.main_id == id);
 
+                // OLD
+                //bool isUserAssigned = projectList.Contains(id);
+                //bool isArchived = userProject?.IsArchived == true;
+                //bool isPrivilegedUser = userDetails.JobLevel == 4035 || userDetails.JobLevel == 4036;
+
+                //if (!isUserAssigned && !isArchived && !isPrivilegedUser)
+                //{
+                //    return RedirectToAction("AccessDenied", "Error");
+                //}
+
+                //if (userProject == null && !isPrivilegedUser)
+                //{
+                //    return RedirectToAction("AccessDenied", "Error");
+                //}
+
+                //bool isProjectManager = db.ProjectMembersTbls
+                //    .Any(pm => pm.project_id == id && pm.email == userEmail && pm.role == 1004);
+
+                // NEW
                 bool isUserAssigned = projectList.Contains(id);
                 bool isArchived = userProject?.IsArchived == true;
-                bool isPrivilegedUser = userDetails.JobLevel == 4035 || userDetails.JobLevel == 4036;
+
+                bool isODCPAdmin = User.IsInRole("PMS_ODCP_ADMIN");
+                bool isManagement = User.IsInRole("PMS_Management");
+                bool isPrivilegedUser = isODCPAdmin || isManagement || userDetails.JobLevel == 4035 || userDetails.JobLevel == 4036;
 
                 if (!isUserAssigned && !isArchived && !isPrivilegedUser)
                 {
@@ -702,6 +724,10 @@ namespace ProjectManagementSystem.Controllers
 
                 bool isProjectManager = db.ProjectMembersTbls
                     .Any(pm => pm.project_id == id && pm.email == userEmail && pm.role == 1004);
+                bool isReadOnlyChecklistView = !isProjectManager && !isODCPAdmin; // newly added
+
+
+
 
                 UserModel userInfo = new UserModel()
                 {
@@ -868,9 +894,11 @@ namespace ProjectManagementSystem.Controllers
                     TaskTitle = tasks,
                     IsProjectManager = isProjectManager,
                     ProjectStatus = projectStatus,
-                    IsArchived = projects.IsArchived
-                };
+                    IsArchived = projects.IsArchived,
+                    IsReadOnlyChecklistView = isReadOnlyChecklistView,
 
+                };
+                viewModel.IsReadOnlyChecklistView = !isProjectManager;
                 ViewBag.SelectedTab = tab;
                 return View(viewModel);
             }
