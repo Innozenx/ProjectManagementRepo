@@ -1169,7 +1169,10 @@
                                 <th>Name</th>
                                 <th>Date Added</th>
                                 <th>Added By</th>
-                                <th>Action</th>
+                                @if (!Model.IsReadOnlyChecklistView)
+                                {
+                                    <th>Action</th>
+                                }
                             </tr>
                         </thead>
                         <tbody id="approver_tbody"></tbody>
@@ -1687,7 +1690,7 @@
                     Select a milestone to view checklist items. <br />
                     <small>
                         <i class="fa fa-exclamation-circle text-warning"></i> = Pending,
-                        <i class="fa-solid fa-circle-check text-success"></i> = Approved,
+                        <i class="fa fa-circle-check text-success"></i> = Approved,
                         <i class="fas fa-ban text-danger"></i> = Rejected
                     </small>
                 </td>
@@ -1714,7 +1717,7 @@
                         let saved_ctr = 0;
 
                         response.data.forEach((task) => {
-                            // skip rows if di pa nakapag attach for readonly view
+                            // skip rows na walang attachments pa from PM if readonly 
                             if (isReadOnlyView && !task.attachment) return;
 
                             if (task.attachment && task.reason == null) saved_ctr++;
@@ -1767,14 +1770,19 @@
                                     : approverHtml
                                 }
                             </td>
-                            <td>
-                                ${task.approved
-                                    ? "Approved"
+                            <td class="text-center">
+                                ${
+                                task.approved
+                                    ? '<span class="badge badge-completed">Approved</span>'
                                     : task.reason
-                                        ? "Disapproved"
+                                        ? '<span class="badge badge-delayed">Rejected</span>'
                                         : task.attachment
-                                            ? (isReadOnlyView ? "Pending for Approval" : "Saved")
-                                            : "Pending"
+                                            ? (isReadOnlyView
+                                                ? `<span class="badge badge-active pending-approver-tooltip" data-task-id="${task.task_id}">Pending for Approval</span>`
+                                                : '<span class="badge badge-warning">Saved</span>')
+                                            : (isReadOnlyView
+                                                ? ''
+                                                : '<span class="badge badge-secondary">Pending</span>')
                                 }
                             </td>
                             ${
@@ -1797,13 +1805,32 @@
                     `);
                         });
 
+                        response.data.forEach((task) => {
+                            if (isReadOnlyView && task.attachment && !task.approved && !task.reason) {
+                                let tooltipHtml = Object.keys(task.approvers).map(key => {
+                                    let status = task.approver_status[key];
+                                    let icon = status === true
+                                        ? '<i class="fa fa-check text-success"></i>'
+                                        : status === false
+                                            ? '<i class="fa fa-ban text-danger"></i>'
+                                            : '<i class="fa fa-exclamation-circle text-warning"></i>';
+                                    return `${icon} ${task.approvers[key]}`;
+                                }).join("<br/>");
+
+                                $(`.pending-approver-tooltip[data-task-id="${task.task_id}"]`).tooltip({
+                                    title: tooltipHtml,
+                                    html: true,
+                                    placement: 'top'
+                                });
+                            }
+                        });
+
                         checklistTableBody.off('click', '.toggle-approvers').on('click', '.toggle-approvers', function () {
                             const parent = $(this).closest('.approver-list');
                             parent.find('.more-approvers').toggleClass('d-none');
                             $(this).text($(this).text() === 'See More' ? 'See Less' : 'See More');
                         });
 
-                        // PM sees the "Submit for Approval" btn
                         if (!isReadOnlyView && item_ctr === saved_ctr) {
                             checklistTableBody.append(`
                         <tr>
@@ -1827,9 +1854,6 @@
                 }
             });
         }
-
-
-
         function submitApproval(task_id) {
             var inputFile = $("#" + task_id + "file");
             var inputName = $("#" + task_id + "name");
