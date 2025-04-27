@@ -209,7 +209,6 @@
 
     .modal-title {
         color: white;
-        
         font-size: 20px;
     }
 
@@ -403,13 +402,13 @@
             gap: 10px;
         }
 
-    .selected-members-chips .chip .remove-chip {
-        margin-left: 10px;
-        cursor: pointer;
-        background: transparent;
-        border: none;
-        color: white;
-    }
+            .selected-members-chips .chip .remove-chip {
+                margin-left: 10px;
+                cursor: pointer;
+                background: transparent;
+                border: none;
+                color: white;
+            }
 
     tr, th, td {
         margin: auto;
@@ -436,20 +435,20 @@
         width: 100%;
     }
 
-    .checklist-table th {
-        background: #66399A;
-        color: white;
-        padding: 12px;
-        font-weight: normal; 
-    }
+        .checklist-table th {
+            background: #66399A;
+            color: white;
+            padding: 12px;
+            font-weight: normal;
+        }
 
-    .checklist-table tbody tr {
-        transition: all 0.2s ease-in-out;
-    }
+        .checklist-table tbody tr {
+            transition: all 0.2s ease-in-out;
+        }
 
-    .checklist-table tbody tr:hover {
-        background: #f5f5f5;
-    }
+            .checklist-table tbody tr:hover {
+                background: #f5f5f5;
+            }
 
 
     .btn-purple {
@@ -460,11 +459,11 @@
         font-size: 16px;
         border-radius: 6px;
         transition: all 0.3s ease-in-out;
-        width: 200px; 
-        display: block; 
-        margin: auto; 
+        width: 200px;
+        display: block;
+        margin: auto;
         text-align: center;
-        font-weight:normal
+        font-weight: normal
     }
 
         .btn-purple:hover {
@@ -473,9 +472,9 @@
         }
 
 
-    .btn-purple:hover {
-        background-color: #4E0D8D;
-    }
+        .btn-purple:hover {
+            background-color: #4E0D8D;
+        }
 
     .fa-check {
         color: green;
@@ -491,7 +490,7 @@
 
     .milestone-dropdown-container {
         display: flex;
-        justify-content: center; 
+        justify-content: center;
         align-items: center;
         width: 100%;
         margin-top: 10px;
@@ -519,6 +518,7 @@
         width: 250px;
         text-align: center;
     }
+
     .badge {
         padding: 4px 8px;
         border-radius: 8px;
@@ -527,21 +527,19 @@
 
 
     .badge-active {
-        background-color: #f1c40f; 
+        background-color: #f1c40f;
         color: #66399A;
     }
 
     .badge-completed {
-        background-color: #27ae60; 
+        background-color: #27ae60;
         color: #fff;
     }
 
     .badge-delayed {
-        background-color: #e74c3c; 
+        background-color: #e74c3c;
         color: #fff;
     }
-
-
 </style>
 
 <div class="project-header">
@@ -562,23 +560,23 @@
 }
 
 @*<ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link @(selectedTab == "overview" ? "active" : "")" id="overview-tab"
-           data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
-            <i class="fas fa-info-circle"></i> Overview
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="timeline-tab" data-toggle="tab" href="#timeline" role="tab" aria-controls="timeline" aria-selected="false">
-            <i class="fas fa-project-diagram"></i> Timeline
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="checklist-tab" data-toggle="tab" href="#checklist" role="tab" aria-controls="checkist" aria-selected="false">
-            <i class="fa-solid fa-list-check"></i> Checklist
-        </a>
-    </li>
-</ul>*@
+        <li class="nav-item">
+            <a class="nav-link @(selectedTab == "overview" ? "active" : "")" id="overview-tab"
+               data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
+                <i class="fas fa-info-circle"></i> Overview
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="timeline-tab" data-toggle="tab" href="#timeline" role="tab" aria-controls="timeline" aria-selected="false">
+                <i class="fas fa-project-diagram"></i> Timeline
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="checklist-tab" data-toggle="tab" href="#checklist" role="tab" aria-controls="checkist" aria-selected="false">
+                <i class="fa-solid fa-list-check"></i> Checklist
+            </a>
+        </li>
+    </ul>*@
 
 <ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
     <li class="nav-item">
@@ -701,13 +699,13 @@
                         </td>
                     </tr>
                 </table>
-             }
+            }
         </div>
     </div>
 
     <div class="action-tiles-container">
-    @if (!Model.IsArchived && (Model.IsProjectManager && (Model.IsODCPAdmin || !Model.IsODCPAdmin)))
-    {
+        @if (!Model.IsArchived && (Model.IsProjectManager && (Model.IsODCPAdmin || !Model.IsODCPAdmin)))
+        {
             <div class="action-tile">
                 <button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title">
                     <i class="fas fa-edit"></i> Status
@@ -983,7 +981,7 @@
 
     <div class="card shadow-sm p-4">
         <h3 class="text-center text-purple fw-bold">Checklist <span id="checklist_id_container"></span></h3>
-        <input class="d-none" type="text" id="checklist_id_input"/>
+        <input class="d-none" type="text" id="checklist_id_input" />
         @*<p class="text-center text-muted">Manage checklist for each milestone.</p>*@
 
         <div class="milestone-dropdown-container">
@@ -1052,13 +1050,13 @@
 
                 }
                 @*if (!Model.IsReadOnlyChecklistView)
-                {
-                    <div class="text-center mt-3">
-                        <button class="btn btn-purple btn-lg d-none" id="add_optional">
-                            <i class="fa fa-plus"></i> Checklist Item
-                        </button>
-                    </div>
-            }*@
+                        {
+                            <div class="text-center mt-3">
+                                <button class="btn btn-purple btn-lg d-none" id="add_optional">
+                                    <i class="fa fa-plus"></i> Checklist Item
+                                </button>
+                            </div>
+                    }*@
 
             }
         </div>
@@ -1167,7 +1165,7 @@
                     <table id="approver_table" style="width: 100%">
                         <thead class="table-primary">
                             <tr style="margin:auto; text-align: center">
-                                <th>Select All<br/><input type="checkbox" name="remove_all" id="remove_all"/></th>
+                                <th>Select All<br /><input type="checkbox" name="remove_all" id="remove_all" /></th>
                                 <th>Name</th>
                                 <th>Date Added</th>
                                 <th>Added By</th>
@@ -1263,403 +1261,6 @@
             });
         }
 
-
-    </script>
-
-    <script>
-
-        document.addEventListener("DOMContentLoaded", function () {
-            gantt.config.xml_date = "%Y-%m-%d %H:%i";
-            gantt.config.readonly = true;
-            gantt.config.columns = [
-                { name: "key_person", label: "Key Person", align: "center", width: 90 },
-                { name: "text", label: "Milestone", tree: true, width: 200 },
-                { name: "duration", label: "Duration", align: "center", width: 70 },
-                { name: "start_date", label: "Start", align: "center", width: 90 },
-                { name: "end_date", label: "Finish", align: "center", width: 90 }
-            ];
-            gantt.config.scales = [
-                { unit: "week", date: "Week %W" }
-            ];
-
-            gantt.templates.task_text = function () {
-                return "";
-            };
-
-            gantt.init("gantt_here");
-            gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json");
-
-
-        const setDayView = () => {
-            gantt.config.scales = [
-                    { unit: "day", step: 1, date: "%d" },
-                    { unit: "week", date: "Week %W" }
-                ];
-            gantt.render();
-        };
-
-
-        const setWeekView = () => {
-            gantt.config.scales = [
-                    { unit: "week", step: 1, date: "WW %W" },
-                    { unit: "month", step: 1, date: "%F %Y" }
-                ];
-            gantt.render();
-        };
-
-        const setMonthView = () => {
-            gantt.config.scales = [
-                    { unit: "month", step: 1, date: "%F %Y" },
-                    { unit: "year", step: 1, date: "%Y" }
-                ];
-            gantt.render();
-        };
-
-        document.querySelector("#day-view").addEventListener("click", () => {
-            setDayView();
-            activateButton("day-view");
-        });
-
-        document.querySelector("#week-view").addEventListener("click", () => {
-            setWeekView();
-            activateButton("week-view");
-        });
-
-        document.querySelector("#month-view").addEventListener("click", () => {
-            setMonthView();
-            activateButton("month-view");
-        });
-
-        const activateButton = (buttonId) => {
-            document.querySelectorAll(".gantt-view-btn").forEach((btn) => {
-                btn.classList.remove("active");
-            });
-            document.getElementById(buttonId).classList.add("active");
-        };
-
-        document.querySelector("#maximize-btn").addEventListener("click", function () {
-        const projectId = "@TempData["entry"]";
-        window.open(`/Checklist/GanttChart?id=${projectId}`, "_blank");
-        });
-
-
-            $("#timeline-tab").on("click", function () {
-                $("#detailsContainer").css("display", "none");
-                $("#overview").css("display", "none");
-                $("#checklist").css("display", "none");
-                $("#timeline").css("display", "block");
-            });
-
-            $("#overview-tab").on("click", function () {
-                $("#detailsContainer").css("display", "block");
-                $("#overview").css("display", "block");
-                $("#checklist").css("display", "none");
-                $("#timeline").css("display", "none");
-            });
-
-            $("#checklist-tab").on("click", function () {
-                $("#detailsContainer").css("display", "none");
-                $("#overview").css("display", "none");
-                $("#checklist").css("display", "block");
-                $("#timeline").css("display", "none");
-
-            });
-
-            setWeekView();
-            activateButton("week-view");
-
-            //loadActivityLogs();
-
-            var tab = localStorage.getItem('currentTab');
-            var dropdown = localStorage.getItem('currentDrop');
-
-            if (tab == "checklist") {
-                const element = document.getElementById("milestoneDropdown");
-                document.getElementById("checklist-tab").click();
-                setTimeout(function () {
-                    document.getElementById("milestoneDropdown").value = dropdown;
-                    document.getElementById("milestoneDropdown").dispatchEvent(new Event('change'));
-                },1000)
-
-                localStorage.clear();
-            }
-
-            $("#remove_all").on("click", function () {
-                $("input[name='cb_remove']").prop("checked", this.checked);
-            });
-        });
-
-        const selectedTab = new URLSearchParams(window.location.search).get("tab");
-
-        if (selectedTab === "timeline") {
-            $("#timeline").addClass("show active").css("display", "block");
-            $("#overview").removeClass("show active").css("display", "none");
-            $("#checklist").removeClass("show active").css("display", "none");
-            $("#detailsContainer").css("display", "none");
-
-            setTimeout(() => {
-                gantt.render();
-                document.getElementById("gantt_here").scrollIntoView({ behavior: "smooth" });
-            }, 200);
-        }
-
-        const urlTab = new URLSearchParams(window.location.search).get("tab");
-
-        if (urlTab === "timeline" || urlTab === "checklist" || urlTab === "overview") {
-     
-            $(".tab-pane").removeClass("show active").hide();
-            $("#" + urlTab).addClass("show active").show();
-
-            $(".nav-link").removeClass("active");
-            $("#" + urlTab + "-tab").addClass("active");
-
-            if (urlTab === "checklist") {
-                $("#detailsContainer").hide();
-            } else if (urlTab === "timeline") {
-                $("#detailsContainer").hide();
-                setTimeout(() => gantt.render(), 200);
-            } else {
-                $("#detailsContainer").show();
-            }
-        }
-    </script>
-
-    <script>
-        $(document).ready(function () {
-        const mainId = '@(TempData["entry"] ?? "null")';
-
-        if (mainId === "null") {
-            console.error("mainId is not set. Please check your TempData.");
-            return;
-            }
-        });
-
-        $("#milestoneDropdown").on("change", function () {
-            const milestoneId = $(this).val();
-            $("#checklist_id_container").empty();
-            $("#checklist_id_input").val("");
-
-            if ($("#milestoneDropdown").val() != "") {
-                $("#add_optional").removeClass("d-none");
-            }
-
-            else {
-                $("#add_optional").addClass("d-none");
-            }
-
-            loadTasksForMilestone(milestoneId, @(TempData["entry"]));
-        });
-
-        $("#delayed_yes").on("click", function () {
-            $("#delay_input_group").removeClass("d-none");
-            $("#delay_input_group").prop("class", "form-group mb-4");
-        });
-
-        $("#delayed_no").on("click", function () {
-            $("#delay_input_group").addClass("d-none");
-            $("#weeks_delayed").val(0);
-        });
-
-        $("#selectedMilestone").on("change", function () {
-            let selection = $("#selectedMilestone").val();
-            if (selection != "") {
-                $("#status_input_group").removeClass("d-none");
-
-                $.ajax({
-                    type: "GET",
-                    url: "@Url.Action("GetTaskUpdate", "Checklist")",
-                    data: { selection },
-                    success: function (res) {
-                        if (res.success == true) {
-                            if (res.data != 0) {
-                                var note = document.getElementById("delay_note");
-                                var inputGrp = document.getElementById("delay_input_group");
-
-                                $("#delayed_yes").prop("checked", true);
-                                $("#weeks_delayed").prop("value", res.data);
-                                $("#delay_div").removeClass("d-none");
-                                inputGrp.classList.remove("d-none");
-
-                                note.textContent = "Previously Delayed by: " + res.data + " week/s";
-                            }
-
-                            else {
-                                var note = document.getElementById("delay_note");
-                                var inputGrp = document.getElementById("delay_input_group");
-
-                                $("#delayed_no").prop("checked", true);
-                                $("#weeks_delayed").prop("value", res.data);
-                                $("#delay_div").removeClass("d-none");
-                                inputGrp.classList.add("d-none");
-
-                                //note.textContent = "";
-                            }
-                        }
-
-                        else {
-                            alert(res.message);
-                        }
-                    }
-                });
-            }
-
-            else {
-                $("#status_input_group").prop("class", "d-none");
-            }
-        });
-
-        $(document).on("click", "#add_optional", function (e) {
-            e.preventDefault();
-            const queryString = window.location.search;
-            const urlParams = new URLSearchParams(queryString);
-            const projectID = urlParams.get("id");
-            var milestone = $("#milestoneDropdown").val();
-
-
-            if (milestone != "") {
-                $("#modal_title").text("Checklist item for: " + milestone);
-                $("#milestone_id").val(milestone);
-                $("#project_id").val(projectID);
-
-                $(".modal-body").html();
-                $("#myModal").modal("show");
-            }
-
-            else {
-                //alert("Please select a milestone first");
-                Swal.fire("Oops", "Please select a milestone first.", "error");
-            }
-
-        });
-
-        $(document).on("click", "#submit_button", function () {
-            var formData = $("#optionalForm").serialize();
-            var incomplete = false;
-            var milestone = $("#milestoneDropdown").val();
-
-            $('#optionalForm :input').each(function (index, el) {
-                //if ($(el).val().length == 0) incomplete = true;
-                //return false;
-                if ($(el).val().length == 0) {
-                    incomplete = true;
-                    return false;
-                }
-
-            });
-
-            if (incomplete != true) {
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("AddOptional", "Checklist")",
-                    data: formData,
-                    success: function (res) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: 'Checklist item added!',
-                        }).then(function () {
-                            localStorage.setItem('currentTab', 'checklist');
-                            localStorage.setItem('currentDrop', milestone);
-
-                            location.reload();
-
-                            //setTimeout(function () {
-                            //    location.reload();
-                            //}, 1000)
-                        });
-                    },
-
-                    error: function () {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Query failed, please retry',
-                        }).then(function () {
-                            localStorage.setItem('currentTab', 'checklist');
-                            localStorage.setItem('currentDrop', milestone);
-
-                            location.reload();
-
-                            //setTimeout(function () {
-                            //    location.reload();
-                            //}, 1000)
-                        });
-                    }
-                });
-            }
-
-            else {
-                Swal.fire("Incomplete Entry", "Please fill up the form.", "error");
-            }
-
-        });
-
-        document.addEventListener('change', function (event) {
-            if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
-                updateSelectedChips();
-            }
-        });
-
-        $(document).on("click", "#submit_approver", function () {
-            const taskID = $("#task_id").val();
-            const projID = $("#approver_project_id").val();
-            const approvers = document.getElementById("selectedMembersChips");
-            const selectedMembers = [...document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked')].map(e => e.value);
-            const milestone = $("#milestoneDropdown").val();
-            console.log(selectedMembers);
-
-            if (approvers.hasChildNodes()) {
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("AddApproverOpt", "Checklist")",
-                    data: { "id": taskID, "proj_id": projID, "approvers": selectedMembers },
-                    success: function (res) {
-                        var dropdown = $("#milestoneDropdown").val();
-                        localStorage.setItem('currentTab', 'checklist');
-                        localStorage.setItem('currentDrop', dropdown);
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: 'Approver/s Added!',
-                        }).then(function () {
-                            localStorage.setItem('currentTab', 'checklist');
-                            localStorage.setItem('currentDrop', milestone);
-
-                            location.reload();
-
-                            //setTimeout(function () {
-                            //    location.reload();
-                            //}, 1000)
-                            });
-
-                    }
-                });
-            }
-
-            else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'No selected approvers',
-                    text: 'Please select an approver first',
-                }).then(function () {
-                    localStorage.setItem('currentTab', 'checklist');
-                    localStorage.setItem('currentDrop', milestone);
-
-                    location.reload();
-
-                    //setTimeout(function () {
-                    //    location.reload();
-                    //}, 1000)
-                });
-            }
-
-
-        });
-
-    </script>
-
-    <script>
         loadMilestones(@TempData["entry"]);
          const isReadOnlyView = @(Model.IsReadOnlyChecklistView.ToString().ToLower());
 
@@ -1720,14 +1321,12 @@
                     if (response.success && response.data.length > 0) {
                         $("#checklist_id_container").text("ID # " + response.id);
                         $("#checklist_id_input").val(response.id);
-                        var item_ctr = response.data.length;
-                        var saved_ctr = 0;
 
                         let item_ctr = response.data.length;
                         let saved_ctr = 0;
 
                         response.data.forEach((task) => {
-                            // skip rows na walang attachments pa from PM if readonly 
+                            // skip rows na walang attachments pa from PM if readonly
                             if (isReadOnlyView && !task.attachment) return;
 
                             if (task.attachment && task.reason == null) saved_ctr++;
@@ -1757,36 +1356,61 @@
 
                             checklistTableBody.append(`
                     <tr>
-                        <td>
-                            ${task.optFlag ? `<button class="bg-red" onclick="removeTask(${task.task_id})">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                            </button>` : ""}
-                        </td>
-                        <td>${task.optFlag ? `Project Manager` : `ODCP`}</td>
-                        <td id="${task.task_id}name">${task.taskname}</td>
-                        <td>
-                            ${task.attachment ? `<a href="${task.attachment}" target="_blank" ">View Attachment</a>`
-                                    : `<input type="file" class="form-control-file" id="${task.task_id}file">`}
-                        </td>
-                        <td>${task.optFlag
-                                ? task.approvers.length > 0
-                                    ? approverHtml + `<div><button class="btn btn-primary w-25" onclick="add_approverbtn(${task.task_id})">+</button> <button class="btn btn-danger w-25" onclick="removeApprover(${task.task_id})">-</button></div>`
-                                    : `<button class="btn btn-primary w-25" onclick="add_approverbtn(${task.task_id})">+</button>`
-                                : approverHtml
-                                }</td>
-                        <td>${task.approved ? "Approved" : task.reason ? "Disapproved" :  task.attachment ? "Saved" : "Pending"}</td>
-                        <td>
-                            ${task.attachment
-                                    ? task.approved
-                                        ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
-                                        : task.reason
-                                            ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
-                                            : `<button class="btn btn-sm btn-warning" disabled>Saved</button>`
-                                    : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Save</button>`}
-                        </td>
-                        <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
-                        <td class="d-none" id="${task.task_id}project">${pId}</td>
-                    </tr>
+                            <td>
+                                ${(task.optFlag && !isReadOnlyView) ? `<button class="bg-red" onclick="removeTask(${task.task_id})"><i class="fa fa-trash" aria-hidden="true"></i></button>` : ""}
+                            </td>
+                            <td>${task.optFlag ? "Project Manager" : "ODCP"}</td>
+                            <td id="${task.task_id}name">${task.taskname}</td>
+                            <td>
+                                ${task.attachment
+                                    ? `<a href="${task.attachment}" target="_blank">View Attachment</a>`
+                                    : isReadOnlyView
+                                        ? `<span class="text-muted">No file uploaded</span>`
+                                        : `<input type="file" class="form-control-file" id="${task.task_id}file">`
+                                }
+                            </td>
+                            <td>
+                                ${task.optFlag
+                                    ? (isReadOnlyView
+                                        ? approverHtml
+                                        : task.approvers.length > 0
+                                            ? approverHtml + `<button class="btn btn-primary w-25" onclick="add_approverbtn(${task.task_id})">+</button> <button class="btn btn-danger w-25" onclick="removeApprover(${task.task_id})">-</button>`
+                                            : `<button class="btn btn-primary w-50" onclick="add_approverbtn(${task.task_id})">+</button>`)
+                                    : approverHtml
+                                }
+                            </td>
+                            <td class="text-center">
+                                ${
+                                task.approved
+                                    ? `<span class="badge badge-completed">Approved</span>`
+                                    : task.reason
+                                        ? `<span class="badge badge-delayed">Rejected</span>`
+                                        : task.attachment
+                                            ? (isReadOnlyView
+                                                ? `<span class="badge badge-active pending-approver-tooltip" data-task-id="${task.task_id}">Pending for Approval</span>`
+                                                : `<span class="badge badge-warning">Saved</span>`)
+                                            : (isReadOnlyView
+                                                ? ``
+                                                : `<span class="badge badge-secondary">Pending</span>`)
+                                }
+                            </td>
+                            ${
+                                isReadOnlyView
+                                    ? ``
+                                    : `<td>
+                                        ${task.attachment
+                                        ? task.approved
+                                            ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
+                                            : task.reason
+                                                ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
+                                                : `<button class="btn btn-sm btn-warning" disabled>Saved</button>`
+                                        : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Save</button>`
+                                    }
+                                    </td>`
+                                }
+                            <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
+                            <td class="d-none" id="${task.task_id}project">${pId}</td>
+                        </tr>
                 `);
                         });
 
@@ -1820,7 +1444,7 @@
                             checklistTableBody.append(`
                         <tr>
                             <td colspan="7" class="text-center">
-                                <button class="btn btn-success w-25" onclick="notifyApprovers()">Submit for Approval</button>
+                                <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})">Submit for Approval</button>
                             </td>
                         </tr>
                     `);
@@ -2123,7 +1747,7 @@
                         type: "POST",
                         data: { "id": ele.value, "project_id": projID, "milestone_id": milestoneID },
                         success: function () {
-                            
+
                         }
                     })
                 }
@@ -2161,16 +1785,410 @@
     <script>
         $(function () {
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                const selectedTab = $(e.target).attr('href').substring(1); 
+                const selectedTab = $(e.target).attr('href').substring(1);
                 const url = new URL(window.location);
                 url.searchParams.set('tab', selectedTab);
                 window.history.replaceState({}, '', url);
             });
         });
         $('#timeline-tab').on('shown.bs.tab', function () {
-            gantt.render();  
+            gantt.render();
         });
 
-</script>
+
+    </script>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            gantt.config.xml_date = "%Y-%m-%d %H:%i";
+            gantt.config.readonly = true;
+            gantt.config.columns = [
+                { name: "key_person", label: "Key Person", align: "center", width: 90 },
+                { name: "text", label: "Milestone", tree: true, width: 200 },
+                { name: "duration", label: "Duration", align: "center", width: 70 },
+                { name: "start_date", label: "Start", align: "center", width: 90 },
+                { name: "end_date", label: "Finish", align: "center", width: 90 }
+            ];
+            gantt.config.scales = [
+                { unit: "week", date: "Week %W" }
+            ];
+
+            gantt.templates.task_text = function () {
+                return "";
+            };
+
+            gantt.init("gantt_here");
+            gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json");
+
+
+        const setDayView = () => {
+            gantt.config.scales = [
+                    { unit: "day", step: 1, date: "%d" },
+                    { unit: "week", date: "Week %W" }
+                ];
+            gantt.render();
+        };
+
+
+        const setWeekView = () => {
+            gantt.config.scales = [
+                    { unit: "week", step: 1, date: "WW %W" },
+                    { unit: "month", step: 1, date: "%F %Y" }
+                ];
+            gantt.render();
+        };
+
+        const setMonthView = () => {
+            gantt.config.scales = [
+                    { unit: "month", step: 1, date: "%F %Y" },
+                    { unit: "year", step: 1, date: "%Y" }
+                ];
+            gantt.render();
+        };
+
+        document.querySelector("#day-view").addEventListener("click", () => {
+            setDayView();
+            activateButton("day-view");
+        });
+
+        document.querySelector("#week-view").addEventListener("click", () => {
+            setWeekView();
+            activateButton("week-view");
+        });
+
+        document.querySelector("#month-view").addEventListener("click", () => {
+            setMonthView();
+            activateButton("month-view");
+        });
+
+        const activateButton = (buttonId) => {
+            document.querySelectorAll(".gantt-view-btn").forEach((btn) => {
+                btn.classList.remove("active");
+            });
+            document.getElementById(buttonId).classList.add("active");
+        };
+
+        document.querySelector("#maximize-btn").addEventListener("click", function () {
+        const projectId = "@TempData["entry"]";
+        window.open(`/Checklist/GanttChart?id=${projectId}`, "_blank");
+        });
+
+
+            $("#timeline-tab").on("click", function () {
+                $("#detailsContainer").css("display", "none");
+                $("#overview").css("display", "none");
+                $("#checklist").css("display", "none");
+                $("#timeline").css("display", "block");
+            });
+
+            $("#overview-tab").on("click", function () {
+                $("#detailsContainer").css("display", "block");
+                $("#overview").css("display", "block");
+                $("#checklist").css("display", "none");
+                $("#timeline").css("display", "none");
+            });
+
+            $("#checklist-tab").on("click", function () {
+                $("#detailsContainer").css("display", "none");
+                $("#overview").css("display", "none");
+                $("#checklist").css("display", "block");
+                $("#timeline").css("display", "none");
+
+            });
+
+            setWeekView();
+            activateButton("week-view");
+
+            //loadActivityLogs();
+
+            var tab = localStorage.getItem('currentTab');
+            var dropdown = localStorage.getItem('currentDrop');
+
+            if (tab == "checklist") {
+                const element = document.getElementById("milestoneDropdown");
+                document.getElementById("checklist-tab").click();
+                setTimeout(function () {
+                    document.getElementById("milestoneDropdown").value = dropdown;
+                    document.getElementById("milestoneDropdown").dispatchEvent(new Event('change'));
+                },1000)
+
+                localStorage.clear();
+            }
+
+            $("#remove_all").on("click", function () {
+                $("input[name='cb_remove']").prop("checked", this.checked);
+            });
+        });
+
+        const selectedTab = new URLSearchParams(window.location.search).get("tab");
+
+        if (selectedTab === "timeline") {
+            $("#timeline").addClass("show active").css("display", "block");
+            $("#overview").removeClass("show active").css("display", "none");
+            $("#checklist").removeClass("show active").css("display", "none");
+            $("#detailsContainer").css("display", "none");
+
+            setTimeout(() => {
+                gantt.render();
+                document.getElementById("gantt_here").scrollIntoView({ behavior: "smooth" });
+            }, 200);
+        }
+
+        const urlTab = new URLSearchParams(window.location.search).get("tab");
+
+        if (urlTab === "timeline" || urlTab === "checklist" || urlTab === "overview") {
+
+            $(".tab-pane").removeClass("show active").hide();
+            $("#" + urlTab).addClass("show active").show();
+
+            $(".nav-link").removeClass("active");
+            $("#" + urlTab + "-tab").addClass("active");
+
+            if (urlTab === "checklist") {
+                $("#detailsContainer").hide();
+            } else if (urlTab === "timeline") {
+                $("#detailsContainer").hide();
+                setTimeout(() => gantt.render(), 200);
+            } else {
+                $("#detailsContainer").show();
+            }
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+        const mainId = '@(TempData["entry"] ?? "null")';
+
+        if (mainId === "null") {
+            console.error("mainId is not set. Please check your TempData.");
+            return;
+            }
+        });
+
+        $("#milestoneDropdown").on("change", function () {
+            const milestoneId = $(this).val();
+            $("#checklist_id_container").empty();
+            $("#checklist_id_input").val("");
+
+            if ($("#milestoneDropdown").val() != "") {
+                $("#add_optional").removeClass("d-none");
+            }
+
+            else {
+                $("#add_optional").addClass("d-none");
+            }
+
+            loadTasksForMilestone(milestoneId, @(TempData["entry"]));
+        });
+
+        $("#delayed_yes").on("click", function () {
+            $("#delay_input_group").removeClass("d-none");
+            $("#delay_input_group").prop("class", "form-group mb-4");
+        });
+
+        $("#delayed_no").on("click", function () {
+            $("#delay_input_group").addClass("d-none");
+            $("#weeks_delayed").val(0);
+        });
+
+        $("#selectedMilestone").on("change", function () {
+            let selection = $("#selectedMilestone").val();
+            if (selection != "") {
+                $("#status_input_group").removeClass("d-none");
+
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("GetTaskUpdate", "Checklist")",
+                    data: { selection },
+                    success: function (res) {
+                        if (res.success == true) {
+                            if (res.data != 0) {
+                                var note = document.getElementById("delay_note");
+                                var inputGrp = document.getElementById("delay_input_group");
+
+                                $("#delayed_yes").prop("checked", true);
+                                $("#weeks_delayed").prop("value", res.data);
+                                $("#delay_div").removeClass("d-none");
+                                inputGrp.classList.remove("d-none");
+
+                                note.textContent = "Previously Delayed by: " + res.data + " week/s";
+                            }
+
+                            else {
+                                var note = document.getElementById("delay_note");
+                                var inputGrp = document.getElementById("delay_input_group");
+
+                                $("#delayed_no").prop("checked", true);
+                                $("#weeks_delayed").prop("value", res.data);
+                                $("#delay_div").removeClass("d-none");
+                                inputGrp.classList.add("d-none");
+
+                                //note.textContent = "";
+                            }
+                        }
+
+                        else {
+                            alert(res.message);
+                        }
+                    }
+                });
+            }
+
+            else {
+                $("#status_input_group").prop("class", "d-none");
+            }
+        });
+
+        $(document).on("click", "#add_optional", function (e) {
+            e.preventDefault();
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const projectID = urlParams.get("id");
+            var milestone = $("#milestoneDropdown").val();
+
+
+            if (milestone != "") {
+                $("#modal_title").text("Checklist item for: " + milestone);
+                $("#milestone_id").val(milestone);
+                $("#project_id").val(projectID);
+
+                $(".modal-body").html();
+                $("#myModal").modal("show");
+            }
+
+            else {
+                //alert("Please select a milestone first");
+                Swal.fire("Oops", "Please select a milestone first.", "error");
+            }
+
+        });
+
+        $(document).on("click", "#submit_button", function () {
+            var formData = $("#optionalForm").serialize();
+            var incomplete = false;
+            var milestone = $("#milestoneDropdown").val();
+
+            $('#optionalForm :input').each(function (index, el) {
+                //if ($(el).val().length == 0) incomplete = true;
+                //return false;
+                if ($(el).val().length == 0) {
+                    incomplete = true;
+                    return false;
+                }
+
+            });
+
+            if (incomplete != true) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddOptional", "Checklist")",
+                    data: formData,
+                    success: function (res) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Checklist item added!',
+                        }).then(function () {
+                            localStorage.setItem('currentTab', 'checklist');
+                            localStorage.setItem('currentDrop', milestone);
+
+                            location.reload();
+
+                            //setTimeout(function () {
+                            //    location.reload();
+                            //}, 1000)
+                        });
+                    },
+
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Query failed, please retry',
+                        }).then(function () {
+                            localStorage.setItem('currentTab', 'checklist');
+                            localStorage.setItem('currentDrop', milestone);
+
+                            location.reload();
+
+                            //setTimeout(function () {
+                            //    location.reload();
+                            //}, 1000)
+                        });
+                    }
+                });
+            }
+
+            else {
+                Swal.fire("Incomplete Entry", "Please fill up the form.", "error");
+            }
+
+        });
+
+        document.addEventListener('change', function (event) {
+            if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
+                updateSelectedChips();
+            }
+        });
+
+        $(document).on("click", "#submit_approver", function () {
+            const taskID = $("#task_id").val();
+            const projID = $("#approver_project_id").val();
+            const approvers = document.getElementById("selectedMembersChips");
+            const selectedMembers = [...document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked')].map(e => e.value);
+            const milestone = $("#milestoneDropdown").val();
+            console.log(selectedMembers);
+
+            if (approvers.hasChildNodes()) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddApproverOpt", "Checklist")",
+                    data: { "id": taskID, "proj_id": projID, "approvers": selectedMembers },
+                    success: function (res) {
+                        var dropdown = $("#milestoneDropdown").val();
+                        localStorage.setItem('currentTab', 'checklist');
+                        localStorage.setItem('currentDrop', dropdown);
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Approver/s Added!',
+                        }).then(function () {
+                            localStorage.setItem('currentTab', 'checklist');
+                            localStorage.setItem('currentDrop', milestone);
+
+                            location.reload();
+
+                            //setTimeout(function () {
+                            //    location.reload();
+                            //}, 1000)
+                            });
+
+                    }
+                });
+            }
+
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'No selected approvers',
+                    text: 'Please select an approver first',
+                }).then(function () {
+                    localStorage.setItem('currentTab', 'checklist');
+                    localStorage.setItem('currentDrop', milestone);
+
+                    location.reload();
+
+                    //setTimeout(function () {
+                    //    location.reload();
+                    //}, 1000)
+                });
+            }
+
+
+        });
+
+    </script>
 
 }
