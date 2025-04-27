@@ -730,7 +730,7 @@
                     <h5 class="modal-title" id="updateMilestoneLabel">
                         </i> Update Task Status
                     </h5>
-                    <button type="button" class="btn-close text-white" data-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body bg-light p-4">
@@ -790,7 +790,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-3">
-                            @*<button type="button" class="btn btn-light border shadow-sm" data-dismiss="modal">Cancel</button>*@
+                            @*<button type="button" class="btn btn-light border shadow-sm" data-bs-dismiss="modal">Cancel</button>*@
                             @*<button type="button" class="btn btn-outline-primary text-white shadow-sm px-4" onclick="validateAndSubmit()">*@
                             <button type="button" class="btn btn-outline-primary text-white shadow-sm px-4"
                                     onclick="validateAndSubmit()"
@@ -859,7 +859,7 @@
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
                     <h5 class="modal-title" id="statusUpdatedLabel">Success!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -867,7 +867,7 @@
                     Status Updated!
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
@@ -878,7 +878,7 @@
             <div class="modal-content shadow-lg rounded">
                 <div class="modal-header bg-white">
                     <h5 class="modal-title" id="activityLogLabel">Activity Log</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="false">&times;</span>
                     </button>
                 </div>
@@ -943,7 +943,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="attachmentModalLabel">Attachment Preview</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -983,6 +983,7 @@
 
     <div class="card shadow-sm p-4">
         <h3 class="text-center text-purple fw-bold">Checklist <span id="checklist_id_container"></span></h3>
+        <input class="d-none" type="text" id="checklist_id_input"/>
         @*<p class="text-center text-muted">Manage checklist for each milestone.</p>*@
 
         <div class="milestone-dropdown-container">
@@ -1070,7 +1071,7 @@
         <div class="modal-content" style="width: 100%">
             <div class="modal-header">
                 <label id="modal_title"></label>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="optionalForm">
@@ -1102,7 +1103,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" id="submit_button">Save</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -1114,7 +1115,7 @@
         <div class="modal-content" style="width: 100%">
             <div class="modal-header">
                 <label id="modal_title"></label>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -1144,7 +1145,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" id="submit_approver">Submit</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -1157,7 +1158,7 @@
         <div class="modal-content" style="width: 140%">
             <div class="modal-header">
                 <label id="modal_title"></label>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -1166,6 +1167,7 @@
                     <table id="approver_table" style="width: 100%">
                         <thead class="table-primary">
                             <tr style="margin:auto; text-align: center">
+                                <th>Select All<br/><input type="checkbox" name="remove_all" id="remove_all"/></th>
                                 <th>Name</th>
                                 <th>Date Added</th>
                                 <th>Added By</th>
@@ -1181,8 +1183,8 @@
             </div>
 
             <div class="modal-footer">
-                @*<button type="button" class="btn btn-success" id="submit_approver">Submit</button>*@
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger w-25" onclick="removeSelected()">Remove Selected</button>
+                @*<button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>*@
             </div>
         </div>
     </div>
@@ -1381,6 +1383,10 @@
 
                 localStorage.clear();
             }
+
+            $("#remove_all").on("click", function () {
+                $("input[name='cb_remove']").prop("checked", this.checked);
+            });
         });
 
         const selectedTab = new URLSearchParams(window.location.search).get("tab");
@@ -1431,6 +1437,7 @@
         $("#milestoneDropdown").on("change", function () {
             const milestoneId = $(this).val();
             $("#checklist_id_container").empty();
+            $("#checklist_id_input").val("");
 
             if ($("#milestoneDropdown").val() != "") {
                 $("#add_optional").removeClass("d-none");
@@ -1712,6 +1719,9 @@
 
                     if (response.success && response.data.length > 0) {
                         $("#checklist_id_container").text("ID # " + response.id);
+                        $("#checklist_id_input").val(response.id);
+                        var item_ctr = response.data.length;
+                        var saved_ctr = 0;
 
                         let item_ctr = response.data.length;
                         let saved_ctr = 0;
@@ -1746,63 +1756,38 @@
                     `;
 
                             checklistTableBody.append(`
-                        <tr>
-                            <td>
-                                ${(task.optFlag && !isReadOnlyView) ? `<button class="bg-red" onclick="removeTask(${task.task_id})"><i class="fa fa-trash" aria-hidden="true"></i></button>` : ""}
-                            </td>
-                            <td>${task.optFlag ? "Project Manager" : "ODCP"}</td>
-                            <td id="${task.task_id}name">${task.taskname}</td>
-                            <td>
-                                ${task.attachment
-                                    ? `<a href="${task.attachment}" target="_blank">View Attachment</a>`
-                                    : isReadOnlyView
-                                        ? `<span class="text-muted">No file uploaded</span>`
-                                        : `<input type="file" class="form-control-file" id="${task.task_id}file">`
-                                }
-                            </td>
-                            <td>
-                                ${task.optFlag
-                                    ? (isReadOnlyView
-                                        ? task.approvers
-                                        : task.approvers.length > 0
-                                            ? task.approvers + `<button class="btn btn-primary w-50" onclick="add_approverbtn(${task.task_id})">Add Approver</button> <button class="btn btn-danger w-50" onclick="removeApprover(${task.task_id})">Remove Approver</button>`
-                                            : `<button class="btn btn-primary w-50" onclick="add_approverbtn(${task.task_id})">Add Approver</button>`)
-                                    : approverHtml
-                                }
-                            </td>
-                            <td class="text-center">
-                                ${
-                                task.approved
-                                    ? '<span class="badge badge-completed">Approved</span>'
-                                    : task.reason
-                                        ? '<span class="badge badge-delayed">Rejected</span>'
-                                        : task.attachment
-                                            ? (isReadOnlyView
-                                                ? `<span class="badge badge-active pending-approver-tooltip" data-task-id="${task.task_id}">Pending for Approval</span>`
-                                                : '<span class="badge badge-warning">Saved</span>')
-                                            : (isReadOnlyView
-                                                ? ''
-                                                : '<span class="badge badge-secondary">Pending</span>')
-                                }
-                            </td>
-                            ${
-                                isReadOnlyView
-                                    ? ""
-                                    : `<td>
-                                        ${task.attachment
-                                        ? task.approved
-                                            ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
-                                            : task.reason
-                                                ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
-                                                : `<button class="btn btn-sm btn-warning" disabled>Saved</button>`
-                                        : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Save</button>`
-                                    }
-                                    </td>`
-                                }
-                            <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
-                            <td class="d-none" id="${task.task_id}project">${pId}</td>
-                        </tr>
-                    `);
+                    <tr>
+                        <td>
+                            ${task.optFlag ? `<button class="bg-red" onclick="removeTask(${task.task_id})">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>` : ""}
+                        </td>
+                        <td>${task.optFlag ? `Project Manager` : `ODCP`}</td>
+                        <td id="${task.task_id}name">${task.taskname}</td>
+                        <td>
+                            ${task.attachment ? `<a href="${task.attachment}" target="_blank" ">View Attachment</a>`
+                                    : `<input type="file" class="form-control-file" id="${task.task_id}file">`}
+                        </td>
+                        <td>${task.optFlag
+                                ? task.approvers.length > 0
+                                    ? approverHtml + `<div><button class="btn btn-primary w-25" onclick="add_approverbtn(${task.task_id})">+</button> <button class="btn btn-danger w-25" onclick="removeApprover(${task.task_id})">-</button></div>`
+                                    : `<button class="btn btn-primary w-25" onclick="add_approverbtn(${task.task_id})">+</button>`
+                                : approverHtml
+                                }</td>
+                        <td>${task.approved ? "Approved" : task.reason ? "Disapproved" :  task.attachment ? "Saved" : "Pending"}</td>
+                        <td>
+                            ${task.attachment
+                                    ? task.approved
+                                        ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
+                                        : task.reason
+                                            ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
+                                            : `<button class="btn btn-sm btn-warning" disabled>Saved</button>`
+                                    : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Save</button>`}
+                        </td>
+                        <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
+                        <td class="d-none" id="${task.task_id}project">${pId}</td>
+                    </tr>
+                `);
                         });
 
                         response.data.forEach((task) => {
@@ -1843,10 +1828,15 @@
 
                     } else {
                         checklistTableBody.html(`
-                    <tr>
-                        <td colspan="7" class="text-center">No tasks found for this milestone.</td>
-                    </tr>
-                `);
+                <tr>
+                    <td colspan="7" class="text-center">No tasks found for this milestone.</td>
+                </tr>
+            `);
+                        //$("#add_optional").remove();
+                    }
+
+                    if (item_ctr == saved_ctr && item_ctr > 0) {
+                        $("#checklistTableBody ").append(`<tr><td colspan="7"><button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})">Submit for Approval</button></td></tr>`)
                     }
                 },
                 error: function (xhr) {
@@ -2017,6 +2007,7 @@
 
                         table_body.append(`
                         <tr>
+                        <td><input type="checkbox" name="cb_remove" value="${approver.employee_id}"></input></td>
                         <td>${approver.approver_name}</td>
                         <td>${moment(approver.date_added).format('MM-DD-yyyy')}</td>
                         <td>${approver.added_by.split("@@")[0]}</td>
@@ -2110,8 +2101,60 @@
                 });
         }
 
-        function notifyApprovers() {
-            alert("IN");
+        function filterMembers() {
+            const searchInput = document.getElementById('searchMembers').value.toLowerCase();
+            const items = document.querySelectorAll('.multi-select-dropdown .dropdown-item');
+
+            items.forEach(item => {
+                const text = item.querySelector('label').innerText.toLowerCase();
+                item.style.display = text.includes(searchInput) ? '' : 'none';
+            });
+        }
+
+        function removeSelected() {
+            const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="cb_remove"]`);
+            const projID = $("#approver_project_id_removal").val();
+            const milestoneID = $("#task_id_removal").val();
+
+            checkboxes.forEach((ele, index, array) => {
+                if (ele.checked) {
+                    $.ajax({
+                        url: "@Url.Action("RemoveOptionalApprover", "Checklist")",
+                        type: "POST",
+                        data: { "id": ele.value, "project_id": projID, "milestone_id": milestoneID },
+                        success: function () {
+                            
+                        }
+                    })
+                }
+
+                if (array.length - 1 === index) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Approvers Removed!',
+                    }).then(function () {
+                        location.reload();
+                    });
+                }
+            });
+        }
+
+        function notifyApprovers(checklist_id) {
+            $.ajax({
+                url: "@Url.Action("NotifyApprovers", "Checklist")",
+                type: "POST",
+                data: { "cID": checklist_id },
+                success: function (res) {
+                    if (res.message == "success") {
+                        alert("success");
+                    }
+
+                    else {
+                        alert(res.message);
+                    }
+                }
+            });
         }
     </script>
 

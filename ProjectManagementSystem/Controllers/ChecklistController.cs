@@ -2569,7 +2569,7 @@ namespace ProjectManagementSystem.Controllers
                         date_added = DateTime.Now,
                         added_by = User.Identity.Name,
                         division = userDetails.Where(x => x.email == User.Identity.Name).Select(x => x.division).FirstOrDefault(),
-                        employee_id = Int32.Parse(userDetails.Where(x => x.email == User.Identity.Name).Select(x => x.emp_id).FirstOrDefault())
+                        employee_id = Int32.Parse(userDetails.Where(x => x.emp_id == current_approver.emp_id).Select(x => x.emp_id).FirstOrDefault())
                     };
 
                     approver_list.Add(approver);
@@ -2630,8 +2630,8 @@ namespace ProjectManagementSystem.Controllers
 
             try
             {
-                var dbSubmission = db.ChecklistSubmissions.Where(x => x.main_id == project_id && x.milestone_id == milestone_id && x.is_removed != true).FirstOrDefault();
-                dbSubmission.is_removed = true;
+                //var dbSubmission = db.ChecklistSubmissions.Where(x => x.main_id == project_id && x.milestone_id == milestone_id && x.is_removed != true).FirstOrDefault();
+                //dbSubmission.is_removed = true;
 
                 var dbItem = db.OptionalMilestoneApprovers.Where(x => x.main_id == project_id && x.milestone_id == milestone_id && x.employee_id == id && x.is_removed != true).FirstOrDefault();
                 dbItem.is_removed = true;
@@ -2681,6 +2681,30 @@ namespace ProjectManagementSystem.Controllers
         {
             ViewBag.ProjectId = id;
             return View();
+        }
+
+        public JsonResult NotifyApprovers(int cID)
+        {
+            try
+            {
+                var dbChecklist = (from c in db.ChecklistTables.Where(x => x.checklist_id == cID)
+                                   join s in db.ChecklistSubmissions.Where(x => x.is_removed != true) on new { mainID = c.main_id, milestoneID = c.milestone_id} equals new { mainID = s.main_id, milestoneID = s.milestone_id}
+                                   select s).ToList();
+
+                foreach(var checklist in dbChecklist)
+                {
+                    checklist.approval_enabled = true;
+                }
+
+                db.SaveChanges();
+
+                return Json(new { message = "success", JsonRequestBehavior.AllowGet });
+            }
+
+            catch(Exception e)
+            {
+                return Json(new { message = e.Message, JsonRequestBehavior.AllowGet });
+            }
         }
 
         //public JsonResult GetStatusUpdates()

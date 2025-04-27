@@ -1015,27 +1015,56 @@ namespace ProjectManagementSystem.Controllers
             {
                 string currentUserId = User.Identity.GetUserId();
 
-                var pendingTasks = db.ApproversTbls
-                    .Where(a => a.User_Id == currentUserId && a.IsRemoved_ == false)
-                    .Select(a => new ApproverTaskViewModel
-                    {
-                        DetailsID = a.Details_Id ?? 0,
-                        TaskName = db.DetailsTbls
-                            .Where(t => t.details_id == a.Details_Id)
-                            .Select(t => t.process_title)
-                            .FirstOrDefault(),
+                //var pendingTasks = db.ApproversTbls
+                //    .Where(a => a.User_Id == currentUserId && a.IsRemoved_ == false)
+                //    .Select(a => new ApproverTaskViewModel
+                //    {
+                //        DetailsID = a.Details_Id ?? 0,
+                //        TaskName = db.DetailsTbls
+                //            .Where(t => t.details_id == a.Details_Id)
+                //            .Select(t => t.process_title)
+                //            .FirstOrDefault(),
 
-                        ProjectTitle = db.MainTables
-                            .Where(p => p.main_id == a.Main_Id)
-                            .Select(p => p.project_title)
-                            .FirstOrDefault(),
+                //        ProjectTitle = db.MainTables
+                //            .Where(p => p.main_id == a.Main_Id)
+                //            .Select(p => p.project_title)
+                //            .FirstOrDefault(),
 
-                        SubmittedBy = cmdb.AspNetUsers
-                            .Where(u => u.Id == a.User_Id)
-                            .Select(u => u.FirstName + " " + u.LastName)
-                            .FirstOrDefault(),
-                        SubmittedDate = a.ApprovalDate ?? DateTime.Now
-                    }).ToList();
+                //        SubmittedBy = cmdb.AspNetUsers
+                //            .Where(u => u.Id == a.User_Id)
+                //            .Select(u => u.FirstName + " " + u.LastName)
+                //            .FirstOrDefault(),
+                //        SubmittedDate = a.ApprovalDate ?? DateTime.Now
+                //    }).ToList();
+
+                var pendingOptional = (from s in db.ChecklistSubmissions.Where(x => x.approval_enabled == true && x.is_removed != true && x.type == "optional")
+                                       join a in db.OptionalMilestoneApprovers.Where(x => x.approver_email == User.Identity.Name && x.is_removed != true) on new { mainID = s.main_id, milestoneID = s.milestone_id } equals new { mainID = a.main_id, milestoneID = a.milestone_id }
+                                       join m in db.MainTables on s.main_id equals m.main_id
+                                       select new ApproverTaskViewModel{
+                                           DetailsID = s.task_id.Value,
+                                           TaskName = s.task_name,
+                                           ProjectTitle = m.project_title,
+                                           SubmittedBy = s.submitted_by,
+                                           SubmittedDate = s.submission_date.Value
+                                       }).ToList();
+
+                var pendingPreset = (from s in db.ChecklistSubmissions.Where(x => x.approval_enabled == true && x.is_removed != true && x.type != "optional")
+                                     join a in db.PreSetMilestoneApprovers.Where(x => x.approver_email == User.Identity.Name && x.is_removed != true) on new { mainID = s.main_id, milestoneID = s.milestone_id } equals new { mainID = a.main_id, milestoneID = a.milestone_id }
+                                     join m in db.MainTables on s.main_id equals m.main_id
+                                     select new ApproverTaskViewModel
+                                     {
+                                         DetailsID = s.task_id.Value,
+                                         TaskName = s.task_name,
+                                         ProjectTitle = m.project_title,
+                                         SubmittedBy = s.submitted_by,
+                                         SubmittedDate = s.submission_date.Value
+
+                                     }).ToList();
+
+                List<ApproverTaskViewModel> pendingTasks = new List<ApproverTaskViewModel>();
+
+                pendingTasks.AddRange(pendingPreset);
+                pendingTasks.AddRange(pendingOptional);
 
                 return Json(pendingTasks, JsonRequestBehavior.AllowGet);
 
