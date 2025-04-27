@@ -32,7 +32,6 @@
         <EntityTypeShape EntityType="ProjectManagementDBModel.TransactionTbl" Width="1.5" PointX="14.75" PointY="15.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyChecklistTable" Width="1.5" PointX="16.75" PointY="0.75" />
         <EntityTypeShape EntityType="ProjectManagementDBModel.WeeklyStatu" Width="1.5" PointX="16.75" PointY="6.75" />
-        <EntityTypeShape EntityType="ProjectManagementDBModel.View_1" Width="1.5" PointX="16.75" PointY="10.75" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_FixedChecklistTbl_ChecklistSetup" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_TaskApproval_DetailsTbl" />
         <AssociationConnector Association="ProjectManagementDBModel.FK_PreSetMilestone_Divisions" />
