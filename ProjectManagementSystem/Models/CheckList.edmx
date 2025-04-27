@@ -231,6 +231,7 @@
           <Property Name="date_removed" Type="date" />
           <Property Name="removed_by" Type="nvarchar" MaxLength="100" />
           <Property Name="employee_id" Type="int" />
+          <Property Name="task_id" Type="int" />
         </EntityType>
         <EntityType Name="OptionalMilestones">
           <Key>
@@ -378,13 +379,6 @@
           <Property Name="transaction_date" Type="datetime" />
           <Property Name="transaction_user" Type="nvarchar" MaxLength="100" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6013: The table/view 'ProjectManagementDB.dbo.UserRoles' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
-        <EntityType Name="UserRoles">
-          <Property Name="user_id" Type="int" />
-          <Property Name="role_id" Type="int" />
-          <Property Name="id" Type="int" />
-        </EntityType>-->
         <EntityType Name="WeeklyChecklistTable">
           <Key>
             <PropertyRef Name="localId" />
@@ -885,6 +879,7 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
           <Property Name="date_removed" Type="DateTime" Precision="0" />
           <Property Name="removed_by" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="employee_id" Type="Int32" />
+          <Property Name="task_id" Type="Int32" />
         </EntityType>
         <EntityType Name="OptionalMilestone">
           <Key>
@@ -1398,6 +1393,7 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
           <EntitySetMapping Name="OptionalMilestoneApprovers">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.OptionalMilestoneApprover">
               <MappingFragment StoreEntitySet="OptionalMilestoneApprovers">
+                <ScalarProperty Name="task_id" ColumnName="task_id" />
                 <ScalarProperty Name="employee_id" ColumnName="employee_id" />
                 <ScalarProperty Name="removed_by" ColumnName="removed_by" />
                 <ScalarProperty Name="date_removed" ColumnName="date_removed" />

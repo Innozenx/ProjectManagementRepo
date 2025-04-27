@@ -2135,6 +2135,7 @@
         $(document).on("click", "#submit_approver", function () {
             const taskID = $("#task_id").val();
             const projID = $("#approver_project_id").val();
+            const milestoneID = $("#checklist_id_input").val();
             const approvers = document.getElementById("selectedMembersChips");
             const selectedMembers = [...document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked')].map(e => e.value);
             const milestone = $("#milestoneDropdown").val();
@@ -2144,7 +2145,7 @@
                 $.ajax({
                     type: "POST",
                     url: "@Url.Action("AddApproverOpt", "Checklist")",
-                    data: { "id": taskID, "proj_id": projID, "approvers": selectedMembers },
+                    data: { "id": taskID, "proj_id": projID, "approvers": selectedMembers, "milestone_id": milestoneID },
                     success: function (res) {
                         var dropdown = $("#milestoneDropdown").val();
                         localStorage.setItem('currentTab', 'checklist');

@@ -2539,7 +2539,7 @@ namespace ProjectManagementSystem.Controllers
             return Json(new { message = "success", data = userlist }, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult AddApproverOpt(int id, int proj_id, List<int> approvers)
+        public JsonResult AddApproverOpt(int id, int proj_id, List<int> approvers, int milestone_id)
         {
             var message = ""; 
             try
@@ -2565,7 +2565,8 @@ namespace ProjectManagementSystem.Controllers
                         approver_name = current_approver.name,
                         approver_email = current_approver.email,
                         main_id = proj_id,
-                        milestone_id = id,
+                        milestone_id = milestone_id,
+                        task_id = id,
                         date_added = DateTime.Now,
                         added_by = User.Identity.Name,
                         division = userDetails.Where(x => x.email == User.Identity.Name).Select(x => x.division).FirstOrDefault(),
