@@ -1410,6 +1410,7 @@
                                 }
                             <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
                             <td class="d-none" id="${task.task_id}project">${pId}</td>
+                            <td class="d-none" id="${task.task_id}type">${task.optFlag ? "optional" : "preset"}</td>
                         </tr>
                 `);
                         });
@@ -1473,6 +1474,7 @@
             var inputName = $("#" + task_id + "name");
             var inputMilestone = $("#" + task_id + "milestone");
             var inputProject = $("#" + task_id + "project");
+            var inputType = $("#" + task_id + "type");
 
             var fileupload = inputFile.get(0);
 
@@ -1480,6 +1482,7 @@
 
             var taskmilestone = inputMilestone.text();
             var taskproject = inputProject.text();
+            var tasktype = inputType.text();
 
             var files = fileupload.files;
 
@@ -1493,6 +1496,7 @@
             fileData.append("id", task_id);
             fileData.append("milestone_id", taskmilestone);
             fileData.append("project_id", taskproject);
+            fileData.append("type", tasktype);
 
             $.ajax({
                 type: "POST",

@@ -62,7 +62,7 @@ namespace ProjectManagementSystem.Controllers
                             filepath = path,
                             milestone_id = Int32.Parse(Request.Form.GetValues("milestone_id")[0]),
                             main_id = Int32.Parse(Request.Form.GetValues("project_id")[0]),
-                            type = "optional"
+                            type = Request.Form.GetValues("type")[0]
 
                         };
 

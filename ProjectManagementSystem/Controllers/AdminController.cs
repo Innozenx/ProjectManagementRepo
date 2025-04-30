@@ -575,6 +575,9 @@ namespace ProjectManagementSystem.Controllers
                     division_string = db.Divisions.Where(x => x.DivisionID == DivisionID).Select(x => x.DivisionName).FirstOrDefault()
                 };
 
+                db.PreSetMilestones.Add(milestone);
+                db.SaveChanges();
+
                 var approver_ids = approverIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 List<PreSetMilestoneApprover> approver_list = new List<PreSetMilestoneApprover>();
 
@@ -596,7 +599,8 @@ namespace ProjectManagementSystem.Controllers
                             //division = cmdb.Identity_Keywords.Where(x => x.Id == approver_details.JobId && x.Type == "Divisions").Select(x => x.Description).SingleOrDefault(),
                             division = userDetails.Where(x => x.id == approver_details.Id).Select(x => x.division).FirstOrDefault(),
                             employee_id = Int32.Parse(approver_details.CMId),
-                            main_id = project.main_id
+                            main_id = project.main_id,
+                            task_id = milestone.ID
                         };
 
                         approver_list.Add(approver_container);
@@ -605,7 +609,6 @@ namespace ProjectManagementSystem.Controllers
                 }
 
                 db.PreSetMilestoneApprovers.AddRange(approver_list);
-                db.PreSetMilestones.Add(milestone);
                 db.SaveChanges();
 
                 return Json(new { success = true, message = "Milestone saved successfully!" });
@@ -1038,7 +1041,7 @@ namespace ProjectManagementSystem.Controllers
                 //    }).ToList();
 
                 var pendingOptional = (from s in db.ChecklistSubmissions.Where(x => x.approval_enabled == true && x.is_removed != true && x.type == "optional")
-                                       join a in db.OptionalMilestoneApprovers.Where(x => x.approver_email == User.Identity.Name && x.is_removed != true) on new { mainID = s.main_id, milestoneID = s.milestone_id } equals new { mainID = a.main_id, milestoneID = a.milestone_id }
+                                       join a in db.OptionalMilestoneApprovers.Where(x => x.approver_email == User.Identity.Name && x.is_removed != true) on new { mainID = s.main_id, milestoneID = s.milestone_id, taskID = s.task_id } equals new { mainID = a.main_id, milestoneID = a.milestone_id, taskID = a.task_id }
                                        join m in db.MainTables on s.main_id equals m.main_id
                                        select new ApproverTaskViewModel{
                                            DetailsID = s.task_id.Value,
@@ -1048,8 +1051,8 @@ namespace ProjectManagementSystem.Controllers
                                            SubmittedDate = s.submission_date.Value
                                        }).ToList();
 
-                var pendingPreset = (from s in db.ChecklistSubmissions.Where(x => x.approval_enabled == true && x.is_removed != true && x.type != "optional")
-                                     join a in db.PreSetMilestoneApprovers.Where(x => x.approver_email == User.Identity.Name && x.is_removed != true) on new { mainID = s.main_id, milestoneID = s.milestone_id } equals new { mainID = a.main_id, milestoneID = a.milestone_id }
+                var pendingPreset = (from s in db.ChecklistSubmissions.Where(x => x.approval_enabled == true && x.is_removed != true && x.type == "preset")
+                                     join a in db.PreSetMilestoneApprovers.Where(x => x.approver_email == User.Identity.Name && x.is_removed != true) on new { mainID = s.main_id, milestoneID = s.milestone_id, taskID = s.task_id } equals new { mainID = a.main_id, milestoneID = a.milestone_id, taskID = a.task_id }
                                      join m in db.MainTables on s.main_id equals m.main_id
                                      select new ApproverTaskViewModel
                                      {

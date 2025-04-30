@@ -2288,8 +2288,8 @@ namespace ProjectManagementSystem.Controllers
                         {
                             taskname = x.task_name,
                             approved = x.is_approved,
-                            approver_status = db.OptionalMilestoneApprovers.Where(y => y.milestone_id == x.task_id).Select(y => y.approved).ToList(),
-                            approvers = db.OptionalMilestoneApprovers.Where(y => y.milestone_id == x.task_id && y.main_id == item.main_id && y.is_removed != true).Select(y => y.approver_name).ToList(),
+                            approver_status = db.OptionalMilestoneApprovers.Where(y => y.task_id == x.task_id).Select(y => y.approved).ToList(),
+                            approvers = db.OptionalMilestoneApprovers.Where(y => y.task_id == x.task_id && y.main_id == item.main_id && y.is_removed != true).Select(y => y.approver_name).ToList(),
                             task_id = x.task_id,
                             milestone_id = x.milestone_id,
                             project_id = x.main_id,
@@ -2321,8 +2321,8 @@ namespace ProjectManagementSystem.Controllers
                             {
                                 taskname = x.task,
                                 approved = x.approved,
-                                approvers = db.OptionalMilestoneApprovers.Where(y => y.milestone_id == item.id && y.main_id == item.main_id && y.is_removed != true).Select(y => y.approver_name).ToList(),
-                                approver_status = db.OptionalMilestoneApprovers.Where(y => y.milestone_id == item.id).Select(y => y.approved).ToList(),
+                                approvers = db.OptionalMilestoneApprovers.Where(y => y.task_id == item.id && y.main_id == item.main_id && y.is_removed != true).Select(y => y.approver_name).ToList(),
+                                approver_status = db.OptionalMilestoneApprovers.Where(y => y.task_id == item.id).Select(y => y.approved).ToList(),
                                 task_id = x.id,
                                 milestone_id = x.milestone_id,
                                 project_id = x.main_id
