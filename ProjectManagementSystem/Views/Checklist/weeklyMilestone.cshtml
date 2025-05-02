@@ -1293,17 +1293,17 @@
 
             if (!milestoneId) {
                 checklistTableBody.html(`
-            <tr>
-                <td colspan="7" class="text-center">
-                    Select a milestone to view checklist items. <br />
-                    <small>
-                        <i class="fa fa-exclamation-circle text-warning"></i> = Pending,
-                        <i class="fa fa-circle-check text-success"></i> = Approved,
-                        <i class="fas fa-ban text-danger"></i> = Rejected
-                    </small>
-                </td>
-            </tr>
-        `);
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            Select a milestone to view checklist items. <br />
+                            <small>
+                                <i class="fa fa-exclamation-circle text-warning"></i> = Pending,
+                                <i class="fa fa-circle-check text-success"></i> = Approved,
+                                <i class="fas fa-ban text-danger"></i> = Rejected
+                            </small>
+                        </td>
+                    </tr>
+                 `);
                 return;
             }
 
@@ -1312,6 +1312,7 @@
                 type: "GET",
                 data: { milestoneId, mainId },
                 success: function (response) {
+
                     const queryString = window.location.search;
                     const urlParams = new URLSearchParams(queryString);
                     const pId = urlParams.get("id");
@@ -1345,17 +1346,17 @@
                             let remainingApprovers = approversArray.slice(2).join("<br/>");
 
                             let approverHtml = `
-                        <div class="approver-list">
-                            <div class="collapsed-approvers">${collapsedApprovers}</div>
-                            ${approversArray.length > 2 ? `
-                                <div class="more-approvers d-none">${remainingApprovers}</div>
-                                <a href="javascript:void(0);" class="toggle-approvers text-purple small">See More</a>
-                            ` : ''}
-                        </div>
-                    `;
+                                <div class="approver-list">
+                                    <div class="collapsed-approvers">${collapsedApprovers}</div>
+                                    ${approversArray.length > 2 ? `
+                                        <div class="more-approvers d-none">${remainingApprovers}</div>
+                                        <a href="javascript:void(0);" class="toggle-approvers text-purple small">See More</a>
+                                    ` : ''}
+                                </div>
+                            `;
 
                             checklistTableBody.append(`
-                    <tr>
+                            <tr>
                             <td>
                                 ${(task.optFlag && !isReadOnlyView) ? `<button class="bg-red" onclick="removeTask(${task.task_id})"><i class="fa fa-trash" aria-hidden="true"></i></button>` : ""}
                             </td>
@@ -1379,8 +1380,8 @@
                                     : approverHtml
                                 }
                             </td>
-                            <td class="text-center">
-                                ${
+                           <td class="text-center">
+    ${
                                 task.approved
                                     ? `<span class="badge badge-completed">Approved</span>`
                                     : task.reason
@@ -1388,12 +1389,13 @@
                                         : task.attachment
                                             ? (isReadOnlyView
                                                 ? `<span class="badge badge-active pending-approver-tooltip" data-task-id="${task.task_id}">Pending for Approval</span>`
-                                                : `<span class="badge badge-warning">Saved</span>`)
+                                                : `<span class="badge badge-warning">Pending</span>`)
                                             : (isReadOnlyView
                                                 ? ``
                                                 : `<span class="badge badge-secondary">Pending</span>`)
-                                }
-                            </td>
+    }
+</td>
+
                             ${
                                 isReadOnlyView
                                     ? ``
@@ -1427,10 +1429,11 @@
                                     return `${icon} ${task.approvers[key]}`;
                                 }).join("<br/>");
 
-                                $(`.pending-approver-tooltip[data-task-id="${task.task_id}"]`).tooltip({
-                                    title: tooltipHtml,
+                                $(`.pending-approver-tooltip[data-task-id = "${task.task_idi}"]`).tooltip({
+                                    tooltip: tooltipHtml,
                                     html: true,
                                     placement: 'top'
+
                                 });
                             }
                         });
@@ -1443,13 +1446,14 @@
 
                         if (!isReadOnlyView && item_ctr === saved_ctr) {
                             checklistTableBody.append(`
-                        <tr>
-                            <td colspan="7" class="text-center">
-                                <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})">Submit for Approval</button>
-                            </td>
-                        </tr>
-                    `);
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})">Submit for Approval</button>
+                                    </td>
+                                </tr>
+                            `);
                         }
+
 
                     } else {
                         checklistTableBody.html(`
@@ -1469,6 +1473,9 @@
                 }
             });
         }
+
+
+
         function submitApproval(task_id) {
             var inputFile = $("#" + task_id + "file");
             var inputName = $("#" + task_id + "name");

@@ -80,7 +80,6 @@
                     pendingContainer.append(taskCard);
                 });
             } else {
-                //pendingContainer.append(`<p class="text-center text-muted">No pending approvals</p>`);
                 pendingContainer.append(`<p class="text-center text-muted">No pending approvals.`);
             }
         }).fail(() => {
@@ -89,7 +88,7 @@
     }
 
     $(document).ready(function () {
-        loadPendingApprovals();
+        loadApprovals();
 
         $(document).on("click", ".approve-btn", function () {
             let taskId = $(this).data("taskid");
@@ -104,10 +103,12 @@
                 allowOutsideClick: false,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post("@Url.Action("ApproveTask", "Admin")", { taskId: taskId })
+                  $.post("@Url.Action("ApproveTask", "Admin")", { taskId: taskId })
+
                         .done(response => {
                             if (response.success) {
-                                Swal.fire("Success", "Task approved successfully!", "success").then(() => loadPendingApprovals());
+                                Swal.fire("Success", "Task approved successfully!", "success").then(() => loadApprovals());
+
                             } else {
                                 Swal.fire("Error", response.message, "error");
                             }
@@ -129,17 +130,74 @@
                 cancelButtonText: "Cancel"
             }).then((result) => {
                 if (result.isConfirmed && result.value.trim() !== "") {
-                    $.post("@Url.Action("RejectTask", "Admin")", { taskId: taskId, reason: result.value.trim() })
+             $.post("@Url.Action("RejectTask", "Admin")", { taskId: taskId, reason: result.value.trim() })
+
                         .done(response => {
                             if (response.success) {
-                                Swal.fire("Rejected", "Task has been rejected.", "success").then(() => loadPendingApprovals());
+                                Swal.fire("Rejected", "Task has been rejected.", "success").then(() => loadApprovals());
+
                             }
                         })
                         .fail(() => Swal.fire("Error", "Failed to reject task.", "error"));
                 }
             });
         });
-    });
+        });
+
+        function loadApprovals() {
+            $.get("@Url.Action("GetApprovals", "Admin")", function (data) {
+                const pending = data.pending;
+                const approved = data.approved;
+                const rejected = data.rejected;
+
+                const pendingContainer = $("#pendingTasks").empty();
+                const approvedContainer = $("#approvedTasks").empty();
+                const rejectedContainer = $("#rejectedTasks").empty();
+
+                const createCard = (task, type) => {
+                    return `
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card task-card shadow-sm border-0">
+                                <div class="card-body">
+                                    <h5 class="fw-bold text-dark">${task.TaskName}</h5>
+                                    <p class="small"><i class="fas fa-user"></i> <b>Submitted By:</b> ${task.SubmittedBy}</p>
+                                    <p class="small"><i class="far fa-calendar-alt"></i> <b>Submitted On:</b> ${task.SubmittedDate}</p>
+                                    ${type === "pending" ? `
+                                        <div class="d-flex justify-content-between mt-3 gap-2">
+                                            <button class="btn btn-success approve-btn w-50" data-taskid="${task.DetailsID}">
+                                                <i class="fas fa-check"></i> Approve
+                                            </button>
+                                            <button class="btn btn-danger reject-btn w-50" data-taskid="${task.DetailsID}">
+                                                <i class="fas fa-times"></i> Reject
+                                            </button>
+                                        </div>
+                                    ` : ""}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                };
+
+                if (pending.length > 0) {
+                    pending.forEach(t => pendingContainer.append(createCard(t, "pending")));
+                } else {
+                    pendingContainer.append(`<p class="text-center text-muted">No pending approvals.</p>`);
+                }
+
+                if (approved.length > 0) {
+                    approved.forEach(t => approvedContainer.append(createCard(t, "approved")));
+                } else {
+                    approvedContainer.append(`<p class="text-center text-muted">No approved tasks yet.</p>`);
+                }
+
+                if (rejected.length > 0) {
+                    rejected.forEach(t => rejectedContainer.append(createCard(t, "rejected")));
+                } else {
+                    rejectedContainer.append(`<p class="text-center text-muted">No rejected tasks yet.</p>`);
+                }
+            });
+        }
+
     </script>
 
 <style>

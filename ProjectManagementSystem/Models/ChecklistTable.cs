@@ -17,5 +17,8 @@ namespace ProjectManagementSystem.Models
         public int checklist_id { get; set; }
         public Nullable<int> main_id { get; set; }
         public Nullable<int> milestone_id { get; set; }
+        public Nullable<bool> is_approved { get; set; }
+        public Nullable<System.DateTime> approval_date { get; set; }
+        public string disapproval_reason { get; set; }
     }
 }

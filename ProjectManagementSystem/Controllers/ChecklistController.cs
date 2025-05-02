@@ -247,6 +247,11 @@ namespace ProjectManagementSystem.Controllers
 
             var userEmail = User.Identity.GetUserName();
             var userInfo = cmdb.AspNetUsers.FirstOrDefault(u => u.Email == userEmail);
+
+            ViewBag.IsApprover = db.ApproversTbls.Any(a => a.User_Id == userId && a.IsRemoved_ == false)
+            || db.OptionalMilestoneApprovers.Any(a => a.approver_email.ToLower().Trim() == userEmail.ToLower().Trim())
+            || db.PreSetMilestoneApprovers.Any(a => a.approver_email.ToLower().Trim() == userEmail.ToLower().Trim());
+
             ViewBag.FirstName = userInfo?.FirstName ?? "User";
 
             // get the projects where the user is a member, excluding archived/completed
@@ -2263,44 +2268,54 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
-  
-
         public JsonResult GetTasksForMilestone(int milestoneId, int mainId)
         {
-
             try
             {
                 List<TaskContainerModel> container = new List<TaskContainerModel>();
 
-                var tasks = db.OptionalMilestones.Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.is_removed != true).ToList();
+                var tasks = db.OptionalMilestones
+                    .Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.is_removed != true)
+                    .ToList();
 
-                var submissions = db.ChecklistSubmissions.Where(x => x.main_id == mainId && x.milestone_id == milestoneId).ToList();
+                var submissions = db.ChecklistSubmissions
+                    .Where(x => x.main_id == mainId && x.milestone_id == milestoneId)
+                    .ToList();
 
-                var checklistGrp_id = db.ChecklistTables.Where(x => x.main_id == mainId && x.milestone_id == milestoneId).Select(x => x.checklist_id).FirstOrDefault();
+                var checklistGrp_id = db.ChecklistTables
+                    .Where(x => x.main_id == mainId && x.milestone_id == milestoneId)
+                    .Select(x => x.checklist_id)
+                    .FirstOrDefault();
 
                 foreach (var item in tasks)
                 {
-
                     if (submissions.Any(x => x.main_id == item.main_id && x.task_id == item.id))
                     {
-
-                        var submissionContainer = submissions.Where(x => x.main_id == item.main_id && x.task_id == item.id).OrderByDescending(x => x.submission_date).Select(x => new
-                        {
-                            taskname = x.task_name,
-                            approved = x.is_approved,
-                            approver_status = db.OptionalMilestoneApprovers.Where(y => y.task_id == x.task_id).Select(y => y.approved).ToList(),
-                            approvers = db.OptionalMilestoneApprovers.Where(y => y.task_id == x.task_id && y.main_id == item.main_id && y.is_removed != true).Select(y => y.approver_name).ToList(),
-                            task_id = x.task_id,
-                            milestone_id = x.milestone_id,
-                            project_id = x.main_id,
-                            attachment = x.filepath,
-                            reason = x.disapproval_reason
-                        }).First();
+                        var submissionContainer = submissions
+                            .Where(x => x.main_id == item.main_id && x.task_id == item.id)
+                            .OrderByDescending(x => x.submission_date)
+                            .Select(x => new
+                            {
+                                taskname = x.task_name,
+                                approver_status = db.OptionalMilestoneApprovers
+                                    .Where(y => y.task_id == x.task_id)
+                                    .Select(y => y.approved)
+                                    .ToList(),
+                                approvers = db.OptionalMilestoneApprovers
+                                    .Where(y => y.task_id == x.task_id && y.main_id == item.main_id && y.is_removed != true)
+                                    .Select(y => y.approver_name)
+                                    .ToList(),
+                                task_id = x.task_id,
+                                milestone_id = x.milestone_id,
+                                project_id = x.main_id,
+                                attachment = x.filepath,
+                                reason = x.disapproval_reason
+                            }).First();
 
                         TaskContainerModel temporary = new TaskContainerModel()
                         {
                             taskname = submissionContainer.taskname,
-                            approved = submissionContainer.approved,
+                            approved = submissionContainer.approver_status.All(s => s == true),
                             approvers = submissionContainer.approvers,
                             task_id = submissionContainer.task_id,
                             milestone_id = submissionContainer.milestone_id,
@@ -2320,9 +2335,14 @@ namespace ProjectManagementSystem.Controllers
                             .Select(x => new
                             {
                                 taskname = x.task,
-                                approved = x.approved,
-                                approvers = db.OptionalMilestoneApprovers.Where(y => y.task_id == item.id && y.main_id == item.main_id && y.is_removed != true).Select(y => y.approver_name).ToList(),
-                                approver_status = db.OptionalMilestoneApprovers.Where(y => y.task_id == item.id).Select(y => y.approved).ToList(),
+                                approvers = db.OptionalMilestoneApprovers
+                                    .Where(y => y.task_id == item.id && y.main_id == item.main_id && y.is_removed != true)
+                                    .Select(y => y.approver_name)
+                                    .ToList(),
+                                approver_status = db.OptionalMilestoneApprovers
+                                    .Where(y => y.task_id == item.id)
+                                    .Select(y => y.approved)
+                                    .ToList(),
                                 task_id = x.id,
                                 milestone_id = x.milestone_id,
                                 project_id = x.main_id
@@ -2331,7 +2351,7 @@ namespace ProjectManagementSystem.Controllers
                         TaskContainerModel temporary = new TaskContainerModel()
                         {
                             taskname = optionalTasks.taskname,
-                            approved = optionalTasks.approved,
+                            approved = optionalTasks.approver_status.All(s => s == true),
                             approvers = optionalTasks.approvers,
                             task_id = optionalTasks.task_id,
                             milestone_id = optionalTasks.milestone_id,
@@ -2343,34 +2363,42 @@ namespace ProjectManagementSystem.Controllers
                         };
 
                         container.Add(temporary);
-
                     }
                 }
 
-                var presetTasks = db.PreSetMilestones.Where(x => x.MilestoneID == milestoneId).ToList();
+                var presetTasks = db.PreSetMilestones
+                    .Where(x => x.MilestoneID == milestoneId)
+                    .ToList();
 
                 foreach (var preset in presetTasks)
                 {
                     if (submissions.Any(x => x.task_id == preset.ID))
                     {
-
-                        var submissionContainer = submissions.Where(x => x.task_id == preset.ID).OrderByDescending(x => x.submission_date).Select(x => new
-                        {
-                            taskname = x.task_name,
-                            approved = x.is_approved,
-                            approver_status = db.PreSetMilestoneApprovers.Where(y => y.main_id == x.main_id && y.milestone_id == x.milestone_id).Select(y => y.approved).ToList(),
-                            approvers = db.PreSetMilestoneApprovers.Where(y => y.milestone_id == milestoneId && y.main_id == mainId && y.is_removed != true).Select(y => y.approver_name).ToList(),
-                            task_id = x.task_id,
-                            milestone_id = x.milestone_id,
-                            project_id = x.main_id,
-                            attachment = x.filepath,
-                            reason = x.disapproval_reason
-                        }).First();
+                        var submissionContainer = submissions
+                            .Where(x => x.task_id == preset.ID)
+                            .OrderByDescending(x => x.submission_date)
+                            .Select(x => new
+                            {
+                                taskname = x.task_name,
+                                approver_status = db.PreSetMilestoneApprovers
+                                    .Where(y => y.main_id == x.main_id && y.milestone_id == x.milestone_id)
+                                    .Select(y => y.approved)
+                                    .ToList(),
+                                approvers = db.PreSetMilestoneApprovers
+                                    .Where(y => y.milestone_id == milestoneId && y.main_id == mainId && y.is_removed != true)
+                                    .Select(y => y.approver_name)
+                                    .ToList(),
+                                task_id = x.task_id,
+                                milestone_id = x.milestone_id,
+                                project_id = x.main_id,
+                                attachment = x.filepath,
+                                reason = x.disapproval_reason
+                            }).First();
 
                         TaskContainerModel temporary = new TaskContainerModel()
                         {
                             taskname = submissionContainer.taskname,
-                            approved = submissionContainer.approved,
+                            approved = submissionContainer.approver_status.All(s => s == true),
                             approvers = submissionContainer.approvers,
                             task_id = submissionContainer.task_id,
                             milestone_id = submissionContainer.milestone_id,
@@ -2382,26 +2410,31 @@ namespace ProjectManagementSystem.Controllers
                         };
 
                         container.Add(temporary);
-
                     }
-
                     else
                     {
+                        var approverStatus = db.PreSetMilestoneApprovers
+                            .Where(x => x.milestone_id == milestoneId && x.main_id == mainId)
+                            .Select(x => x.approved)
+                            .ToList();
+
                         TaskContainerModel preset_container = new TaskContainerModel()
                         {
                             taskname = preset.Requirements,
-                            approvers = db.PreSetMilestoneApprovers.Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.is_removed != true).Select(x => x.approver_name).ToList(),
+                            approvers = db.PreSetMilestoneApprovers
+                                .Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.is_removed != true)
+                                .Select(x => x.approver_name)
+                                .ToList(),
                             task_id = preset.ID,
                             milestone_id = preset.MilestoneID,
-                            approver_status = db.ChecklistSubmissions.Where(x => x.task_id == milestoneId).Select(x => x.is_approved).ToList(),
+                            approver_status = approverStatus,
+                            approved = approverStatus.All(s => s == true),
                             optFlag = false
                         };
 
                         container.Add(preset_container);
                     }
-                    
                 }
-
 
                 return Json(new { success = true, data = container, id = checklistGrp_id }, JsonRequestBehavior.AllowGet);
             }
@@ -2410,6 +2443,9 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+
+
+
         [HttpGet]
         public JsonResult GetProjectOwner(int projectId)
         {

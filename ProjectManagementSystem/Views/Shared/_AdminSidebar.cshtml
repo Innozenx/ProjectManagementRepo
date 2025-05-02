@@ -70,7 +70,7 @@
                         </li>
 
 
-                            if (ViewBag.IsApprover == true)
+                            @*if (ViewBag.IsApprover == true)
                             {
                             <li class="nav-item">
                                 <a href="@Url.Action("PendingApprovals", "Admin")" class="nav-link">
@@ -78,11 +78,21 @@
                                     <p>Approval</p>
                                 </a>
                             </li>
-                            }
-
-
+                            }*@
 
                     }
+
+                        @if (ViewBag.IsApprover == true)
+                        {
+                                <li class="nav-item">
+                                    <a href="@Url.Action("PendingApprovals", "Admin")" class="nav-link">
+                                        <i class="nav-icon fas fa-check-square"></i>
+                                        <p>Approval</p>
+
+
+                                    </a>
+                                </li>
+                        }
 
                     <!-- Report Section -->
 
