@@ -1325,12 +1325,14 @@
 
                         let item_ctr = response.data.length;
                         let saved_ctr = 0;
+                        let approval_enabled = 0;
 
                         response.data.forEach((task) => {
                             // skip rows na walang attachments pa from PM if readonly
                             if (isReadOnlyView && !task.attachment) return;
 
                             if (task.attachment && task.reason == null) saved_ctr++;
+                            if (task.attachment && task.reason == null && task.approval_enabled == true) approval_enabled++;
 
                             let approversArray = Object.keys(task.approvers).map(key => {
                                 let status = task.approver_status[key];
@@ -1413,6 +1415,7 @@
                             <td class="d-none" id="${task.task_id}milestone">${task.milestone_id}</td>
                             <td class="d-none" id="${task.task_id}project">${pId}</td>
                             <td class="d-none" id="${task.task_id}type">${task.optFlag ? "optional" : "preset"}</td>
+                            <td class="d-none" id="${task.task_id}id">${task.optFlag ? "optional" : "preset"}</td>
                         </tr>
                 `);
                         });
@@ -1444,14 +1447,15 @@
                             $(this).text($(this).text() === 'See More' ? 'See Less' : 'See More');
                         });
 
-                        if (!isReadOnlyView && item_ctr === saved_ctr) {
+                        if (!isReadOnlyView && item_ctr === saved_ctr && item_ctr != approval_enabled) {
+                            alert(approval_enabled);
                             checklistTableBody.append(`
-                                <tr>
-                                    <td colspan="7" class="text-center">
-                                        <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})">Submit for Approval</button>
-                                    </td>
-                                </tr>
-                            `);
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})" id="approval_btn">Submit for Approval</button>
+                            </td>
+                        </tr>
+                    `);
                         }
 
 
@@ -1464,7 +1468,7 @@
                         //$("#add_optional").remove();
                     }
 
-                    if (item_ctr == saved_ctr && item_ctr > 0) {
+                    if (item_ctr == saved_ctr && item_ctr > 0 && item_ctr != approval_enabled) {
                         $("#checklistTableBody ").append(`<tr><td colspan="7"><button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})">Submit for Approval</button></td></tr>`)
                     }
                 },
@@ -1626,7 +1630,7 @@
             $.ajax({
                 type: "GET",
                 url: "@Url.Action("GetApprover", "Checklist")",
-                data: { "main_id": projectID, "milestone_id": taskID },
+                data: { "main_id": projectID, "milestone_id": taskID},
                 success: function (res) {
                     $(".modal-body").html();
                     $("#removeModal").modal("show");
