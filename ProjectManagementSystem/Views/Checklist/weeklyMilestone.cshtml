@@ -1834,7 +1834,8 @@
             };
 
             gantt.init("gantt_here");
-            gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json");
+            @*gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json");*@
+            gantt.load(`PMS/Checklist/getGanttData?id=@TempData["entry"]`, "json");
 
 
         const setDayView = () => {
