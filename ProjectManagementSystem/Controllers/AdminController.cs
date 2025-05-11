@@ -461,12 +461,19 @@ namespace ProjectManagementSystem.Controllers
                     return HttpNotFound("Division not found.");
                 }
 
+
+                // make the select approvers list limited to division and department head only
                 var users = cmdb.AspNetUsers
-                    .Select(u => new SelectListItem
-                    {
-                        Value = u.Id.ToString(),
-                        Text = u.FirstName + " " + u.LastName 
-                    }).ToList();
+                  .Where(u => u.JobLevel == 4035 || u.JobLevel == 4034)
+                  .Select(u => new SelectListItem
+                  {
+                      Value = u.Id.ToString(),
+                      Text = u.FirstName + " " + u.LastName +
+                             (u.JobLevel == 4035 ? " (Division Head)" :
+                             u.JobLevel == 4034 ? " (Department Head)" : "")
+                  })
+                  .ToList();
+
 
                 var milestoneList = db.MilestoneRoots
                     .Select(m => new SelectListItem
