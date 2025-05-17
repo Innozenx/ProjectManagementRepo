@@ -9,49 +9,54 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        min-height: 80vh;
+        min-height: 85vh;
         font-family: 'Poppins', sans-serif;
+        background-color: #f9f9f9;
         text-align: center;
+        animation: fadeIn 0.6s ease-in-out;
     }
 
     .icon img {
-        width: 80px;
+        width: 100px;
         margin-bottom: 20px;
-    }
-
-    .access-denied-content {
-        max-width: 400px;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
     }
 
     .access-denied-content h1 {
-        font-size: 1.5em;
-        font-weight: bold;
-        color: #333;
-        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: #470A67;
+        margin-bottom: 10px;
     }
 
     .access-denied-content p {
-        font-size: 1em;
+        font-size: 15px;
         color: #555;
-        margin-top: 10px;
+        margin-bottom: 20px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
-    .access-denied-content .btn {
-        font-family: 'Poppins', sans-serif;
-        background-color: #470A67;
-        border: none;
-        padding: 8px 16px;
-        color: #fff;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
+    .btn-return {
+        background-color: #832fae;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
         font-size: 14px;
-        margin-top: 15px;
+        border: none;
         text-decoration: none;
-        display: inline-block;
+        transition: background-color 0.3s ease;
     }
 
-    .access-denied-content .btn:hover {
-        background-color: #0056b3;
+    .btn-return:hover {
+        background-color: #6e2494;
+        color: white;
+    }
+
+   @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 
@@ -60,8 +65,8 @@
         <img src="~/AdminLTE-3.2.0/dist/img/ek.png" alt="Access Denied Icon">
     </div>
     <div class="access-denied-content">
-        <h1><i class="fa fa-lock"></i>  Access Denied</h1>
-        <p>It looks like your account does not have the required access to this page. For assistance, please reach out to your administrator.</p>
-        <a href="@Url.Action("Dashboard", "Checklist")" class="btn">Home</a>
+        <h1>Access Denied</h1>
+        <p>You don’t have permission to access this page. Please contact your system administrator if you believe this is a mistake.</p>
+        <a href="@Url.Action("Dashboard", "Checklist")" class="btn-return">Return to Dashboard</a>
     </div>
 </div>

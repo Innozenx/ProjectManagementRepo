@@ -1961,24 +1961,31 @@
             }
         }
     </script>
+
 <script>
     $(document).ready(function () {
         const mainId = '@(TempData["entry"] ?? "null")';
-
         if (mainId === "null") {
             console.error("mainId is not set. Please check your TempData.");
             return;
         }
 
-        // auto-select milestone using the milestone id from the url
         const urlParams = new URLSearchParams(window.location.search);
         const milestoneIdFromUrl = urlParams.get("milestone");
 
         if (milestoneIdFromUrl) {
             const $dropdown = $("#milestoneDropdown");
+
+            $("#checklist_id_container").hide(); // hide before fadeIn
+
             setTimeout(() => {
-                if ($dropdown.find(`option[value='${milestoneIdFromUrl}']`).length) {
+                if ($dropdown.find(`option[value='${milestoneIdFromUrl}']`).length > 0) {
                     $dropdown.val(milestoneIdFromUrl).trigger("change");
+
+                    // fade in after milestone is applied
+                    setTimeout(() => {
+                        $("#checklist_id_container").fadeIn(300);
+                    }, 150);
                 }
             }, 200);
         }
@@ -1987,7 +1994,9 @@
     $("#milestoneDropdown").on("change", function () {
         const milestoneId = $(this).val();
 
-        $("#checklist_id_container").empty();
+        $("#checklist_id_container").fadeOut(100, function () {
+            $(this).empty();
+        });
         $("#checklist_id_input").val("");
 
         if (milestoneId !== "") {
@@ -1997,6 +2006,11 @@
         }
 
         loadTasksForMilestone(milestoneId, @(TempData["entry"]));
+
+        // fade in after slight delay for smoother UI
+        setTimeout(() => {
+            $("#checklist_id_container").fadeIn(300);
+        }, 150);
     });
 
     $("#delayed_yes").on("click", function () {
@@ -2009,8 +2023,8 @@
     });
 
     $("#selectedMilestone").on("change", function () {
-        let selection = $("#selectedMilestone").val();
-        if (selection != "") {
+        const selection = $(this).val();
+        if (selection !== "") {
             $("#status_input_group").removeClass("d-none");
 
             $.ajax({
@@ -2018,19 +2032,19 @@
                 url: "@Url.Action("GetTaskUpdate", "Checklist")",
                 data: { selection },
                 success: function (res) {
-                    var note = document.getElementById("delay_note");
-                    var inputGrp = document.getElementById("delay_input_group");
+                    const note = document.getElementById("delay_note");
+                    const inputGrp = document.getElementById("delay_input_group");
 
-                    if (res.success == true) {
-                        if (res.data != 0) {
+                    if (res.success === true) {
+                        if (res.data !== 0) {
                             $("#delayed_yes").prop("checked", true);
-                            $("#weeks_delayed").prop("value", res.data);
+                            $("#weeks_delayed").val(res.data);
                             $("#delay_div").removeClass("d-none");
                             inputGrp.classList.remove("d-none");
                             note.textContent = "Previously Delayed by: " + res.data + " week/s";
                         } else {
                             $("#delayed_no").prop("checked", true);
-                            $("#weeks_delayed").prop("value", res.data);
+                            $("#weeks_delayed").val(0);
                             $("#delay_div").removeClass("d-none");
                             inputGrp.classList.add("d-none");
                         }
@@ -2040,7 +2054,7 @@
                 }
             });
         } else {
-            $("#status_input_group").prop("class", "d-none");
+            $("#status_input_group").addClass("d-none");
         }
     });
 
@@ -2050,7 +2064,7 @@
         const projectID = urlParams.get("id");
         const milestone = $("#milestoneDropdown").val();
 
-        if (milestone != "") {
+        if (milestone !== "") {
             $("#modal_title").text("Checklist item for: " + milestone);
             $("#milestone_id").val(milestone);
             $("#project_id").val(projectID);
@@ -2062,12 +2076,12 @@
     });
 
     $(document).on("click", "#submit_button", function () {
-        var formData = $("#optionalForm").serialize();
-        var incomplete = false;
-        var milestone = $("#milestoneDropdown").val();
+        const formData = $("#optionalForm").serialize();
+        let incomplete = false;
+        const milestone = $("#milestoneDropdown").val();
 
-        $('#optionalForm :input').each(function (index, el) {
-            if ($(el).val().length == 0) {
+        $('#optionalForm :input').each(function () {
+            if ($(this).val().length === 0) {
                 incomplete = true;
                 return false;
             }
@@ -2154,5 +2168,6 @@
         }
     });
 </script>
+
 
 }
