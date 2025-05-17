@@ -715,14 +715,17 @@ namespace ProjectManagementSystem.Controllers
 
                 bool isODCPAdmin = User.IsInRole("PMS_ODCP_ADMIN");
                 bool isManagement = User.IsInRole("PMS_Management");
-                bool isPrivilegedUser = isODCPAdmin || isManagement || userDetails.JobLevel == 4035 || userDetails.JobLevel == 4036;
+                bool isDivisionOrDeptHead = userDetails.JobLevel == 4035 || userDetails.JobLevel == 4036;
 
-                if (!isUserAssigned && !isArchived && !isPrivilegedUser)
-                {
-                    return RedirectToAction("AccessDenied", "Error");
-                }
+                // check if user is an approver for this project
+                bool isApprover = db.PreSetMilestoneApprovers
+                                    .Any(a => a.main_id == id && a.approver_email.ToLower() == userEmail.ToLower() && (a.is_removed == null || a.is_removed == false))
+                                 || db.OptionalMilestoneApprovers
+                                    .Any(a => a.main_id == id && a.approver_email.ToLower() == userEmail.ToLower() && (a.is_removed == null || a.is_removed == false));
 
-                if (userProject == null && !isPrivilegedUser)
+                bool isPrivilegedUser = isODCPAdmin || isManagement || isDivisionOrDeptHead;
+
+                if (!isUserAssigned && !isArchived && !isPrivilegedUser && !isApprover)
                 {
                     return RedirectToAction("AccessDenied", "Error");
                 }
@@ -730,9 +733,6 @@ namespace ProjectManagementSystem.Controllers
                 bool isProjectManager = db.ProjectMembersTbls
                     .Any(pm => pm.project_id == id && pm.email == userEmail && pm.role == 1004);
                 bool isReadOnlyChecklistView = !isProjectManager && !isODCPAdmin; // newly added
-
-
-
 
                 UserModel userInfo = new UserModel()
                 {
