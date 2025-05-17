@@ -364,8 +364,6 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
-
-
         public ActionResult GetDivisions()
         {
             var divisions = db.Divisions.Select(d => new { d.DivisionID, d.DivisionName }).ToList();
@@ -421,8 +419,6 @@ namespace ProjectManagementSystem.Controllers
 
             return View(milestones);
         }
-
-
 
         public JsonResult GetMilestones(int divisionId)
         {
@@ -647,8 +643,6 @@ namespace ProjectManagementSystem.Controllers
                         success = false,
                         message = $"This checklist has already been finalized. " +
                         $"Reference No. {existingReference.ReferenceNumber}"
-                       
-
                 });
                 }
 
@@ -891,40 +885,6 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
-        //[Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER, PMS_PROJECT_MANAGER")]
-        //public ActionResult PendingApprovals()
-        //{
-        //    var userId = User.Identity.Name;
-
-        //    var approverTasks = db.ApproversTbls
-        //        .Where(a => a.User_Id == userId && a.IsRemoved_ == false)
-        //        .ToList();
-
-        //    var taskIds = approverTasks.Select(a => a.Details_Id).ToList();
-        //    var projectIds = approverTasks.Select(a => a.Main_Id).ToList();
-
-        //    var tasks = db.DetailsTbls.Where(t => taskIds.Contains(t.details_id)).ToList();
-        //    var projects = db.MainTables.Where(p => projectIds.Contains(p.main_id)).ToList();
-        //    var attachments = db.AttachmentTables.Where(att => taskIds.Contains(att.details_id)).ToList();
-
-
-        //    var userIds = approverTasks.Select(a => a.User_Id).Distinct().ToList();
-        //    var users = cmdb.AspNetUsers.Where(u => userIds.Contains(u.Id)).ToList();
-
-        //    var pendingTasks = approverTasks.Select(a => new ApproverTaskViewModel
-        //    {
-        //        DetailsID = a.Details_Id ?? 0,
-        //        TaskName = tasks.FirstOrDefault(t => t.details_id == a.Details_Id)?.process_title ?? "N/A",
-        //        ProjectTitle = projects.FirstOrDefault(p => p.main_id == a.Main_Id)?.project_title ?? "N/A",
-        //        SubmittedBy = users.FirstOrDefault(u => u.Id == a.User_Id)?.UserName ?? "Unknown",
-        //        SubmittedDate = tasks.FirstOrDefault(t => t.details_id == a.Details_Id)?.created_date ?? DateTime.MinValue,
-        //        AttachmentID = attachments.FirstOrDefault(att => att.details_id == a.Details_Id)?.details_id ?? 0,
-        //        FilePath = attachments.FirstOrDefault(att => att.details_id == a.Details_Id)?.path_file
-        //    }).ToList();
-
-        //    return View(pendingTasks);
-        //}
-
         [Authorize(Roles = "PMS_ODCP_ADMIN, PMS_PROJECT_OWNER, PMS_PROJECT_MANAGER, PMS_USER, PMS_Management")]
         public ActionResult PendingApprovals()
         {
@@ -966,48 +926,69 @@ namespace ProjectManagementSystem.Controllers
             return View(pendingTasks);
         }
 
-
         [HttpGet]
         [Authorize]
         public JsonResult GetApprovals()
         {
-            var userEmail = User.Identity.Name;
-            var userId = User.Identity.GetUserId();
+            var userEmail = User.Identity.Name.ToLower().Trim();
 
-            // load optional approvals
-            var optional = from s in db.ChecklistSubmissions
-                           join a in db.OptionalMilestoneApprovers on new { s.main_id, s.milestone_id, s.task_id }
-                               equals new { a.main_id, a.milestone_id, a.task_id }
-                           join m in db.MainTables on s.main_id equals m.main_id
-                           where a.approver_email == userEmail && a.is_removed != true && s.is_removed != true
-                           select new
-                           {
-                               s.task_id,
-                               s.task_name,
-                               s.submitted_by,
-                               s.submission_date,
-                               m.project_title,
-                               isApproved = a.approved,
-                               isRejected = a.rejected
-                           };
+            // load maintable once to avoid duplicate join 
+            var checklistMainIds = db.ChecklistSubmissions
+                .Where(s => s.is_removed != true)
+                .Select(s => s.main_id)
+                .Distinct()
+                .ToList();
 
-            var preset = from s in db.ChecklistSubmissions
-                         join a in db.PreSetMilestoneApprovers on new { s.main_id, s.milestone_id, s.task_id }
-                             equals new { a.main_id, a.milestone_id, a.task_id }
-                         join m in db.MainTables on s.main_id equals m.main_id
-                         where a.approver_email == userEmail && a.is_removed != true && s.is_removed != true
-                         select new
-                         {
-                             s.task_id,
-                             s.task_name,
-                             s.submitted_by,
-                             s.submission_date,
-                             m.project_title,
-                             isApproved = a.approved,
-                             isRejected = a.rejected
-                         };
+            var mainTableLookup = db.MainTables
+                .Where(m => checklistMainIds.Contains(m.main_id))
+                .ToDictionary(m => m.main_id, m => m.project_title);
 
-            var all = optional.Concat(preset).ToList();
+            // optional
+            var optional = (from s in db.ChecklistSubmissions
+                            join a in db.OptionalMilestoneApprovers
+                              on new { s.main_id, s.milestone_id, s.task_id }
+                              equals new { a.main_id, a.milestone_id, a.task_id }
+                            join m in db.MainTables on s.main_id equals m.main_id
+                            where a.approver_email.ToLower().Trim() == userEmail
+                               && (a.is_removed == false || a.is_removed == null)
+                               && (s.is_removed == false || s.is_removed == null)
+                            select new ApprovalTaskDTO
+                            {
+                                task_id = s.task_id.Value,
+                                task_name = s.task_name,
+                                submitted_by = s.submitted_by,
+                                submission_date = s.submission_date,
+                                main_id = s.main_id.Value,
+                                milestone_id = s.milestone_id.Value,
+                                project_title = m.project_title,
+                                isApproved = a.approved,
+                                isRejected = a.rejected
+                            }).ToList();
+
+            // preset 
+            var preset = (from s in db.ChecklistSubmissions
+                          join a in db.PreSetMilestoneApprovers
+                            on new { s.main_id, s.milestone_id, s.task_id }
+                            equals new { a.main_id, a.milestone_id, a.task_id }
+                          join m in db.MainTables on s.main_id equals m.main_id
+                          where a.approver_email.ToLower().Trim() == userEmail
+                             && (a.is_removed == false || a.is_removed == null)
+                             && (s.is_removed == false || s.is_removed == null)
+                          select new ApprovalTaskDTO
+                          {
+                              task_id = s.task_id.Value,
+                              task_name = s.task_name,
+                              submitted_by = s.submitted_by,
+                              submission_date = s.submission_date,
+                              main_id = s.main_id.Value,
+                              milestone_id = s.milestone_id.Value,
+                              project_title = m.project_title,
+                              isApproved = a.approved,
+                              isRejected = a.rejected
+                          }).ToList();
+
+            // combine then filter
+            var all = optional.Concat(preset).Distinct().ToList();
 
             var pending = all.Where(x => x.isApproved != true && x.isRejected != true);
             var approved = all.Where(x => x.isApproved == true);
@@ -1015,29 +996,87 @@ namespace ProjectManagementSystem.Controllers
 
             return Json(new
             {
-                pending = pending.Select(x => new {
+                pending = pending.Select(x => new
+                {
                     DetailsID = x.task_id,
                     TaskName = x.task_name,
-                    ProjectTitle = x.project_title,
+                    ProjectTitle = mainTableLookup.ContainsKey(x.main_id) ? mainTableLookup[x.main_id] : "N/A",
+                    ProjectMainId = x.main_id,
+                    MilestoneID = x.milestone_id,
                     SubmittedBy = x.submitted_by,
                     SubmittedDate = x.submission_date
                 }),
-                approved = approved.Select(x => new {
+                approved = approved.Select(x => new
+                {
                     DetailsID = x.task_id,
                     TaskName = x.task_name,
-                    ProjectTitle = x.project_title,
+                    ProjectTitle = mainTableLookup.ContainsKey(x.main_id) ? mainTableLookup[x.main_id] : "N/A",
+                    ProjectMainId = x.main_id,
+                    MilestoneID = x.milestone_id,
                     SubmittedBy = x.submitted_by,
                     SubmittedDate = x.submission_date
                 }),
-                rejected = rejected.Select(x => new {
+                rejected = rejected.Select(x => new
+                {
                     DetailsID = x.task_id,
                     TaskName = x.task_name,
-                    ProjectTitle = x.project_title,
+                    ProjectTitle = mainTableLookup.ContainsKey(x.main_id) ? mainTableLookup[x.main_id] : "N/A",
+                    ProjectMainId = x.main_id,
+                    MilestoneID = x.milestone_id,
                     SubmittedBy = x.submitted_by,
                     SubmittedDate = x.submission_date
                 })
             }, JsonRequestBehavior.AllowGet);
         }
+
+        // OLD
+        //[HttpPost]
+        //public JsonResult ApproveTask(int taskId)
+        //{
+        //    try
+        //    {
+        //        string userEmail = User.Identity.Name.ToLower().Trim();
+
+        //        var optional = db.OptionalMilestoneApprovers.FirstOrDefault(x =>
+        //            x.task_id == taskId &&
+        //            x.approver_email.ToLower().Trim() == userEmail &&
+        //            x.is_removed != true
+        //        );
+
+        //        var preset = db.PreSetMilestoneApprovers.FirstOrDefault(x =>
+        //            x.task_id == taskId &&
+        //            x.approver_email.ToLower().Trim() == userEmail &&
+        //            x.is_removed != true
+        //        );
+
+        //        if (optional == null && preset == null)
+        //        {
+        //            return Json(new { success = false, message = "Task not found or not assigned to you." });
+        //        }
+
+        //        if (optional != null)
+        //        {
+        //            optional.approved = true;
+        //            optional.rejected = false;
+        //            optional.date_approved = DateTime.Now;
+        //        }
+
+        //        if (preset != null)
+        //        {
+        //            preset.approved = true;
+        //            preset.rejected = false;
+        //            preset.date_approved = DateTime.Now;
+        //        }
+
+        //        db.SaveChanges();
+
+        //        return Json(new { success = true, message = "Task approved successfully!" });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new { success = false, message = "Error: " + ex.Message });
+        //    }
+        //}
 
         [HttpPost]
         public JsonResult ApproveTask(int taskId)
@@ -1046,36 +1085,16 @@ namespace ProjectManagementSystem.Controllers
             {
                 string userEmail = User.Identity.Name.ToLower().Trim();
 
-                var optional = db.OptionalMilestoneApprovers.FirstOrDefault(x =>
-                    x.task_id == taskId &&
-                    x.approver_email.ToLower().Trim() == userEmail &&
-                    x.is_removed != true
-                );
+                var submission = db.ChecklistSubmissions
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
 
-                var preset = db.PreSetMilestoneApprovers.FirstOrDefault(x =>
-                    x.task_id == taskId &&
-                    x.approver_email.ToLower().Trim() == userEmail &&
-                    x.is_removed != true
-                );
-
-                if (optional == null && preset == null)
+                if (submission == null)
                 {
-                    return Json(new { success = false, message = "Task not found or not assigned to you." });
+                    return Json(new { success = false, message = "Task not found or already removed." });
                 }
 
-                if (optional != null)
-                {
-                    optional.approved = true;
-                    optional.rejected = false;
-                    optional.date_approved = DateTime.Now;
-                }
-
-                if (preset != null)
-                {
-                    preset.approved = true;
-                    preset.rejected = false;
-                    preset.date_approved = DateTime.Now;
-                }
+                submission.is_approved = true;
+                submission.submission_date = DateTime.Now; 
 
                 db.SaveChanges();
 
@@ -1087,38 +1106,62 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
+        // OLD
+        //[HttpPost]
+        //public JsonResult RejectTask(int taskId, string reason)
+        //{
+        //    try
+        //    {
+        //        var userId = User.Identity.GetUserId();
 
+        //        var task = db.ApproversTbls.FirstOrDefault(a => a.Details_Id == taskId && a.User_Id == userId);
+
+        //        if (task == null)
+        //        {
+        //            return Json(new { success = false, message = "Task not found" });
+        //        }
+
+        //        task.IsApproved_ = false;
+        //        task.IsRejected_ = true;
+        //        task.RejectReason = reason;
+        //        task.ApprovalDate = DateTime.Now;
+
+        //        db.SaveChanges();
+
+        //        return Json(new { success = true, message = "Task rejected! :( " });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new { success = false, message = "Error: " + ex.Message });
+        //    }
+        //}
 
         [HttpPost]
         public JsonResult RejectTask(int taskId, string reason)
         {
             try
             {
-                var userId = User.Identity.GetUserId();
+                var submission = db.ChecklistSubmissions
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
 
-                var task = db.ApproversTbls.FirstOrDefault(a => a.Details_Id == taskId && a.User_Id == userId);
-
-                if (task == null)
+                if (submission == null)
                 {
-                    return Json(new { success = false, message = "Task not found" });
+                    return Json(new { success = false, message = "Task not found or already removed." });
                 }
 
-                task.IsApproved_ = false;
-                task.IsRejected_ = true;
-                task.RejectReason = reason;
-                task.ApprovalDate = DateTime.Now;
+                submission.is_approved = false;
+                submission.submission_date = DateTime.Now; 
+                submission.disapproval_reason = reason;
 
                 db.SaveChanges();
 
-                return Json(new { success = true, message = "Task rejected! :( " });
+                return Json(new { success = true, message = "Task rejected!" });
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "Error: " + ex.Message });
             }
         }
-
-
 
         [HttpGet]
         public JsonResult GetApproversByTask(int taskId)
@@ -1158,75 +1201,6 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
-        //[HttpGet]
-        //[Authorize]
-        //public JsonResult GetPendingApprovals()
-        //{
-        //    try
-        //    {
-        //        string currentUserId = User.Identity.GetUserId();
-
-        //        //var pendingTasks = db.ApproversTbls
-        //        //    .Where(a => a.User_Id == currentUserId && a.IsRemoved_ == false)
-        //        //    .Select(a => new ApproverTaskViewModel
-        //        //    {
-        //        //        DetailsID = a.Details_Id ?? 0,
-        //        //        TaskName = db.DetailsTbls
-        //        //            .Where(t => t.details_id == a.Details_Id)
-        //        //            .Select(t => t.process_title)
-        //        //            .FirstOrDefault(),
-
-        //        //        ProjectTitle = db.MainTables
-        //        //            .Where(p => p.main_id == a.Main_Id)
-        //        //            .Select(p => p.project_title)
-        //        //            .FirstOrDefault(),
-
-        //        //        SubmittedBy = cmdb.AspNetUsers
-        //        //            .Where(u => u.Id == a.User_Id)
-        //        //            .Select(u => u.FirstName + " " + u.LastName)
-        //        //            .FirstOrDefault(),
-        //        //        SubmittedDate = a.ApprovalDate ?? DateTime.Now
-        //        //    }).ToList();
-
-        //        var pendingOptional = (from s in db.ChecklistSubmissions.Where(x => x.approval_enabled == true && x.is_removed != true && x.type == "optional")
-        //                               join a in db.OptionalMilestoneApprovers.Where(x => x.approver_email == User.Identity.Name && x.is_removed != true) on new { mainID = s.main_id, milestoneID = s.milestone_id, taskID = s.task_id } equals new { mainID = a.main_id, milestoneID = a.milestone_id, taskID = a.task_id }
-        //                               join m in db.MainTables on s.main_id equals m.main_id
-        //                               select new ApproverTaskViewModel{
-        //                                   DetailsID = s.task_id.Value,
-        //                                   TaskName = s.task_name,
-        //                                   ProjectTitle = m.project_title,
-        //                                   SubmittedBy = s.submitted_by,
-        //                                   SubmittedDate = s.submission_date.Value
-        //                               }).ToList();
-
-        //        var pendingPreset = (from s in db.ChecklistSubmissions.Where(x => x.approval_enabled == true && x.is_removed != true && x.type == "preset")
-        //                             join a in db.PreSetMilestoneApprovers.Where(x => x.approver_email == User.Identity.Name && x.is_removed != true) on new { mainID = s.main_id, milestoneID = s.milestone_id, taskID = s.task_id } equals new { mainID = a.main_id, milestoneID = a.milestone_id, taskID = a.task_id }
-        //                             join m in db.MainTables on s.main_id equals m.main_id
-        //                             select new ApproverTaskViewModel
-        //                             {
-        //                                 DetailsID = s.task_id.Value,
-        //                                 TaskName = s.task_name,
-        //                                 ProjectTitle = m.project_title,
-        //                                 SubmittedBy = s.submitted_by,
-        //                                 SubmittedDate = s.submission_date.Value
-
-        //                             }).ToList();
-
-        //        List<ApproverTaskViewModel> pendingTasks = new List<ApproverTaskViewModel>();
-
-        //        pendingTasks.AddRange(pendingPreset);
-        //        pendingTasks.AddRange(pendingOptional);
-
-        //        return Json(pendingTasks, JsonRequestBehavior.AllowGet);
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Json(new { success = false, message = "Error loading pending approvals" }, JsonRequestBehavior.AllowGet);
-        //    }
-        //}
-        [HttpGet]
         [Authorize]
         public JsonResult GetPendingApprovals()
         {
@@ -1277,7 +1251,6 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Error loading pending approvals" }, JsonRequestBehavior.AllowGet);
             }
         }
-
 
     }
 }

@@ -676,7 +676,7 @@ namespace ProjectManagementSystem.Controllers
         //}
 
 
-        public ActionResult weeklyMilestone(int id, string title, string projectId, string tab = "overview")
+        public ActionResult weeklyMilestone(int id, string title, string projectId, int milestone, string tab = "overview" )
         {
             if (User.Identity.IsAuthenticated)
             {
@@ -901,10 +901,14 @@ namespace ProjectManagementSystem.Controllers
                     ProjectStatus = projectStatus,
                     IsArchived = projects.IsArchived,
                     IsReadOnlyChecklistView = isReadOnlyChecklistView,
+                    milestone = milestone
 
                 };
                 viewModel.IsReadOnlyChecklistView = !isProjectManager;
                 ViewBag.SelectedTab = tab;
+
+
+
                 return View(viewModel);
             }
             else
