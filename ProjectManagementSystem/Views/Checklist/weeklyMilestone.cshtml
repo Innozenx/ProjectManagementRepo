@@ -1961,247 +1961,198 @@
             }
         }
     </script>
-
-    <script>
-        $(document).ready(function () {
+<script>
+    $(document).ready(function () {
         const mainId = '@(TempData["entry"] ?? "null")';
 
         if (mainId === "null") {
             console.error("mainId is not set. Please check your TempData.");
             return;
-       // }
+        }
 
-            var milestone = "@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.milestone.ToString()))";
-            $("#milestoneDropdown").val(milestone).trigger("change");
-        });
+        // auto-select milestone using the milestone id from the url
+        const urlParams = new URLSearchParams(window.location.search);
+        const milestoneIdFromUrl = urlParams.get("milestone");
 
-        $("#milestoneDropdown").on("change", function () {
-            const milestoneId = $(this).val();
-
-            $("#checklist_id_container").empty();
-            $("#checklist_id_input").val("");
-
-            if ($("#milestoneDropdown").val() != "") {
-                $("#add_optional").removeClass("d-none");
-            }
-
-            else {
-                $("#add_optional").addClass("d-none");
-            }
-
-            loadTasksForMilestone(milestoneId, @(TempData["entry"]));
-
-
-        });
-
-        $("#delayed_yes").on("click", function () {
-            $("#delay_input_group").removeClass("d-none");
-            $("#delay_input_group").prop("class", "form-group mb-4");
-        });
-
-        $("#delayed_no").on("click", function () {
-            $("#delay_input_group").addClass("d-none");
-            $("#weeks_delayed").val(0);
-        });
-
-        $("#selectedMilestone").on("change", function () {
-            let selection = $("#selectedMilestone").val();
-            if (selection != "") {
-                $("#status_input_group").removeClass("d-none");
-
-                $.ajax({
-                    type: "GET",
-                    url: "@Url.Action("GetTaskUpdate", "Checklist")",
-                    data: { selection },
-                    success: function (res) {
-                        if (res.success == true) {
-                            if (res.data != 0) {
-                                var note = document.getElementById("delay_note");
-                                var inputGrp = document.getElementById("delay_input_group");
-
-                                $("#delayed_yes").prop("checked", true);
-                                $("#weeks_delayed").prop("value", res.data);
-                                $("#delay_div").removeClass("d-none");
-                                inputGrp.classList.remove("d-none");
-
-                                note.textContent = "Previously Delayed by: " + res.data + " week/s";
-                            }
-
-                            else {
-                                var note = document.getElementById("delay_note");
-                                var inputGrp = document.getElementById("delay_input_group");
-
-                                $("#delayed_no").prop("checked", true);
-                                $("#weeks_delayed").prop("value", res.data);
-                                $("#delay_div").removeClass("d-none");
-                                inputGrp.classList.add("d-none");
-
-                                //note.textContent = "";
-                            }
-                        }
-
-                        else {
-                            alert(res.message);
-                        }
-                    }
-                });
-            }
-
-            else {
-                $("#status_input_group").prop("class", "d-none");
-            }
-        });
-
-        $(document).on("click", "#add_optional", function (e) {
-            e.preventDefault();
-            const queryString = window.location.search;
-            const urlParams = new URLSearchParams(queryString);
-            const projectID = urlParams.get("id");
-            var milestone = $("#milestoneDropdown").val();
-
-
-            if (milestone != "") {
-                $("#modal_title").text("Checklist item for: " + milestone);
-                $("#milestone_id").val(milestone);
-                $("#project_id").val(projectID);
-
-                $(".modal-body").html();
-                $("#myModal").modal("show");
-            }
-
-            else {
-                //alert("Please select a milestone first");
-                Swal.fire("Oops", "Please select a milestone first.", "error");
-            }
-
-        });
-
-        $(document).on("click", "#submit_button", function () {
-            var formData = $("#optionalForm").serialize();
-            var incomplete = false;
-            var milestone = $("#milestoneDropdown").val();
-
-            $('#optionalForm :input').each(function (index, el) {
-                //if ($(el).val().length == 0) incomplete = true;
-                //return false;
-                if ($(el).val().length == 0) {
-                    incomplete = true;
-                    return false;
+        if (milestoneIdFromUrl) {
+            const $dropdown = $("#milestoneDropdown");
+            setTimeout(() => {
+                if ($dropdown.find(`option[value='${milestoneIdFromUrl}']`).length) {
+                    $dropdown.val(milestoneIdFromUrl).trigger("change");
                 }
+            }, 200);
+        }
+    });
 
+    $("#milestoneDropdown").on("change", function () {
+        const milestoneId = $(this).val();
+
+        $("#checklist_id_container").empty();
+        $("#checklist_id_input").val("");
+
+        if (milestoneId !== "") {
+            $("#add_optional").removeClass("d-none");
+        } else {
+            $("#add_optional").addClass("d-none");
+        }
+
+        loadTasksForMilestone(milestoneId, @(TempData["entry"]));
+    });
+
+    $("#delayed_yes").on("click", function () {
+        $("#delay_input_group").removeClass("d-none").prop("class", "form-group mb-4");
+    });
+
+    $("#delayed_no").on("click", function () {
+        $("#delay_input_group").addClass("d-none");
+        $("#weeks_delayed").val(0);
+    });
+
+    $("#selectedMilestone").on("change", function () {
+        let selection = $("#selectedMilestone").val();
+        if (selection != "") {
+            $("#status_input_group").removeClass("d-none");
+
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("GetTaskUpdate", "Checklist")",
+                data: { selection },
+                success: function (res) {
+                    var note = document.getElementById("delay_note");
+                    var inputGrp = document.getElementById("delay_input_group");
+
+                    if (res.success == true) {
+                        if (res.data != 0) {
+                            $("#delayed_yes").prop("checked", true);
+                            $("#weeks_delayed").prop("value", res.data);
+                            $("#delay_div").removeClass("d-none");
+                            inputGrp.classList.remove("d-none");
+                            note.textContent = "Previously Delayed by: " + res.data + " week/s";
+                        } else {
+                            $("#delayed_no").prop("checked", true);
+                            $("#weeks_delayed").prop("value", res.data);
+                            $("#delay_div").removeClass("d-none");
+                            inputGrp.classList.add("d-none");
+                        }
+                    } else {
+                        alert(res.message);
+                    }
+                }
             });
+        } else {
+            $("#status_input_group").prop("class", "d-none");
+        }
+    });
 
-            if (incomplete != true) {
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("AddOptional", "Checklist")",
-                    data: formData,
-                    success: function (res) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: 'Checklist item added!',
-                        }).then(function () {
-                            localStorage.setItem('currentTab', 'checklist');
-                            localStorage.setItem('currentDrop', milestone);
+    $(document).on("click", "#add_optional", function (e) {
+        e.preventDefault();
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectID = urlParams.get("id");
+        const milestone = $("#milestoneDropdown").val();
 
-                            location.reload();
+        if (milestone != "") {
+            $("#modal_title").text("Checklist item for: " + milestone);
+            $("#milestone_id").val(milestone);
+            $("#project_id").val(projectID);
+            $(".modal-body").html();
+            $("#myModal").modal("show");
+        } else {
+            Swal.fire("Oops", "Please select a milestone first.", "error");
+        }
+    });
 
-                            //setTimeout(function () {
-                            //    location.reload();
-                            //}, 1000)
-                        });
-                    },
+    $(document).on("click", "#submit_button", function () {
+        var formData = $("#optionalForm").serialize();
+        var incomplete = false;
+        var milestone = $("#milestoneDropdown").val();
 
-                    error: function () {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Query failed, please retry',
-                        }).then(function () {
-                            localStorage.setItem('currentTab', 'checklist');
-                            localStorage.setItem('currentDrop', milestone);
-
-                            location.reload();
-
-                            //setTimeout(function () {
-                            //    location.reload();
-                            //}, 1000)
-                        });
-                    }
-                });
-            }
-
-            else {
-                Swal.fire("Incomplete Entry", "Please fill up the form.", "error");
-            }
-
-        });
-
-        document.addEventListener('change', function (event) {
-            if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
-                updateSelectedChips();
+        $('#optionalForm :input').each(function (index, el) {
+            if ($(el).val().length == 0) {
+                incomplete = true;
+                return false;
             }
         });
 
-        $(document).on("click", "#submit_approver", function () {
-            const taskID = $("#task_id").val();
-            const projID = $("#approver_project_id").val();
-            const milestoneID = $("#checklist_id_input").val();
-            const approvers = document.getElementById("selectedMembersChips");
-            const selectedMembers = [...document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked')].map(e => e.value);
-            const milestone = $("#milestoneDropdown").val();
-            console.log(selectedMembers);
-
-            if (approvers.hasChildNodes()) {
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("AddApproverOpt", "Checklist")",
-                    data: { "id": taskID, "proj_id": projID, "approvers": selectedMembers, "milestone_id": milestoneID },
-                    success: function (res) {
-                        var dropdown = $("#milestoneDropdown").val();
+        if (!incomplete) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("AddOptional", "Checklist")",
+                data: formData,
+                success: function () {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Checklist item added!',
+                    }).then(function () {
                         localStorage.setItem('currentTab', 'checklist');
-                        localStorage.setItem('currentDrop', dropdown);
+                        localStorage.setItem('currentDrop', milestone);
+                        location.reload();
+                    });
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Query failed, please retry',
+                    }).then(function () {
+                        localStorage.setItem('currentTab', 'checklist');
+                        localStorage.setItem('currentDrop', milestone);
+                        location.reload();
+                    });
+                }
+            });
+        } else {
+            Swal.fire("Incomplete Entry", "Please fill up the form.", "error");
+        }
+    });
 
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: 'Approver/s Added!',
-                        }).then(function () {
-                            localStorage.setItem('currentTab', 'checklist');
-                            localStorage.setItem('currentDrop', milestone);
+    document.addEventListener('change', function (event) {
+        if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
+            updateSelectedChips();
+        }
+    });
 
-                            location.reload();
+    $(document).on("click", "#submit_approver", function () {
+        const taskID = $("#task_id").val();
+        const projID = $("#approver_project_id").val();
+        const milestoneID = $("#checklist_id_input").val();
+        const selectedMembers = [...document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked')].map(e => e.value);
+        const milestone = $("#milestoneDropdown").val();
 
-                            //setTimeout(function () {
-                            //    location.reload();
-                            //}, 1000)
-                            });
-
-                    }
-                });
-            }
-
-            else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'No selected approvers',
-                    text: 'Please select an approver first',
-                }).then(function () {
-                    localStorage.setItem('currentTab', 'checklist');
-                    localStorage.setItem('currentDrop', milestone);
-
-                    location.reload();
-
-                    //setTimeout(function () {
-                    //    location.reload();
-                    //}, 1000)
-                });
-            }
-
-
-        });
-
-    </script>
+        if (selectedMembers.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("AddApproverOpt", "Checklist")",
+                data: {
+                    id: taskID,
+                    proj_id: projID,
+                    approvers: selectedMembers,
+                    milestone_id: milestoneID
+                },
+                success: function () {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Approver/s Added!',
+                    }).then(function () {
+                        localStorage.setItem('currentTab', 'checklist');
+                        localStorage.setItem('currentDrop', milestone);
+                        location.reload();
+                    });
+                }
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'No selected approvers',
+                text: 'Please select an approver first',
+            }).then(function () {
+                localStorage.setItem('currentTab', 'checklist');
+                localStorage.setItem('currentDrop', milestone);
+                location.reload();
+            });
+        }
+    });
+</script>
 
 }

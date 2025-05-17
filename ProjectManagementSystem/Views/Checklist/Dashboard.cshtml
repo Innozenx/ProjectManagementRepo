@@ -1036,11 +1036,10 @@
         });      
     });
 
-    function toDetailedView(mainId, projectTitle) {
-        //window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${projectTitle}`;
-        //window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${projectTitle}&tab=timeline`;
-        window.location.href = `weeklyMilestone?id=${mainId}&title=${projectTitle}&tab=timeline`;
+    function toDetailedView(mainId, projectTitle, milestoneId = 0) {
+        window.location.href = `/Checklist/weeklyMilestone?id=${mainId}&title=${encodeURIComponent(projectTitle)}&projectId=${mainId}&milestone=${milestoneId}&tab=timeline`;
     }
+
 
     function toggleDropdown(icon) {
         $('.project-options').not($(icon).parent()).removeClass('show');
