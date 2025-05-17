@@ -12,70 +12,293 @@
 <div class="container mt-5">
     <div class="text-center mb-4">
         <h2 class="fw-bold text-purple">Approval Requests</h2>
-        <p class="text-muted">Manage task approvals using the interactive views below.</p>
+        <p class="text-muted">Manage task approvals across all projects and divisions.</p>
     </div>
-
     <ul class="nav nav-tabs custom-tabs" id="approvalsTab" role="tablist">
-        <li class="nav-item">
+        <li class="nav-item" title="Tasks awaiting your approval">
             <a class="nav-link active" id="pending-tab" data-bs-toggle="tab" href="#pending" role="tab">Pending</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" title="Tasks you've already approved">
             <a class="nav-link" id="approved-tab" data-bs-toggle="tab" href="#approved" role="tab">Approved</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" title="Tasks you've rejected">
             <a class="nav-link" id="rejected-tab" data-bs-toggle="tab" href="#rejected" role="tab">Rejected</a>
         </li>
     </ul>
-
     <div class="tab-content p-4 bg-white rounded border shadow-sm" id="approvalsTabContent">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <select id="divisionFilter" class="form-select w-auto">
+                <option value="">All Divisions</option>
+            </select>
+            <div id="bulkActions" class="d-none">
+                <span id="selectedCount" class="me-3 text-muted small"></span>
+                <button class="btn btn-sm btn-success" id="bulkApprove" title="Approve all selected tasks">Approve All</button>
+                <button class="btn btn-sm btn-danger" id="bulkReject" title="Reject all selected tasks">Reject All</button>
+            </div>
+        </div>
         <div class="tab-pane fade show active" id="pending" role="tabpanel">
             <div class="d-flex justify-content-end mb-3 pe-2">
                 <div class="btn-group view-toggle" role="group">
                     <button type="button" class="btn btn-outline-secondary btn-sm" id="listViewBtn" title="Switch to list view">
-                        <i class="fas fa-list"></i>  List View
+                        <i class="fas fa-list"></i> List View
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm" id="gridViewBtn" title="Switch to grid view">
-                        <i class="fas fa-th-large"></i>  Grid View
+                        <i class="fas fa-th-large"></i> Grid View
                     </button>
                 </div>
             </div>
-
             <div id="loadingSpinner" class="text-center my-4 d-none">
                 <div class="spinner-border text-purple" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                    <span class="visually-hidden"></span>
                 </div>
             </div>
-
             <div id="pendingCardWrapper">
                 <div id="pendingCardView" class="row g-3"></div>
             </div>
-
             <div id="pendingListViewContainer" class="d-none">
-                <table id="pendingListView" class="table table-striped table-bordered table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Task</th>
-                            <th>Division</th>
-                            <th>Submitted By</th>
-                            <th>Date</th>
-                            <th>Attachment</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-responsive" style="max-height: 500px;">
+                    <table id="pendingListView" class="table table-striped table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th>Task</th>
+                                <th>Submitted By</th>
+                                <th>Date</th>
+                                <th>Attachment</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
         <div class="tab-pane fade" id="approved" role="tabpanel">
-            <div class="row g-4 text-muted text-center" id="approvedTasks">No approved tasks to display.</div>
+            <div class="row g-3" id="approvedTasks"></div>
         </div>
-
         <div class="tab-pane fade" id="rejected" role="tabpanel">
-            <div class="row g-4 text-muted text-center" id="rejectedTasks">No rejected tasks to display.</div>
+            <div class="row g-3" id="rejectedTasks"></div>
         </div>
     </div>
 </div>
+
+
+<script>
+function formatDate(jsonDate) {
+    if (!jsonDate) return "-";
+    const timestamp = parseInt(jsonDate.replace(/[^0-9]/g, ''));
+    return new Date(timestamp).toLocaleDateString('en-PH', {
+        year: 'numeric', month: 'short', day: 'numeric'
+    });
+}
+
+function createTaskCard(task) {
+    //console.log("DEBUG: Task values for link", {
+    //    ProjectMainId: task.ProjectMainId,
+    //    ProjectTitle: task.ProjectTitle,
+    //    DetailsID: task.DetailsID,
+    //    MilestoneID: task.MilestoneID
+    //});
+
+    const formattedDate = formatDate(task.SubmittedDate);
+    const attachment = task.AttachmentUrl
+        ? `<a href="${task.AttachmentUrl}" target="_blank" class="attachment-link" title="View attachment"><i class="fas fa-paperclip"></i> View File</a>`
+        : `<span class="text-muted small fst-italic">No attachment</span>`;
+
+    return `
+        <div class="col-md-4">
+            <div class="card task-card p-3">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-2 text-center">
+                        <a href="/Checklist/weeklyMilestone?id=${task.ProjectMainId}&title=${encodeURIComponent(task.ProjectTitle)}&tab=checklist&checklistId=${task.DetailsID}&milestone=${task.MilestoneID}"
+                           class="text-purple text-decoration-none task-title-link"
+                           target="_blank"
+                           title="Click to view this task's checklist">
+                           ${task.TaskName}
+                        </a>
+                    </h5>
+                    <p class="mb-1 small"><strong>Submitted By:</strong> ${task.SubmittedBy}</p>
+                    <p class="mb-1 small"><strong>Division:</strong> ${task.DivisionName || 'N/A'}</p>
+                    <p class="mb-1 small"><strong>Submitted On:</strong> ${formattedDate}</p>
+                    <p class="mb-2 small">${attachment}</p>
+                    <div class="d-flex gap-2">
+                        ${task.ShowActions ? `
+                        <button class="btn btn-success btn-sm approve-btn w-100" data-taskid="${task.DetailsID}" aria-label="Approve Task">Approve</button>
+                        <button class="btn btn-danger btn-sm reject-btn w-100" data-taskid="${task.DetailsID}" aria-label="Reject Task">Reject</button>` : ``}
+                    </div>
+                </div>
+            </div>
+        </div>`;
+}
+
+function toggleBulkActions() {
+    const selectedCount = $("#pendingListView tbody input[type='checkbox']:checked").length;
+    $("#bulkActions").toggleClass("d-none", selectedCount === 0);
+    $("#pendingListView .approve-btn, #pendingListView .reject-btn").toggleClass("d-none", selectedCount > 0);
+    $("#selectedCount").text(selectedCount > 0 ? `${selectedCount} task${selectedCount > 1 ? "s" : ""} selected` : "");
+}
+
+function getSelectedTaskIds() {
+    return $("#pendingListView tbody input[type='checkbox']:checked")
+        .map(function () { return $(this).data("taskid"); })
+        .get();
+}
+
+function loadApprovals() {
+    $("#loadingSpinner").removeClass("d-none");
+
+    $.get('@Url.Action("GetApprovals", "Admin")', function (data) {
+        const listBody = $("#pendingListView tbody").empty();
+        const cardView = $("#pendingCardView").empty();
+        const approved = $("#approvedTasks").empty();
+        const rejected = $("#rejectedTasks").empty();
+
+        if (data.pending.length === 0) {
+            listBody.append(`<tr><td colspan="6" class="text-center text-muted">No pending approvals found.</td></tr>`);
+            cardView.append(`<div class="col-12 text-center text-muted">No pending approvals to display.</div>`);
+        }
+
+        data.pending.forEach(task => {
+            task.ShowActions = true;
+            const formattedDate = formatDate(task.SubmittedDate);
+            listBody.append(`
+                <tr>
+                    <td><input type="checkbox" data-taskid="${task.DetailsID}"></td>
+                    <td><a href="/Checklist/weeklyMilestone?id=${task.ProjectMainId}&title=${encodeURIComponent(task.ProjectTitle)}&tab=checklist&checklistId=${task.DetailsID}&milestone=${task.MilestoneID}" target="_blank">${task.TaskName}</a></td>
+                    <td>${task.SubmittedBy}</td>
+                    <td>${formattedDate}</td>
+                    <td>${task.AttachmentUrl ? `<a href="${task.AttachmentUrl}" class="attachment-link">View File</a>` : "<span class='text-muted small fst-italic'>No attachment</span>"}</td>
+                    <td>
+                        <button class="btn btn-success btn-sm approve-btn" data-taskid="${task.DetailsID}">Approve</button>
+                        <button class="btn btn-danger btn-sm reject-btn" data-taskid="${task.DetailsID}">Reject</button>
+                    </td>
+                </tr>`);
+            cardView.append(createTaskCard(task));
+        });
+
+        if (data.approved.length === 0) {
+            approved.append(`<div class="col-12 text-center text-muted">No approved tasks to display.</div>`);
+        } else {
+            data.approved.forEach(task => {
+                task.ShowActions = false;
+                approved.append(createTaskCard(task));
+          
+            });
+        }
+
+        if (data.rejected.length === 0) {
+            rejected.append(`<div class="col-12 text-center text-muted">No rejected tasks to display.</div>`);
+        } else {
+            data.rejected.forEach(task => {
+                task.ShowActions = false;
+                rejected.append(createTaskCard(task));
+            });
+        }
+
+        if ($.fn.DataTable.isDataTable('#pendingListView')) {
+            $('#pendingListView').DataTable().clear().destroy();
+        }
+
+        $('#pendingListView').DataTable({
+            paging: true,
+            searching: true,
+            info: false,
+            ordering: false,
+            pageLength: 5,
+            responsive: true,
+            dom: '<"row align-items-center mb-2"<"col-sm-6"l><"col-sm-6 text-end"f>>rt<"row mt-3"<"col-sm-6"i><"col-sm-6 text-end"p>>',
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search tasks...",
+                lengthMenu: "_MENU_ entries per page"
+            }
+        });
+    }).always(() => {
+        $("#loadingSpinner").addClass("d-none");
+    });
+}
+
+$(document).ready(function () {
+    loadApprovals();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const milestoneFromUrl = urlParams.get("milestone");
+
+    if (milestoneFromUrl) {
+        setTimeout(() => {
+            const dropdown = document.getElementById("milestoneDropdown");
+            const options = [...dropdown.options];
+            const matchingOption = options.find(opt => opt.value == milestoneFromUrl);
+            if (matchingOption) {
+                dropdown.value = matchingOption.value;
+                dropdown.dispatchEvent(new Event("change"));
+            }
+        }, 800);
+    }
+
+    $("#listViewBtn").click(function () {
+        $('#pendingCardWrapper').addClass('d-none');
+        $('#pendingListViewContainer').removeClass('d-none');
+        $("#selectAll").prop("checked", false);
+        $("#pendingListView tbody input[type='checkbox']").prop("checked", false);
+        $("#pendingListView .approve-btn, #pendingListView .reject-btn").removeClass("d-none");
+        toggleBulkActions();
+    });
+
+    $("#gridViewBtn").click(function () {
+        $('#pendingListViewContainer').addClass('d-none');
+        $('#pendingCardWrapper').removeClass('d-none');
+        $('#bulkActions').addClass('d-none');
+    });
+
+    $(document).on("click", ".approve-btn", function () {
+        const taskId = $(this).data("taskid");
+        Swal.fire({
+            title: "Approve Task?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Approve"
+        }).then(result => {
+            if (result.isConfirmed) {
+                $.post('@Url.Action("ApproveTask", "Admin")', { taskId })
+                    .done(res => res.success && Swal.fire("Success", "Task approved.", "success").then(loadApprovals))
+                    .fail(() => Swal.fire("Error", "Approval failed.", "error"));
+            }
+        });
+    });
+
+    $(document).on("click", ".reject-btn", function () {
+        const taskId = $(this).data("taskid");
+        Swal.fire({
+            title: "Reject Task?",
+            input: "text",
+            inputPlaceholder: "Reason for rejection",
+            showCancelButton: true,
+            confirmButtonText: "Reject"
+        }).then(result => {
+            if (result.isConfirmed && result.value.trim()) {
+                $.post('@Url.Action("RejectTask", "Admin")', {
+                    taskId,
+                    reason: result.value.trim()
+                }).done(res =>
+                    res.success && Swal.fire("Rejected", "Task rejected.", "success").then(loadApprovals)
+                ).fail(() =>
+                    Swal.fire("Error", "Rejection failed.", "error")
+                );
+            }
+        });
+    });
+
+    $(document).on("change", "#selectAll", function () {
+        const isChecked = $(this).is(":checked");
+        $("#pendingListView tbody input[type='checkbox']").prop("checked", isChecked);
+        toggleBulkActions();
+    });
+
+    $(document).on("change", "#pendingListView tbody input[type='checkbox']", toggleBulkActions);
+});
+</script>
+
 
 <style>
     .custom-tabs {
@@ -135,10 +358,10 @@
         transition: border-bottom 0.2s ease;
     }
 
-    .task-title-link:hover {
-        border-bottom: 1px solid #6f42c1;
-        cursor: pointer;
-    }
+        .task-title-link:hover {
+            border-bottom: 1px solid #6f42c1;
+            cursor: pointer;
+        }
 
     .attachment-link {
         font-size: 13px;
@@ -226,7 +449,7 @@
         background-color: #f0e8ff;
     }
 
-     /*Optional: Division badge styling (uncomment to use)*/ 
+    /*Optional: Division badge styling (uncomment to use)*/
     .badge-division {
         display: inline-block;
         padding: 4px 8px;
@@ -235,149 +458,5 @@
         font-size: 12px;
         border-radius: 4px;
         border: 1px solid #ddd;
-    } 
-</style>
-
-
-<script>
-function formatDate(jsonDate) {
-    if (!jsonDate) return "-";
-    const timestamp = parseInt(jsonDate.replace(/[^0-9]/g, ''));
-    return new Date(timestamp).toLocaleDateString('en-PH', {
-        year: 'numeric', month: 'short', day: 'numeric'
-    });
-}
-
-function loadApprovals() {
-    $("#loadingSpinner").removeClass("d-none");
-
-    $.get('@Url.Action("GetApprovals", "Admin")', function (data) {
-        const listBody = $("#pendingListView tbody").empty();
-        const cardView = $("#pendingCardView").empty();
-
-        if (data.pending.length === 0) {
-            listBody.append(`<tr><td colspan="6" class="text-center text-muted">No pending approvals found.</td></tr>`);
-            cardView.append(`<div class="col-12 text-center text-muted">No pending approvals to display.</div>`);
-        }
-
-        data.pending.forEach(task => {
-            const formattedDate = formatDate(task.SubmittedDate);
-            const attachment = task.AttachmentUrl
-                ? `<a href="${task.AttachmentUrl}" target="_blank" class="attachment-link" title="View attachment"><i class="fas fa-paperclip"></i> View File</a>`
-                : `<span class="text-muted small fst-italic">No attachment</span>`;
-
-            cardView.append(`
-                <div class="col-md-4">
-                    <div class="card task-card p-3">
-                        <div class="card-body">
-                            <h5 class="fw-bold mb-2 text-center" style="max-width: 100%; white-space: normal; word-wrap: break-word;">
-                                <a href="/Checklist/weeklyMilestone?id=${task.ProjectMainId}&title=${encodeURIComponent(task.ProjectTitle)}&projectId=${task.ProjectId}&tab=checklist&checklistId=${task.DetailsID}"
-                                   class="text-purple text-decoration-none task-title-link fw-bold"
-                                   target="_blank"
-                                   title="Click to see checklist">
-                                    ${task.TaskName}
-                                </a>
-                            </h5>
-                            <p class="mb-1 small"><strong>Submitted By:</strong> ${task.SubmittedBy}</p>
-                            <p class="mb-1 small"><strong>Division:</strong> ${task.DivisionName}</p>
-                            <p class="mb-1 small"><strong>Submitted On:</strong> ${formattedDate}</p>
-                            <p class="mb-2 small">${attachment}</p>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-success btn-sm approve-btn w-100" data-taskid="${task.DetailsID}" aria-label="Approve Task">✔ Approve</button>
-                                <button class="btn btn-danger btn-sm reject-btn w-100" data-taskid="${task.DetailsID}" aria-label="Reject Task">✖ Reject</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `);
-
-            listBody.append(`
-                <tr>
-                    <td><a href="/Checklist/weeklyMilestone?id=${task.ProjectMainId}&title=${encodeURIComponent(task.ProjectTitle)}&projectId=${task.ProjectId}&tab=checklist&checklistId=${task.DetailsID}" target="_blank" title="Click to see checklist">${task.TaskName}</a></td>
-                    <td>${task.DivisionName}</td>
-                    <td>${task.SubmittedBy}</td>
-                    <td>${formattedDate}</td>
-                    <td>${attachment}</td>
-                    <td>
-                        <button class="btn btn-success btn-sm approve-btn" data-taskid="${task.DetailsID}" aria-label="Approve Task">✔</button>
-                        <button class="btn btn-danger btn-sm reject-btn" data-taskid="${task.DetailsID}" aria-label="Reject Task">✖</button>
-                    </td>
-                </tr>
-            `);
-        });
-
-        if ($.fn.DataTable.isDataTable('#pendingListView')) {
-            $('#pendingListView').DataTable().clear().destroy();
-        }
-
-        $('#pendingListView').DataTable({
-            paging: true,
-            searching: true,
-            info: false,
-            ordering: false,
-            pageLength: 5,
-            responsive: true,
-            dom: '<"row align-items-center mb-2"<"col-sm-6"l><"col-sm-6 text-end"f>>rt<"row mt-3"<"col-sm-6"i><"col-sm-6 text-end"p>>',
-            language: {
-                search: "_INPUT_",
-                searchPlaceholder: "Search tasks...",
-                lengthMenu: "_MENU_ entries per page"
-            }
-        });
-    }).always(() => {
-        $("#loadingSpinner").addClass("d-none");
-    });
-}
-
-$(document).ready(function () {
-    loadApprovals();
-
-    $("#listViewBtn").click(function () {
-        $('#pendingCardWrapper').addClass('d-none');
-        $('#pendingListViewContainer').removeClass('d-none');
-    });
-
-    $("#gridViewBtn").click(function () {
-        $('#pendingListViewContainer').addClass('d-none');
-        $('#pendingCardWrapper').removeClass('d-none');
-    });
-
-    $(document).on("click", ".approve-btn", function () {
-        const taskId = $(this).data("taskid");
-        Swal.fire({
-            title: "Approve Task?",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonText: "Approve"
-        }).then(result => {
-            if (result.isConfirmed) {
-                $.post('@Url.Action("ApproveTask", "Admin")', { taskId })
-                    .done(res => res.success && Swal.fire("Success", "Task approved.", "success").then(loadApprovals))
-                    .fail(() => Swal.fire("Error", "Approval failed.", "error"));
-            }
-        });
-    });
-
-    $(document).on("click", ".reject-btn", function () {
-        const taskId = $(this).data("taskid");
-        Swal.fire({
-            title: "Reject Task?",
-            input: "text",
-            inputPlaceholder: "Reason for rejection",
-            showCancelButton: true,
-            confirmButtonText: "Reject"
-        }).then(result => {
-            if (result.isConfirmed && result.value.trim()) {
-                $.post('@Url.Action("RejectTask", "Admin")', {
-                    taskId,
-                    reason: result.value.trim()
-                }).done(res =>
-                    res.success && Swal.fire("Rejected", "Task rejected.", "success").then(loadApprovals)
-                ).fail(() =>
-                    Swal.fire("Error", "Rejection failed.", "error")
-                );
-            }
-        });
-    });
-});
-</script>
+    }
+</style> 

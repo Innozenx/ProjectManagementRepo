@@ -996,16 +996,6 @@
         </div>
 
 
-        <!-- Checklist Instructions -->
-        @*<div id="checklistContainer" class="mt-4 text-center text-muted">
-                Select a milestone to view checklist items. <br />
-                <small>
-                    <i class="fa-solid fa-check text-success"></i> = Approved,
-                    <i class="fa fa-exclamation-triangle text-warning"></i> = Pending,
-                    <i class="fas fa-ban text-danger"></i> = Disapproved
-                </small>
-            </div>*@
-
         <div class="table-responsive mt-4">
             <table class="table table-hover align-middle checklist-table" id="checklist_table">
                 <thead class="table-purple text-white">
@@ -1814,7 +1804,7 @@
     </script>
 
     <script>
-
+        
         document.addEventListener("DOMContentLoaded", function () {
             gantt.config.xml_date = "%Y-%m-%d %H:%i";
             gantt.config.readonly = true;
@@ -1835,7 +1825,7 @@
 
             gantt.init("gantt_here");
             @*gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json");*@
-            gantt.load(`PMS/Checklist/getGanttData?id=@TempData["entry"]`, "json");
+            gantt.load(`getGanttData?id=@TempData["entry"]`, "json");
 
 
         const setDayView = () => {
@@ -1979,11 +1969,15 @@
         if (mainId === "null") {
             console.error("mainId is not set. Please check your TempData.");
             return;
-            }
+       // }
+
+            var milestone = "@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.milestone.ToString()))";
+            $("#milestoneDropdown").val(milestone).trigger("change");
         });
 
         $("#milestoneDropdown").on("change", function () {
             const milestoneId = $(this).val();
+
             $("#checklist_id_container").empty();
             $("#checklist_id_input").val("");
 
@@ -1996,6 +1990,8 @@
             }
 
             loadTasksForMilestone(milestoneId, @(TempData["entry"]));
+
+
         });
 
         $("#delayed_yes").on("click", function () {

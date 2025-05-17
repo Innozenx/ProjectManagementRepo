@@ -124,6 +124,7 @@ namespace ProjectManagementSystem.Models
         public bool IsODCPAdminAndDivisionHead { get; set; }
         public bool IsODCPAdmin { get; set; }
         public bool IsReadOnlyChecklistView { get; set; }
+        public int milestone { get; set; }
     }
 
     public class StatusLogsViewModel
@@ -644,6 +645,7 @@ namespace ProjectManagementSystem.Models
         public bool IsApproved { get; set; }
         public bool IsRejected { get; set; }
         public DateTime? ApprovalDate { get; set; }
+        public int ProjectMainId { get; set; }
     }
 
     public class ApproverRequest
@@ -727,5 +729,20 @@ namespace ProjectManagementSystem.Models
         public string MilestoneName { get; set; }
         public List<TaskModel> Tasks { get; set; }
     }
+
+    public class ApprovalTaskDTO
+    {
+        public int task_id { get; set; }
+        public string task_name { get; set; }
+        public string submitted_by { get; set; }
+        public DateTime? submission_date { get; set; }
+        public int main_id { get; set; }
+        public string project_title { get; set; }
+        public bool? isApproved { get; set; }
+        public bool? isRejected { get; set; }
+       // public string milestone_name { get; set; }
+        public int milestone_id { get; set; }
+    }
+
 }
 
