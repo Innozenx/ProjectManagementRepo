@@ -1193,7 +1193,7 @@ namespace ProjectManagementSystem.Controllers
                 });
                 return Json(userList, JsonRequestBehavior.AllowGet);
 
-            }
+            } 
             catch (Exception ex)
             {
                 Console.WriteLine("Error fetching users: " + ex.Message);
@@ -1250,7 +1250,26 @@ namespace ProjectManagementSystem.Controllers
             {
                 return Json(new { success = false, message = "Error loading pending approvals" }, JsonRequestBehavior.AllowGet);
             }
+        } 
+
+        
+
+        public ActionResult RedirectToChecklist(int id, string title, string projectId, int milestone, int checklistId)
+        {
+            TempData["FromApproval"] = true;
+            TempData["CurrentUserEmail"] = User.Identity.Name; 
+
+            return RedirectToAction("weeklyMilestone", "Checklist", new
+            {
+                id,
+                title,
+                projectId,
+                milestone,
+                tab = "checklist",
+                checklistId
+            });
         }
+
 
     }
 }

@@ -674,10 +674,14 @@ namespace ProjectManagementSystem.Controllers
 
         //    return View(viewModel);
         //}
-
-
-        public ActionResult weeklyMilestone(int id, string title, string projectId, int milestone, string tab = "overview" )
+        
+        public ActionResult weeklyMilestone(int id, string title, string projectId, int milestone, string tab = "overview", bool fromApproval = false)
         {
+
+            ViewBag.FromApproval = TempData["FromApproval"] != null && (bool)TempData["FromApproval"];
+            ViewBag.CurrentUserEmail = TempData["CurrentUserEmail"] ?? User.Identity.Name;
+            ViewBag.CurrentUserEmail = User.Identity.Name;
+
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.Identity.GetUserId();
@@ -767,7 +771,7 @@ namespace ProjectManagementSystem.Controllers
                 {
                     return HttpNotFound("No milestones found.");
                 }
-
+      
                 var projectDetails = db.MainTables
                     .Where(p => p.main_id == id)
                     .Select(p => new ProjectDetailViewModel

@@ -160,8 +160,7 @@ namespace ProjectManagementSystem.Models
         public int MilestonePosition { get; set; }
         public List<ApproverViewModel> Approvers { get; set; }
         public List<string> Attachments { get; set; }
-        
-
+     
     }
 
     public class ProjectChecklistGroupViewModel
