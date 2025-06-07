@@ -1184,6 +1184,13 @@
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
     <script src="~/Scripts/moment.min.js"></script>
 
+    <input type="hidden" id="fromApproval" value="@ViewBag.FromApproval" />
+    <input type="hidden" id="checklistId" value="@ViewBag.ChecklistId" />
+    <input type="hidden" id="currentUserEmail" value="@ViewBag.CurrentUserEmail" />
+
+    @*const currentUserEmail = '@ViewBag.CurrentUserEmail'.toLowerCase().trim();
+    const isFromApproval = '@ViewBag.FromApproval'.toLowerCase() === 'True';*@
+
     <script>
         //function loadActivityLogs() {
         //    const activityLogContainer = $('#activity-log-container');
@@ -1254,32 +1261,72 @@
         loadMilestones(@TempData["entry"]);
          const isReadOnlyView = @(Model.IsReadOnlyChecklistView.ToString().ToLower());
 
-        function loadMilestones(mainId) {
-            $.ajax({
-                url: "/Checklist/GetMilestonesWithApprovalTasks",
-                type: "GET",
-                data: { mainId },
-                datatype: "json",
-                success: function (response) {
-                    if (response.success) {
-                        //milestoneDropdown.empty().append('<option value="">Select a Milestone</option>');
-                        response.data.forEach(milestone => {
-                            //milestoneDropdown.append(`<option value="${}">${response.data.milestone}</option>`);
-                            $("#milestoneDropdown").append('<option value="'+ milestone.MilestoneId +'">' + milestone.MilestoneName + '</option>');
-                        });
-                        //$("#milestoneDropdown").append('<option>' + response.data[0].MilestoneName + '</option>');
-                    } else {
-                        Swal.fire("Error", "Failed to load milestones.", "error");
-                    }
-                },
-                error: function (xhr) {
-                    console.error("Error fetching milestones:", xhr.responseText);
-                }
-            });
-        }
+        //function loadMilestones(mainId) {
+        //    $.ajax({
+        //        url: "/Checklist/GetMilestonesWithApprovalTasks",
+        //        type: "GET",
+        //        data: { mainId },
+        //        datatype: "json",
+        //        success: function (response) {
+        //            if (response.success) {
+        //                //milestoneDropdown.empty().append('<option value="">Select a Milestone</option>');
+        //                response.data.forEach(milestone => {
+        //                    //milestoneDropdown.append(`<option value="${}">${response.data.milestone}</option>`);
+        //                    $("#milestoneDropdown").append('<option value="'+ milestone.MilestoneId +'">' + milestone.MilestoneName + '</option>');
+        //                });
+        //                //$("#milestoneDropdown").append('<option>' + response.data[0].MilestoneName + '</option>');
+        //            } else {
+        //                Swal.fire("Error", "Failed to load milestones.", "error");
+        //            }
+        //        },
+        //        error: function (xhr) {
+        //            console.error("Error fetching milestones:", xhr.responseText);
+        //        }
+        //    });
+        //}
+
+         function loadMilestones(mainId) {
+             $.ajax({
+                 url: "/Checklist/GetMilestonesWithApprovalTasks",
+                 type: "GET",
+                 data: { mainId },
+                 datatype: "json",
+                 success: function (response) {
+                     if (response.success) {
+                         const dropdown = $("#milestoneDropdown");
+                         dropdown.empty(); 
+
+                         response.data.forEach(milestone => {
+                             dropdown.append(`<option value="${milestone.MilestoneId}">${milestone.MilestoneName}</option>`);
+                         });
+
+                         const urlParams = new URLSearchParams(window.location.search);
+                         const milestoneIdFromUrl = urlParams.get("milestone");
+
+                         if (milestoneIdFromUrl && dropdown.find(`option[value='${milestoneIdFromUrl}']`).length > 0) {
+                             dropdown.val(milestoneIdFromUrl).trigger("change");
+                         }
+
+                     } else {
+                         Swal.fire("Error", "Failed to load milestones.", "error");
+                     }
+                 },
+                 error: function (xhr) {
+                     console.error("Error fetching milestones:", xhr.responseText);
+                 }
+             });
+         }
+
 
         function loadTasksForMilestone(milestoneId, mainId) {
             const checklistTableBody = $("#checklistTableBody");
+            const isFromApproval = $("#fromApproval").val() === "True";
+            const currentUserEmail = $("#currentUserEmail").val();
+
+
+            let item_ctr = 0;
+            let saved_ctr = 0;
+            let approval_enabled = 0;
 
             if (!milestoneId) {
                 checklistTableBody.html(`
@@ -1827,6 +1874,8 @@
             @*gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json");*@
             gantt.load(`getGanttData?id=@TempData["entry"]`, "json");
 
+            gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json"); // added to be deleted too
+
 
         const setDayView = () => {
             gantt.config.scales = [
@@ -1963,6 +2012,26 @@
     </script>
 
 <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const milestoneIdFromUrl = urlParams.get("milestone");
+
+        if (milestoneIdFromUrl) {
+            const $dropdown = $("#milestoneDropdown");
+
+            $("#checklist_id_container").hide(); // hide before fadeIn
+
+            setTimeout(() => {
+                if ($dropdown.find(`option[value='${milestoneIdFromUrl}']`).length > 0) {
+                    $dropdown.val(milestoneIdFromUrl).trigger("change");
+
+                    // fade in after milestone is applied
+                    setTimeout(() => {
+                        $("#checklist_id_container").fadeIn(300);
+                    }, 150);
+                }
+            }, 200);
+        }
+
     $(document).ready(function () {
         const mainId = '@(TempData["entry"] ?? "null")';
         if (mainId === "null") {
@@ -2160,14 +2229,13 @@
                 icon: 'error',
                 title: 'No selected approvers',
                 text: 'Please select an approver first',
-            }).then(function () {
+            }).then(function () {                                                                                     
                 localStorage.setItem('currentTab', 'checklist');
                 localStorage.setItem('currentDrop', milestone);
                 location.reload();
             });
         }
     });
-</script>
-
+</script>                                                                                                                                                                                           
 
 }
