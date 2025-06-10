@@ -943,56 +943,109 @@ namespace ProjectManagementSystem.Controllers
                 .Where(m => checklistMainIds.Contains(m.main_id))
                 .ToDictionary(m => m.main_id, m => m.project_title);
 
+            List<ApprovalTaskDTO> optionalMileStone = new List<ApprovalTaskDTO>();
+
+            //get all optionalMilestoneApprovers based on userEmail
+            var _optional = db.OptionalMilestoneApprovers.Where(x => x.approver_email == userEmail && (x.is_removed == false || x.is_removed == null)).ToList();
+            
+            foreach(var row in _optional)
+            {
+                var getTask = db.OptionalMilestones.FirstOrDefault(x => x.id == row.task_id);
+                var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id);
+                var getMaintbl = db.MainTables.FirstOrDefault(x => x.main_id == getCheckListSubmission.main_id);
+
+                var getOptional = new ApprovalTaskDTO{
+                    isApproved = row.approved,
+                    isRejected = row.rejected,
+
+                    task_id = row.task_id.Value,
+                    task_name = getCheckListSubmission.task_name,
+                    submitted_by = getCheckListSubmission.submitted_by,
+                    submission_date = getCheckListSubmission.submission_date,
+                    main_id = getCheckListSubmission.main_id.Value,
+                    milestone_id = getCheckListSubmission.milestone_id.Value,
+                    project_title = getMaintbl.project_title,
+                };
+
+                optionalMileStone.Add(getOptional);
+            }
+
+            //Pre-set task
+            var _preset = db.PreSetMilestoneApprovers.Where(x => x.approver_email == userEmail && (x.is_removed == false || x.is_removed == null)).ToList();
+
+            foreach (var row in _preset)
+            {
+                var getTask = db.OptionalMilestones.FirstOrDefault(x => x.id == row.task_id);
+                var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id);
+                var getMaintbl = db.MainTables.FirstOrDefault(x => x.main_id == getCheckListSubmission.main_id);
+
+                var getOptional = new ApprovalTaskDTO
+                {
+                    isApproved = row.approved,
+                    isRejected = row.rejected,
+
+                    task_id = row.task_id.Value,
+                    task_name = getCheckListSubmission.task_name,
+                    submitted_by = getCheckListSubmission.submitted_by,
+                    submission_date = getCheckListSubmission.submission_date,
+                    main_id = getCheckListSubmission.main_id.Value,
+                    milestone_id = getCheckListSubmission.milestone_id.Value,
+                    project_title = getMaintbl.project_title,
+                };
+
+                optionalMileStone.Add(getOptional);
+            }
+
             // optional
-            var optional = (from s in db.ChecklistSubmissions
-                            join a in db.OptionalMilestoneApprovers
-                              on new { s.main_id, s.milestone_id, s.task_id }
-                              equals new { a.main_id, a.milestone_id, a.task_id }
-                            join m in db.MainTables on s.main_id equals m.main_id
-                            where a.approver_email.ToLower().Trim() == userEmail
-                               && (a.is_removed == false || a.is_removed == null)
-                               && (s.is_removed == false || s.is_removed == null)
-                            select new ApprovalTaskDTO
-                            {
-                                task_id = s.task_id.Value,
-                                task_name = s.task_name,
-                                submitted_by = s.submitted_by,
-                                submission_date = s.submission_date,
-                                main_id = s.main_id.Value,
-                                milestone_id = s.milestone_id.Value,
-                                project_title = m.project_title,
-                                isApproved = a.approved,
-                                isRejected = a.rejected
-                            }).ToList();
+            //var optional = (from s in db.ChecklistSubmissions
+            //                join a in db.OptionalMilestoneApprovers
+            //                  on new { s.main_id, s.milestone_id, s.task_id }
+            //                  equals new { a.main_id, a.milestone_id, a.task_id }
+            //                join m in db.MainTables on s.main_id equals m.main_id
+            //                where a.approver_email.ToLower().Trim() == userEmail
+            //                   && (a.is_removed == false || a.is_removed == null)
+            //                   && (s.is_removed == false || s.is_removed == null)
+            //                select new ApprovalTaskDTO
+            //                {
+            //                    task_id = s.task_id.Value,
+            //                    task_name = s.task_name,
+            //                    submitted_by = s.submitted_by,
+            //                    submission_date = s.submission_date,
+            //                    main_id = s.main_id.Value,
+            //                    milestone_id = s.milestone_id.Value,
+            //                    project_title = m.project_title,
+            //                    isApproved = a.approved,
+            //                    isRejected = a.rejected
+            //                }).ToList();
 
             // preset 
-            var preset = (from s in db.ChecklistSubmissions
-                          join a in db.PreSetMilestoneApprovers
-                            on new { s.main_id, s.milestone_id, s.task_id }
-                            equals new { a.main_id, a.milestone_id, a.task_id }
-                          join m in db.MainTables on s.main_id equals m.main_id
-                          where a.approver_email.ToLower().Trim() == userEmail
-                             && (a.is_removed == false || a.is_removed == null)
-                             && (s.is_removed == false || s.is_removed == null)
-                          select new ApprovalTaskDTO
-                          {
-                              task_id = s.task_id.Value,
-                              task_name = s.task_name,
-                              submitted_by = s.submitted_by,
-                              submission_date = s.submission_date,
-                              main_id = s.main_id.Value,
-                              milestone_id = s.milestone_id.Value,
-                              project_title = m.project_title,
-                              isApproved = a.approved,
-                              isRejected = a.rejected
-                          }).ToList();
+            //var preset = (from s in db.ChecklistSubmissions
+            //              join a in db.PreSetMilestoneApprovers
+            //                on new { s.main_id, s.milestone_id, s.task_id }
+            //                equals new { a.main_id, a.milestone_id, a.task_id }
+            //              join m in db.MainTables on s.main_id equals m.main_id
+            //              where a.approver_email.ToLower().Trim() == userEmail
+            //                 && (a.is_removed == false || a.is_removed == null)
+            //                 && (s.is_removed == false || s.is_removed == null)
+            //              select new ApprovalTaskDTO
+            //              {
+            //                  task_id = s.task_id.Value,
+            //                  task_name = s.task_name,
+            //                  submitted_by = s.submitted_by,
+            //                  submission_date = s.submission_date,
+            //                  main_id = s.main_id.Value,
+            //                  milestone_id = s.milestone_id.Value,
+            //                  project_title = m.project_title,
+            //                  isApproved = a.approved,
+            //                  isRejected = a.rejected
+            //              }).ToList();
 
             // combine then filter
-            var all = optional.Concat(preset).Distinct().ToList();
+            //var all = optional.Concat(preset).Distinct().ToList();
 
-            var pending = all.Where(x => x.isApproved != true && x.isRejected != true);
-            var approved = all.Where(x => x.isApproved == true);
-            var rejected = all.Where(x => x.isRejected == true);
+            var pending = optionalMileStone.Where(x => (x.isApproved == null) && x.isRejected == null);
+            var approved = optionalMileStone.Where(x => x.isApproved == true);
+            var rejected = optionalMileStone.Where(x => x.isRejected == true);
 
             return Json(new
             {
@@ -1085,6 +1138,7 @@ namespace ProjectManagementSystem.Controllers
             {
                 string userEmail = User.Identity.Name.ToLower().Trim();
 
+                // Get the submission task from ChecklistSubmissions
                 var submission = db.ChecklistSubmissions
                     .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
 
@@ -1093,8 +1147,32 @@ namespace ProjectManagementSystem.Controllers
                     return Json(new { success = false, message = "Task not found or already removed." });
                 }
 
+                // Mark the task as approved
                 submission.is_approved = true;
-                submission.submission_date = DateTime.Now; 
+                submission.submission_date = DateTime.Now;
+
+                // Get the corresponding rows from PreSetMilestoneApprovers and OptionalMilestoneApprovers
+                var preset = db.PreSetMilestoneApprovers
+                    .FirstOrDefault(x => x.task_id == taskId && x.approver_email.ToLower().Trim() == userEmail && x.is_removed != true);
+
+                var optional = db.OptionalMilestoneApprovers
+                    .FirstOrDefault(x => x.task_id == taskId && x.approver_email.ToLower().Trim() == userEmail && x.is_removed != true);
+
+                // Update approval status in PreSetMilestoneApprovers
+                if (preset != null)
+                {
+                    preset.approved = true;
+                    preset.rejected = false;
+                    preset.date_approved = DateTime.Now;
+                }
+
+                // Update approval status in OptionalMilestoneApprovers
+                if (optional != null)
+                {
+                    optional.approved = true;
+                    optional.rejected = false;
+                    optional.date_approved = DateTime.Now;
+                }
 
                 db.SaveChanges();
 
@@ -1105,6 +1183,7 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Error: " + ex.Message });
             }
         }
+
 
         // OLD
         //[HttpPost]
@@ -1149,9 +1228,33 @@ namespace ProjectManagementSystem.Controllers
                     return Json(new { success = false, message = "Task not found or already removed." });
                 }
 
+                // Mark the task as rejected
                 submission.is_approved = false;
-                submission.submission_date = DateTime.Now; 
+                submission.submission_date = DateTime.Now;
                 submission.disapproval_reason = reason;
+
+                // Get the corresponding rows from PreSetMilestoneApprovers and OptionalMilestoneApprovers
+                var preset = db.PreSetMilestoneApprovers
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+
+                var optional = db.OptionalMilestoneApprovers
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+
+                // Update rejection status in PreSetMilestoneApprovers
+                if (preset != null)
+                {
+                    preset.approved = false;
+                    preset.rejected = true;
+                    preset.date_approved = DateTime.Now; // or use date_rejected if you prefer
+                }
+
+                // Update rejection status in OptionalMilestoneApprovers
+                if (optional != null)
+                {
+                    optional.approved = false;
+                    optional.rejected = true;
+                    optional.date_approved = DateTime.Now; // or use date_rejected if you prefer
+                }
 
                 db.SaveChanges();
 

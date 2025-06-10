@@ -27,118 +27,125 @@
     ViewBag.AvatarInitial = avatarInitial;
 }
 
-
-
+<!-- Navbar -->
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+                <i class="fas fa-bars"></i>
+            </a>
         </li>
     </ul>
 
-
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown" id="adminDropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#" role="button" data-toggle="tooltip" data-placement="bottom" title="@ViewBag.FullName
-               My workspace">
-                <div style="display: flex; align-items: center;">
-                    <span class="avatar-circle" style="background-color: #66339A; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; margin-right: 5px;">
-                 @((ViewBag.FirstName as string)?.Substring(0, 1).ToUpper() ?? User.Identity.Name.Substring(0, 1).ToUpper())
-
-                    </span>
-                    <i class="fas fa-angle-down ml-1"></i>
-                </div>
-            </a>
-            @*<div class="dropdown-menu dropdown-menu-right" style="width: 250px; padding: 10px;">*@
-            <div class="dropdown-menu dropdown-menu-right p-3" style="width: 260px;">
-                <div class="text-center mb-3">
-                    <div class="avatar-circle mx-auto" style="background-color: #66339A; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;">
+            <a class="nav-link" href="#" role="button" data-toggle="dropdown" title="@ViewBag.FullName" style="text-decoration: none;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-circle-small">
                         @ViewBag.AvatarInitial
                     </div>
-                    <small class="d-block mt-2 text-break" style="font-size: 0.85rem;">
-                       @ViewBag.FullName
-                    </small>
-                    <p class="text-muted text-center mb-1" style="font-size: 0.75rem;">My Workspace</p>
+                    <i class="fas fa-angle-down text-secondary"></i>
                 </div>
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-right p-3" style="width: 260px;">
+                <div class="text-center mb-3">
+                    <div class="avatar-circle mb-2 mx-auto">
+                        @ViewBag.AvatarInitial
+                    </div>
+                    <div class="fw-semibold" style="font-size: 0.95rem;">
+                        @ViewBag.FullName
+                    </div>
+                    <div class="text-muted" style="font-size: 0.75rem;">My Workspace</div>
+                </div>
+
                 <hr class="my-2" />
 
                 <a href="@Url.Action("InviteTeammates", "Checklist")" class="dropdown-item">
-                    <i class="fas fa-user-plus mr-2"></i> Invite Teammates
+                    <i class="fas fa-user-plus"></i> Invite Teammates
                 </a>
                 <a href="@Url.Action("Milestones", "Admin")" class="dropdown-item">
-                    <i class="fas fa-tasks mr-2"></i> Milestones
+                    <i class="fas fa-tasks"></i> Milestones
                 </a>
                 <a href="@Url.Action("Register", "Admin")" class="dropdown-item">
-                    <i class="fas fa-cogs mr-2"></i> Project Registration
+                    <i class="fas fa-cogs"></i> Project Registration
                 </a>
                 <a href="@Url.Action("AddProject", "Checklist")" class="dropdown-item">
-                    <i class="fas fa-plus-circle mr-2"></i> Project Onboarding
+                    <i class="fas fa-plus-circle"></i> Project Onboarding
                 </a>
                 <a href="@Url.Action("RoleConfiguration", "Admin")" class="dropdown-item">
-                    <i class="fas fa-user mr-2"></i> Role Configuration
+                    <i class="fas fa-user"></i> Role Configuration
                 </a>
                 <a href="@Url.Action("ChecklistSettings", "Admin")" class="dropdown-item">
-                    <i class="fas fa-pen-square mr-2"></i> Checklist Settings
+                    <i class="fas fa-pen-square"></i> Checklist Settings
                 </a>
 
                 <div class="dropdown-divider"></div>
 
-                <a href="@Url.Action("Logout", "Account")" class="dropdown-item">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Log out
+                <a href="@Url.Action("Logout", "Account")" class="dropdown-item text-danger">
+                    <i class="fas fa-sign-out-alt"></i> Log out
                 </a>
             </div>
-
-
         </li>
     </ul>
 </nav>
-<!-- /.navbar -->
 
+<!-- /.navbar -->
 <style>
-    .dropdown-menu .dropdown-item {
-        padding: 8px 15px;
-        font-size: 0.9rem;
-        color: #4a4a4a;
-        transition: background-color 0.2s;
+    .avatar-circle {
+        background: linear-gradient(145deg, #6f42c1, #563d7c);
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
-        .dropdown-menu .dropdown-item:hover {
-            background-color: #e3d6f4;
-            font-weight: 500;
-            /*transition: background-color 0.2s ease, color 0.2s ease;*/
-            box-shadow: inset 2px 2px 8px rgba(102, 51, 154, 0.05);
-        }
-
-    .avatar-circle {
-        background-color: #470A67;
-        width: 50px;
-        height: 50px;
-        border-radius: 50% !important;
+    .avatar-circle-small {
+        background-color: #6f42c1;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        color: #fff;
     }
-    .dropdown-item i {
-        width: 20px;
-        text-align: center;
-        margin-right: 8px;
-        border-radius: 8px;
-        margin-bottom: 4px;
-        /*color: #66339A;*/
-    }
-    .text-break {
-        word-break: break-word;
-    }
+
     .dropdown-menu {
-        border-radius: 12px !important;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+        border: none;
     }
 
+    .dropdown-item {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        color: #333;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
 
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            margin-right: 10px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f1fb;
+            color: #5e34a1;
+            border-radius: 8px;
+        }
 </style>
 
 @*<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>*@

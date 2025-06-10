@@ -31,5 +31,7 @@ namespace ProjectManagementSystem.Models
         public string removed_by { get; set; }
         public Nullable<int> employee_id { get; set; }
         public Nullable<int> task_id { get; set; }
+        public string approver_status { get; set; }
+        public string withdraw_status { get; set; }
     }
 }

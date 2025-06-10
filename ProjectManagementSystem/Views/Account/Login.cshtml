@@ -2,187 +2,170 @@
 @model LoginViewModel
 @{
     ViewBag.Title = "Log in";
-    Layout = null;  
+    Layout = null;
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-    .form-container {
-        max-width: 500px;
-        width: 100%;
-        padding: 50px 20px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-
-    .form-container img {
-        width: 100px;
-        /*margin-bottom: 20px;*/
-    }
-
-    .form-container h1 {
-        color: #66339A;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-
-    .form-container p {
-        color: #888;
-        margin-bottom: 20px;
-        margin-top:-15px;
-    }
-
-    .form-group label {
-        font-weight: 500;
-        font-size: 0.9rem;
-        color: #333;
-        display: block;
-        text-align: left;
-        margin-bottom: 5px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, .12);
-    }
-
-    .btn-primary {
+    body {
+        margin: 0;
+        padding: 0;
         font-family: 'Poppins', sans-serif;
-        background-color: #470A67;
-        border: none;
-        padding: 10px 20px;
-        color: #fff;
-        /*font-weight: bold;*/
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-        width: 100%;
-        font-size: 16px;
-    }
-
-    .btn-primary:hover {
-        background-color: #532c7e;
-    }
-
-    .checkbox {
-        text-align: left;
-        margin-bottom: 15px;
-    }
-
-    .form-footer {
-        text-align: center;
-        padding-top: 20px;
-    }
-
-    .text-danger {
-        color: red;
-    }
-
-    .form-footer a {
-        display: block;
-        margin-top: 10px;
-        text-decoration: none;
-        color: #66339A;
-    }
-
-    .form-footer a:hover {
-        text-decoration: underline;
-    }
-
-    .form-container h3 {
-        font-weight: 500;
-    }
-
-    .toggle-password {
-        cursor: pointer;
-        position: absolute;
-        right: 10px; 
-        top: 50%;
-        transform: translateY(-50%);
-        margin-top:-7px;
-    }
-
-    .login-body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f4f6f9;
+        background: linear-gradient(to bottom right, #f8f9fa, #e6e6f2);
+        height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        margin: 0;
     }
 
-    
+    .login-card {
+        background: #fff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+    }
+
+        .login-card img {
+            width: 100px;
+            margin-bottom: 15px;
+        }
+
+        .login-card h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #470A67;
+        }
+
+        .login-card p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+    .form-group {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            transition: border 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+            .form-group input:focus {
+                outline: none;
+                border-color: #66339A;
+            }
+
+    .btn-primary {
+        background-color: #66339A;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 30px;
+        font-size: 0.95rem;
+        width: 100%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+    }
+
+        .btn-primary:hover {
+            background-color: #55227d;
+        }
+
+    .text-danger {
+        color: red;
+        font-size: 0.85rem;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 20px;
+        top: 38px;
+        cursor: pointer;
+        color: #aaa;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+    input:invalid {
+        border-color: #e74c3c;
+    }
+    input:focus {
+        border-color: #66339A;
+        box-shadow: 0 0 0 2px rgba(102, 51, 154, 0.1);
+    }
+    .btn-primary:hover {
+        background-color: #5a2b8c;
+        box-shadow: 0 4px 10px rgba(102, 51, 154, 0.2);
+    }
+
+
+
 </style>
 
+<div class="login-card">
+    <img src="~/AdminLTE-3.2.0/dist/img/30thEK.jpg" alt="PMS" />
+    <h1>Project Management System</h1>
+    <p>Sign in with your assigned credentials.</p>
+    <hr />
+    <br />
 
+    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-<div class="login-body">
-    <div class="form-container">
-        <img src="~/AdminLTE-3.2.0/dist/img/30thEK.jpg" alt="PMS" />
-        <!-- Title and subtitle -->
-        <h1>Project Management System</h1>
-        <h3>Login to your account</h3>
-        @*<p>Enter your email and password to login</p>*@
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email)
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "you@enchantedkingdom.ph" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+        </div>
 
-        <section id="loginForm">
-            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
-                @Html.AntiForgeryToken()
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group input-wrapper">
+            @Html.LabelFor(m => m.Password)
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "••••••••", id = "password" })
+            <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+        </div>
 
-                <!-- Email Input -->
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Email, "Email")
-                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                </div>
-
-                <!-- Password Input -->
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Password, "Password")
-                    <div class="input-group" style="position: relative;">
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "password-field", style = "padding-right: 40px;" })
-                        <span class="toggle-password fa fa-fw fa-eye-slash" onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></span>
-                    </div>
-                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                </div>
-
-                <!-- Submit Button -->
-                <div class="form-footer">
-                    <button type="submit" class="btn btn-primary">Log in</button>
-                </div>
-
-                <!-- Links -->
-                @*<div class="form-footer">*@
-                    @*@Html.ActionLink("Register as a new user", "Register")*@
-                    @* Uncomment if password recovery is needed
-                        @Html.ActionLink("Forgot your password?", "ForgotPassword")
-                    *@
-                @*</div>*@
-            }
-        </section>
-    </div>
+        <button type="submit" class="btn-primary">Sign in</button>
+    }
 </div>
+
 <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
-
 <script>
-    $(document).ready(function () {
-        $(".toggle-password").click(function () {
-            $(this).toggleClass("fa-eye-slash fa-eye");
-            var input = $(this).closest(".input-group").find("input");
-            if (input.attr("type") === "password") {
-                input.attr("type", "text");
-            } else {
-                input.attr("type", "password");
-            }
-        });
-    });
-
+    function togglePassword() {
+        const input = document.getElementById('password');
+        const icon = document.querySelector('.toggle-password');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
 </script>
