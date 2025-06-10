@@ -6,169 +6,170 @@
 }
 
 <!-- Main Sidebar Container -->
-    <aside class="main-sidebar elevation-4 sidebar-light-white">
-        <!-- Brand Logo -->
-        <a href="@Url.Action("Dashboard", "Checklist")" class="brand-link d-flex align-items-center">
-            <img src="https://home.enchantedkingdom.ph/intranet/Images/ek_logo.png" alt="EK-PMS Logo" @*class="brand-image img-circle elevation-3"*@ style="opacity: 1; height: 40px; width: 40px; object-fit: cover; margin-right: 10px;">
-            <span class="brand-text font-weight-light" style="font-size: 0.85rem; color: #333; white-space: nowrap;">Project Management <br /> System</span>
-        </a>
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar elevation-1" style="background-color: #fff;">
+    <!-- Brand Logo -->
+    <a href="@Url.Action("Dashboard", "Checklist")" class="brand-link d-flex align-items-center" style="background-color: #fff;">
+        <img src="https://home.enchantedkingdom.ph/intranet/Images/ek_logo.png" alt="EK-PMS Logo"
+             style="height: 40px; width: 40px; object-fit: cover; margin-right: 10px;" />
+        <span class="brand-text">Project Management<br />System</span>
+    </a>
 
-        <div class="sidebar">
-            <!-- Sidebar Menu -->
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column small-font" data-widget="treeview" role="menu" data-accordion="false">
-                    <!-- Panels Section -->
-                    <!-- Dashboard for Management-->
-                    @if (User.IsInRole("PMS_Management") || User.IsInRole("PMS_ODCP_ADMIN") || User.IsInRole("PMS_DIVISION_HEAD"))
+    <div class="sidebar" style="background-color: #fff;">
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column small-font" data-widget="treeview" role="menu" data-accordion="false">
+
+                @* Management / Division Head *@
+                @if (User.IsInRole("PMS_Management") || User.IsInRole("PMS_ODCP_ADMIN") || User.IsInRole("PMS_DIVISION_HEAD"))
                 {
-                    if (User.IsInRole("PMS_Management") || User.IsInRole("PMS_ODCP_ADMIN"))
-                    {
-                            <li class="nav-header">Management</li>
-                    }
-                    else
-                    {
-                            <li class="nav-header">Division Head</li>
-                    }
-
-                        <li class="nav-item">
-                            <a href="@Url.Action("DashboardManagement", "Checklist")" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>Dashboard</p>
-                            </a>
-                        </li>
-
+                    <li class="nav-section">@((User.IsInRole("PMS_Management") || User.IsInRole("PMS_ODCP_ADMIN")) ? "Management" : "Division Head")</li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("DashboardManagement", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
                 }
 
-                    <!-- Dashboard for Project Managers -->
-                    @if (@*!isPMSManagement ||*@ isPMS_ODCP_Admin || isPMS_Project_Manager || isPMS_Project_Admin)
+                @* PM Panels *@
+                @if (isPMS_ODCP_Admin || isPMS_Project_Manager || isPMS_Project_Admin)
                 {
-                        <li class="nav-header">Panels</li>
-                        <li class="nav-item">
-                            <a href="@Url.Action("Dashboard", "Checklist")" class="nav-link">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>Dashboard</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
-                                <i class="nav-icon fas fa-plus-circle"></i>
-                                <p>Project Onboarding</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="@Url.Action("ActivityView", "Checklist", new { user = User.Identity.Name.ToString() })" class="nav-link">
-                                <i class="nav-icon fas fa-list"></i>
-                                <p>Activity Logs</p>
-                            </a>
-                        </li>
-                  
-                        <li class="nav-item">
-                            <a href="@Url.Action("ArchivedProjects", "Checklist")" class="nav-link">
-                                <i class="fas fa-archive nav-icon"></i>
-                                <p>Archived Projects</p>
-                            </a>
-                        </li>
-
-
-                            @*if (ViewBag.IsApprover == true)
-                            {
-                            <li class="nav-item">
-                                <a href="@Url.Action("PendingApprovals", "Admin")" class="nav-link">
-                                    <i class="nav-icon fas fa-check-square"></i>
-                                    <p>Approval</p>
-                                </a>
-                            </li>
-                            }*@
-
-                    }
-
-                        @if (ViewBag.IsApprover == true)
-                        {
-                                <li class="nav-item">
-                                    <a href="@Url.Action("PendingApprovals", "Admin")" class="nav-link">
-                                        <i class="nav-icon fas fa-check-square"></i>
-                                        <p>Approval</p>
-
-
-                                    </a>
-                                </li>
-                        }
-
-                    <!-- Report Section -->
-
-                    @if (isPMSManagement || isPMS_ODCP_Admin || isPMS_Project_Admin)
-                {
-                        <li class="nav-header">Report</li>
-                        <li class="nav-item">
-                            <a href="@Url.Action("Index", "PMReports")" class="nav-link">
-                                <i class="nav-icon fas fa-chart-pie"></i>
-                                <p>Reports</p>
-                            </a>
-                        </li>
+                    <li class="nav-section">Panels</li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Dashboard", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("AddProject", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-plus-circle"></i>
+                            <p>Project Onboarding</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("ActivityView", "Checklist", new { user = User.Identity.Name })" class="nav-link">
+                            <i class="nav-icon fas fa-list"></i>
+                            <p>Activity Logs</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("ArchivedProjects", "Checklist")" class="nav-link">
+                            <i class="nav-icon fas fa-archive"></i>
+                            <p>Archived Projects</p>
+                        </a>
+                    </li>
                 }
-                </ul>
-            </nav>
-            <!-- /.sidebar-menu -->
-        </div>
-    </aside>
+
+                @* Approval *@
+                @if (ViewBag.IsApprover == true)
+                {
+                    <li class="nav-item">
+                        <a href="@Url.Action("PendingApprovals", "Admin")" class="nav-link">
+                            <i class="nav-icon fas fa-check-square"></i>
+                            <p>Approval</p>
+                        </a>
+                    </li>
+                }
+
+                @* Reports *@
+                @if (isPMSManagement || isPMS_ODCP_Admin || isPMS_Project_Admin)
+                {
+                    <li class="nav-section">Report</li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "PMReports")" class="nav-link">
+                            <i class="nav-icon fas fa-chart-pie"></i>
+                            <p>Reports</p>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</aside>
 
 <style>
-    .main-sidebar {
+    .main-sidebar,
+    .sidebar,
+    .brand-link {
         background-color: #ffffff !important;
     }
 
-    .sidebar {
-        background-color: #ffffff;
+    .main-sidebar {
+        border-right: 1px solid #e6e6e6;
     }
 
     .brand-link {
-        background-color: #f5f5f5;
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 500;
         color: #333;
+        border-bottom: 1px solid #eee;
     }
 
     .brand-text {
-        font-size: 1rem;
-        font-weight: bold; 
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #333;
+        line-height: 1.2;
     }
 
     .nav-sidebar .nav-link {
-        padding: 8px 10px;
+        padding: 10px 14px;
         font-size: 0.85rem;
-        color: #4a4a4a;
-        border-left: 4px solid transparent;
-        transition: all 0.3s;
-        font-weight: normal; 
+        color: #555;
+        border-radius: 8px;
+        margin: 2px 6px;
+        transition: background-color 0.2s ease, color 0.2s ease;
     }
 
         .nav-sidebar .nav-link .nav-icon {
-            margin-right: 8px;
-            color: #666;
+            color: #888;
+            margin-right: 10px;
             font-size: 1rem;
         }
 
-    .nav-sidebar .nav-link:hover {
-        color: #66339A;
-        background-color: #f9f9f9;
-    }
+        .nav-sidebar .nav-link:hover,
+        .nav-sidebar .nav-link.active {
+            background-color: #f5f1fb;
+            color: #5e34a1;
+        }
 
-    .nav-header {
-        color: #888;
-        font-size: 0.8rem;
-        margin: 8px 0;
+            .nav-sidebar .nav-link:hover .nav-icon,
+            .nav-sidebar .nav-link.active .nav-icon,
+            .nav-sidebar .nav-link:hover p,
+            .nav-sidebar .nav-link.active p {
+                color: #5e34a1;
+            }
+
+    .nav-section {
+        font-size: 0.75rem;
+        color: #999;
+        padding: 12px 16px 6px;
         text-transform: uppercase;
-        font-weight: normal; 
+        font-weight: 500;
+        letter-spacing: 0.05em;
     }
 
-    .dot {
-        height: 8px;
-        width: 8px;
-        display: inline-block;
-        border-radius: 50%;
-        margin-right: 8px;
+    .fa-check-square {
+        color: #4CAF50;
     }
 
-    .nav-header + .nav-item {
-        margin-top: 8px;
+    .fa-archive {
+        color: #607D8B;
+    }
+
+    .fa-chart-pie {
+        color: #2196F3;
+    }
+
+    .sidebar-collapse .nav-section {
+        display: none;
+    }
+
+    .sidebar-collapse .main-sidebar:hover .nav-section {
+        display: block;
     }
 
 </style>
+

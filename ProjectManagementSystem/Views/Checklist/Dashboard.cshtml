@@ -118,12 +118,16 @@
         text-align: center;
         animation: scaleUp 1.2s ease-in-out;
         animation-delay: 0.2s;
+        background: linear-gradient(145deg, #f3ecff, #e7dff3);
+        box-shadow: 0 4px 14px rgba(102, 51, 154, 0.15);
+        transition: transform 0.25s ease;
     }
 
         .top-card i {
             font-size: 1.8rem;
             color: #66339A;
             margin-bottom: 10px;
+   
         }
 
         .top-card h3 {
@@ -173,6 +177,9 @@
         .table th, .table td {
             padding: 15px 20px;
             text-align: center;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+
         }
 
         .table th {
@@ -417,6 +424,12 @@
         background-color: #fff;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
         border: 1px solid #e0e0e0;
+        content: '← Scroll to see more →';
+        display: block;
+        text-align: center;
+        font-size: 12px;
+        color: #aaa;
+        margin-top: 8px;
     }
 
     .table th:first-child {
@@ -514,6 +527,8 @@
         z-index: 1000;
         min-width: 100px;
         padding: 5px 0;
+
+
     }
 
 
@@ -563,6 +578,18 @@
         transform: translateY(-3px);
         transition: 0.3s ease;
     }
+    .dropdown-options {
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        opacity: 0;
+        transform: translateY(10px);
+        pointer-events: none;
+    }
+
+    .project-options.show .dropdown-options {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
 
 </style>
 
@@ -591,6 +618,10 @@
     }
 
     <h3>@ViewBag.Greeting! 👋🏼</h3>
+    <p style="margin-top: 10px; font-size: 0.95rem; color: #e0d7f6;">
+        Here's an overview of your projects and milestones this week.
+    </p>
+
 </div>
 
 

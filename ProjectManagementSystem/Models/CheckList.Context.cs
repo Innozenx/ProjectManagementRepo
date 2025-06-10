@@ -25,6 +25,7 @@ namespace ProjectManagementSystem.Models
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<View_1> View_1 { get; set; }
         public virtual DbSet<Activity_Log> Activity_Log { get; set; }
         public virtual DbSet<AdminList> AdminLists { get; set; }
         public virtual DbSet<ApproversTbl> ApproversTbls { get; set; }

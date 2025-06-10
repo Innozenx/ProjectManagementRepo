@@ -14,6 +14,7 @@
         <h2 class="fw-bold text-purple">Approval Requests</h2>
         <p class="text-muted">Manage task approvals across all projects and divisions.</p>
     </div>
+
     <ul class="nav nav-tabs custom-tabs" id="approvalsTab" role="tablist">
         <li class="nav-item" title="Tasks awaiting your approval">
             <a class="nav-link active" id="pending-tab" data-bs-toggle="tab" href="#pending" role="tab">Pending</a>
@@ -25,6 +26,7 @@
             <a class="nav-link" id="rejected-tab" data-bs-toggle="tab" href="#rejected" role="tab">Rejected</a>
         </li>
     </ul>
+    <br />
     <div class="tab-content p-4 bg-white rounded border shadow-sm" id="approvalsTabContent">
         <div class="mb-3 d-flex justify-content-between align-items-center">
             <select id="divisionFilter" class="form-select w-auto">
@@ -82,8 +84,10 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
+
 function formatDate(jsonDate) {
     if (!jsonDate) return "-";
     const timestamp = parseInt(jsonDate.replace(/[^0-9]/g, ''));
@@ -123,8 +127,9 @@ function createTaskCard(task) {
                     <p class="mb-2 small">${attachment}</p>
                     <div class="d-flex gap-2">
                         ${task.ShowActions ? `
-                        <button class="btn btn-success btn-sm approve-btn w-100" data-taskid="${task.DetailsID}" aria-label="Approve Task">Approve</button>
-                        <button class="btn btn-danger btn-sm reject-btn w-100" data-taskid="${task.DetailsID}" aria-label="Reject Task">Reject</button>` : ``}
+                 <button class="btn btn-reject reject-btn" data-taskid="${task.DetailsID}" aria-label="Reject Task">Reject</button>
+                 <button class="btn btn-approve approve-btn" data-taskid="${task.DetailsID}" aria-label="Approve Task">Approve</button>
+                 ` : ``}
                     </div>
                 </div>
             </div>
@@ -168,10 +173,11 @@ function loadApprovals() {
                     <td>${task.SubmittedBy}</td>
                     <td>${formattedDate}</td>
                     <td>${task.AttachmentUrl ? `<a href="${task.AttachmentUrl}" class="attachment-link">View File</a>` : "<span class='text-muted small fst-italic'>No attachment</span>"}</td>
-                    <td>
-                        <button class="btn btn-success btn-sm approve-btn" data-taskid="${task.DetailsID}">Approve</button>
-                        <button class="btn btn-danger btn-sm reject-btn" data-taskid="${task.DetailsID}">Reject</button>
-                    </td>
+              <td>
+    <button class="btn btn-approve approve-btn" data-taskid="${task.DetailsID}">Approve</button>
+    <button class="btn btn-reject reject-btn" data-taskid="${task.DetailsID}">Reject</button>
+</td>
+
                 </tr>`);
             cardView.append(createTaskCard(task));
         });
@@ -182,7 +188,7 @@ function loadApprovals() {
             data.approved.forEach(task => {
                 task.ShowActions = false;
                 approved.append(createTaskCard(task));
-          
+
             });
         }
 
@@ -251,28 +257,60 @@ $(document).ready(function () {
         $('#bulkActions').addClass('d-none');
     });
 
-    $(document).on("click", ".approve-btn", function () {
-        const taskId = $(this).data("taskid");
-        Swal.fire({
-            title: "Approve Task?",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonText: "Approve"
-        }).then(result => {
-            if (result.isConfirmed) {
-                $.post('@Url.Action("ApproveTask", "Admin")', { taskId })
-                    .done(res => res.success && Swal.fire("Success", "Task approved.", "success").then(loadApprovals))
-                    .fail(() => Swal.fire("Error", "Approval failed.", "error"));
-            }
-        });
+$(document).on("click", ".approve-btn", function () {
+    const taskId = $(this).data("taskid");
+    Swal.fire({
+        title: "You're about to approve this task.",
+        html: `<p style="font-size: 16px; color: #555;">Please make sure all requirements are met before confirming.</p>`,
+        icon: "question",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Approve",
+        confirmButtonColor: "#66339A",
+        background: "#fff",
+        color: "#333"
+    }).then(result => {
+        if (result.isConfirmed) {
+
+            $.post('@Url.Action("ApproveTask", "Admin")', { taskId })
+                .done(res => {
+                    if (res.success) {
+                        triggerConfetti(); 
+                        Swal.fire({
+                            title: "Task Approved 🎉",
+                            text: "This task has been successfully approved.",
+                            icon: "success",
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            background: "#ffffff",
+                            color: "#333"
+                        }).then(loadApprovals);
+                    }
+                })
+                .fail(() => {
+                    Swal.fire({
+                        title: "Error",
+                        text: "Approval failed.",
+                        icon: "error",
+                        confirmButtonColor: "#66339A"
+                    });
+                });
+        }
     });
+});
 
     $(document).on("click", ".reject-btn", function () {
         const taskId = $(this).data("taskid");
         Swal.fire({
             title: "Reject Task?",
+            html: '<p style="font-size: 14px; color: #555;">Please provide a reason for rejecting this task.</p>',
             input: "text",
             inputPlaceholder: "Reason for rejection",
+            inputPlaceholder: "e.g., Missing proof of completion",
+            inputAttributes: {
+                style: "font-size: 14px;"
+            },
             showCancelButton: true,
             confirmButtonText: "Reject"
         }).then(result => {
@@ -296,7 +334,36 @@ $(document).ready(function () {
     });
 
     $(document).on("change", "#pendingListView tbody input[type='checkbox']", toggleBulkActions);
-});
+    });
+
+    function triggerConfetti() {
+        const confettiCanvas = document.createElement('canvas');
+        confettiCanvas.style.position = 'fixed';
+        confettiCanvas.style.top = 0;
+        confettiCanvas.style.left = 0;
+        confettiCanvas.style.width = '100vw';
+        confettiCanvas.style.height = '100vh';
+        confettiCanvas.style.pointerEvents = 'none';
+        confettiCanvas.style.zIndex = 11000; 
+        document.body.appendChild(confettiCanvas);
+
+        const myConfetti = confetti.create(confettiCanvas, {
+            resize: true,
+            useWorker: true
+        });
+
+        myConfetti({
+            particleCount: 80,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#66339A', '#A066C9', '#FFD700', '#88D8B0']
+        });
+
+        setTimeout(() => {
+            document.body.removeChild(confettiCanvas);
+        }, 5000);
+    }
+
 </script>
 
 
@@ -459,4 +526,37 @@ $(document).ready(function () {
         border-radius: 4px;
         border: 1px solid #ddd;
     }
+    .btn-approve {
+        background-color: #66399A;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        font-size: 13px;
+        padding: 6px 14px;
+        width: 100%;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+        .btn-approve:hover {
+            background-color: #552788;
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(102, 51, 154, 0.25);
+            color: white;
+        }
+
+    .btn-reject {
+        background-color: #D6C5E0; 
+        color: #66399A;
+        border: none;
+        border-radius: 20px;
+        font-size: 13px;
+        padding: 6px 14px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-reject:hover {
+            background-color: #cbb3db;
+        }
+
 </style> 

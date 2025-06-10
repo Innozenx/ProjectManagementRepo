@@ -233,6 +233,8 @@ namespace ProjectManagementSystem.Controllers
         [Authorize(Roles = "PMS_PROJECT_MANAGER, PMS_ODCP_ADMIN, PMS_Management, PMS_PROJECT_OWNER, PMS_DIVISION_HEAD, PMS_USER")]
         public ActionResult Dashboard()
         {
+            var userEmail = User.Identity.GetUserName(); ;
+
             var userId = User.Identity.GetUserId();
 
             if (User.IsInRole("PMS_Management") || User.IsInRole("PMS_DIVISION_HEAD"))
@@ -245,7 +247,7 @@ namespace ProjectManagementSystem.Controllers
                 return View("~/Views/Account/Login.cshtml");
             }
 
-            var userEmail = User.Identity.GetUserName();
+            //var userEmail = User.Identity.GetUserName();
             var userInfo = cmdb.AspNetUsers.FirstOrDefault(u => u.Email == userEmail);
 
             ViewBag.IsApprover = db.ApproversTbls.Any(a => a.User_Id == userId && a.IsRemoved_ == false)
@@ -407,12 +409,17 @@ namespace ProjectManagementSystem.Controllers
                     };
                 }).ToList();
 
+            //var userEmail = User.Identity.Name.ToLower().Trim();
+
             // approval task count (preset + optional)
             var checklistMain = db.PreSetMilestoneApprovers
+                .Where(x => x.added_by == userEmail)
                 .Select(x => new { IsApproved = x.approved })
+                
                 .ToList();
 
             var checklistOptional = db.OptionalMilestoneApprovers
+                .Where(x => x.added_by == userEmail)
                 .Select(x => new { IsApproved = x.approved })
                 .ToList();
 
@@ -2723,6 +2730,51 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { message = e.Message, JsonRequestBehavior.AllowGet });
             }
         }
+
+        //[HttpPost]
+        //public JsonResult SubmitForApproval(int taskId)
+        //{
+        //    try
+        //    {
+        //        string userEmail = User.Identity.Name.ToLower().Trim();
+
+        //        var existing = db.ChecklistSubmissions
+        //            .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+
+        //        if (existing != null)
+        //        {
+        //            return Json(new { success = false, message = "Task already submitted." });
+        //        }
+
+        //        var taskDetails = db.DetailsTbls.FirstOrDefault(d => d.details_id == taskId);
+        //        if (taskDetails == null)
+        //        {
+        //            return Json(new { success = false, message = "Task not found." });
+        //        }
+
+        //        var submission = new ChecklistSubmission
+        //        {
+        //            task_id = taskId,
+        //            main_id = taskDetails.main_id,
+        //            is_approved = null,
+        //            is_removed = false,
+        //            submitted_by = userEmail,
+        //            submission_date = DateTime.Now
+        //        };
+
+        //        db.ChecklistSubmissions.Add(submission);
+        //        db.SaveChanges();
+
+        //        return Json(new { success = true, message = "Task submitted for approval.", id = submission.submission_id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new { success = false, message = "Error: " + ex.Message });
+        //    }
+        //}
+
+
+
 
         //public JsonResult GetStatusUpdates()
         //{
