@@ -125,6 +125,8 @@ namespace ProjectManagementSystem.Models
         public bool IsODCPAdmin { get; set; }
         public bool IsReadOnlyChecklistView { get; set; }
         public int milestone { get; set; }
+
+        public string ReadOnlyApprover { get; set; }
     }
 
     public class StatusLogsViewModel

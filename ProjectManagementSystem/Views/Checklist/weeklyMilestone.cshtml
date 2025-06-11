@@ -1385,8 +1385,10 @@
             });
         });
         loadMilestones(@TempData["entry"]);
-         const isReadOnlyView = @(Model.IsReadOnlyChecklistView.ToString().ToLower());
+        const isReadOnlyView = @(Model.IsReadOnlyChecklistView.ToString().ToLower());
 
+        //who is login
+        const ownerApprover = "@(Model.ReadOnlyApprover)";
         //function loadMilestones(mainId) {
         //    $.ajax({
         //        url: "/Checklist/GetMilestonesWithApprovalTasks",
@@ -1499,9 +1501,7 @@
 
                             let approversArray = Object.keys(task.approvers).map(key => {
                                 let status = task.approver_status[key];
-                                let icon = status === true
-                                    ? '<i class="fa fa-check text-success"></i>'
-                                    : status === false
+                                let icon = status === true ? '<i class="fa fa-check text-success"></i>' : status === false
                                         ? '<i class="fa fa-ban text-danger"></i>'
                                         : '<i class="fa fa-exclamation-circle text-warning"></i>';
                                 return `${icon} ${task.approvers[key]}`;
@@ -1519,6 +1519,22 @@
                                     ` : ''}
                                 </div>
                             `;
+
+                            // Check allowed approver and render checkbox accordingly
+                            const _allowedApproversArray = Object.entries(task.approvers)
+                                .filter(([key, approver]) => approver === ownerApprover)
+                                .map(([key]) => {
+                                    const isApproved = task.approver_status[key];
+                                    const disabledAttr = isApproved ? 'disabled' : '';
+
+                                    return `
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="taskSelect" value="1" ${disabledAttr}>
+                                            </label>
+                                        </div>
+                                    `;
+                                });
 
                             checklistTableBody.append(`
                             <tr>
@@ -1551,11 +1567,8 @@
                                 }
                             </td>
                            <td class="text-center">
-    ${
-                                task.approved
-                                    ? `<span class="badge badge-completed">Approved</span>`
-                                    : task.reason
-                                        ? `<span class="badge badge-delayed">Rejected</span>`
+                            ${
+                                task.approved ? `<span class="badge badge-completed">Approved</span>` : task.reason ? `<span class="badge badge-delayed">Rejected</span>`
                                         : task.attachment
                                             ? (isReadOnlyView
                                                 ? `<span class="badge badge-active pending-approver-tooltip" data-task-id="${task.task_id}">Pending for Approval</span>`
@@ -1563,19 +1576,13 @@
                                             : (isReadOnlyView
                                                 ? ``
                                                 : `<span class="badge badge-secondary">Pending</span>`)
-    }
-</td>
+                            }
+                            </td>
 
                             ${
                                 isReadOnlyView
-                                ? `<td>
-                                    <div class="checkbox">
-                                      <label>
-                                        <input type="checkbox" name="taskSelect" value="1"> 
-                                      </label>
-                                    </div>
-    
-                                   </td>`
+                                ? `<td>${_allowedApproversArray}</td>`
+
                                     : `<td>
                                         ${task.attachment
                                         ? task.approved
@@ -1626,7 +1633,7 @@
                             alert(approval_enabled);
                             checklistTableBody.append(`
                         <tr>
-                                                      <td colspan="7" class="text-center">
+                            <td colspan="7" class="text-center">
                                 <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})" id="approval_btn">Submit for Approval</button>
                             </td>
                         </tr>

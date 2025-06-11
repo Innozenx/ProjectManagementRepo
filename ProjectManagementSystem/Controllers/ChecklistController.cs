@@ -912,7 +912,8 @@ namespace ProjectManagementSystem.Controllers
                     ProjectStatus = projectStatus,
                     IsArchived = projects.IsArchived,
                     IsReadOnlyChecklistView = isReadOnlyChecklistView,
-                    milestone = milestone
+                    milestone = milestone,
+                    ReadOnlyApprover = userDetails.FirstName + " " + userDetails.LastName
 
                 };
                 viewModel.IsReadOnlyChecklistView = !isProjectManager;
