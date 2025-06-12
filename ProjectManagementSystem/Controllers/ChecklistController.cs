@@ -2128,36 +2128,49 @@ namespace ProjectManagementSystem.Controllers
                             email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                             {
                                 Text = @"
-                            <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
-                                <div style='text-align: center; margin-bottom: 20px;'>
-                              
-                                    <h1 style='font-size: 26px; color: #66339A; margin: 0;'>Welcome to the Project!</h1>
-                                    <h2 style='font-size: 20px; color: #333; margin: 10px 0;'>Project: <b>" + userProject + @"</b></h2>
-                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>We’re thrilled to have you on board! Let’s make some magic happen.</p>
-                                </div>
-                                <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);'>
-                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Hello, " + userName + @"!</p>
-                                    <p style='font-size: 14px; color: #555;'>
-                                        You've been officially added to the project <b>" + userProject + @"</b> as a <b>" + userRole + @"</b>.;
-                                    </p>
-                                    <p style='font-size: 14px; color: #555; margin-top: 20px;'>
-                                        Ready to dive in? Click the button below to explore your tasks and milestones:
-                                    </p>
-                                    <div style='text-align: center; margin: 30px 0;'>
-                                        <a href='http://localhost:60297/Checklist/weeklyMilestone?id=" + project + "&title=" + title + @"'
-                                           style='display: inline-block; padding: 14px 40px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 16px;'>
-                                           Get Started
-                                        </a>
+                                <div style='font-family: Poppins, Arial, sans-serif; background-color: #f3f4f7; padding: 40px 20px;'>
+                                    <div style='max-width: 600px; margin: auto; background-color: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.05);'>
+
+                                        <!-- Header Section -->
+                                        <div style='background-color: #66339A; color: #fff; padding: 30px 40px; text-align: center;'>
+                                            <h1 style='margin: 0; font-size: 24px;'>You're In!</h1>
+                                            <p style='margin: 10px 0 0; font-size: 16px;'>Welcome to the <strong>" + userProject + @"</strong> Project</p>
+                                        </div>
+
+                                        <!-- Body Section -->
+                                        <div style='padding: 30px 40px;'>
+                                            <h2 style='color: #333; font-size: 18px; margin-top: 0;'>Hello, " + userName + @"</h2>
+                                            <p style='color: #555; font-size: 14px; margin-bottom: 20px;'>
+                                                You've officially been added to <strong>" + userProject + @"</strong> as a <strong>" + userRole + @"</strong>. We're excited to have you join the team.
+                                            </p>
+
+                                            <div style='background-color: #f7f2fc; padding: 20px; border-left: 5px solid #66339A; border-radius: 8px; margin-bottom: 25px;'>
+                                                <p style='margin: 0; color: #444; font-size: 14px;'>
+                                                    Tip: You can now view your tasks, track milestones, and start collaborating with your project team.
+                                                </p>
+                                            </div>
+
+                                            <div style='text-align: center; margin-bottom: 30px;'>
+                                                <a href='http://localhost:60297/Checklist/weeklyMilestone?id=" + project + @"&title=" + title + @"'
+                                                   style='padding: 14px 30px; background-color: #66339A; color: #ffffff; text-decoration: none; font-weight: bold; border-radius: 6px; font-size: 15px; display: inline-block;'>
+                                                   Open Project Dashboard
+                                                </a>
+                                            </div>
+
+                                            <p style='font-size: 13px; color: #888; text-align: center;'>
+                                                Need help getting started? Reach out to the ITS team loc. 132
+                                            </p>
+                                        </div>
+
+                                        <!-- Footer Section -->
+                                        <div style='background-color: #f1f1f5; text-align: center; padding: 15px; font-size: 12px; color: #888;'>
+                                            This is an automated message from the Project Management System.<br/>
+                                            For assistance, contact ITS at <strong>LOCAL: 132</strong>.
+                                        </div>
                                     </div>
-                                    <p style='font-size: 14px; color: #555; text-align: center;'>
-                                        Need help or have questions? Don’t hesitate to reach out. We’re here to support you every step of the way!
-                                    </p>
-                                </div>
-                                <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
-                                    <i>*This is an automated email from the Project Management System. Please do not reply. For assistance, contact your supervisor or ITS at <b>LOCAL: 132</b>.</i>
-                                </div>
-                            </div>"
+                                </div>"
                             };
+
 
                             using (var smtp = new SmtpClient())
                             {
