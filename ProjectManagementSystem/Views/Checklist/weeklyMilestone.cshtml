@@ -5,8 +5,6 @@
     var selectedTab = Request.QueryString["tab"] ?? "overview";
 
 
-
-
 }
 
 <head>
@@ -1126,7 +1124,7 @@
                         <th>Checklist Items</th>
                         <th>Attachments</th>
                         <th>Approvers</th>
-                        <th>Status</th>
+                        @*<th>Status</th>*@
                         <th>Action</th>
                         @*@if (!Model.IsReadOnlyChecklistView)
                         {
@@ -1500,12 +1498,33 @@
                             if (task.attachment && task.reason == null && task.approval_enabled == true) approval_enabled++;
 
                             let approversArray = Object.keys(task.approvers).map(key => {
-                                let status = task.approver_status[key];
-                                let icon = status === true ? '<i class="fa fa-check text-success"></i>' : status === false
+                                const name = task.approvers[key];
+                                const status = task.approver_status[key];
+                                const approvedDate = task.approver_dates && task.approver_dates[key];
+                                //const formattedDate = approvedDate
+                                //    ? moment(approvedDate).format("MMM D, YYYY - h:mm A")
+                                //    : "No action yet";
+
+                                const tooltipText = status === true
+                                    ? `Approved`
+                                    : status === false
+                                        ? `Rejected`
+                                        : `Pending`;
+
+                                const icon = status === true
+                                    ? '<i class="fa fa-check text-success"></i>'
+                                    : status === false
                                         ? '<i class="fa fa-ban text-danger"></i>'
                                         : '<i class="fa fa-exclamation-circle text-warning"></i>';
-                                return `${icon} ${task.approvers[key]}`;
+
+                                return `<span class="d-inline-block me-1" data-bs-toggle="tooltip" title="${tooltipText}">
+                                ${icon} ${name}
+                            </span>`;
                             });
+                            setTimeout(() => {
+                                $('[data-bs-toggle="tooltip"]').tooltip();
+                            }, 100);
+
 
                             let collapsedApprovers = approversArray.slice(0, 2).join("<br/>");
                             let remainingApprovers = approversArray.slice(2).join("<br/>");
@@ -1520,7 +1539,7 @@
                                 </div>
                             `;
 
-                            // Check allowed approver and render checkbox accordingly
+                            // check allowed approver and render checkbox accordingly
                             const _allowedApproversArray = Object.entries(task.approvers)
                                 .filter(([key, approver]) => approver === ownerApprover)
                                 .map(([key]) => {
@@ -1535,6 +1554,10 @@
                                         </div>
                                     `;
                                 });
+
+                            checklistTableBody.append(`
+    `)
+
 
                             checklistTableBody.append(`
                             <tr>
@@ -1566,18 +1589,7 @@
                                     : approverHtml
                                 }
                             </td>
-                           <td class="text-center">
-                            ${
-                                task.approved ? `<span class="badge badge-completed">Approved</span>` : task.reason ? `<span class="badge badge-delayed">Rejected</span>`
-                                        : task.attachment
-                                            ? (isReadOnlyView
-                                                ? `<span class="badge badge-active pending-approver-tooltip" data-task-id="${task.task_id}">Pending for Approval</span>`
-                                                : `<span class="badge badge-warning">Pending</span>`)
-                                            : (isReadOnlyView
-                                                ? ``
-                                                : `<span class="badge badge-secondary">Pending</span>`)
-                            }
-                            </td>
+                    
 
                             ${
                                 isReadOnlyView
@@ -1586,7 +1598,7 @@
                                     : `<td>
                                         ${task.attachment
                                         ? task.approved
-                                            ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
+                                        ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
                                             : task.reason
                                                 ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
                                                 : `<button class="btn btn-sm btn-warning" disabled>Saved</button>`
@@ -1634,7 +1646,7 @@
                             checklistTableBody.append(`
                         <tr>
                             <td colspan="7" class="text-center">
-                                <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})" id="approval_btn">Submit for Approval</button>
+                                <button class="btn btn-success w-25" style=""border-radius: 30px;"onclick="notifyApprovers(${response.id})" id="approval_btn">Submit for Approval</button>
                             </td>
                         </tr>
                     `);
@@ -2379,6 +2391,16 @@
                 location.reload();
             });
         }
+        const approverBadges = task.approvers.map(approver => {
+            const tooltip = `${approver.status.charAt(0).toUpperCase() + approver.status.slice(1)} on ${approver.date}`;
+            const badgeColor = approver.status === 'approved' ? 'success'
+                : approver.status === 'rejected' ? 'danger'
+                    : 'secondary';
+            return `<span class="badge bg-${badgeColor} me-1" data-bs-toggle="tooltip" title="${tooltip}">
+                ${approver.name}
+            </span>`;
+        }).join('');
+
     });
 </script>                                                                                                                                                                                           
 
