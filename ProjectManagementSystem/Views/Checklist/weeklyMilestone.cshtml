@@ -1549,7 +1549,7 @@
                                     return `
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" name="taskSelect" value="1" ${disabledAttr}>
+                                                <input type="checkbox" name="taskSelect" data-task-id=${task.taskID} value="${approver}" ${disabledAttr}>
                                             </label>
                                         </div>
                                     `;
@@ -1610,9 +1610,17 @@
                             <td class="d-none" id="${task.task_id}project">${pId}</td>
                             <td class="d-none" id="${task.task_id}type">${task.optFlag ? "optional" : "preset"}</td>
                             <td class="d-none" id="${task.task_id}id">${task.optFlag ? "optional" : "preset"}</td>
-                        </tr>
-                `);
+                        </tr>`);
                         });
+
+                        //show bulk approve button
+                        if (isReadOnlyView) {
+                            checklistTableBody.append(`<tr>
+                                    <td colspan="7" class="text-center">
+                                        <button class="btn btn-success w-25" style=""border-radius: 30px;"onclick="" id="approval_btn">Approve</button>
+                                    </td>
+                                </tr>`);
+                        }
 
                         response.data.forEach((task) => {
                             if (isReadOnlyView && task.attachment && !task.approved && !task.reason) {
@@ -1643,13 +1651,11 @@
 
                         if (!isReadOnlyView && item_ctr === saved_ctr && item_ctr != approval_enabled) {
                             alert(approval_enabled);
-                            checklistTableBody.append(`
-                        <tr>
-                            <td colspan="7" class="text-center">
-                                <button class="btn btn-success w-25" style=""border-radius: 30px;"onclick="notifyApprovers(${response.id})" id="approval_btn">Submit for Approval</button>
-                            </td>
-                        </tr>
-                    `);
+                            checklistTableBody.append(`<tr>
+                                    <td colspan="7" class="text-center">
+                                        <button class="btn btn-success w-25" style=""border-radius: 30px;"onclick="notifyApprovers(${response.id})" id="approval_btn">Submit for Approval</button>
+                                    </td>
+                                </tr>`);
                         }
 
 
