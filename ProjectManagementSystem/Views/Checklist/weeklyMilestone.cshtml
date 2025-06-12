@@ -1549,7 +1549,7 @@
                                     return `
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" name="taskSelect" data-task-id=${task.taskID} value="${approver}" ${disabledAttr}>
+                                                <input type="checkbox" name="taskSelect" data-task-id="${task.task_id}" data-milestone-id="${task.milestone_id}" value="${task.approvers[key]}" ${disabledAttr}>
                                             </label>
                                         </div>
                                     `;
