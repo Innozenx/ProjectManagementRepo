@@ -1097,6 +1097,8 @@
 
 @*<div class="tab-pane fade" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">*@
 <div class="tab-pane fade @(selectedTab == "checklist" ? "show active" : "")" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">
+    <input type="text" id="main_id" value="@Model.MainId" hidden readonly />
+    <input type="text" id="current_milestoneid" value="" hidden readonly />
 
     <div class="card shadow-sm p-4">
         <h3 class="text-center text-purple fw-bold">Checklist <span id="checklist_id_container"></span></h3>
@@ -1580,13 +1582,15 @@
                                 }
                             </td>
                             <td>
-                                ${task.optFlag
-                                    ? (isReadOnlyView
-                                        ? approverHtml
-                                        : task.approvers.length > 0
-                                            ? approverHtml + `<button class="btn btn-primary w-25" onclick="add_approverbtn(${task.task_id})">+</button> <button class="btn btn-danger w-25" onclick="removeApprover(${task.task_id})">-</button>`
-                                            : `<button class="btn btn-primary w-50" onclick="add_approverbtn(${task.task_id})">+</button>`)
-                                    : approverHtml
+                                ${task.approval_enabled 
+                                    ? approverHtml
+                                    : task.optFlag
+                                        ? (isReadOnlyView
+                                            ? approverHtml
+                                            : task.approvers.length > 0
+                                                ? approverHtml + `<button class="btn btn-primary w-25" onclick="add_approverbtn(${task.task_id})">+</button> <button class="btn btn-danger w-25" onclick="removeApprover(${task.task_id})">-</button>`
+                                                : `<button class="btn btn-primary w-50" onclick="add_approverbtn(${task.task_id})">+</button>`)
+                                        : approverHtml
                                 }
                             </td>
                     
@@ -1601,7 +1605,9 @@
                                         ? `<button class="btn btn-sm btn-success" disabled>Approved</button>`
                                             : task.reason
                                                 ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
-                                                : `<button class="btn btn-sm btn-warning" disabled>Saved</button>`
+                                                : task.approval_enabled
+                                                    ? `<button class="btn btn-sm btn-warning" disabled>Saved</button>`
+                                                    : `<button class="btn btn-sm btn-warning">Resubmit</button>`
                                         : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Save</button>`
                                     }
                                     </td>`
@@ -1650,13 +1656,22 @@
                         });
 
                         if (!isReadOnlyView && item_ctr === saved_ctr && item_ctr != approval_enabled) {
-                            alert(approval_enabled);
-                            checklistTableBody.append(`<tr>
-                                    <td colspan="7" class="text-center">
-                                        <button class="btn btn-success w-25" style=""border-radius: 30px;"onclick="notifyApprovers(${response.id})" id="approval_btn">Submit for Approval</button>
-                                    </td>
-                                </tr>`);
+                            checklistTableBody.append(`
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})" id="approval_btn">Submit for Approval</button>
+                            </td>
+                        </tr>
+                    `);
                         }
+
+                    //        checklistTableBody.append(`
+                    //    <tr>
+                    //        <td colspan="7" class="text-center">
+                    //            <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})" id="approval_btn">Submit for Approval</button>
+                    //        </td>
+                    //    </tr>
+                    //`);
 
 
                     } else {
@@ -1979,10 +1994,13 @@
         }
 
         function notifyApprovers(checklist_id) {
+            let projectID = $("#main_id").val();
+            let milestoneID = $("#current_milestoneid").val();
+
             $.ajax({
                 url: "@Url.Action("NotifyApprovers", "Checklist")",
                 type: "POST",
-                data: { "cID": checklist_id },
+                data: { "cID": checklist_id, "pID": projectID, "mID": milestoneID },
                 success: function (res) {
                     if (res.message == "success") {
                         alert("success");

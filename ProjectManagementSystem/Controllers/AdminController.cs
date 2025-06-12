@@ -12,6 +12,8 @@ using System.Data.SqlClient;
 using System.IO;
 using Newtonsoft.Json;
 using Microsoft.AspNet.Identity;
+using MimeKit;
+using MailKit.Net.Smtp;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -946,15 +948,16 @@ namespace ProjectManagementSystem.Controllers
             List<ApprovalTaskDTO> optionalMileStone = new List<ApprovalTaskDTO>();
 
             //get all optionalMilestoneApprovers based on userEmail
-            var _optional = db.OptionalMilestoneApprovers.Where(x => x.approver_email == userEmail && (x.is_removed == false || x.is_removed == null)).ToList();
-            
-            foreach(var row in _optional)
+            var _optional = db.OptionalMilestoneApprovers.Where(x => x.approver_email == userEmail && (x.is_removed == false || x.is_removed == null) && x.task_id.HasValue).ToList();
+
+            foreach (var row in _optional)
             {
                 var getTask = db.OptionalMilestones.FirstOrDefault(x => x.id == row.task_id);
                 var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id);
                 var getMaintbl = db.MainTables.FirstOrDefault(x => x.main_id == getCheckListSubmission.main_id);
 
-                var getOptional = new ApprovalTaskDTO{
+                var getOptional = new ApprovalTaskDTO
+                {
                     isApproved = row.approved,
                     isRejected = row.rejected,
 
@@ -971,7 +974,7 @@ namespace ProjectManagementSystem.Controllers
             }
 
             //Pre-set task
-            var _preset = db.PreSetMilestoneApprovers.Where(x => x.approver_email == userEmail && (x.is_removed == false || x.is_removed == null)).ToList();
+            var _preset = db.PreSetMilestoneApprovers.Where(x => x.approver_email == userEmail && (x.is_removed != true || x.is_removed == null) && x.task_id.HasValue).ToList();
 
             foreach (var row in _preset)
             {
@@ -1176,6 +1179,87 @@ namespace ProjectManagementSystem.Controllers
 
                 db.SaveChanges();
 
+                //Checking for project status. If completely approved, send email.
+                var main_id = submission.main_id;
+                var milestone_id = submission.milestone_id;
+
+                var milestone_submissions = db.ChecklistSubmissions.Where(x => x.main_id == main_id && x.milestone_id == milestone_id && (x.is_removed != true || x.is_removed == null)).ToList();
+
+                if (milestone_submissions.Any()) {
+                    var complete = true;
+
+                    foreach (var sub in milestone_submissions)
+                    {
+                        if (sub.is_approved == null || sub.is_approved == false)
+                        {
+                            complete = false;
+                            break;
+                        }
+                    }
+
+                    if (complete == true)
+                    {
+                        var checklistTbl = db.ChecklistTables.Where(x => x.main_id == main_id && x.milestone_id == milestone_id).OrderByDescending(x => x.checklist_id).FirstOrDefault();
+                        checklistTbl.is_approved = true;
+                        checklistTbl.approval_date = DateTime.Now;
+
+                        var milestoneTbl = db.MilestoneTbls.Where(x => x.main_id == main_id && x.root_id == milestone_id).OrderByDescending(x => x.milestone_id).FirstOrDefault();
+                        milestoneTbl.IsCompleted = true;
+                        milestoneTbl.actual_completion_date = DateTime.Now;
+
+                        //---------------------------------
+                        var mainTbl = db.MainTables.Where(x => x.main_id == main_id).SingleOrDefault();
+                        var projectTitle = mainTbl.project_title;
+     
+                        var milestoneTitle = db.MilestoneRoots.Where(x => x.id == milestone_id).Select(x => x.milestone_name).SingleOrDefault();
+                        var membersTbl = db.ProjectMembersTbls.Where(x => x.project_id == main_id).ToList();
+                        var project_manager = membersTbl.Where(x => x.role == 1004).SingleOrDefault();
+
+                        var systemEmail = "e-notify@enchantedkingdom.ph";
+                        var systemName = "PM SYSTEM";
+                        var email = new MimeMessage();
+
+                        email.From.Add(new MailboxAddress(systemName, systemEmail));
+                        email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
+
+                        email.Subject = "PM System Approval";
+                        email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = @"
+                            <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
+                                <div style='text-align: center; margin-bottom: 20px;'>
+                              
+                                    <h1 style='font-size: 26px; color: #66339A; margin: 0;'>Enchanting Day!</h1>
+                                </div>
+                                <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); text-align: center;'>
+                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Hello, " + project_manager.name + @"!</p>
+                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>Your submission for 
+                                    <br/>Project: <b>" + projectTitle + "</b>" +
+                                        "<br/>Milestone: <b>" + milestoneTitle + "</b>" +
+                                        "<br/><br/> <b>has been approved!</b>" + @" .</p>
+                                    <p style='font-size: 14px; color: #555;'>
+                                        Please see the link below to view the request:
+                                    </p>
+                                    <div style='text-align: center; margin: 30px 0;'>
+                                        <a href='http://localhost:60297/Admin/PendingApprovals'
+                                           style='display: inline-block; padding: 14px 40px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 16px;'>
+                                           Get Started
+                                        </a>
+                                    </div>
+                                    <p style='font-size: 14px; color: #555; text-align: center;'>
+                                        Need help or have questions? Don’t hesitate to reach out. We’re here to support you every step of the way!
+                                    </p>
+                                </div>
+                                <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
+                                    <i>*This is an automated email from the Project Management System. Please do not reply. For assistance, contact your supervisor or ITS at <b>LOCAL: 132</b>.</i>
+                                </div>
+                            </div>"
+                        };
+
+                        db.SaveChanges();
+                    }
+                }
+
                 return Json(new { success = true, message = "Task approved successfully!" });
             }
             catch (Exception ex)
@@ -1257,6 +1341,8 @@ namespace ProjectManagementSystem.Controllers
                 }
 
                 db.SaveChanges();
+
+
 
                 return Json(new { success = true, message = "Task rejected!" });
             }
