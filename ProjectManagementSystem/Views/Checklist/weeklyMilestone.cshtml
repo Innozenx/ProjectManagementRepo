@@ -2247,6 +2247,8 @@
             $(this).empty();
         });
         $("#checklist_id_input").val("");
+        $("#current_milestoneid").empty();
+        $("#current_milestoneid").val(milestoneId);
 
         if (milestoneId !== "") {
             $("#add_optional").removeClass("d-none");
