@@ -746,5 +746,12 @@ namespace ProjectManagementSystem.Models
         public int milestone_id { get; set; }
     }
 
+    public class BulkApprove
+    {
+        public int TaskId { get; set; }
+        public int MilestoneId { get; set; }
+        public string Approver { get; set; }
+    }
+
 }
 

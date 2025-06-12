@@ -17,6 +17,7 @@ using System.Web;
 using MimeKit;
 using MailKit.Net.Smtp;
 using System.Net;
+using System.Data.Entity;
 
 namespace ProjectManagementSystem.Controllers
 {
@@ -2869,6 +2870,72 @@ namespace ProjectManagementSystem.Controllers
             {
                 return Json(new { message = e.Message, JsonRequestBehavior.AllowGet });
             }
+        }
+
+        [HttpPost]
+        public JsonResult BulkApproved(List<BulkApprove> tasks)
+        {
+            if (tasks == null)
+            {
+                return Json(new { success = false, JsonRequestBehavior.AllowGet });
+            }
+
+            foreach (var task in tasks)
+            {
+                var getChecklistSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == task.TaskId);
+                if(getChecklistSubmission.type == "optional")
+                {
+                    var approverToUpdate = db.OptionalMilestoneApprovers.FirstOrDefault(x =>
+                        x.task_id == task.TaskId &&
+                        //x.milestone_id == task.MilestoneId &&
+                        x.approver_name == task.Approver
+                    );
+
+                    if (approverToUpdate != null)
+                    {
+                        // Perform update, e.g.:
+                        approverToUpdate.approved = true;
+                        approverToUpdate.date_approved = DateTime.Now;
+                        db.Entry(approverToUpdate).State = EntityState.Modified;
+
+                        //update CheckListSubmission
+                        var updateChecklistSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == task.TaskId);
+                        updateChecklistSubmission.approved_by = task.Approver;
+                        updateChecklistSubmission.approval_date = DateTime.Now;
+                        db.Entry(updateChecklistSubmission).State = EntityState.Modified;
+
+
+                    }
+                }
+                else if(getChecklistSubmission.type == "preset")
+                {
+                    // Update the PreSetMilestoneApprovers table
+                    var presetToUpdate = db.PreSetMilestoneApprovers.FirstOrDefault(x =>
+                        x.task_id == task.TaskId &&
+                       //x.milestone_id == task.MilestoneId &&
+                        x.approver_name == task.Approver
+                    );
+
+                    if (presetToUpdate != null)
+                    {
+                        // Perform update
+                        presetToUpdate.approved = true;
+                        presetToUpdate.date_approved = DateTime.Now;
+                        db.Entry(presetToUpdate).State = EntityState.Modified;
+
+                        //update CheckListSubmission
+                        var updateChecklistSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == task.TaskId);
+                        updateChecklistSubmission.approved_by = task.Approver;
+                        updateChecklistSubmission.approval_date = DateTime.Now;
+                        db.Entry(updateChecklistSubmission).State = EntityState.Modified;
+                    }
+                }
+            }
+
+            // Save changes once after the loop
+            db.SaveChanges();
+
+            return Json(new { success = true, JsonRequestBehavior.AllowGet });
         }
 
         //[HttpPost]

@@ -1551,7 +1551,7 @@
                                     return `
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" name="taskSelect" data-task-id=${task.taskID} value="${approver}" ${disabledAttr}>
+                                                <input type="checkbox" name="taskSelect" data-task-id="${task.task_id}" data-milestone-id="${task.milestone_id}" value="${task.approvers[key]}" ${disabledAttr}>
                                             </label>
                                         </div>
                                     `;
@@ -1623,7 +1623,7 @@
                         if (isReadOnlyView) {
                             checklistTableBody.append(`<tr>
                                     <td colspan="7" class="text-center">
-                                        <button class="btn btn-success w-25" style=""border-radius: 30px;"onclick="" id="approval_btn">Approve</button>
+                                        <button class="btn btn-success w-25" style="border-radius: 30px;" onclick="bulkApproval()" id="btnBulkApproval">Approve</button>
                                     </td>
                                 </tr>`);
                         }
@@ -1693,6 +1693,69 @@
             });
         }
 
+        
+        function bulkApproval() {
+
+            var checkboxes = $('input[name="taskSelect"]:not(:disabled)');
+            var allChecked = checkboxes.length > 0 && checkboxes.length === checkboxes.filter(':checked').length;
+
+            if (allChecked) {
+
+                var checkedTasks = [];
+
+                $('input[name="taskSelect"]:checked').each(function () {
+                    checkedTasks.push({
+                        taskId: $(this).data('task-id'),
+                        milestoneId: $(this).data('milestone-id'),
+                        approver: $(this).val()
+                    });
+                });
+
+               Swal.fire({
+                    title: "Are you sure you want to approved this Checklist Item?",
+                    showDenyButton: true,
+                    confirmButtonText: "Yes",
+                    denyButtonText: `No`
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("BulkApproved", "Checklist")",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ tasks: checkedTasks }),
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: 'Checklist item approved!',
+                                }).then(function () {
+                                    var milestone = $("#milestoneDropdown").val();
+                                    localStorage.setItem('currentTab', 'checklist');
+                                    localStorage.setItem('currentDrop', milestone);
+
+                                    location.reload();
+
+                                    //setTimeout(function () {
+                                    //    location.reload();
+                                    //}, 1000)
+                                });
+                            } else {
+                                Swal.fire("Changes are not saved", "", "info");
+                            }   
+                        }
+                       
+                    });
+                } else if (result.isDenied) {
+                    Swal.fire("Changes are not saved", "", "info");
+                }
+                });
+            } else {
+                Swal.fire("Select Checklist Item to approve", "", "info");
+            }
+
+            
+        }
 
 
         function submitApproval(task_id) {
