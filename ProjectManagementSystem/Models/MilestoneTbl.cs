@@ -35,6 +35,7 @@ namespace ProjectManagementSystem.Models
         public Nullable<System.DateTime> completion_date { get; set; }
         public Nullable<System.DateTime> current_completion_date { get; set; }
         public Nullable<int> root_id { get; set; }
+        public Nullable<System.DateTime> actual_completion_date { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FixedChecklistTbl> FixedChecklistTbls { get; set; }

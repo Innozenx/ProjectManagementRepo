@@ -214,6 +214,7 @@
           <Property Name="completion_date" Type="datetime" />
           <Property Name="current_completion_date" Type="datetime" />
           <Property Name="root_id" Type="int" />
+          <Property Name="actual_completion_date" Type="datetime" />
         </EntityType>
         <EntityType Name="OptionalMilestoneApprovers">
           <Key>
@@ -446,31 +447,6 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
           <Property Name="milestone_id" Type="int" Nullable="false" />
           <Property Name="main_id" Type="int" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6013: The table/view 'ProjectManagementDB.dbo.vw_optional' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
-        <EntityType Name="vw_optional">
-          <Property Name="task_id" Type="int" />
-          <Property Name="task_name" Type="nvarchar" MaxLength="100" />
-          <Property Name="submitted_by" Type="nvarchar" MaxLength="100" />
-          <Property Name="submission_date" Type="datetime" />
-          <Property Name="main_id" Type="int" />
-          <Property Name="milestone_id" Type="int" />
-          <Property Name="approved" Type="bit" />
-          <Property Name="rejected" Type="bit" />
-        </EntityType>-->
-        <!--Errors Found During Generation:
-warning 6013: The table/view 'ProjectManagementDB.dbo.vwMainTable_Optional' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
-        <EntityType Name="vwMainTable_Optional">
-          <Property Name="task_id" Type="int" />
-          <Property Name="task_name" Type="nvarchar" MaxLength="100" />
-          <Property Name="submitted_by" Type="nvarchar" MaxLength="100" />
-          <Property Name="submission_date" Type="datetime" />
-          <Property Name="main_id" Type="int" />
-          <Property Name="milestone_id" Type="int" />
-          <Property Name="approved" Type="bit" />
-          <Property Name="rejected" Type="bit" />
-          <Property Name="project_title" Type="nvarchar" MaxLength="255" />
-        </EntityType>-->
         <Association Name="FK_FixedChecklistTbl_ChecklistSetup">
           <End Role="ChecklistSetup" Type="Self.ChecklistSetup" Multiplicity="0..1" />
           <End Role="FixedChecklistTbl" Type="Self.FixedChecklistTbl" Multiplicity="*" />
@@ -913,6 +889,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.vwMainTable_Optional' does
           <Property Name="root_id" Type="Int32" />
           <NavigationProperty Name="FixedChecklistTbls" Relationship="ProjectManagementDBModel.FK_FixedChecklistTbl_MilestoneTbl" FromRole="MilestoneTbl" ToRole="FixedChecklistTbl" />
           <NavigationProperty Name="MainTable" Relationship="ProjectManagementDBModel.FK_MilestoneTbl_MainTable" FromRole="MilestoneTbl" ToRole="MainTable" />
+          <Property Name="actual_completion_date" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="OptionalMilestoneApprover">
           <Key>
@@ -1436,6 +1413,7 @@ warning 6013: The table/view 'ProjectManagementDB.dbo.vwMainTable_Optional' does
           <EntitySetMapping Name="MilestoneTbls">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.MilestoneTbl">
               <MappingFragment StoreEntitySet="MilestoneTbl">
+                <ScalarProperty Name="actual_completion_date" ColumnName="actual_completion_date" />
                 <ScalarProperty Name="root_id" ColumnName="root_id" />
                 <ScalarProperty Name="current_completion_date" ColumnName="current_completion_date" />
                 <ScalarProperty Name="completion_date" ColumnName="completion_date" />

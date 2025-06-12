@@ -682,7 +682,7 @@ namespace ProjectManagementSystem.Controllers
         //    return View(viewModel);
         //}
         
-        public ActionResult weeklyMilestone(int id, string title, string projectId, int milestone, string tab = "overview", bool fromApproval = false)
+        public ActionResult weeklyMilestone(int id, string title, string projectId, string tab = "overview", bool fromApproval = false)
         {
 
             ViewBag.FromApproval = TempData["FromApproval"] != null && (bool)TempData["FromApproval"];
@@ -912,7 +912,7 @@ namespace ProjectManagementSystem.Controllers
                     ProjectStatus = projectStatus,
                     IsArchived = projects.IsArchived,
                     IsReadOnlyChecklistView = isReadOnlyChecklistView,
-                    milestone = milestone,
+                    milestone = id,
                     ReadOnlyApprover = userDetails.FirstName + " " + userDetails.LastName
 
                 };
@@ -2288,6 +2288,8 @@ namespace ProjectManagementSystem.Controllers
         {
             try
             {
+                var ctr = 0;
+
                 List<TaskContainerModel> container = new List<TaskContainerModel>();
 
                 var tasks = db.OptionalMilestones.Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.is_removed != true).ToList();
@@ -2328,7 +2330,8 @@ namespace ProjectManagementSystem.Controllers
                             reason = submissionContainer.reason,
                             approver_status = submissionContainer.approver_status,
                             optFlag = true,
-                            approval_enabled = submissionContainer.approval_enabled
+                            approval_enabled = submissionContainer.approval_enabled,
+                            submissionFlag = true
                         };
 
                         container.Add(temporary);
@@ -2359,7 +2362,8 @@ namespace ProjectManagementSystem.Controllers
                             attachment = null,
                             reason = null,
                             approver_status = optionalTasks.approver_status,
-                            optFlag = true
+                            optFlag = true,
+                            submissionFlag = false
                         };
 
                         container.Add(temporary);
@@ -2400,11 +2404,11 @@ namespace ProjectManagementSystem.Controllers
                             reason = submissionContainer.reason,
                             approver_status = submissionContainer.approver_status,
                             optFlag = false,
-                            approval_enabled = submissionContainer.approval_enabled
+                            approval_enabled = submissionContainer.approval_enabled,
+                            submissionFlag = true
                         };
 
                         container.Add(temporary);
-
                     }
 
                     else
@@ -2416,7 +2420,8 @@ namespace ProjectManagementSystem.Controllers
                             task_id = preset.ID,
                             milestone_id = preset.MilestoneID,
                             approver_status = db.ChecklistSubmissions.Where(x => x.task_id == milestoneId).Select(x => x.is_approved).ToList(),
-                            optFlag = false
+                            optFlag = false,
+                            submissionFlag = false
                         };
 
                         container.Add(preset_container);
@@ -2689,6 +2694,14 @@ namespace ProjectManagementSystem.Controllers
                 dbOptional.is_removed = true;
                 dbOptional.date_removed = DateTime.Now;
 
+                var dbOptionalApprovers = db.OptionalMilestoneApprovers.Where(x => x.task_id == id).ToList();
+                foreach(var approver in dbOptionalApprovers)
+                {
+                    approver.is_removed = true;
+                    approver.date_removed = DateTime.Now;
+                    approver.removed_by = User.Identity.Name;
+                }
+
                 db.SaveChanges();
 
                 return Json(new { message = "success" }, JsonRequestBehavior.AllowGet);
@@ -2708,20 +2721,146 @@ namespace ProjectManagementSystem.Controllers
             return View();
         }
 
-        public JsonResult NotifyApprovers(int cID)
+        public JsonResult NotifyApprovers(int cID, int pID, int mID)
         {
             try
             {
                 var dbChecklist = (from c in db.ChecklistTables.Where(x => x.checklist_id == cID)
-                                   join s in db.ChecklistSubmissions.Where(x => x.is_removed != true) on new { mainID = c.main_id, milestoneID = c.milestone_id} equals new { mainID = s.main_id, milestoneID = s.milestone_id}
+                                   join s in db.ChecklistSubmissions.Where(x => x.is_removed != true && x.is_approved != true) on new { mainID = c.main_id, milestoneID = c.milestone_id} equals new { mainID = s.main_id, milestoneID = s.milestone_id}
                                    select s).ToList();
 
-                foreach(var checklist in dbChecklist)
+                var optionalApprovers = (from s in db.ChecklistSubmissions.Where(x => x.is_removed != true && x.approval_enabled == true && x.type == "optional" && x.main_id == pID && x.milestone_id == mID)
+                                         join o in db.OptionalMilestoneApprovers.Where(x => x.is_removed != true && x.main_id == pID && x.milestone_id == mID) on new { taskID = s.task_id, } equals new { taskID = o.task_id }
+                                         select o).ToList();
+
+                var presetApprovers = (from s in db.ChecklistSubmissions.Where(x => x.is_removed != true && x.approval_enabled == true && x.type == "preset" && x.main_id == pID && x.milestone_id == mID)
+                                         join o in db.PreSetMilestoneApprovers.Where(x => x.is_removed != true && x.main_id == pID && x.milestone_id == mID) on new { taskID = s.task_id, } equals new { taskID = o.task_id }
+                                         select o).ToList();
+
+                foreach (var checklist in dbChecklist)
                 {
                     checklist.approval_enabled = true;
                 }
 
                 db.SaveChanges();
+
+                //optional approver email notification
+                foreach(var approver in optionalApprovers)
+                {
+                    var projectTitle = db.MainTables.Where(x => x.main_id == pID).Select(x => x.project_title).SingleOrDefault();
+                    var milestoneTitle = db.MilestoneRoots.Where(x => x.id == mID).Select(x => x.milestone_name).SingleOrDefault();
+
+                    var systemEmail = "e-notify@enchantedkingdom.ph";
+                    var systemName = "PM SYSTEM";
+                    var email = new MimeMessage();
+
+                    email.From.Add(new MailboxAddress(systemName, systemEmail));
+                    email.To.Add(new MailboxAddress(approver.approver_name, approver.approver_email));
+
+                    email.Subject = "PM System Pending Approval";
+                    email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                    {
+                        Text = @"
+                            <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
+                                <div style='text-align: center; margin-bottom: 20px;'>
+                              
+                                    <h1 style='font-size: 26px; color: #66339A; margin: 0;'>Enchanting Day!</h1>
+                                </div>
+                                <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); text-align: center;'>
+                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Hello, " + approver.approver_name + @"!</p>
+                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>You have a pending approval for 
+                                    <br/>Project: <b>" + projectTitle + "</b>" +
+                                    "<br/>Milestone: <b>" + milestoneTitle + "</b>" +
+                                    "<br/><br/> as an <b>Optional Milestone Approver</b>" + @" .</p>
+                                    <p style='font-size: 14px; color: #555;'>
+                                        Please see the link below to view the request for your approval:
+                                    </p>
+                                    <div style='text-align: center; margin: 30px 0;'>
+                                        <a href='http://localhost:60297/Admin/PendingApprovals'
+                                           style='display: inline-block; padding: 14px 40px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 16px;'>
+                                           Get Started
+                                        </a>
+                                    </div>
+                                    <p style='font-size: 14px; color: #555; text-align: center;'>
+                                        Need help or have questions? Don’t hesitate to reach out. We’re here to support you every step of the way!
+                                    </p>
+                                </div>
+                                <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
+                                    <i>*This is an automated email from the Project Management System. Please do not reply. For assistance, contact your supervisor or ITS at <b>LOCAL: 132</b>.</i>
+                                </div>
+                            </div>"
+                    };
+
+                    using (var smtp = new SmtpClient())
+                    {
+                        smtp.Connect("mail.enchantedkingdom.ph", 587, false);
+
+                        // Note: only needed if the SMTP server requires authentication
+                        smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
+
+                        smtp.Send(email);
+                        smtp.Disconnect(true);
+                    }
+                }
+
+                //preset approver email notification
+                foreach (var approver in presetApprovers)
+                {
+                    var projectTitle = db.MainTables.Where(x => x.main_id == pID).Select(x => x.project_title).SingleOrDefault();
+                    var milestoneTitle = db.MilestoneRoots.Where(x => x.id == mID).Select(x => x.milestone_name).SingleOrDefault();
+
+                    var systemEmail = "e-notify@enchantedkingdom.ph";
+                    var systemName = "PM SYSTEM";
+                    var email = new MimeMessage();
+
+                    email.From.Add(new MailboxAddress(systemName, systemEmail));
+                    email.To.Add(new MailboxAddress(approver.approver_name, approver.approver_email));
+
+                    email.Subject = "PM System Pending Approval";
+                    email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                    {
+                        Text = @"
+                            <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
+                                <div style='text-align: center; margin-bottom: 20px;'>
+                              
+                                    <h1 style='font-size: 26px; color: #66339A; margin: 0;'>Enchanting Day!</h1>
+                                </div>
+                                <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); text-align: center;'>
+                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Hello, " + approver.approver_name + @"!</p>
+                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>You have a pending approval for
+                                    <br/>Project: <b>" + projectTitle + "</b>" +
+                                    "<br/>Milestone: <b>" + milestoneTitle + "" +
+                                    "<br/><br/></b> as a <b>Preset Milestone Approver</b>" + @" .</p>
+                                    <p style='font-size: 14px; color: #555;'>
+                                        Please see the link below to view the request for your approval:
+                                    </p>
+                                    <div style='text-align: center; margin: 30px 0;'>
+                                        <a href='http://localhost:60297/Admin/PendingApprovals'
+                                           style='display: inline-block; padding: 14px 40px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 16px;'>
+                                           Get Started
+                                        </a>
+                                    </div>
+                                    <p style='font-size: 14px; color: #555; text-align: center;'>
+                                        Need help or have questions? Don’t hesitate to reach out. We’re here to support you every step of the way!
+                                    </p>
+                                </div>
+                                <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
+                                    <i>*This is an automated email from the Project Management System. Please do not reply. For assistance, contact your supervisor or ITS at <b>LOCAL: 132</b>.</i>
+                                </div>
+                            </div>"
+                    };
+
+                    using (var smtp = new SmtpClient())
+                    {
+                        smtp.Connect("mail.enchantedkingdom.ph", 587, false);
+
+                        // Note: only needed if the SMTP server requires authentication
+                        smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
+
+                        smtp.Send(email);
+                        smtp.Disconnect(true);
+                    }
+                }
 
                 return Json(new { message = "success", JsonRequestBehavior.AllowGet });
             }

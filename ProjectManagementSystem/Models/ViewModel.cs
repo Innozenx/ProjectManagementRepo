@@ -624,6 +624,7 @@ namespace ProjectManagementSystem.Models
         public List<bool?> approver_status { get; set; }
         public bool optFlag { get; set; }
         public bool? approval_enabled { get; set; }
+        public bool submissionFlag { get; set; }
     }
 
     public class ApproverTaskViewModel
