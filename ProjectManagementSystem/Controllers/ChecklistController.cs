@@ -2443,8 +2443,23 @@ namespace ProjectManagementSystem.Controllers
                     
                 }
 
+                var checklist_for_approval = false;
 
-                return Json(new { success = true, data = container, id = checklistGrp_id }, JsonRequestBehavior.AllowGet);
+                foreach(var item in container)
+                {
+                    if (item.approval_enabled != true)
+                    {
+                        checklist_for_approval = false;
+                    }
+
+                    else
+                    {
+                        checklist_for_approval = true;
+                    }
+                }
+
+
+                return Json(new { success = true, data = container, id = checklistGrp_id, flag = checklist_for_approval }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -2741,25 +2756,28 @@ namespace ProjectManagementSystem.Controllers
             {
                 var dbChecklist = (from c in db.ChecklistTables.Where(x => x.checklist_id == cID)
                                    join s in db.ChecklistSubmissions.Where(x => x.is_removed != true && x.is_approved != true) on new { mainID = c.main_id, milestoneID = c.milestone_id} equals new { mainID = s.main_id, milestoneID = s.milestone_id}
-                                   select s).ToList();
+                                   select new { submissions = s, checklist = c }).ToList();
+
+                var updateChecklist = dbChecklist.SingleOrDefault().checklist;
+                updateChecklist.for_approval = true;
+
+                foreach (var checklist in dbChecklist)
+                {
+                    checklist.submissions.approval_enabled = true;
+                }
+
+                db.SaveChanges();
 
                 var optionalApprovers = (from s in db.ChecklistSubmissions.Where(x => x.is_removed != true && x.approval_enabled == true && x.type == "optional" && x.main_id == pID && x.milestone_id == mID)
                                          join o in db.OptionalMilestoneApprovers.Where(x => x.is_removed != true && x.main_id == pID && x.milestone_id == mID) on new { taskID = s.task_id, } equals new { taskID = o.task_id }
                                          select o).ToList();
 
                 var presetApprovers = (from s in db.ChecklistSubmissions.Where(x => x.is_removed != true && x.approval_enabled == true && x.type == "preset" && x.main_id == pID && x.milestone_id == mID)
-                                         join o in db.PreSetMilestoneApprovers.Where(x => x.is_removed != true && x.main_id == pID && x.milestone_id == mID) on new { taskID = s.task_id, } equals new { taskID = o.task_id }
-                                         select o).ToList();
-
-                foreach (var checklist in dbChecklist)
-                {
-                    checklist.approval_enabled = true;
-                }
-
-                db.SaveChanges();
+                                       join o in db.PreSetMilestoneApprovers.Where(x => x.is_removed != true && x.main_id == pID && x.milestone_id == mID) on new { taskID = s.task_id, } equals new { taskID = o.task_id }
+                                       select o).ToList();
 
                 //optional approver email notification
-                foreach(var approver in optionalApprovers)
+                foreach (var approver in optionalApprovers)
                 {
                     var projectTitle = db.MainTables.Where(x => x.main_id == pID).Select(x => x.project_title).SingleOrDefault();
                     var milestoneTitle = db.MilestoneRoots.Where(x => x.id == mID).Select(x => x.milestone_name).SingleOrDefault();

@@ -111,6 +111,7 @@
           <Property Name="is_approved" Type="bit" />
           <Property Name="approval_date" Type="date" />
           <Property Name="disapproval_reason" Type="nvarchar" MaxLength="250" />
+          <Property Name="for_approval" Type="bit" />
         </EntityType>
         <EntityType Name="DetailsTbl">
           <Key>
@@ -776,6 +777,7 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
           <Property Name="is_approved" Type="Boolean" />
           <Property Name="approval_date" Type="DateTime" Precision="0" />
           <Property Name="disapproval_reason" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="for_approval" Type="Boolean" />
         </EntityType>
         <EntityType Name="DetailsTbl">
           <Key>
@@ -1313,6 +1315,7 @@ warning 6002: The table/view 'ProjectManagementDB.dbo.View_1' does not have a pr
           <EntitySetMapping Name="ChecklistTables">
             <EntityTypeMapping TypeName="ProjectManagementDBModel.ChecklistTable">
               <MappingFragment StoreEntitySet="ChecklistTable">
+                <ScalarProperty Name="for_approval" ColumnName="for_approval" />
                 <ScalarProperty Name="disapproval_reason" ColumnName="disapproval_reason" />
                 <ScalarProperty Name="approval_date" ColumnName="approval_date" />
                 <ScalarProperty Name="is_approved" ColumnName="is_approved" />

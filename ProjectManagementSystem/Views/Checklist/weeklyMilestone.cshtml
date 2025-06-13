@@ -1158,7 +1158,7 @@
                     if (!Model.IsReadOnlyChecklistView)
                     {
                         <div class="text-center mt-3">
-                            <button class="btn btn-purple btn-lg" id="add_optional" style="border-radius:30px;">Add Checklist Item</button>
+                            <button class="btn btn-purple btn-lg d-none" id="add_optional" style="border-radius:30px;">Add Checklist Item</button>
                         </div>
                     }
 
@@ -1210,7 +1210,7 @@
             </div>
 
             <div style="margin: auto; text-align: center">
-                <button class="btn-primary w-100" id="add_row" onclick="AddRow()">Add</button>
+                <button class="btn-primary w-100" id="add_row" onclick="AddRow()">Add New Row</button>
             </div>
 
             <div class="modal-footer">
@@ -1426,6 +1426,7 @@
                      if (response.success) {
                          const dropdown = $("#milestoneDropdown");
                          dropdown.empty();
+                         dropdown.append(`<option value="">Select a Milestone</option> selected`);
 
                          response.data.forEach(milestone => {
                              dropdown.append(`<option value="${milestone.MilestoneId}">${milestone.MilestoneName}</option>`);
@@ -1490,6 +1491,17 @@
                     if (response.success && response.data.length > 0) {
                         $("#checklist_id_container").text("ID # " + response.id);
                         $("#checklist_id_input").val(response.id);
+
+                        if (response.flag == true) {
+                            $("#add_optional").addClass("d-none");
+                            $(".remove-opt-btn").addClass("d-none");
+                        }
+
+                        else {
+                            $("#add_optional").removeClass("d-none");
+                            $(".remove-opt-btn").removeClass("d-none");
+                        }
+                        
 
                         let item_ctr = response.data.length;
                         let saved_ctr = 0;
@@ -1568,7 +1580,7 @@
                             <tr>
                            <td>
                             ${(task.optFlag && !isReadOnlyView) ? `
-                                <button type="button" class="btn btn-danger rounded-pill p-2" style="min-width: 35px;" onclick="removeTask(${task.task_id})">
+                                <button type="button" class="btn btn-danger rounded-pill p-2 remove-opt-btn" style="min-width: 35px;" onclick="removeTask(${task.task_id})">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </button>
                             ` : ""}
@@ -2461,7 +2473,8 @@ function bulkApproval() {
     $(document).on("click", "#submit_approver", function () {
         const taskID = $("#task_id").val();
         const projID = $("#approver_project_id").val();
-        const milestoneID = $("#checklist_id_input").val();
+        const checklistID = $("#checklist_id_input").val();
+        const milestoneID = $("#milestoneDropdown").val();
         const selectedMembers = [...document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked')].map(e => e.value);
         const milestone = $("#milestoneDropdown").val();
 

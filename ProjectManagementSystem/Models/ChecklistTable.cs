@@ -20,5 +20,6 @@ namespace ProjectManagementSystem.Models
         public Nullable<bool> is_approved { get; set; }
         public Nullable<System.DateTime> approval_date { get; set; }
         public string disapproval_reason { get; set; }
+        public Nullable<bool> for_approval { get; set; }
     }
 }
