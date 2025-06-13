@@ -1137,10 +1137,12 @@
                 <tbody id="checklistTableBody">
                     <tr>
                         <td colspan="7" class="text-center">
-                            Select a milestone to view checklist items. <br />
+                            Choose a milestone to see its checklist items. <br />
                             <small>
-                                <i class="fa fa-exclamation-circle text-warning"></i> = Pending,
-                                <i class="fa-solid fa-circle-check text-success"></i> = Approved,
+                                <i class="fa fa-exclamation-circle text-warning"></i> = Pending
+                                <br/>
+                                <i class="fa-solid fa-circle-check text-success"></i> = Approved
+                                <br />
                                 <i class="fas fa-ban text-danger"></i> = Rejected
                             </small>
                         </td>
@@ -1619,14 +1621,18 @@
                         </tr>`);
                         });
 
-                        //show bulk approve button
+                        // bulk approve and reject
                         if (isReadOnlyView) {
-                            checklistTableBody.append(`<tr>
-                                    <td colspan="7" class="text-center">
-                                        <button class="btn btn-success w-25" style="border-radius: 30px;" onclick="bulkApproval()" id="btnBulkApproval">Approve</button>
-                                    </td>
-                                </tr>`);
+                            checklistTableBody.append(`
+                            <tr id="bulkActionRow" style="display: none;">
+                                <td colspan="7" class="text-center">
+                                    <button class="btn btn-success w-25 me-2" style="border-radius: 30px;" onclick="bulkApproval()" id="btnBulkApproval">Approve</button>
+                                    <button class="btn btn-danger w-25" style="border-radius: 30px;" onclick="bulkReject()" id="btnBulkReject">Reject</button>
+                                </td>
+                            </tr>
+                        `);
                         }
+
 
                         response.data.forEach((task) => {
                             if (isReadOnlyView && task.attachment && !task.approved && !task.reason) {
@@ -2491,6 +2497,11 @@
         }).join('');
 
     });
-</script>                                                                                                                                                                                           
+    $(document).on('change', 'input[name="taskSelect"]', function () {
+        const anyChecked = $('input[name="taskSelect"]:checked').length > 0;
+        $('#bulkActionRow').toggle(anyChecked);
+    });
+</script>                           
+    
 
 }
