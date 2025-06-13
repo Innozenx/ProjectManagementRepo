@@ -36,47 +36,77 @@ namespace ProjectManagementSystem.Controllers
                 //ViewBag.Message = "File Uploaded Successfully!!";
                 //return Json(new { message = message }, JsonRequestBehavior.AllowGet);
 
-                if(Request.Files.Count > 0)
+                if (Request.Files.Count > 0)
                 {
                     HttpFileCollectionBase files = Request.Files;
+
                     for (int i = 0; i < files.Count; i++)
                     {
                         HttpPostedFileBase file = files[i];
-                        string fname, path;
 
-                        fname = file.FileName;
-
-                        fname = Path.Combine(Server.MapPath("~/Uploads/"), fname);
-                        file.SaveAs(fname);
-
-                        path = fname.Replace("c:\\users\\jyparraguirre\\source\\repos\\ProjectManagementSystem\\ProjectManagementSystem", "");
-                        var sample = Request.Form.GetValues("name")[0];
-                        var submission = new ChecklistSubmission()
+                        if (file != null && file.ContentLength > 0)
                         {
-                            submission_description = "test",
-                            task_name = Request.Form.GetValues("name")[0],
-                            task_id = Int32.Parse(Request.Form.GetValues("id")[0]),
-                            submitted_by = User.Identity.Name,
-                            submission_date = DateTime.Now,
-                            is_approved = false,
-                            filepath = path,
-                            milestone_id = Int32.Parse(Request.Form.GetValues("milestone_id")[0]),
-                            main_id = Int32.Parse(Request.Form.GetValues("project_id")[0]),
-                            type = Request.Form.GetValues("type")[0]
+                            try
+                            {
+                                // Get only the file name (no path)
+                                string originalFileName = Path.GetFileName(file.FileName);
 
-                        };
+                                // Sanitize file name if needed (basic example)
+                                originalFileName = originalFileName.Replace(" ", "_");
 
-                        db.ChecklistSubmissions.Add(submission);
-                        db.SaveChanges();
+                                // Combine with the server path
+                                string uploadPath = Server.MapPath("~/Uploads/");
+                                string fullPath = Path.Combine(uploadPath, originalFileName);
 
+                                // Ensure the directory exists
+                                if (!Directory.Exists(uploadPath))
+                                {
+                                    Directory.CreateDirectory(uploadPath);
+                                }
+
+                                // Save the file to the server
+                                file.SaveAs(fullPath);
+
+                                // Get the relative path (e.g., "~/Uploads/file.ext")
+                                string relativePath = Url.Content($"~/Uploads/{originalFileName}");
+
+                                // Get values from form
+                                string taskName = Request.Form["name"];
+                                int taskId = int.Parse(Request.Form["id"]);
+                                int milestoneId = int.Parse(Request.Form["milestone_id"]);
+                                int projectId = int.Parse(Request.Form["project_id"]);
+                                string type = Request.Form["type"];
+
+                                // Create and save the submission
+                                var submission = new ChecklistSubmission
+                                {
+                                    submission_description = "test",
+                                    task_name = taskName,
+                                    task_id = taskId,
+                                    submitted_by = User.Identity.Name,
+                                    submission_date = DateTime.Now,
+                                    is_approved = false,
+                                    filepath = relativePath,
+                                    milestone_id = milestoneId,
+                                    main_id = projectId,
+                                    type = type
+                                };
+
+                                db.ChecklistSubmissions.Add(submission);
+                                db.SaveChanges();
+                            }
+                            catch (Exception ex)
+                            {
+                                return Json(new { message = "error", detail = ex.Message }, JsonRequestBehavior.AllowGet);
+                            }
+                        }
                     }
 
                     return Json(new { message = "success" }, JsonRequestBehavior.AllowGet);
                 }
-
                 else
                 {
-                    return Json(new { message = "failed" }, JsonRequestBehavior.AllowGet);
+                    return Json(new { message = "no_files_uploaded" }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception e)
