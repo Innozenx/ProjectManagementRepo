@@ -609,6 +609,15 @@
                 background-color: #552788;
             }
 
+    #splash-screen {
+        position: fixed;
+        inset: 0;
+        background: white;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 </style>
 
 <div class="project-header">
@@ -1298,9 +1307,15 @@
                 <button type="button" class="btn btn-danger w-25" onclick="removeSelected()">Remove Selected</button>
                 @*<button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>*@
             </div>
+
+    
         </div>
     </div>
 </div>
+@*<div id="splash-screen" style="display: none;">
+    @Html.Partial("_SplashScreen")
+</div>*@
+
 
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -1501,7 +1516,7 @@
                             $("#add_optional").removeClass("d-none");
                             $(".remove-opt-btn").removeClass("d-none");
                         }
-                        
+
 
                         let item_ctr = response.data.length;
                         let saved_ctr = 0;
@@ -1740,6 +1755,10 @@ function bulkApproval() {
             color: "#333"
         }).then((result) => {
             if (result.isConfirmed) {
+                // Show the splash screen
+                $('body').css('overflow', 'hidden');
+                $('#splash-screen').fadeIn();
+
                 $.ajax({
                     type: "POST",
                     url: "@Url.Action("BulkApproved", "Checklist")",
@@ -1747,32 +1766,38 @@ function bulkApproval() {
                     data: JSON.stringify({ tasks: checkedTasks }),
                     success: function (res) {
                         if (res.success) {
-                            triggerConfetti(); 
-                            Swal.fire({
-                                title: "Tasks Approved 🎉",
-                                text: "Selected checklist items have been successfully approved.",
-                                icon: "success",
-                                timer: 3000,
-                                timerProgressBar: true,
-                                showConfirmButton: false,
-                                background: "#ffffff",
-                                color: "#333"
-                            }).then(function () {
-                                const milestoneDropdown = $("#milestoneDropdown");
-                                const milestone = milestoneDropdown.length ? milestoneDropdown.val() : null;
+                            setTimeout(function () {
+                                triggerConfetti();
+                                Swal.fire({
+                                    title: "Tasks Approved 🎉",
+                                    text: "Selected checklist items have been successfully approved.",
+                                    icon: "success",
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    background: "#ffffff",
+                                    color: "#333"
+                                }).then(function () {
+                                    const milestoneDropdown = $("#milestoneDropdown");
+                                    const milestone = milestoneDropdown.length ? milestoneDropdown.val() : null;
 
-                                localStorage.setItem('currentTab', 'checklist');
-                                if (milestone) {
-                                    localStorage.setItem('currentDrop', milestone);
-                                }
+                                    localStorage.setItem('currentTab', 'checklist');
+                                    if (milestone) {
+                                        localStorage.setItem('currentDrop', milestone);
+                                    }
 
-                                location.reload();
-                            });
+                                    location.reload();
+                                });
+                            }, 1000); // Let the splash show for 1 second
                         } else {
+                            $('#splash-screen').hide();
+                            $('body').css('overflow', 'auto');
                             Swal.fire("Approval failed", res.message || "Please try again.", "error");
                         }
                     },
                     error: function () {
+                        $('#splash-screen').hide();
+                        $('body').css('overflow', 'auto');
                         Swal.fire("Error", "Something went wrong while approving tasks.", "error");
                     }
                 });
@@ -1785,6 +1810,7 @@ function bulkApproval() {
         Swal.fire("No checklist item selected", "Please select tasks to approve.", "info");
     }
 }
+
 
 
 
