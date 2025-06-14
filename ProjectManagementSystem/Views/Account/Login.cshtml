@@ -8,52 +8,92 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-    body {
+        body {
         margin: 0;
         padding: 0;
         font-family: 'Poppins', sans-serif;
-        background: linear-gradient(to bottom right, #f8f9fa, #e6e6f2);
         height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        overflow: hidden;
+        background: #f8f9fa;
     }
 
-    .login-card {
-        background: #fff;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        max-width: 400px;
-        width: 100%;
-        text-align: center;
-    }
-
-        .login-card img {
-            width: 100px;
-            margin-bottom: 15px;
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
         }
 
-        .login-card h1 {
-            font-size: 1.6rem;
-            font-weight: 600;
-            margin-bottom: 10px;
+        .left-panel,
+        .right-panel {
+            flex: 1; /* equal split */
+            width: 50%;
+        }
+
+        .left-panel {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             color: #470A67;
+            animation: fadeInLeft 1.2s ease;
+            text-align: center;
+            padding: 40px;
         }
 
-        .login-card p {
-            color: #666;
+        .right-panel img {
+            width: 120px;
+            margin-bottom: 20px;
+            animation: popUp 1s ease-in-out;
+        }
+
+            .left-panel h1 {
+                font-size: 38px;
+                font-weight: 600;
+                margin-bottom: 10px;
+                animation: popUp 1.2s ease-in-out;
+                animation: fadeInUp 1.4s ease-in-out;
+            }
+
+        .left-panel .subtitle {
+            font-size: 14px;
+            opacity: 0.7;
+            animation: popUp 1.4s ease-in-out;
+        }
+
+        .right-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            opacity: 0;
+            transform: translateX(50px);
+            animation: slideInRight 1s ease 2s forwards;
+        }
+
+        .login-card {
+            background: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            color: #470A67;
             margin-bottom: 25px;
-            font-size: 0.95rem;
+            font-size: 1.3rem;
+            font-weight: 500;
         }
 
-    .form-group {
-        text-align: left;
-        margin-bottom: 20px;
-    }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
 
         .form-group label {
-            display: block;
             font-size: 0.9rem;
             margin-bottom: 6px;
             color: #333;
@@ -65,93 +105,191 @@
             border: 1px solid #ccc;
             border-radius: 30px;
             font-size: 0.9rem;
-            transition: border 0.2s;
-            font-family: 'Poppins', sans-serif;
         }
 
-            .form-group input:focus {
-                outline: none;
-                border-color: #66339A;
-            }
+        .form-group input:focus {
+            outline: none;
+            border-color: #66339A;
+            box-shadow: 0 0 0 2px rgba(102, 51, 154, 0.1);
+        }
 
-    .btn-primary {
-        background-color: #66339A;
-        color: white;
-        border: none;
-        border-radius: 30px;
-        padding: 10px 30px;
-        font-size: 0.95rem;
-        width: 100%;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        font-family: 'Poppins', sans-serif;
-    }
+        .btn-primary {
+            background-color: #66339A;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 30px;
+            font-size: 0.95rem;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
         .btn-primary:hover {
             background-color: #55227d;
+            box-shadow: 0 4px 10px rgba(102, 51, 154, 0.2);
         }
 
-    .text-danger {
-        color: red;
-        font-size: 0.85rem;
-        font-family: 'Poppins', sans-serif;
+        .toggle-password {
+            position: absolute;
+            right: 20px;
+            top: 38px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .text-danger {
+            color: red;
+            font-size: 0.85rem;
+        }
+
+        @@keyframes popUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @@keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @@keyframes fadeInLeft {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @@media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-panel,
+            .right-panel {
+                width: 100%;
+                flex: none;
+                height: 50vh;
+            }
+
+            .right-panel {
+                animation: none;
+                opacity: 1;
+                transform: none;
+            }
+        }
+        .left-panel::before {
+            content: "";
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            width: 300px;
+            height: 300px;
+            /*background: radial-gradient(circle at center, #e6e6f2 20%, #d2c4f2 100%);*/
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+
+            .left-panel > * {
+                z-index: 1;
+            }
+            .left-panel img {
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        @@keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+    .typing {
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        border-right: 2px solid #470A67;
+        font-size: 18px;
+        opacity: 0.8;
+        width: 0;
+        animation: typing 3s steps(40, end) forwards, blink 0.75s step-end infinite;
+        font-family: 'Courier New', Courier, monospace;
     }
 
-    .toggle-password {
-        position: absolute;
-        right: 20px;
-        top: 38px;
-        cursor: pointer;
-        color: #aaa;
+    @@keyframes typing {
+        from {
+            width: 0
+        }
+
+        to {
+            width: 330px
+        }
     }
 
-    .input-wrapper {
-        position: relative;
+    @@keyframes blink {
+        50% {
+            border-color: transparent
+        }
     }
-    input:invalid {
-        border-color: #e74c3c;
+    .badge {
+        background-color: #e0d4f6;
+        color: #470A67;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
     }
-    input:focus {
-        border-color: #66339A;
-        box-shadow: 0 0 0 2px rgba(102, 51, 154, 0.1);
-    }
-    .btn-primary:hover {
-        background-color: #5a2b8c;
-        box-shadow: 0 4px 10px rgba(102, 51, 154, 0.2);
-    }
-
 
 
 </style>
 
-<div class="login-card">
-    <img src="~/AdminLTE-3.2.0/dist/img/30thEK.jpg" alt="PMS" />
-    <h1>Project Management System</h1>
-    <p>Sign in with your assigned credentials.</p>
-    <hr />
-    <br />
-
-    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.Email)
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "you@enchantedkingdom.ph" })
-            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+<body>
+    <div class="container">
+        <!-- Splash Panel -->
+        <div class="left-panel">
+            @*<img src="~/AdminLTE-3.2.0/dist/img/30thEK.jpg" alt="Logo" />*@
+            <h1>Project Management <br />System</h1>
+            <p><span class="typing">Organize. Collaborate. Succeed.</span></p>
         </div>
 
-        <div class="form-group input-wrapper">
-            @Html.LabelFor(m => m.Password)
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "••••••••", id = "password" })
-            <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
-            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-        </div>
+        <!-- Login Panel -->
+        <div class="right-panel">
+            <div class="login-card">
+                <img src="~/AdminLTE-3.2.0/dist/img/30thEK.jpg" alt="Logo" />
+                <h2>Sign in with your assigned credentials.</h2>
 
-        <button type="submit" class="btn-primary">Sign in</button>
-    }
-</div>
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Email)
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "you@enchantedkingdom.ph" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group input-wrapper">
+                        @Html.LabelFor(m => m.Password)
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "••••••••", id = "password" })
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+
+                    <button type="submit" class="btn-primary">Sign in</button>
+
+                    <div style="margin-top: 15px;">
+                        <span class="badge" title="Application version">v1.0.0</span>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</body>
 
 <script src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
 <script>
@@ -168,4 +306,10 @@
             icon.classList.add('fa-eye');
         }
     }
+    window.addEventListener('load', () => {
+        const typing = document.querySelector('.typing');
+        typing.style.animation = 'none';
+        void typing.offsetWidth; // trigger reflow
+        typing.style.animation = 'typing 3.5s steps(40, end) forwards, blink 0.75s step-end infinite';
+    });
 </script>

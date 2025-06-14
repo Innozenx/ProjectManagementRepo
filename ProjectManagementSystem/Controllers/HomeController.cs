@@ -26,5 +26,10 @@ namespace ProjectManagementSystem.Controllers
 
             return View();
         }
+        public ActionResult Splash()
+        {
+            return View("_SplashScreen");
+        }
+
     }
 }

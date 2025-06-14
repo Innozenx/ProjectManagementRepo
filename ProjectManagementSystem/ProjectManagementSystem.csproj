@@ -2583,6 +2583,7 @@
     <Content Include="FrontEnd\dist\img\credit\paypal2.png" />
     <Content Include="FrontEnd\dist\img\credit\visa.png" />
     <Content Include="FrontEnd\dist\img\default-150x150.png" />
+    <Content Include="FrontEnd\dist\img\ek_friends.jpg" />
     <Content Include="FrontEnd\dist\img\icons.png" />
     <Content Include="FrontEnd\dist\img\photo1.png" />
     <Content Include="FrontEnd\dist\img\photo2.png" />
@@ -5170,6 +5171,7 @@
     <Content Include="Views\Checklist\ArchivedProjects.cshtml" />
     <Content Include="Views\Checklist\_DivisionDashboard.cshtml" />
     <Content Include="Views\Checklist\_ManagementDashboard.cshtml" />
+    <Content Include="Views\Shared\_SplashScreen.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -525,6 +525,12 @@ namespace ProjectManagementSystem.Controllers
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
         }
+
+        public ActionResult SplashPreview()
+        {
+            return View("~/Views/Shared/_SplashScreen.cshtml");
+        }
+
         #endregion
     }
 }
