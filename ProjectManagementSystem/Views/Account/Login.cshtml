@@ -25,7 +25,7 @@
 
         .left-panel,
         .right-panel {
-            flex: 1; /* equal split */
+            flex: 1; 
             width: 50%;
         }
 
@@ -36,9 +36,10 @@
             justify-content: center;
             align-items: center;
             color: #470A67;
-            animation: fadeInLeft 1.2s ease;
+            animation: fadeInLeft 2s ease;
             text-align: center;
             padding: 40px;
+            
         }
 
         .right-panel img {
@@ -47,13 +48,13 @@
             animation: popUp 1s ease-in-out;
         }
 
-            .left-panel h1 {
-                font-size: 38px;
-                font-weight: 600;
-                margin-bottom: 10px;
-                animation: popUp 1.2s ease-in-out;
-                animation: fadeInUp 1.4s ease-in-out;
-            }
+        .left-panel h1 {
+            font-size: 38px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            animation: popUp 1.2s ease-in-out;
+            animation: fadeInUp 1.4s ease-in-out;
+        }
 
         .left-panel .subtitle {
             font-size: 14px;
@@ -61,15 +62,15 @@
             animation: popUp 1.4s ease-in-out;
         }
 
-        .right-panel {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #fff;
-            opacity: 0;
-            transform: translateX(50px);
-            animation: slideInRight 1s ease 2s forwards;
-        }
+    .right-panel {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #fff;
+        opacity: 0;
+        transform: translateX(50px);
+        animation: slideInRight 2s ease forwards;
+    }
 
         .login-card {
             background: #fff;

@@ -8,7 +8,6 @@
         <div class="form-header">
             <div class="icon">
                 <img src="~/AdminLTE-3.2.0/dist/img/giphy.jpg" alt="princesses">
-                @*<img src="~/FrontEnd/dist/img/ek_friends.jpg" alt="collab"/>*@
             </div>
 
             <h3>Invite your Collaborators</h3>
@@ -52,7 +51,7 @@
 
 
         <div class="button-container">
-            <button id="inviteButton" type="button" class="btn-primary" @*onclick="submitInvitations()"*@>Send Invites</button>
+            <button id="inviteButton" type="button" class="btn-primary" style="border-radius:30px; width:100%" @*onclick="submitInvitations()"*@>Send Invites</button>
         </div>
     </div>
 </div>
@@ -287,6 +286,19 @@
             transform: translateY(0);
         }
     }
+    .icon img {
+    animation: wiggle 1s ease-in-out infinite;
+    transform-origin: center bottom;
+}
+
+@@keyframes wiggle {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(3deg); }
+    50% { transform: rotate(-3deg); }
+    75% { transform: rotate(2deg); }
+    100% { transform: rotate(0deg); }
+}
+
 </style>
 
 

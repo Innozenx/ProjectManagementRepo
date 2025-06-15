@@ -153,6 +153,20 @@
         color: gray;
         margin-bottom: 5px;
     }
+    .scribble-emoji {
+    display: inline-block;
+    animation: scribble 2s ease-in-out infinite;
+    transform-origin: bottom center;
+}
+
+@@keyframes scribble {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(-5deg); }
+    75% { transform: rotate(3deg); }
+    100% { transform: rotate(0deg); }
+}
+
 </style>
 
 
@@ -160,8 +174,10 @@
 <div class="content">
     <div class="form-container">
         <h2>
-            📝 <br /> Project Registration
+            <span class="scribble-emoji">📝</span><br />
+            Project Registration
         </h2>
+
         <p>
             First, input your project name.
         </p>

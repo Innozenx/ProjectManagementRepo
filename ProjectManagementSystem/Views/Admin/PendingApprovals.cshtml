@@ -14,7 +14,6 @@
         <h2 class="fw-bold text-purple">Approval Requests</h2>
         <p class="text-muted">Manage task approvals across all projects and divisions.</p>
     </div>
-
     <ul class="nav nav-tabs custom-tabs" id="approvalsTab" role="tablist">
         <li class="nav-item" title="Tasks awaiting your approval">
             <a class="nav-link active" id="pending-tab" data-bs-toggle="tab" href="#pending" role="tab">Pending</a>
@@ -41,7 +40,7 @@
         <div class="tab-pane fade show active" id="pending" role="tabpanel">
             <div class="d-flex justify-content-end mb-3 pe-2">
                 <div class="btn-group view-toggle" role="group">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" style="font-size: 12px;"id="listViewBtn" title="Switch to list view">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" style="font-size: 12px;" id="listViewBtn" title="Switch to list view">
                         <i class="fas fa-list"></i> List View
                     </button>
                     <button type="button" class="btn btn-outline-secondary btn-sm" style="font-size: 12px;" id="gridViewBtn" title="Switch to grid view">
@@ -55,7 +54,7 @@
                 </div>
             </div>
             <div id="pendingCardWrapper">
-                <div id="pendingCardView" class="row g-3"></div>
+                <div id="pendingCardView" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 flex-column-reverse flex-md-row"></div>
             </div>
             <div id="pendingListViewContainer" class="d-none">
                 <div class="table-responsive" style="max-height: 500px;">
@@ -399,6 +398,8 @@ $(document).on("click", ".approve-btn", function () {
         flex-direction: column;
         justify-content: space-between;
         transition: box-shadow 0.3s ease;
+        margin-bottom: 20px;
+        width:100%;
     }
 
         .task-card:hover {
@@ -558,5 +559,7 @@ $(document).on("click", ".approve-btn", function () {
         .btn-reject:hover {
             background-color: #cbb3db;
         }
-
+    #pendingCardView .col-md-4 {
+        display: flex;
+    }
 </style> 
