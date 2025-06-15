@@ -127,7 +127,7 @@
             font-size: 1.8rem;
             color: #66339A;
             margin-bottom: 10px;
-   
+
         }
 
         .top-card h3 {
@@ -390,6 +390,7 @@
         font-size: 12px;
         font-weight: 500;
         margin-left: 6px;
+        margin: 4px;
     }
 
     #customSearchBox {
@@ -457,7 +458,7 @@
     }*/
 
     .table td:first-child {
-        max-width: 180px; 
+        max-width: 180px;
         min-width: 150px;
         width: 180px;
         white-space: nowrap;
@@ -518,7 +519,7 @@
         display: none;
         position: absolute;
         top: 50%;
-        left: 25px; 
+        left: 25px;
         transform: translateY(-50%);
         background: #fff;
         border: 1px solid #ccc;
@@ -569,7 +570,7 @@
         pointer-events: none;
     }
     .dropdown-item.disabled {
-        pointer-events: auto; 
+        pointer-events: auto;
         color: #aaa;
         cursor: not-allowed;
     }
@@ -589,6 +590,30 @@
         opacity: 1;
         transform: translateY(0);
         pointer-events: auto;
+    }
+
+    .legend-badge:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+        opacity: 0.95;
+        cursor: default;
+    }
+
+        .wave-hand {
+        display: inline-block;
+        animation: wave 2s infinite ease-in-out;
+        transform-origin: 70% 70%;
+    }
+
+    @@keyframes wave {
+        0% { transform: rotate(0deg); }
+        10% { transform: rotate(14deg); }
+        20% { transform: rotate(-8deg); }
+        30% { transform: rotate(14deg); }
+        40% { transform: rotate(-4deg); }
+        50% { transform: rotate(10deg); }
+        60% { transform: rotate(0deg); }
+        100% { transform: rotate(0deg); }
     }
 
 </style>
@@ -617,7 +642,7 @@
         ViewBag.Greeting = $"{greeting}, {ViewBag.FirstName}";
     }
 
-    <h3>@ViewBag.Greeting! 👋🏼</h3>
+    <h3>@ViewBag.Greeting! <span class="wave-hand">👋🏼</span></h3>
     <p style="margin-top: 10px; font-size: 0.95rem; color: #e0d7f6;">
         Here's an overview of your projects and milestones this week.
     </p>
@@ -680,7 +705,7 @@
                     <input type="text" id="customSearchBox" class="form-control mb-2"
                            placeholder="Search project name..." />
 
-                    <div class="status-legend d-flex flex-wrap gap-2 justify-content-end mt-1">
+                    <div class="status-legend d-flex flex-wrap gap-2 justify-content-center mt-1">
                         <label style="font-size: 12px; font-weight: 500; color: #555; margin-top: 8px;">Legend:</label>
                         <span class="legend-badge" style="background:#D4EDDA; color:#155724;">Completed</span>
                         <span class="legend-badge" style="background:#D6E4FF; color:#004085;">Active</span>
@@ -688,6 +713,7 @@
                         <span class="legend-badge" style="background:#F8D7DA; color:#b30000;">Delayed</span>
                         <span class="legend-badge" style="background:#E2E3E5; color:#383d41;">Pending</span>
                     </div>
+
                 </div>
             </div>
             <table id="milestonesTable" class="table">
