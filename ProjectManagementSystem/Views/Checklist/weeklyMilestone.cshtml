@@ -1729,86 +1729,88 @@
 
 
 function bulkApproval() {
-    var checkboxes = $('input[name="taskSelect"]:not(:disabled)');
-    var allChecked = checkboxes.length > 0 && checkboxes.length === checkboxes.filter(':checked').length;
+    const checkboxes = $('input[name="taskSelect"]:not(:disabled)');
+    const allChecked = checkboxes.length > 0 && checkboxes.length === checkboxes.filter(':checked').length;
 
-    if (allChecked) {
-        var checkedTasks = [];
-
-        $('input[name="taskSelect"]:checked').each(function () {
-            checkedTasks.push({
-                taskId: $(this).data('task-id'),
-                milestoneId: $(this).data('milestone-id'),
-                approver: $(this).val()
-            });
-        });
-
-        Swal.fire({
-            title: "You're about to approve these checklist items.",
-            html: `<p style="font-size: 15px; color: #555;">Please confirm bulk approval of selected items.</p>`,
-            icon: "question",
-            showDenyButton: true,
-            confirmButtonText: "Yes",
-            denyButtonText: "No",
-            confirmButtonColor: "#66339A",
-            background: "#fff",
-            color: "#333"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Show the splash screen
-                $('body').css('overflow', 'hidden');
-                $('#splash-screen').fadeIn();
-
-                $.ajax({
-                    type: "POST",
-                    url: "@Url.Action("BulkApproved", "Checklist")",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ tasks: checkedTasks }),
-                    success: function (res) {
-                        if (res.success) {
-                            setTimeout(function () {
-                                triggerConfetti();
-                                Swal.fire({
-                                    title: "Tasks Approved 🎉",
-                                    text: "Selected checklist items have been successfully approved.",
-                                    icon: "success",
-                                    timer: 3000,
-                                    timerProgressBar: true,
-                                    showConfirmButton: false,
-                                    background: "#ffffff",
-                                    color: "#333"
-                                }).then(function () {
-                                    const milestoneDropdown = $("#milestoneDropdown");
-                                    const milestone = milestoneDropdown.length ? milestoneDropdown.val() : null;
-
-                                    localStorage.setItem('currentTab', 'checklist');
-                                    if (milestone) {
-                                        localStorage.setItem('currentDrop', milestone);
-                                    }
-
-                                    location.reload();
-                                });
-                            }, 1000); // splash 
-                        } else {
-                            $('#splash-screen').hide();
-                            $('body').css('overflow', 'auto');
-                            Swal.fire("Approval failed", res.message || "Please try again.", "error");
-                        }
-                    },
-                    error: function () {
-                        $('#splash-screen').hide();
-                        $('body').css('overflow', 'auto');
-                        Swal.fire("Error", "Something went wrong while approving tasks.", "error");
-                    }
-                });
-            } else if (result.isDenied) {
-                Swal.fire("Action cancelled", "No checklist item was approved.", "info");
-            }
-        });
-
-    } else {
+    if (!allChecked) {
         Swal.fire("No checklist item selected", "Please select tasks to approve.", "info");
+        return;
     }
+
+    const checkedTasks = [];
+
+    $('input[name="taskSelect"]:checked').each(function () {
+        checkedTasks.push({
+            taskId: $(this).data('task-id'),
+            milestoneId: $(this).data('milestone-id'),
+            approver: $(this).val()
+        });
+    });
+
+    Swal.fire({
+        title: "You're about to approve these checklist items.",
+        html: `<p style="font-size: 15px; color: #555;">Please confirm bulk approval of selected items.</p>`,
+        icon: "question",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: "No",
+        confirmButtonColor: "#66339A",
+        background: "#fff",
+        color: "#333"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: "Processing...",
+                text: "Approving selected tasks...",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("BulkApproved", "Checklist")",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ tasks: checkedTasks }),
+                success: function (res) {
+                    Swal.close(); // Close loading spinner
+
+                    if (res.success) {
+                        triggerConfetti();
+                        Swal.fire({
+                            title: "Tasks Approved 🎉",
+                            text: "Selected checklist items have been successfully approved.",
+                            icon: "success",
+                            timer: 3000,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            background: "#ffffff",
+                            color: "#333"
+                        }).then(() => {
+                            const milestoneDropdown = $("#milestoneDropdown");
+                            const milestone = milestoneDropdown.length ? milestoneDropdown.val() : null;
+
+                            localStorage.setItem('currentTab', 'checklist');
+                            if (milestone) {
+                                localStorage.setItem('currentDrop', milestone);
+                            }
+
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire("Approval failed", res.message || "Please try again.", "error");
+                    }
+                },
+                error: function () {
+                    Swal.close();
+                    Swal.fire("Error", "Something went wrong while approving tasks.", "error");
+                }
+            });
+        } else if (result.isDenied) {
+            Swal.fire("Action cancelled", "No checklist item was approved.", "info");
+        }
+    });
 }
 
 
