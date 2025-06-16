@@ -261,48 +261,71 @@ $(document).ready(function () {
         $('#bulkActions').addClass('d-none');
     });
 
-$(document).on("click", ".approve-btn", function () {
-    const taskId = $(this).data("taskid");
-    Swal.fire({
-        title: "You're about to approve this task.",
-        html: `<p style="font-size: 16px; color: #555;">Please make sure all requirements are met before confirming.</p>`,
-        icon: "question",
-        showCancelButton: true,
-        cancelButtonText: "Cancel",
-        confirmButtonText: "Approve",
-        confirmButtonColor: "#66339A",
-        background: "#fff",
-        color: "#333"
-    }).then(result => {
-        if (result.isConfirmed) {
+    $(document).on("click", ".approve-btn", function () {
+        const taskId = $(this).data("taskid");
 
-            $.post('@Url.Action("ApproveTask", "Admin")', { taskId })
-                .done(res => {
-                    if (res.success) {
-                        triggerConfetti(); 
-                        Swal.fire({
-                            title: "Task Approved 🎉",
-                            text: "This task has been successfully approved.",
-                            icon: "success",
-                            timer: 3000,
-                            timerProgressBar: true,
-                            showConfirmButton: false,
-                            background: "#ffffff",
-                            color: "#333"
-                        }).then(loadApprovals);
+        Swal.fire({
+            title: "You're about to approve this task.",
+            html: `<p style="font-size: 16px; color: #555;">Please make sure all requirements are met before confirming.</p>`,
+            icon: "question",
+            showCancelButton: true,
+            cancelButtonText: "Cancel",
+            confirmButtonText: "Approve",
+            confirmButtonColor: "#66339A",
+            background: "#fff",
+            color: "#333"
+        }).then(result => {
+            if (result.isConfirmed) {
+
+                // Show loading screen
+                Swal.fire({
+                    title: "Processing...",
+                    text: "Approving task, please wait...",
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
                     }
-                })
-                .fail(() => {
-                    Swal.fire({
-                        title: "Error",
-                        text: "Approval failed.",
-                        icon: "error",
-                        confirmButtonColor: "#66339A"
-                    });
                 });
-        }
+
+                // Perform the AJAX request
+                $.post('@Url.Action("ApproveTask", "Admin")', { taskId })
+                    .done(res => {
+                        Swal.close(); // Close loading spinner
+
+                        if (res.success) {
+                            triggerConfetti(); // optional animation
+                            Swal.fire({
+                                title: "Task Approved 🎉",
+                                text: "This task has been successfully approved.",
+                                icon: "success",
+                                timer: 3000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                background: "#ffffff",
+                                color: "#333"
+                            }).then(loadApprovals);
+                        } else {
+                            Swal.fire({
+                                title: "Failed",
+                                text: "Could not approve task.",
+                                icon: "error",
+                                confirmButtonColor: "#66339A"
+                            });
+                        }
+                    })
+                    .fail(() => {
+                        Swal.close(); // Ensure loading spinner is closed
+                        Swal.fire({
+                            title: "Error",
+                            text: "Approval failed due to a server error.",
+                            icon: "error",
+                            confirmButtonColor: "#66339A"
+                        });
+                    });
+            }
+        });
     });
-});
+
 
     $(document).on("click", ".reject-btn", function () {
         const taskId = $(this).data("taskid");
@@ -310,7 +333,6 @@ $(document).on("click", ".approve-btn", function () {
             title: "Reject Task?",
             html: '<p style="font-size: 14px; color: #555;">Please provide a reason for rejecting this task.</p>',
             input: "text",
-            inputPlaceholder: "Reason for rejection",
             inputPlaceholder: "e.g., Missing proof of completion",
             inputAttributes: {
                 style: "font-size: 14px;"
@@ -319,42 +341,80 @@ $(document).on("click", ".approve-btn", function () {
             confirmButtonText: "Reject"
         }).then(result => {
             if (result.isConfirmed && result.value.trim()) {
+                // Show loading modal
+                Swal.fire({
+                    title: "Processing...",
+                    text: "Rejecting task, please wait...",
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Perform the POST request
                 $.post('@Url.Action("RejectTask", "Admin")', {
                     taskId,
                     reason: result.value.trim()
-                }).done(res =>
-                    res.success && Swal.fire("Rejected", "Task rejected.", "success").then(loadApprovals)
-                ).fail(() =>
-                    Swal.fire("Error", "Rejection failed.", "error")
-                );
+                }).done(res => {
+                    Swal.close(); // Close the loading spinner
+
+                    if (res.success) {
+                        Swal.fire("Rejected", "Task rejected.", "success")
+                            .then(loadApprovals);
+                    } else {
+                        Swal.fire("Failed", "Could not reject the task.", "error");
+                    }
+                }).fail(() => {
+                    Swal.close(); // Close spinner even on failure
+                    Swal.fire("Error", "Rejection failed due to a server error.", "error");
+                });
             }
         });
     });
 
+
     
     $(document).on("click", ".withdraw-btn", function () {
-        const taskId = $(this).data("taskid");
-        Swal.fire({
-            title: "Withdraw Task?",
-            html: '<p style="font-size: 14px; color: #555;">Please provide a reason for withdrawing this task.</p>',
-            input: "text",
-            inputPlaceholder: "Reason for withdrawing",
-            inputPlaceholder: "e.g., Change of mind",
-            inputAttributes: {
-                style: "font-size: 14px;"
-            },
-            showCancelButton: true,
-            confirmButtonText: "Withdraw"
+    const taskId = $(this).data("taskid");
+    Swal.fire({
+        title: "Withdraw Task?",
+        html: '<p style="font-size: 14px; color: #555;">Please provide a reason for withdrawing this task.</p>',
+        input: "text",
+        inputPlaceholder: "e.g., Change of mind",
+        inputAttributes: {
+            style: "font-size: 14px;"
+        },
+        showCancelButton: true,
+        confirmButtonText: "Withdraw"
         }).then(result => {
             if (result.isConfirmed && result.value.trim()) {
+                // Show loading screen
+                Swal.fire({
+                    title: "Processing...",
+                    text: "Please wait",
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Perform the AJAX POST
                 $.post('@Url.Action("WithdrawTask", "Admin")', {
                     taskId,
                     reason: result.value.trim()
-                }).done(res =>
-                    res.success && Swal.fire("Withdraw", "Task withdraw.", "success").then(loadApprovals)
-                ).fail(() =>
-                    Swal.fire("Error", "Withdraw failed.", "error")
-                );
+                }).done(res => {
+                    Swal.close(); // Close loading
+
+                    if (res.success) {
+                        Swal.fire("Withdrawn", "Task successfully withdrawn.", "success")
+                            .then(loadApprovals);
+                    } else {
+                        Swal.fire("Failed", "Could not withdraw task.", "error");
+                    }
+                }).fail(() => {
+                    Swal.close(); // Close loading on failure
+                    Swal.fire("Error", "Withdraw failed due to server error.", "error");
+                });
             }
         });
     });
