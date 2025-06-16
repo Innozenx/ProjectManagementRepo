@@ -1427,6 +1427,123 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
+        [HttpPost]
+        public JsonResult WithdrawTask(int taskId, string reason)
+        {
+            try
+            {
+                var submission = db.ChecklistSubmissions
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+
+                if (submission == null)
+                {
+                    return Json(new { success = false, message = "Task not found or already removed." });
+                }
+
+                // Mark the task as rejected
+                submission.is_approved = null;
+                //submission.submission_date = DateTime.Now;
+
+                // Get the corresponding rows from PreSetMilestoneApprovers and OptionalMilestoneApprovers
+                var preset = db.PreSetMilestoneApprovers
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+
+                var optional = db.OptionalMilestoneApprovers
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+
+                // Update rejection status in PreSetMilestoneApprovers
+                if (preset != null)
+                {
+                    preset.approved = null;
+                    preset.rejected = null;
+                    //preset.date_approved = DateTime.Now; // or use date_rejected if you prefer
+                    preset.withdraw_status = reason;
+                }
+
+                // Update rejection status in OptionalMilestoneApprovers
+                if (optional != null)
+                {
+                    optional.approved = null;
+                    optional.rejected = null;
+                    //optional.date_approved = DateTime.Now; // or use date_rejected if you prefer
+                    optional.withdraw_reason = reason;
+                }
+
+                db.SaveChanges();
+
+                //---------------------------------------
+                var main_id = submission.main_id;
+                var milestone_id = submission.milestone_id;
+
+                var dbChecklist = db.ChecklistTables.Where(x => x.main_id == main_id && x.milestone_id == milestone_id).OrderByDescending(x => x.checklist_id).FirstOrDefault();
+                dbChecklist.disapproval_reason = submission.disapproval_reason;
+                dbChecklist.is_approved = false;
+                db.SaveChanges();
+
+                var mainTbl = db.MainTables.Where(x => x.main_id == main_id).SingleOrDefault();
+                var projectTitle = mainTbl.project_title;
+
+                var milestoneTitle = db.MilestoneRoots.Where(x => x.id == milestone_id).Select(x => x.milestone_name).SingleOrDefault();
+                var membersTbl = db.ProjectMembersTbls.Where(x => x.project_id == main_id).ToList();
+                var project_manager = membersTbl.Where(x => x.role == 1004).SingleOrDefault();
+
+                var systemEmail = "e-notify@enchantedkingdom.ph";
+                var systemName = "PM SYSTEM";
+                var email = new MimeMessage();
+
+                email.From.Add(new MailboxAddress(systemName, systemEmail));
+                email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
+
+                email.Subject = "PM System Disapproval";
+                email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = @"
+                            <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
+                                <div style='text-align: center; margin-bottom: 20px;'>
+                              
+                                    <h1 style='font-size: 26px; color: #66339A; margin: 0;'>Enchanting Day!</h1>
+                                </div>
+                                <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); text-align: center;'>
+                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Hello, " + project_manager.name + @"!</p>
+                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>Your submission for 
+                                    <br/>Project: <b>" + projectTitle + "</b>" +
+                                "<br/>Milestone: <b>" + milestoneTitle + "</b>" +
+                                "<br/><br/> <b>has been withdraw</b>" + @" .</p>
+                                    <p style='font-size: 14px; color: #555;'>
+                                        Please see the withdraw reason below:
+                                    </p>
+                                    <div style='text-align: center; margin: 30px 0;'>
+                                        <b>Reason: " + submission.disapproval_reason + @" </b>
+                                    </div>
+                                    <p style='font-size: 14px; color: #555; text-align: center;'>
+                                        Need help or have questions? Don’t hesitate to reach out. We’re here to support you every step of the way!
+                                    </p>
+                                </div>
+                                <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
+                                    <i>*This is an automated email from the Project Management System. Please do not reply. For assistance, contact your supervisor or ITS at <b>LOCAL: 132</b>.</i>
+                                </div>
+                            </div>"
+                };
+
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Connect("mail.enchantedkingdom.ph", 587, false);
+
+                    // Note: only needed if the SMTP server requires authentication
+                    smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+                }
+
+                return Json(new { success = true, message = "Task rejected!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error: " + ex.Message });
+            }
+        }
+
         [HttpGet]
         public JsonResult GetApproversByTask(int taskId)
         {
