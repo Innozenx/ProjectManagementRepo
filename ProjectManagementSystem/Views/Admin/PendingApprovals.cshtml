@@ -126,9 +126,12 @@ function createTaskCard(task) {
                     <p class="mb-2 small">${attachment}</p>
                     <div class="d-flex gap-2">
                         ${task.ShowActions ? `
-                 <button class="btn btn-reject reject-btn" data-taskid="${task.DetailsID}" aria-label="Reject Task">Reject</button>
-                 <button class="btn btn-approve approve-btn" data-taskid="${task.DetailsID}" aria-label="Approve Task">Approve</button>
-                 ` : ``}
+                             <button class="btn btn-reject reject-btn" data-taskid="${task.DetailsID}" aria-label="Reject Task">Reject</button>
+                             <button class="btn btn-approve approve-btn" data-taskid="${task.DetailsID}" aria-label="Approve Task">Approve</button>
+                             ` : ``}
+                        ${task.ShowWithdraw ? `
+                             <button class="btn btn-approve withdraw-btn" data-taskid="${task.DetailsID}" aria-label="">Withdraw</button>
+                             ` : ``}
                     </div>
                 </div>
             </div>
@@ -172,10 +175,10 @@ function loadApprovals() {
                     <td>${task.SubmittedBy}</td>
                     <td>${formattedDate}</td>
                     <td>${task.AttachmentUrl ? `<a href="${task.AttachmentUrl}" class="attachment-link">View File</a>` : "<span class='text-muted small fst-italic'>No attachment</span>"}</td>
-              <td>
-    <button class="btn btn-approve approve-btn" data-taskid="${task.DetailsID}">Approve</button>
-    <button class="btn btn-reject reject-btn" data-taskid="${task.DetailsID}">Reject</button>
-</td>
+                    <td>
+                        <button class="btn btn-approve approve-btn" data-taskid="${task.DetailsID}">Approve</button>
+                        <button class="btn btn-reject reject-btn" data-taskid="${task.DetailsID}">Reject</button>
+                    </td>
 
                 </tr>`);
             cardView.append(createTaskCard(task));
@@ -186,6 +189,7 @@ function loadApprovals() {
         } else {
             data.approved.forEach(task => {
                 task.ShowActions = false;
+                task.ShowWithdraw = true;
                 approved.append(createTaskCard(task));
 
             });
@@ -196,6 +200,7 @@ function loadApprovals() {
         } else {
             data.rejected.forEach(task => {
                 task.ShowActions = false;
+                task.ShowWithdraw = true;
                 rejected.append(createTaskCard(task));
             });
         }
@@ -321,6 +326,34 @@ $(document).on("click", ".approve-btn", function () {
                     res.success && Swal.fire("Rejected", "Task rejected.", "success").then(loadApprovals)
                 ).fail(() =>
                     Swal.fire("Error", "Rejection failed.", "error")
+                );
+            }
+        });
+    });
+
+    
+    $(document).on("click", ".withdraw-btn", function () {
+        const taskId = $(this).data("taskid");
+        Swal.fire({
+            title: "Withdraw Task?",
+            html: '<p style="font-size: 14px; color: #555;">Please provide a reason for withdrawing this task.</p>',
+            input: "text",
+            inputPlaceholder: "Reason for withdrawing",
+            inputPlaceholder: "e.g., Change of mind",
+            inputAttributes: {
+                style: "font-size: 14px;"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Withdraw"
+        }).then(result => {
+            if (result.isConfirmed && result.value.trim()) {
+                $.post('@Url.Action("WithdrawTask", "Admin")', {
+                    taskId,
+                    reason: result.value.trim()
+                }).done(res =>
+                    res.success && Swal.fire("Withdraw", "Task withdraw.", "success").then(loadApprovals)
+                ).fail(() =>
+                    Swal.fire("Error", "Withdraw failed.", "error")
                 );
             }
         });
