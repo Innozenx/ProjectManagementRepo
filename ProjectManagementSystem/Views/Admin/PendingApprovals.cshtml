@@ -276,8 +276,6 @@ $(document).ready(function () {
             color: "#333"
         }).then(result => {
             if (result.isConfirmed) {
-
-                // Show loading screen
                 Swal.fire({
                     title: "Processing...",
                     text: "Approving task, please wait...",
@@ -287,13 +285,13 @@ $(document).ready(function () {
                     }
                 });
 
-                // Perform the AJAX request
+                // AJAX request
                 $.post('@Url.Action("ApproveTask", "Admin")', { taskId })
                     .done(res => {
-                        Swal.close(); // Close loading spinner
+                        Swal.close(); 
 
                         if (res.success) {
-                            triggerConfetti(); // optional animation
+                            triggerConfetti();
                             Swal.fire({
                                 title: "Task Approved 🎉",
                                 text: "This task has been successfully approved.",
@@ -314,7 +312,7 @@ $(document).ready(function () {
                         }
                     })
                     .fail(() => {
-                        Swal.close(); // Ensure loading spinner is closed
+                        Swal.close(); 
                         Swal.fire({
                             title: "Error",
                             text: "Approval failed due to a server error.",
@@ -341,7 +339,6 @@ $(document).ready(function () {
             confirmButtonText: "Reject"
         }).then(result => {
             if (result.isConfirmed && result.value.trim()) {
-                // Show loading modal
                 Swal.fire({
                     title: "Processing...",
                     text: "Rejecting task, please wait...",
@@ -351,12 +348,12 @@ $(document).ready(function () {
                     }
                 });
 
-                // Perform the POST request
+                // POST request
                 $.post('@Url.Action("RejectTask", "Admin")', {
                     taskId,
                     reason: result.value.trim()
                 }).done(res => {
-                    Swal.close(); // Close the loading spinner
+                    Swal.close(); 
 
                     if (res.success) {
                         Swal.fire("Rejected", "Task rejected.", "success")
@@ -365,7 +362,7 @@ $(document).ready(function () {
                         Swal.fire("Failed", "Could not reject the task.", "error");
                     }
                 }).fail(() => {
-                    Swal.close(); // Close spinner even on failure
+                    Swal.close();
                     Swal.fire("Error", "Rejection failed due to a server error.", "error");
                 });
             }
@@ -373,51 +370,51 @@ $(document).ready(function () {
     });
 
 
-    
-    $(document).on("click", ".withdraw-btn", function () {
+   $(document).on("click", ".withdraw-btn", function () {
     const taskId = $(this).data("taskid");
+
     Swal.fire({
-        title: "Withdraw Task?",
+        title: "Confirm Withdrawal",
         html: '<p style="font-size: 14px; color: #555;">Please provide a reason for withdrawing this task.</p>',
         input: "text",
-        inputPlaceholder: "e.g., Change of mind",
+        inputPlaceholder: "e.g., Updated requirements or change of plan",
         inputAttributes: {
             style: "font-size: 14px;"
         },
         showCancelButton: true,
-        confirmButtonText: "Withdraw"
-        }).then(result => {
-            if (result.isConfirmed && result.value.trim()) {
-                // Show loading screen
-                Swal.fire({
-                    title: "Processing...",
-                    text: "Please wait",
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
+        confirmButtonText: "Withdraw",
+        cancelButtonText: "Cancel"
+    }).then(result => {
+        if (result.isConfirmed && result.value.trim()) {
+            Swal.fire({
+                title: "Processing Withdrawal...",
+                text: "Please wait while we update the task status.",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
-                // Perform the AJAX POST
-                $.post('@Url.Action("WithdrawTask", "Admin")', {
-                    taskId,
-                    reason: result.value.trim()
-                }).done(res => {
-                    Swal.close(); // Close loading
+            $.post('@Url.Action("WithdrawTask", "Admin")', {
+                taskId,
+                reason: result.value.trim()
+            }).done(res => {
+                Swal.close();
 
-                    if (res.success) {
-                        Swal.fire("Withdrawn", "Task successfully withdrawn.", "success")
-                            .then(loadApprovals);
-                    } else {
-                        Swal.fire("Failed", "Could not withdraw task.", "error");
-                    }
-                }).fail(() => {
-                    Swal.close(); // Close loading on failure
-                    Swal.fire("Error", "Withdraw failed due to server error.", "error");
-                });
-            }
-        });
+                if (res.success) {
+                    Swal.fire("Task Withdrawn", "The task has been successfully withdrawn.", "success")
+                        .then(loadApprovals);
+                } else {
+                    Swal.fire("Withdrawal Failed", res.message || "Unable to withdraw the task at this time.", "error");
+                }
+            }).fail(() => {
+                Swal.close();
+                Swal.fire("Error", "An unexpected error occurred while processing the withdrawal.", "error");
+            });
+        }
     });
+});
+
 
     $(document).on("change", "#selectAll", function () {
         const isChecked = $(this).is(":checked");
@@ -436,7 +433,7 @@ $(document).ready(function () {
         confettiCanvas.style.width = '100vw';
         confettiCanvas.style.height = '100vh';
         confettiCanvas.style.pointerEvents = 'none';
-        confettiCanvas.style.zIndex = 11000; 
+        confettiCanvas.style.zIndex = 11000;
         document.body.appendChild(confettiCanvas);
 
         const myConfetti = confetti.create(confettiCanvas, {

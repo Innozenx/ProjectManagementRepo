@@ -1774,7 +1774,7 @@ function bulkApproval() {
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ tasks: checkedTasks }),
                 success: function (res) {
-                    Swal.close(); // Close loading spinner
+                    Swal.close(); 
 
                     if (res.success) {
                         triggerConfetti();
@@ -1812,8 +1812,6 @@ function bulkApproval() {
         }
     });
 }
-
-
 
 
         function submitApproval(task_id) {
