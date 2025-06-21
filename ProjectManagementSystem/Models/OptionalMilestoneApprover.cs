@@ -33,5 +33,6 @@ namespace ProjectManagementSystem.Models
         public Nullable<int> task_id { get; set; }
         public string approver_status { get; set; }
         public string withdraw_reason { get; set; }
+        public Nullable<System.DateTime> datetime_withdraw { get; set; }
     }
 }

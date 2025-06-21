@@ -1440,9 +1440,28 @@ namespace ProjectManagementSystem.Controllers
                     return Json(new { success = false, message = "Task not found or already removed." });
                 }
 
-                // Mark the task as rejected
-                submission.is_approved = null;
-                //submission.submission_date = DateTime.Now;
+                // for withdrawn by 
+                string currentEmail = User.Identity.Name?.ToLower().Trim();
+                string withdrawnByName = currentEmail;
+
+                using (var cmdb = new CMIdentityDBEntities())
+                {
+                    var user = cmdb.AspNetUsers.FirstOrDefault(u => u.Email.ToLower() == currentEmail);
+
+                    if (user != null)
+                    {
+                        string firstName = user.FirstName?.Trim();
+                        string lastName = user.LastName?.Trim();
+
+                        if (!string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName))
+                        {
+                            withdrawnByName = $"{firstName} {lastName}";
+                        }
+                    }
+
+
+                    submission.is_approved = null;
+                submission.submission_date = DateTime.Now;
 
                 // Get the corresponding rows from PreSetMilestoneApprovers and OptionalMilestoneApprovers
                 var preset = db.PreSetMilestoneApprovers
@@ -1456,7 +1475,7 @@ namespace ProjectManagementSystem.Controllers
                 {
                     preset.approved = null;
                     preset.rejected = null;
-                    //preset.date_approved = DateTime.Now; // or use date_rejected if you prefer
+                    preset.date_approved = DateTime.Now; 
                     preset.withdraw_status = reason;
                 }
 
@@ -1465,7 +1484,7 @@ namespace ProjectManagementSystem.Controllers
                 {
                     optional.approved = null;
                     optional.rejected = null;
-                    //optional.date_approved = DateTime.Now; // or use date_rejected if you prefer
+                    optional.date_approved = DateTime.Now;
                     optional.withdraw_reason = reason;
                 }
 
@@ -1492,9 +1511,10 @@ namespace ProjectManagementSystem.Controllers
                 var email = new MimeMessage();
 
                 email.From.Add(new MailboxAddress(systemName, systemEmail));
-                email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
+                email.To.Add(new MailboxAddress("Crystal Joyce Benauro", "cbenauro@enchantedkingdom.ph")); // test only
+                //email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
 
-                email.Subject = "PM System Disapproval";
+                email.Subject = "PM System Withdrawal";
                 email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                 {
                     Text = @"
@@ -1509,6 +1529,7 @@ namespace ProjectManagementSystem.Controllers
                                     <br/>Project: <b>" + projectTitle + "</b>" +
                                 "<br/>Milestone: <b>" + milestoneTitle + "</b>" +
                                 "<br/><br/> <b>has been withdraw</b>" + @" .</p>
+
                                     <p style='font-size: 14px; color: #555;'>
                                         Please see the withdraw reason below:
                                     </p>

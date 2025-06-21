@@ -2795,8 +2795,6 @@ namespace ProjectManagementSystem.Controllers
                         Text = @"
                             <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
                                 <div style='text-align: center; margin-bottom: 20px;'>
-                              
-                                    <h1 style='font-size: 26px; color: #66339A; margin: 0;'>Enchanting Day!</h1>
                                 </div>
                                 <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); text-align: center;'>
                                     <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Hello, " + approver.approver_name + @"!</p>
