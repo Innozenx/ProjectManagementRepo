@@ -948,7 +948,7 @@ namespace ProjectManagementSystem.Controllers
             List<ApprovalTaskDTO> optionalMileStone = new List<ApprovalTaskDTO>();
 
             //get all optionalMilestoneApprovers based on userEmail
-            var _optional = db.OptionalMilestoneApprovers.Where(x => x.approver_email == userEmail && (x.is_removed == false || x.is_removed == null) && x.task_id.HasValue).ToList();
+            var _optional = db.OptionalMilestoneApprovers.Where(x => x.approver_email == userEmail && (x.is_removed != true) && x.task_id.HasValue).ToList();
 
             foreach (var row in _optional)
             {
@@ -974,7 +974,7 @@ namespace ProjectManagementSystem.Controllers
             }
 
             //Pre-set task
-            var _preset = db.PreSetMilestoneApprovers.Where(x => x.approver_email == userEmail && (x.is_removed != true || x.is_removed == null) && x.task_id.HasValue).ToList();
+            var _preset = db.PreSetMilestoneApprovers.Where(x => x.approver_email == userEmail && (x.is_removed != true) && x.task_id.HasValue).ToList();
 
             foreach (var row in _preset)
             {
@@ -1316,6 +1316,7 @@ namespace ProjectManagementSystem.Controllers
         {
             try
             {
+                string currentEmail = User.Identity.Name?.ToLower().Trim();
                 var submission = db.ChecklistSubmissions
                     .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
 
@@ -1331,10 +1332,10 @@ namespace ProjectManagementSystem.Controllers
 
                 // Get the corresponding rows from PreSetMilestoneApprovers and OptionalMilestoneApprovers
                 var preset = db.PreSetMilestoneApprovers
-                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
 
                 var optional = db.OptionalMilestoneApprovers
-                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
 
                 // Update rejection status in PreSetMilestoneApprovers
                 if (preset != null)
@@ -1465,10 +1466,10 @@ namespace ProjectManagementSystem.Controllers
 
                     // Get the corresponding rows from PreSetMilestoneApprovers and OptionalMilestoneApprovers
                     var preset = db.PreSetMilestoneApprovers
-                        .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+                        .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
 
                     var optional = db.OptionalMilestoneApprovers
-                        .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+                        .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
 
                     // Update rejection status in PreSetMilestoneApprovers
                     if (preset != null)
