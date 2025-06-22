@@ -1141,7 +1141,6 @@ namespace ProjectManagementSystem.Controllers
             {
                 string userEmail = User.Identity.Name.ToLower().Trim();
 
-                // Get the submission task from ChecklistSubmissions
                 var submission = db.ChecklistSubmissions
                     .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
 
@@ -1150,18 +1149,15 @@ namespace ProjectManagementSystem.Controllers
                     return Json(new { success = false, message = "Task not found or already removed." });
                 }
 
-                // Mark the task as approved
                 submission.is_approved = true;
                 submission.submission_date = DateTime.Now;
 
-                // Get the corresponding rows from PreSetMilestoneApprovers and OptionalMilestoneApprovers
                 var preset = db.PreSetMilestoneApprovers
                     .FirstOrDefault(x => x.task_id == taskId && x.approver_email.ToLower().Trim() == userEmail && x.is_removed != true);
 
                 var optional = db.OptionalMilestoneApprovers
                     .FirstOrDefault(x => x.task_id == taskId && x.approver_email.ToLower().Trim() == userEmail && x.is_removed != true);
 
-                // Update approval status in PreSetMilestoneApprovers
                 if (preset != null)
                 {
                     preset.approved = true;
@@ -1169,7 +1165,6 @@ namespace ProjectManagementSystem.Controllers
                     preset.date_approved = DateTime.Now;
                 }
 
-                // Update approval status in OptionalMilestoneApprovers
                 if (optional != null)
                 {
                     optional.approved = true;
@@ -1179,13 +1174,13 @@ namespace ProjectManagementSystem.Controllers
 
                 db.SaveChanges();
 
-                //Checking for project status. If completely approved, send email.
                 var main_id = submission.main_id;
                 var milestone_id = submission.milestone_id;
 
                 var milestone_submissions = db.ChecklistSubmissions.Where(x => x.main_id == main_id && x.milestone_id == milestone_id && (x.is_removed != true || x.is_removed == null)).ToList();
 
-                if (milestone_submissions.Any()) {
+                if (milestone_submissions.Any())
+                {
                     var complete = true;
 
                     foreach (var sub in milestone_submissions)
@@ -1207,13 +1202,23 @@ namespace ProjectManagementSystem.Controllers
                         milestoneTbl.IsCompleted = true;
                         milestoneTbl.actual_completion_date = DateTime.Now;
 
-                        //---------------------------------
                         var mainTbl = db.MainTables.Where(x => x.main_id == main_id).SingleOrDefault();
                         var projectTitle = mainTbl.project_title;
-     
+
                         var milestoneTitle = db.MilestoneRoots.Where(x => x.id == milestone_id).Select(x => x.milestone_name).SingleOrDefault();
                         var membersTbl = db.ProjectMembersTbls.Where(x => x.project_id == main_id).ToList();
                         var project_manager = membersTbl.Where(x => x.role == 1004).SingleOrDefault();
+
+                        var taskName = submission.task_name;
+                        string approverName = userEmail;
+                        using (var cmdb = new CMIdentityDBEntities())
+                        {
+                            var user = cmdb.AspNetUsers.FirstOrDefault(u => u.Email.ToLower() == userEmail);
+                            if (user != null && !string.IsNullOrEmpty(user.FirstName) && !string.IsNullOrEmpty(user.LastName))
+                            {
+                                approverName = user.FirstName + " " + user.LastName;
+                            }
+                        }
 
                         var systemEmail = "e-notify@enchantedkingdom.ph";
                         var systemName = "PM SYSTEM";
@@ -1221,54 +1226,77 @@ namespace ProjectManagementSystem.Controllers
 
                         email.From.Add(new MailboxAddress(systemName, systemEmail));
                         email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
+                        email.To.Add(new MailboxAddress("Crystal Joyce Benauro", "cbenauro@enchantedkingdom.ph")); // test email
 
                         email.Subject = "PM System Approval";
                         email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                         {
-                            Text = @"
-                            <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
-                                <div style='text-align: center; margin-bottom: 20px;'>
-                              
-                                    <h1 style='font-size: 26px; color: #66339A; margin: 0;'>Enchanting Day!</h1>
-                                </div>
-                                <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); text-align: center;'>
-                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Hello, " + project_manager.name + @"!</p>
-                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>Your submission for 
-                                    <br/>Project: <b>" + projectTitle + "</b>" +
-                                        "<br/>Milestone: <b>" + milestoneTitle + "</b>" +
-                                        "<br/><br/> <b>has been approved!</b>" + @" .</p>
-                                    <p style='font-size: 14px; color: #555;'>
-                                        Please see the link below to view the request:
-                                    </p>
-                                    <div style='text-align: center; margin: 30px 0;'>
-                                        <a href='http://localhost:60297/Admin/PendingApprovals'
-                                           style='display: inline-block; padding: 14px 40px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 16px;'>
-                                           Get Started
-                                        </a>
-                                    </div>
-                                    <p style='font-size: 14px; color: #555; text-align: center;'>
-                                        Need help or have questions? Don’t hesitate to reach out. We’re here to support you every step of the way!
-                                    </p>
-                                </div>
-                                <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
-                                    <i>*This is an automated email from the Project Management System. Please do not reply. For assistance, contact your supervisor or ITS at <b>LOCAL: 132</b>.</i>
-                                </div>
-                            </div>"
-                        };
+                            Text = $@"
+                        <div style='font-family: Poppins, Arial, sans-serif; background-color: #f4f4f9; padding: 0; margin: 0;'>
+                            <table align='center' cellpadding='0' cellspacing='0' width='640' style='margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;'>
+                                <tr>
+                                    <td style='background-color: #66339A; padding: 24px; border-top-left-radius: 8px; border-top-right-radius: 8px; text-align: center;'>
+                                        <h1 style='margin: 0; font-size: 22px; color: #ffffff; font-weight: 600;'>Your Checklist Item Has Been Approved</h1>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style='padding: 30px 40px;'>
+                                        <p style='font-size: 15px; color: #444; margin-bottom: 24px;'>
+                                            This is to notify you that a task has been <strong style='color:#28a745;'>approved</strong> under your project titled <strong>{projectTitle}</strong>.
+                                        </p>
+
+                                        <table cellpadding='0' cellspacing='0' width='100%' style='font-size: 14px; color: #333; line-height: 1.6; border-collapse: collapse; margin-top: 10px;'>
+                                            <tr style='border-bottom: 1px solid #eee;'>
+                                                <td style='padding: 10px; text-align: right; width: 40%;'><strong>Checklist Item:</strong></td>
+                                                <td style='padding: 10px; text-align: left;'>{taskName}</td>
+                                            </tr>
+                                            <tr style='border-bottom: 1px solid #eee;'>
+                                                <td style='padding: 10px; text-align: right;'><strong>Milestone Name:</strong></td>
+                                                <td style='padding: 10px; text-align: left;'>{milestoneTitle}</td>
+                                            </tr>
+                                            <tr style='border-bottom: 1px solid #eee;'>
+                                                <td style='padding: 10px; text-align: right;'><strong>Approved By:</strong></td>
+                                                <td style='padding: 10px; text-align: left;'>{approverName}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style='padding: 10px; text-align: right;'><strong>Date Approved:</strong></td>
+                                                <td style='padding: 10px; text-align: left;'>{DateTime.Now.ToString("MMMM dd, yyyy h:mm tt")}</td>
+                                            </tr>
+                                        </table>
+
+                                        <div style='text-align: center; margin: 30px 0;'>
+                                            <a href='http://localhost:60297/Admin/PendingApprovals'
+                                               style='display: inline-block; padding: 14px 40px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 16px;'>
+                                               View Task
+                                            </a>
+                                        </div>
+
+                                        <p style='font-size: 13px; color: #888; margin-top: 40px; text-align: center;'>
+                                            If you have questions or require assistance, please contact your supervisor or ITS.
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style='background-color: #f0f0f5; text-align: center; padding: 14px; font-size: 12px; color: #999; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;'>
+                                        <em>This is an automated email from the Project Management System</em>. Do not reply.<br/>Need help? Call <strong>ITS Local 123/132</strong>.
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>"
+                                            };
+
 
                         using (var smtp = new SmtpClient())
                         {
                             smtp.Connect("mail.enchantedkingdom.ph", 587, false);
-
-                            // Note: only needed if the SMTP server requires authentication
                             smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
-
                             smtp.Send(email);
                             smtp.Disconnect(true);
                         }
 
                         db.SaveChanges();
-
                     }
                 }
 
@@ -1279,6 +1307,7 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Error: " + ex.Message });
             }
         }
+
 
 
         // OLD
@@ -1317,45 +1346,36 @@ namespace ProjectManagementSystem.Controllers
             try
             {
                 string currentEmail = User.Identity.Name?.ToLower().Trim();
-                var submission = db.ChecklistSubmissions
-                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+                var submission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
 
                 if (submission == null)
                 {
                     return Json(new { success = false, message = "Task not found or already removed." });
                 }
 
-                // Mark the task as rejected
                 submission.is_approved = false;
                 submission.submission_date = DateTime.Now;
                 submission.disapproval_reason = reason;
 
-                // Get the corresponding rows from PreSetMilestoneApprovers and OptionalMilestoneApprovers
-                var preset = db.PreSetMilestoneApprovers
-                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
+                var preset = db.PreSetMilestoneApprovers.FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
+                var optional = db.OptionalMilestoneApprovers.FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
 
-                var optional = db.OptionalMilestoneApprovers
-                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
-
-                // Update rejection status in PreSetMilestoneApprovers
                 if (preset != null)
                 {
                     preset.approved = false;
                     preset.rejected = true;
-                    preset.date_approved = DateTime.Now; // or use date_rejected if you prefer
+                    preset.date_approved = DateTime.Now;
                 }
 
-                // Update rejection status in OptionalMilestoneApprovers
                 if (optional != null)
                 {
                     optional.approved = false;
                     optional.rejected = true;
-                    optional.date_approved = DateTime.Now; // or use date_rejected if you prefer
+                    optional.date_approved = DateTime.Now;
                 }
 
                 db.SaveChanges();
 
-                //---------------------------------------
                 var main_id = submission.main_id;
                 var milestone_id = submission.milestone_id;
 
@@ -1371,51 +1391,86 @@ namespace ProjectManagementSystem.Controllers
                 var membersTbl = db.ProjectMembersTbls.Where(x => x.project_id == main_id).ToList();
                 var project_manager = membersTbl.Where(x => x.role == 1004).SingleOrDefault();
 
+                var taskName = submission.task_name;
+                string approverName = currentEmail;
+                using (var cmdb = new CMIdentityDBEntities())
+                {
+                    var user = cmdb.AspNetUsers.FirstOrDefault(u => u.Email.ToLower() == currentEmail);
+                    if (user != null && !string.IsNullOrEmpty(user.FirstName) && !string.IsNullOrEmpty(user.LastName))
+                    {
+                        approverName = user.FirstName + " " + user.LastName;
+                    }
+                }
+
                 var systemEmail = "e-notify@enchantedkingdom.ph";
                 var systemName = "PM SYSTEM";
                 var email = new MimeMessage();
 
                 email.From.Add(new MailboxAddress(systemName, systemEmail));
                 email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
-
+                email.To.Add(new MailboxAddress("Crystal Joyce Benauro", "cbenauro@enchantedkingdom.ph"));
                 email.Subject = "PM System Disapproval";
+
                 email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                 {
-                    Text = @"
-                            <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
-                                <div style='text-align: center; margin-bottom: 20px;'>
-                              
-                                    <h1 style='font-size: 26px; color: #66339A; margin: 0;'>Enchanting Day!</h1>
+                    Text = $@"
+                <div style='font-family: Poppins, Arial, sans-serif; background-color: #f4f4f9; padding: 0; margin: 0;'>
+                    <table align='center' cellpadding='0' cellspacing='0' width='640' style='margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;'>
+                        <tr>
+                            <td style='background-color: #66339A; padding: 24px; border-top-left-radius: 8px; border-top-right-radius: 8px; text-align: center;'>
+                                <h1 style='margin: 0; font-size: 22px; color: #ffffff; font-weight: 600;'>Your Checklist Item Has Been Disapproved</h1>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style='padding: 30px 40px;'>
+                                <p style='font-size: 15px; color: #444; margin-bottom: 24px;'>
+                                    This is to notify you that a task has been <strong style='color:#dc3545;'>disapproved</strong> under your project titled <strong>{projectTitle}</strong>.
+                                </p>
+
+                                <table cellpadding='0' cellspacing='0' width='100%' style='font-size: 14px; color: #333; line-height: 1.6; border-collapse: collapse; margin-top: 10px;'>
+                                    <tr style='border-bottom: 1px solid #eee;'>
+                                        <td style='padding: 10px; text-align: right; width: 40%;'><strong>Checklist Item:</strong></td>
+                                        <td style='padding: 10px; text-align: left;'>{taskName}</td>
+                                    </tr>
+                                    <tr style='border-bottom: 1px solid #eee;'>
+                                        <td style='padding: 10px; text-align: right;'><strong>Milestone Name:</strong></td>
+                                        <td style='padding: 10px; text-align: left;'>{milestoneTitle}</td>
+                                    </tr>
+                                    <tr style='border-bottom: 1px solid #eee;'>
+                                        <td style='padding: 10px; text-align: right;'><strong>Disapproved By:</strong></td>
+                                        <td style='padding: 10px; text-align: left;'>{approverName}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style='padding: 10px; text-align: right;'><strong>Date Disapproved:</strong></td>
+                                        <td style='padding: 10px; text-align: left;'>{DateTime.Now.ToString("MMMM dd, yyyy h:mm tt")}</td>
+                                    </tr>
+                                </table>
+
+                                <div style='margin-top: 30px; padding: 16px 20px; background-color: #fae3e3; border-left: 5px solid #dc3545; border-radius: 6px;'>
+                                    <p style='margin: 0; color: #dc3545; font-style: italic;'><strong>Reason:</strong> {reason}</p>
                                 </div>
-                                <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); text-align: center;'>
-                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Hello, " + project_manager.name + @"!</p>
-                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>Your submission for 
-                                    <br/>Project: <b>" + projectTitle + "</b>" +
-                                "<br/>Milestone: <b>" + milestoneTitle + "</b>" +
-                                "<br/><br/> <b>has been disapproved</b>" + @" .</p>
-                                    <p style='font-size: 14px; color: #555;'>
-                                        Please see the disapproval reason below:
-                                    </p>
-                                    <div style='text-align: center; margin: 30px 0;'>
-                                        <b>Reason: " + submission.disapproval_reason + @" </b>
-                                    </div>
-                                    <p style='font-size: 14px; color: #555; text-align: center;'>
-                                        Need help or have questions? Don’t hesitate to reach out. We’re here to support you every step of the way!
-                                    </p>
-                                </div>
-                                <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
-                                    <i>*This is an automated email from the Project Management System. Please do not reply. For assistance, contact your supervisor or ITS at <b>LOCAL: 132</b>.</i>
-                                </div>
-                            </div>"
+
+                                <p style='font-size: 13px; color: #888; margin-top: 40px; text-align: center;'>
+                                    If you have questions or require assistance, please contact your supervisor or ITS.
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style='background-color: #f0f0f5; text-align: center; padding: 14px; font-size: 12px; color: #999; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;'>
+                                <em>This is an automated email from the Project Management System</em>. Do not reply.<br/>Need help? Call <strong>ITS Local 123/132</strong>.
+                            </td>
+                        </tr>
+                    </table>
+                </div>"
                 };
+
 
                 using (var smtp = new SmtpClient())
                 {
                     smtp.Connect("mail.enchantedkingdom.ph", 587, false);
-
-                    // Note: only needed if the SMTP server requires authentication
                     smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
-
                     smtp.Send(email);
                     smtp.Disconnect(true);
                 }
@@ -1427,6 +1482,7 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Error: " + ex.Message });
             }
         }
+
 
         [HttpPost]
         public JsonResult WithdrawTask(int taskId, string reason)
@@ -1441,7 +1497,6 @@ namespace ProjectManagementSystem.Controllers
                     return Json(new { success = false, message = "Task not found or already removed." });
                 }
 
-                // for withdrawn by 
                 string currentEmail = User.Identity.Name?.ToLower().Trim();
                 string withdrawnByName = currentEmail;
 
@@ -1459,113 +1514,158 @@ namespace ProjectManagementSystem.Controllers
                             withdrawnByName = $"{firstName} {lastName}";
                         }
                     }
+                }
 
+                submission.is_approved = null;
+                submission.submission_date = DateTime.Now;
 
-                    submission.is_approved = null;
-                    submission.submission_date = DateTime.Now;
+                var preset = db.PreSetMilestoneApprovers
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
 
-                    // Get the corresponding rows from PreSetMilestoneApprovers and OptionalMilestoneApprovers
-                    var preset = db.PreSetMilestoneApprovers
-                        .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
+                var optional = db.OptionalMilestoneApprovers
+                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
 
-                    var optional = db.OptionalMilestoneApprovers
-                        .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true && x.approver_email == currentEmail);
+                string previousStatus = "Pending";
 
-                    // Update rejection status in PreSetMilestoneApprovers
-                    if (preset != null)
-                    {
-                        preset.approved = null;
-                        preset.rejected = null;
-                        preset.date_approved = DateTime.Now;
-                        preset.withdraw_status = reason;
-                    }
+                if (preset != null)
+                {
+                    if (preset.approved == true) previousStatus = "Approved";
+                    else if (preset.rejected == true) previousStatus = "Rejected";
 
-                    // Update rejection status in OptionalMilestoneApprovers
-                    if (optional != null)
-                    {
-                        optional.approved = null;
-                        optional.rejected = null;
-                        optional.date_approved = DateTime.Now;
-                        optional.withdraw_reason = reason;
-                    }
+                    preset.approved = null;
+                    preset.rejected = null;
+                    preset.date_approved = DateTime.Now;
+                    preset.withdraw_status = reason;
+                }
 
-                    db.SaveChanges();
+                if (optional != null)
+                {
+                    if (optional.approved == true) previousStatus = "Approved";
+                    else if (optional.rejected == true) previousStatus = "Rejected";
 
-                    //---------------------------------------
-                    var main_id = submission.main_id;
-                    var milestone_id = submission.milestone_id;
+                    optional.approved = null;
+                    optional.rejected = null;
+                    optional.date_approved = DateTime.Now;
+                    optional.withdraw_reason = reason;
+                }
 
-                    var dbChecklist = db.ChecklistTables.Where(x => x.main_id == main_id && x.milestone_id == milestone_id).OrderByDescending(x => x.checklist_id).FirstOrDefault();
+                db.SaveChanges();
+
+                var main_id = submission.main_id;
+                var milestone_id = submission.milestone_id;
+                var taskName = submission.task_name;
+
+                var dbChecklist = db.ChecklistTables
+                    .Where(x => x.main_id == main_id && x.milestone_id == milestone_id)
+                    .OrderByDescending(x => x.checklist_id)
+                    .FirstOrDefault();
+
+                if (dbChecklist != null)
+                {
                     dbChecklist.disapproval_reason = submission.disapproval_reason;
                     dbChecklist.is_approved = false;
-                    db.SaveChanges();
-
-                    var mainTbl = db.MainTables.Where(x => x.main_id == main_id).SingleOrDefault();
-                    var projectTitle = mainTbl.project_title;
-
-                    var milestoneTitle = db.MilestoneRoots.Where(x => x.id == milestone_id).Select(x => x.milestone_name).SingleOrDefault();
-                    var membersTbl = db.ProjectMembersTbls.Where(x => x.project_id == main_id).ToList();
-                    var project_manager = membersTbl.Where(x => x.role == 1004).SingleOrDefault();
-
-                    var systemEmail = "e-notify@enchantedkingdom.ph";
-                    var systemName = "PM SYSTEM";
-                    var email = new MimeMessage();
-
-                    email.From.Add(new MailboxAddress(systemName, systemEmail));
-                    email.To.Add(new MailboxAddress("Crystal Joyce Benauro", "cbenauro@enchantedkingdom.ph")); // test only
-                                                                                                               //email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
-
-                    email.Subject = "PM System Withdrawal";
-                    email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                    {
-                        Text = @"
-                            <div style='font-family: Poppins, Arial, sans-serif; font-size: 14px; color: #333; background-color: #f9f9f9; padding: 40px; line-height: 1.8; border-radius: 10px; max-width: 600px; margin: auto; border: 1px solid #ddd;'>
-                                <div style='text-align: center; margin-bottom: 20px;'>
-                              
-                                    <h1 style='font-size: 26px; color: #66339A; margin: 0;'>Enchanting Day!</h1>
-                                </div>
-                                <div style='background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); text-align: center;'>
-                                    <p style='font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;'>Hello, " + project_manager.name + @"!</p>
-                                    <p style='font-size: 14px; color: #666; margin-top: 10px;'>Your submission for 
-                                    <br/>Project: <b>" + projectTitle + "</b>" +
-                                    "<br/>Milestone: <b>" + milestoneTitle + "</b>" +
-                                    "<br/><br/> <b>has been withdraw</b>" + @" .</p>
-
-                                    <p style='font-size: 14px; color: #555;'>
-                                        Please see the withdraw reason below:
-                                    </p>
-                                    <div style='text-align: center; margin: 30px 0;'>
-                                        <b>Reason: " + submission.disapproval_reason + @" </b>
-                                    </div>
-                                    <p style='font-size: 14px; color: #555; text-align: center;'>
-                                        Need help or have questions? Don’t hesitate to reach out. We’re here to support you every step of the way!
-                                    </p>
-                                </div>
-                                <div style='margin-top: 20px; padding: 20px; text-align: center; background-color: #f4f4f9; border-radius: 5px; font-size: 12px; color: #999;'>
-                                    <i>*This is an automated email from the Project Management System. Please do not reply. For assistance, contact your supervisor or ITS at <b>LOCAL: 132</b>.</i>
-                                </div>
-                            </div>"
-                    };
-
-                    using (var smtp = new SmtpClient())
-                    {
-                        smtp.Connect("mail.enchantedkingdom.ph", 587, false);
-
-                        // Note: only needed if the SMTP server requires authentication
-                        smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
-
-                        smtp.Send(email);
-                        smtp.Disconnect(true);
-                    }
-
-                    return Json(new { success = true, message = "Task rejected!" });
                 }
+
+                db.SaveChanges();
+
+                var mainTbl = db.MainTables.FirstOrDefault(x => x.main_id == main_id);
+                var projectTitle = mainTbl?.project_title;
+
+                var milestoneTitle = db.MilestoneRoots
+                    .Where(x => x.id == milestone_id)
+                    .Select(x => x.milestone_name)
+                    .FirstOrDefault();
+
+                var project_manager = db.ProjectMembersTbls
+                    .FirstOrDefault(x => x.project_id == main_id && x.role == 1004);
+
+                var subjectHeading = previousStatus == "Approved" ? "Approval Withdrawal"
+                             : previousStatus == "Rejected" ? "Rejection Withdrawal"
+                             : "Task Withdrawal";
+
+
+                var email = new MimeMessage();
+                email.From.Add(new MailboxAddress("PM SYSTEM", "e-notify@enchantedkingdom.ph"));
+                email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
+                email.To.Add(new MailboxAddress("Crystal Joyce Benauro", "cbenauro@enchantedkingdom.ph"));
+
+                email.Subject = "PM System " + subjectHeading;
+                email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = $@"
+                    <div style='font-family: Poppins, Arial, sans-serif; background-color: #f4f4f9; padding: 0; margin: 0;'>
+                        <table align='center' cellpadding='0' cellspacing='0' width='640' style='margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;'>
+                            <tr>
+                                <td style='background-color: #66339A; padding: 24px; border-top-left-radius: 8px; border-top-right-radius: 8px; text-align: center;'>
+                                    <h1 style='margin: 0; font-size: 22px; color: #ffffff; font-weight: 600;'>{subjectHeading}</h1>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style='padding: 30px 40px;'>
+                                    <p style='font-size: 15px; color: #444; margin-bottom: 24px;'>
+                                        This is to notify you that a task has been <strong>withdrawn</strong> from the checklist under your project title <strong>{projectTitle}</strong>.
+                                    </p>
+
+
+                                    <p style='font-size: 14px; color: #555; margin-bottom: 24px;'>
+                                        You may view this checklist item under your <strong>Pending Approvals</strong> tab.
+                                    </p>
+
+                                    <table cellpadding='0' cellspacing='0' width='100%' style='font-size: 14px; color: #333; line-height: 1.6; border-collapse: collapse; margin-top: 10px;'>
+                                        <tr style='border-bottom: 1px solid #eee;'>
+                                            <td style='padding: 10px; vertical-align: top;'><strong>Checklist Item:</strong></td>
+                                            <td style='padding: 10px;'>{taskName}</td>
+                                        </tr>
+                                        <tr style='border-bottom: 1px solid #eee;'>
+                                            <td style='padding: 10px; vertical-align: top;'><strong>Milestone Name:</strong></td>
+                                            <td style='padding: 10px;'>{milestoneTitle}</td>
+                                        </tr>
+                                        <tr style='border-bottom: 1px solid #eee;'>
+                                            <td style='padding: 10px; vertical-align: top;'><strong>Withdrawn By:</strong></td>
+                                            <td style='padding: 10px;'>{withdrawnByName}</td>
+                                        </tr>   
+                                    </table>
+
+                                    <div style='margin-top: 30px; padding: 16px 20px; background-color: #f7f1fa; border-left: 5px solid #66339A; border-radius: 6px;'>
+                                        <p style='margin: 0; color: #66339A; font-style: italic; font-weight: normal;'>Reason: {reason}</p>
+                                    </div>
+
+                                    <p style='font-size: 13px; color: #888; margin-top: 40px; text-align: center; font-weight: normal;'>
+                                        If you have questions or require assistance, please contact your supervisor or ITS.
+                                    </p>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style='background-color: #f0f0f5; text-align: center; padding: 14px; font-size: 12px; color: #999; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;'>
+                                    <em>This is an automated email from the Project Management System. Do not reply.<br/>Need help? Call <strong>ITS Local 123/132</strong>.</em>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>"
+                };
+
+
+
+
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Connect("mail.enchantedkingdom.ph", 587, false);
+                    smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+                }
+
+                return Json(new { success = true, message = "Task withdrawn!" });
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "Error: " + ex.Message });
             }
         }
+
+
 
         [HttpGet]
         public JsonResult GetApproversByTask(int taskId)
