@@ -436,14 +436,7 @@ namespace ProjectManagementSystem.Controllers
                     ? new List<string>()
                     : m.Requirements.Split(';').Select(r => r.Trim()).ToList(),
 
-                Approvers = string.IsNullOrEmpty(m.Approvers)
-                    ? new List<string>()
-                    : m.Approvers.Split(',')
-                        .Select(id => cmdb.AspNetUsers
-                            .Where(u => u.Id == id)
-                            .Select(u => u.FirstName + " " + u.LastName)
-                            .FirstOrDefault() ?? "Unknown Approver")
-                        .ToList()
+                Approvers = db.PreSetMilestoneApprovers.Where(x => x.task_id == m.ID).Select(x => x.approver_name).ToList()
             }).ToList();
 
             return Json(milestones, JsonRequestBehavior.AllowGet);
@@ -566,55 +559,86 @@ namespace ProjectManagementSystem.Controllers
 
                 Debug.WriteLine($"DivisionCodeNumber: {divisionCodeNumber}");
 
-                var milestone = new PreSetMilestone
+                foreach(var task in Tasks)
                 {
-                    MilestoneID = milestoneId,
-                    DivisionID = DivisionID,
-                    MilestoneName = MilestoneName,
-                    Sorting = nextSorting,
-                    Requirements = requirements,
-                    Approvers = approverIds,
-                    CreatedDate = DateTime.Now,
-                    ChecklistNumber = "",
-                    DivisionCodeNumber = divisionCodeNumber,
-                    division_string = db.Divisions.Where(x => x.DivisionID == DivisionID).Select(x => x.DivisionName).FirstOrDefault()
-                };
-
-                db.PreSetMilestones.Add(milestone);
-                db.SaveChanges();
-
-                var approver_ids = approverIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                List<PreSetMilestoneApprover> approver_list = new List<PreSetMilestoneApprover>();
-
-                foreach (var item in approver_ids)
-                {
-                    var approver_details = cmdb.AspNetUsers.Where(x => x.Id == item).SingleOrDefault();
-
-                    var project_list = db.MainTables.Where(x => x.division == division_string).ToList();
-
-                    foreach(var project in project_list)
+                    var presetMilestone = new PreSetMilestone
                     {
-                        var approver_container = new PreSetMilestoneApprover
-                        {
-                            approver_name = approver_details.FirstName + " " + approver_details.LastName,
-                            approver_email = approver_details.Email,
-                            milestone_id = db.MilestoneRoots.Where(x => x.milestone_name.ToLower() == MilestoneName).Select(x => x.id).SingleOrDefault(),
-                            date_added = DateTime.Now,
-                            added_by = User.Identity.Name,
-                            //division = cmdb.Identity_Keywords.Where(x => x.Id == approver_details.JobId && x.Type == "Divisions").Select(x => x.Description).SingleOrDefault(),
-                            division = userDetails.Where(x => x.id == approver_details.Id).Select(x => x.division).FirstOrDefault(),
-                            employee_id = Int32.Parse(approver_details.CMId),
-                            main_id = project.main_id,
-                            task_id = milestone.ID
-                        };
+                        MilestoneID = milestoneId,
+                        DivisionID = DivisionID,
+                        MilestoneName = MilestoneName,
+                        Sorting = nextSorting,
+                        Requirements = task.Requirement,
+                        CreatedDate = DateTime.Now,
+                        ChecklistNumber = "",
+                        DivisionCodeNumber = divisionCodeNumber,
+                        division_string = db.Divisions.Where(x => x.DivisionID == DivisionID).Select(x => x.DivisionName).FirstOrDefault()
+                    };
 
-                        approver_list.Add(approver_container);
+                    db.PreSetMilestones.Add(presetMilestone);
+                    db.SaveChanges();
+
+                    foreach (var approver in task.Approvers)
+                    {
+                        //save for preset approvers
+                        var approver_details = cmdb.AspNetUsers.Where(x => x.Id == approver).SingleOrDefault();
+                        var project_list = db.MainTables.Where(x => x.division == division_string).ToList();
+
+                        foreach (var project in project_list)
+                        {
+                            var approver_container = new PreSetMilestoneApprover
+                            {
+                                approver_name = approver_details.FirstName + " " + approver_details.LastName,
+                                approver_email = approver_details.Email,
+                                milestone_id = db.MilestoneRoots.Where(x => x.milestone_name.ToLower() == MilestoneName).Select(x => x.id).SingleOrDefault(),
+                                date_added = DateTime.Now,
+                                added_by = User.Identity.Name,
+                                //division = cmdb.Identity_Keywords.Where(x => x.Id == approver_details.JobId && x.Type == "Divisions").Select(x => x.Description).SingleOrDefault(),
+                                division = userDetails.Where(x => x.id == approver_details.Id).Select(x => x.division).FirstOrDefault(),
+                                employee_id = Int32.Parse(approver_details.CMId),
+                                main_id = project.main_id,
+                                task_id = presetMilestone.ID
+                            };
+
+                            db.PreSetMilestoneApprovers.Add(approver_container);
+                            db.SaveChanges();
+                        }
                     }
-                    
                 }
 
-                db.PreSetMilestoneApprovers.AddRange(approver_list);
-                db.SaveChanges();
+                
+                
+                //var approver_ids = approverIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                //List<PreSetMilestoneApprover> approver_list = new List<PreSetMilestoneApprover>();
+
+                //foreach (var item in approver_ids)
+                //{
+                //    var approver_details = cmdb.AspNetUsers.Where(x => x.Id == item).SingleOrDefault();
+
+                //    var project_list = db.MainTables.Where(x => x.division == division_string).ToList();
+
+                //    foreach(var project in project_list)
+                //    {
+                //        var approver_container = new PreSetMilestoneApprover
+                //        {
+                //            approver_name = approver_details.FirstName + " " + approver_details.LastName,
+                //            approver_email = approver_details.Email,
+                //            milestone_id = db.MilestoneRoots.Where(x => x.milestone_name.ToLower() == MilestoneName).Select(x => x.id).SingleOrDefault(),
+                //            date_added = DateTime.Now,
+                //            added_by = User.Identity.Name,
+                //            //division = cmdb.Identity_Keywords.Where(x => x.Id == approver_details.JobId && x.Type == "Divisions").Select(x => x.Description).SingleOrDefault(),
+                //            division = userDetails.Where(x => x.id == approver_details.Id).Select(x => x.division).FirstOrDefault(),
+                //            employee_id = Int32.Parse(approver_details.CMId),
+                //            main_id = project.main_id,
+                //            task_id = milestone.ID
+                //        };
+
+                //        approver_list.Add(approver_container);
+                //    }
+                    
+                //}
+
+                //db.PreSetMilestoneApprovers.AddRange(approver_list);
+                //db.SaveChanges();
 
                 return Json(new { success = true, message = "Milestone saved successfully!" });
             }
