@@ -2298,7 +2298,7 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
-        public JsonResult GetTasksForMilestone(int milestoneId, int mainId)
+        public JsonResult GetTasksForMilestone(int milestoneId, int mainId, string division)
         {
             try
             {
@@ -2306,7 +2306,7 @@ namespace ProjectManagementSystem.Controllers
 
                 List<TaskContainerModel> container = new List<TaskContainerModel>();
 
-                var tasks = db.OptionalMilestones.Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.is_removed != true).ToList();
+                var tasks = db.OptionalMilestones.Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.division == division && x.is_removed != true).ToList();
 
                 var submissions = db.ChecklistSubmissions.Where(x => x.main_id == mainId && x.milestone_id == milestoneId).ToList();
 
@@ -2385,7 +2385,7 @@ namespace ProjectManagementSystem.Controllers
                     }
                 }
 
-                var presetTasks = db.PreSetMilestones.Where(x => x.MilestoneID == milestoneId).ToList();
+                var presetTasks = db.PreSetMilestones.Where(x => x.MilestoneID == milestoneId && x.division_string == division).ToList();
 
                 foreach (var preset in presetTasks)
                 {
@@ -2396,8 +2396,8 @@ namespace ProjectManagementSystem.Controllers
                         {
                             taskname = x.task_name,
                             approved = x.is_approved,
-                            approver_status = db.PreSetMilestoneApprovers.Where(y => y.main_id == x.main_id && y.milestone_id == x.milestone_id).Select(y => y.approved).ToList(),
-                            approvers = db.PreSetMilestoneApprovers.Where(y => y.milestone_id == milestoneId && y.main_id == mainId && y.is_removed != true).Select(y => y.approver_name).ToList(),
+                            approver_status = db.PreSetMilestoneApprovers.Where(y => y.main_id == x.main_id && y.milestone_id == x.milestone_id && y.task_id == preset.ID).Select(y => y.approved).ToList(),
+                            approvers = db.PreSetMilestoneApprovers.Where(y => y.milestone_id == milestoneId && y.main_id == mainId && y.is_removed != true && y.task_id == preset.ID).Select(y => y.approver_name).ToList(),
                             task_id = x.task_id,
                             milestone_id = x.milestone_id,
                             project_id = x.main_id,
@@ -2430,7 +2430,7 @@ namespace ProjectManagementSystem.Controllers
                         TaskContainerModel preset_container = new TaskContainerModel()
                         {
                             taskname = preset.Requirements,
-                            approvers = db.PreSetMilestoneApprovers.Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.is_removed != true).Select(x => x.approver_name).ToList(),
+                            approvers = db.PreSetMilestoneApprovers.Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.task_id == preset.ID && x.is_removed != true).Select(x => x.approver_name).ToList(),
                             task_id = preset.ID,
                             milestone_id = preset.MilestoneID,
                             approver_status = db.ChecklistSubmissions.Where(x => x.task_id == milestoneId).Select(x => x.is_approved).ToList(),
@@ -2757,7 +2757,7 @@ namespace ProjectManagementSystem.Controllers
                 var dbChecklist = (from c in db.ChecklistTables.Where(x => x.checklist_id == cID)
                                    join s in db.ChecklistSubmissions.Where(x => x.is_removed != true && x.is_approved != true) on new { mainID = c.main_id, milestoneID = c.milestone_id} equals new { mainID = s.main_id, milestoneID = s.milestone_id}
                                    select new { submissions = s, checklist = c }).ToList();
-
+                //error here
                 var updateChecklist = dbChecklist.SingleOrDefault().checklist;
                 updateChecklist.for_approval = true;
 
