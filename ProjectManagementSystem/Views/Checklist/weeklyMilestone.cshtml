@@ -1450,19 +1450,19 @@
                         dropdown.empty();
                         dropdown.append(`<option value="">Select a Milestone</option>`);
 
-                        let firstUnlocked = true;
+                        let previousCompleted = true; // Assume the first milestone can be unlocked
 
                         response.data.forEach((milestone, index) => {
-                            // Only unlock the first milestone
-                            const isUnlocked = firstUnlocked;
+                            const isUnlocked = previousCompleted;
                             const label = isUnlocked ? milestone.MilestoneName : `🔒 ${milestone.MilestoneName}`;
                             const disabled = isUnlocked ? "" : "disabled";
 
                             dropdown.append(`<option value="${milestone.MilestoneId}" ${disabled}>${label}</option>`);
 
-                            // After the first item, all others will be locked
-                            firstUnlocked = false;
+                            // Only allow the next milestone to be unlocked if this one is completed
+                            previousCompleted = milestone.MilestoneCompleted;
                         });
+
 
                         const urlParams = new URLSearchParams(window.location.search);
                         const milestoneIdFromUrl = urlParams.get("milestone");

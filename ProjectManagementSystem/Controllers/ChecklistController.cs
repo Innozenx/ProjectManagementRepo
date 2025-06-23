@@ -2272,25 +2272,48 @@ namespace ProjectManagementSystem.Controllers
                 //            }).ToList()
                 //    }).ToList();
 
+                List<dynamic> milestoneList = new List<dynamic>();
+
                 var milestones = db.MilestoneTbls
                     .Where(m => m.main_id == mainId)
                     .Select(m => new
                     {
                         MilestoneId = m.root_id,
                         MilestoneName = m.milestone_name,
-                        //Tasks = db.DetailsTbls
-                        //    .Where(t => t.milestone_id == m.milestone_id && t.RequiresApproval == true)
-                        //    .Select(t => new
-                        //    {
-                        //        TaskId = t.details_id,
-                        //        TaskName = t.process_title,
-                        //        RequiresApproval = t.RequiresApproval,
-                        //        IsApproved = t.IsApproved,
-                        //        Approver = t.key_person
-                        //    }).ToList()
                     }).ToList();
 
-                return Json(new { success = true, data = milestones }, JsonRequestBehavior.AllowGet);
+                foreach(var row in milestones)
+                {
+                    var getpreset = db.PreSetMilestoneApprovers
+                         .Where(x => x.main_id == mainId && x.milestone_id == row.MilestoneId)
+                         .ToList();
+
+                    var getoptional = db.OptionalMilestoneApprovers
+                        .Where(x => x.main_id == mainId && x.milestone_id == row.MilestoneId)
+                        .ToList();
+
+                    bool milestoneCompleted = false;
+
+                    // Only check lists if they contain items
+                    bool allPresetApproved = getpreset.Count == 0 || getpreset.All(x => x.approved == true);
+                    bool allOptionalApproved = getoptional.Count == 0 || getoptional.All(x => x.approved == true);
+
+                    // If both are either empty or fully approved, milestone is completed
+                    if (allPresetApproved && allOptionalApproved)
+                    {
+                        milestoneCompleted = true;
+                    }
+
+                    // Add to milestoneList
+                    milestoneList.Add(new
+                    {
+                        row.MilestoneId,
+                        row.MilestoneName,
+                        milestoneCompleted
+                    });
+                }
+
+                return Json(new { success = true, data = milestoneList }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -2755,10 +2778,11 @@ namespace ProjectManagementSystem.Controllers
             try
             {
                 var dbChecklist = (from c in db.ChecklistTables.Where(x => x.checklist_id == cID)
-                                   join s in db.ChecklistSubmissions.Where(x => x.is_removed != true && x.is_approved != true) on new { mainID = c.main_id, milestoneID = c.milestone_id} equals new { mainID = s.main_id, milestoneID = s.milestone_id}
+                                   join s in db.ChecklistSubmissions.Where(x => x.is_removed != true && x.is_approved != true) 
+                                   on new { mainID = c.main_id, milestoneID = c.milestone_id} equals new { mainID = s.main_id, milestoneID = s.milestone_id}
                                    select new { submissions = s, checklist = c }).ToList();
                 //error here
-                var updateChecklist = dbChecklist.SingleOrDefault().checklist;
+                var updateChecklist = dbChecklist.FirstOrDefault().checklist;
                 updateChecklist.for_approval = true;
 
                 foreach (var checklist in dbChecklist)
@@ -2911,7 +2935,7 @@ namespace ProjectManagementSystem.Controllers
 
             foreach (var task in tasks)
             {
-                var getChecklistSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == task.TaskId);
+                var getChecklistSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == task.TaskId && x.milestone_id == task.MilestoneId);
                 if(getChecklistSubmission.type == "optional")
                 {
                     var approverToUpdate = db.OptionalMilestoneApprovers.FirstOrDefault(x =>

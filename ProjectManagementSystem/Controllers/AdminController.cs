@@ -977,7 +977,7 @@ namespace ProjectManagementSystem.Controllers
             foreach (var row in _optional)
             {
                 var getTask = db.OptionalMilestones.FirstOrDefault(x => x.id == row.task_id);
-                var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id);
+                var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id && x.type == "optional");
                 var getMaintbl = db.MainTables.FirstOrDefault(x => x.main_id == getCheckListSubmission.main_id);
 
                 var getOptional = new ApprovalTaskDTO
@@ -1002,8 +1002,8 @@ namespace ProjectManagementSystem.Controllers
 
             foreach (var row in _preset)
             {
-                var getTask = db.OptionalMilestones.FirstOrDefault(x => x.id == row.task_id);
-                var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id);
+                var getTask = db.PreSetMilestones.FirstOrDefault(x => x.ID == row.task_id);
+                var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id && x.type == "preset");
                 var getMaintbl = db.MainTables.FirstOrDefault(x => x.main_id == getCheckListSubmission.main_id);
 
                 var getOptional = new ApprovalTaskDTO
