@@ -411,6 +411,9 @@
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModel.cs" />
+    <Compile Include="Models\View_1.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\WeeklyChecklistTable.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
@@ -2581,7 +2584,6 @@
     <Content Include="FrontEnd\dist\img\credit\paypal2.png" />
     <Content Include="FrontEnd\dist\img\credit\visa.png" />
     <Content Include="FrontEnd\dist\img\default-150x150.png" />
-    <Content Include="FrontEnd\dist\img\ek_friends.jpg" />
     <Content Include="FrontEnd\dist\img\icons.png" />
     <Content Include="FrontEnd\dist\img\photo1.png" />
     <Content Include="FrontEnd\dist\img\photo2.png" />

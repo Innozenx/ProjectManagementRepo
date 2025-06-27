@@ -977,24 +977,37 @@ namespace ProjectManagementSystem.Controllers
             foreach (var row in _optional)
             {
                 var getTask = db.OptionalMilestones.FirstOrDefault(x => x.id == row.task_id);
-                var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id && x.type == "optional");
-                var getMaintbl = db.MainTables.FirstOrDefault(x => x.main_id == getCheckListSubmission.main_id);
-
-                var getOptional = new ApprovalTaskDTO
+                if(getTask != null)
                 {
-                    isApproved = row.approved,
-                    isRejected = row.rejected,
+                    var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id && x.type == "optional");
 
-                    task_id = row.task_id.Value,
-                    task_name = getCheckListSubmission.task_name,
-                    submitted_by = getCheckListSubmission.submitted_by,
-                    submission_date = getCheckListSubmission.submission_date,
-                    main_id = getCheckListSubmission.main_id.Value,
-                    milestone_id = getCheckListSubmission.milestone_id.Value,
-                    project_title = getMaintbl.project_title,
-                };
+                    if(getCheckListSubmission != null)
+                    {
+                        var getMaintbl = db.MainTables.FirstOrDefault(x => x.main_id == getCheckListSubmission.main_id);
 
-                optionalMileStone.Add(getOptional);
+                        if(getMaintbl != null)
+                        {
+                            var getOptional = new ApprovalTaskDTO
+                            {
+                                isApproved = row.approved,
+                                isRejected = row.rejected,
+
+                                task_id = row.task_id.Value,
+                                task_name = getCheckListSubmission.task_name,
+                                submitted_by = getCheckListSubmission.submitted_by,
+                                submission_date = getCheckListSubmission.submission_date,
+                                main_id = getCheckListSubmission.main_id.Value,
+                                milestone_id = getCheckListSubmission.milestone_id.Value,
+                                project_title = getMaintbl.project_title,
+                            };
+
+                            optionalMileStone.Add(getOptional);
+                        }
+
+                    }
+                    
+                }
+                
             }
 
             //Pre-set task
@@ -1003,24 +1016,36 @@ namespace ProjectManagementSystem.Controllers
             foreach (var row in _preset)
             {
                 var getTask = db.PreSetMilestones.FirstOrDefault(x => x.ID == row.task_id);
-                var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id && x.type == "preset");
-                var getMaintbl = db.MainTables.FirstOrDefault(x => x.main_id == getCheckListSubmission.main_id);
-
-                var getOptional = new ApprovalTaskDTO
+                if(getTask != null)
                 {
-                    isApproved = row.approved,
-                    isRejected = row.rejected,
+                    var getCheckListSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == row.task_id && x.type == "preset");
 
-                    task_id = row.task_id.Value,
-                    task_name = getCheckListSubmission.task_name,
-                    submitted_by = getCheckListSubmission.submitted_by,
-                    submission_date = getCheckListSubmission.submission_date,
-                    main_id = getCheckListSubmission.main_id.Value,
-                    milestone_id = getCheckListSubmission.milestone_id.Value,
-                    project_title = getMaintbl.project_title,
-                };
+                    if(getCheckListSubmission != null)
+                    {
+                        var getMaintbl = db.MainTables.FirstOrDefault(x => x.main_id == getCheckListSubmission.main_id);
 
-                optionalMileStone.Add(getOptional);
+                        if (getMaintbl != null)
+                        {
+                            var getPreset = new ApprovalTaskDTO
+                            {
+                                isApproved = row.approved,
+                                isRejected = row.rejected,
+
+                                task_id = row.task_id.Value,
+                                task_name = getCheckListSubmission.task_name,
+                                submitted_by = getCheckListSubmission.submitted_by,
+                                submission_date = getCheckListSubmission.submission_date,
+                                main_id = getCheckListSubmission.main_id.Value,
+                                milestone_id = getCheckListSubmission.milestone_id.Value,
+                                project_title = getMaintbl.project_title,
+                            };
+
+                            optionalMileStone.Add(getPreset);
+                        }
+                    }
+
+                }
+                
             }
 
             // optional
