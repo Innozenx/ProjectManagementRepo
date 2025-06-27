@@ -259,6 +259,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AutomatedTaskController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ChecklistController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -5169,6 +5170,8 @@
     <Content Include="Views\Checklist\_DivisionDashboard.cshtml" />
     <Content Include="Views\Checklist\_ManagementDashboard.cshtml" />
     <Content Include="Views\Shared\_SplashScreen.cshtml" />
+    <Content Include="Views\AutomatedTask\StatusNotifier.cshtml" />
+    <Content Include="Views\AutomatedTask\ApprovalNotifier.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

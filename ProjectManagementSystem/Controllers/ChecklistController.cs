@@ -2208,7 +2208,7 @@ namespace ProjectManagementSystem.Controllers
                             db.SaveChanges();
 
                             message = "Success";
-                            transaction.Commit();
+                            //transaction.Commit();
                         }
 
                         else
@@ -2226,7 +2226,7 @@ namespace ProjectManagementSystem.Controllers
                     message = "An error occured. Please refresh your browser and re-check your entries. If error persists, please contact ITS Local: 132";
                     transaction.Rollback();
                 }
-
+                transaction.Commit();
             }
 
             return Json(new { message = message }, JsonRequestBehavior.AllowGet);
@@ -2338,15 +2338,15 @@ namespace ProjectManagementSystem.Controllers
                 foreach (var item in tasks)
                 {
 
-                    if (submissions.Any(x => x.main_id == item.main_id && x.task_id == item.id))
+                    if (submissions.Any(x => x.main_id == item.main_id && x.task_id == item.id && x.milestone_id == milestoneId))
                     {
 
-                        var submissionContainer = submissions.Where(x => x.main_id == item.main_id && x.task_id == item.id).OrderByDescending(x => x.submission_date).Select(x => new
+                        var submissionContainer = submissions.Where(x => x.main_id == item.main_id && x.task_id == item.id && x.milestone_id == milestoneId).OrderByDescending(x => x.submission_date).Select(x => new
                         {
                             taskname = x.task_name,
                             approved = x.is_approved,
                             approver_status = db.OptionalMilestoneApprovers.Where(y => y.task_id == x.task_id).Select(y => y.approved).ToList(),
-                            approvers = db.OptionalMilestoneApprovers.Where(y => y.task_id == x.task_id && y.main_id == item.main_id && y.is_removed != true).Select(y => y.approver_name).ToList(),
+                            approvers = db.OptionalMilestoneApprovers.Where(y => y.task_id == x.task_id && y.main_id == item.main_id && x.milestone_id == milestoneId && y.is_removed != true).Select(y => y.approver_name).ToList(),
                             task_id = x.task_id,
                             milestone_id = x.milestone_id,
                             project_id = x.main_id,
@@ -2376,12 +2376,12 @@ namespace ProjectManagementSystem.Controllers
                     else
                     {
                         var optionalTasks = db.OptionalMilestones
-                            .Where(x => x.milestone_id == item.milestone_id && x.id == item.id && x.is_removed != true)
+                            .Where(x => x.milestone_id == item.milestone_id && x.id == item.id && x.is_removed != true && x.main_id == mainId)
                             .Select(x => new
                             {
                                 taskname = x.task,
                                 approved = x.approved,
-                                approvers = db.OptionalMilestoneApprovers.Where(y => y.task_id == item.id && y.main_id == item.main_id && y.is_removed != true).Select(y => y.approver_name).ToList(),
+                                approvers = db.OptionalMilestoneApprovers.Where(y => y.task_id == item.id && y.main_id == item.main_id && x.milestone_id == milestoneId  && y.is_removed != true).Select(y => y.approver_name).ToList(),
                                 approver_status = db.OptionalMilestoneApprovers.Where(y => y.task_id == item.id).Select(y => y.approved).ToList(),
                                 task_id = x.id,
                                 milestone_id = x.milestone_id,

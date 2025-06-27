@@ -753,5 +753,21 @@ namespace ProjectManagementSystem.Models
         public string Approver { get; set; }
     }
 
+    public class AutomatedWeeklyStatusModel
+    {
+        public string project_title { get; set; }
+        public string pmanager_email { get; set; }
+        public string pmanager_name { get; set; }
+        public List<string> tasks { get; set; }
+        public string content_body { get; set; }
+    }
+
+    public class AutomatedApprovalModel
+    {
+        public string project_title { get; set; }
+        public string approver_email { get; set; }
+        public string approver_name { get; set; }
+        public string content_body { get; set; }
+    }
 }
 

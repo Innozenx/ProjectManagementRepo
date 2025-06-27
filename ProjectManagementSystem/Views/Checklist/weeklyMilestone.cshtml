@@ -1521,17 +1521,16 @@
                     checklistTableBody.empty();
 
                     if (response.success && response.data.length > 0) {
+                       
                         $("#checklist_id_container").text("ID # " + response.id);
                         $("#checklist_id_input").val(response.id);
 
                         if (response.flag == true) {
                             $("#add_optional").addClass("d-none");
-                            $(".remove-opt-btn").addClass("d-none");
                         }
 
                         else {
                             $("#add_optional").removeClass("d-none");
-                            $(".remove-opt-btn").removeClass("d-none");
                         }
 
 
@@ -1611,7 +1610,7 @@
                             checklistTableBody.append(`
                             <tr>
                            <td>
-                            ${(task.optFlag && !isReadOnlyView) ? `
+                            ${(task.optFlag && !isReadOnlyView && response.flag != true) ? `
                                 <button type="button" class="btn btn-danger rounded-pill p-2 remove-opt-btn" style="min-width: 35px;" onclick="removeTask(${task.task_id})">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </button>
@@ -1653,7 +1652,7 @@
                                             : task.reason
                                                 ? `<button class="btn btn-sm btn-danger" disabled>Rejected</button>`
                                                 : task.approval_enabled
-                                                    ? `<button class="btn btn-sm btn-warning" disabled>Saved</button>`
+                                                    ? `<button class="btn btn-sm btn-warning" disabled>Pending</button>`
                                                     : `<button class="btn btn-sm btn-warning">Resubmit</button>`
                                         : `<button class="btn btn-sm btn-outline-success" onclick="submitApproval(${task.task_id})">Save</button>`
                                     }
@@ -2379,9 +2378,10 @@ function bulkApproval() {
     $("#milestoneDropdown").on("change", function () {
         const milestoneId = $(this).val();
 
-        $("#checklist_id_container").fadeOut(100, function () {
-            $(this).empty();
-        });
+        if (milestoneId == "") {
+            $("#checklist_id_container").empty();
+        }
+
         $("#checklist_id_input").val("");
         $("#current_milestoneid").empty();
         $("#current_milestoneid").val(milestoneId);
