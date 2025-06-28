@@ -1,10 +1,30 @@
 ﻿@model ProjectManagementSystem.Models.DashboardManagementViewModel
 @using System.Globalization;
 
+<style>
+    .legend-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        margin: 4px 6px;
+        transition: all 0.2s ease;
+    }
+
+        .legend-badge:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+            opacity: 0.95;
+            cursor: default;
+        }
+</style>
+
 <div class="tab-content" id="divisionTabContent">
     @foreach (var division in Model.Divisions)
     {
         var divisionId = division.Replace(" ", "");
+
         <div class="tab-pane fade @(Model.Divisions.First() == division ? "show active" : "")"
              id="panel-@divisionId"
              role="tabpanel"
@@ -12,8 +32,11 @@
 
             <div class="table-container wide-table-container">
                 <h5>@division <br />Projects</h5>
+
+                <!-- Legend -->
                 <div class="status-legend d-flex flex-wrap gap-2 justify-content-end mt-1">
-                    <label style="font-size: 12px; font-weight: 500; color: #555; margin-top: 8px;">Legend:</label>
+
+                    <label class="mt-1" style="font-size: 12px; font-weight: 500; color: #555;">Legend:</label>
                     <span class="legend-badge" style="background:#D4EDDA; color:#155724;">Completed</span>
                     <span class="legend-badge" style="background:#D6E4FF; color:#004085;">Active</span>
                     <span class="legend-badge" style="background:#FFF9DB; color:#856404;">Due Today</span>
@@ -21,6 +44,7 @@
                     <span class="legend-badge" style="background:#E2E3E5; color:#383d41;">Pending</span>
                 </div>
 
+                <!-- Project Table -->
                 <table class="table">
                     <thead>
                         <tr>
@@ -35,35 +59,42 @@
                         @foreach (var project in Model.ProjectsByDivision[division])
                         {
                             <tr>
-                                <td class="project-title-cell" style="position: relative; word-break: break-word; overflow-wrap: break-word;">
-                                    <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId })" class="text-decoration-none text-primary">
+                                <td class="project-title-cell" style="word-break: break-word;">
+                                    <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = project.MainId })"
+                                       class="text-decoration-none text-primary">
                                         @project.ProjectTitle
                                     </a>
                                 </td>
+
                                 @foreach (var milestoneName in Model.UniqueMilestoneNames)
                                 {
                                     var milestoneTasks = Model.ProjectsMilestones
                                         .Where(pm => pm.ProjectTitle == project.ProjectTitle && pm.MilestoneName == milestoneName)
                                         .ToList();
 
-                                    var latestEndDate = milestoneTasks.Any(pm => pm.EndDate.HasValue) ? milestoneTasks.Max(pm => pm.EndDate.Value) : (DateTime?)null;
-                                    var currentEndDate = milestoneTasks.Any(pm => pm.CurrentCompletionDate.HasValue) ? milestoneTasks.Max(pm => pm.CurrentCompletionDate.Value) : latestEndDate;
+                                    var latestEndDate = milestoneTasks.Any(pm => pm.EndDate.HasValue)
+                                        ? milestoneTasks.Max(pm => pm.EndDate.Value)
+                                        : (DateTime?)null;
 
-                                    var osWeek = latestEndDate.HasValue ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}" : "-";
-                                    var csWeek = currentEndDate.HasValue ? $"WW{currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}" : "-";
+                                    var currentEndDate = milestoneTasks.Any(pm => pm.CurrentCompletionDate.HasValue)
+                                        ? milestoneTasks.Max(pm => pm.CurrentCompletionDate.Value)
+                                        : latestEndDate;
 
-                                    string combinedFormatted = "-";
-                                    if (osWeek != "-" && csWeek != "-" && osWeek != csWeek)
-                                    {
-                                        combinedFormatted = $"{osWeek} os / {csWeek} cs";
-                                    }
-                                    else if (osWeek != "-")
-                                    {
-                                        combinedFormatted = osWeek;
-                                    }
+                                    var osWeek = latestEndDate.HasValue
+                                        ? $"WW{latestEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(latestEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                        : "-";
+
+                                    var csWeek = currentEndDate.HasValue
+                                        ? $"WW{currentEndDate.Value:yy}{CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(currentEndDate.Value, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday):00}"
+                                        : "-";
+
+                                    var combinedFormatted = osWeek != "-" && csWeek != "-" && osWeek != csWeek
+                                        ? $"{osWeek} os / {csWeek} cs"
+                                        : osWeek;
 
                                     var milestoneStatus = milestoneTasks.FirstOrDefault()?.MilestoneStatus ?? "";
                                     string cellColor = "", textColor = "";
+
                                     switch (milestoneStatus)
                                     {
                                         case "Completed": cellColor = "#E6F4EA"; textColor = "#4C8C6B"; break;
@@ -74,23 +105,21 @@
                                         default: cellColor = "#ffffff"; textColor = "#000000"; break;
                                     }
 
-                                    <td style="text-align: center; position: relative;">
+                                    <td style="text-align: center;">
                                         <div class="tooltip-container">
                                             <span class="status-badge" style="background-color:@cellColor; color:@textColor;">
                                                 @combinedFormatted
                                             </span>
                                             <div class="custom-tooltip">
                                                 <strong>Status:</strong> @milestoneStatus
-                                                @if (milestoneStatus == "Completed")
-                                                { <span>✅</span> }
-                                                else if (milestoneStatus == "Active")
-                                                { <span>🟢</span> }
-                                                else if (milestoneStatus == "Due Today")
-                                                { <span>⏳</span> }
-                                                else if (milestoneStatus == "Delayed")
-                                                { <span>⚠️</span> }
-                                                else if (milestoneStatus == "Pending")
-                                                { <span>🕒</span> }
+                                                @switch (milestoneStatus)
+                                                {
+                                                    case "Completed": <span>✅</span>; break;
+                                                    case "Active": <span>🟢</span>; break;
+                                                    case "Due Today": <span>⏳</span>; break;
+                                                    case "Delayed": <span>⚠️</span>; break;
+                                                    case "Pending": <span>🕒</span>; break;
+                                                }
                                                 <br />
                                                 <strong>Due:</strong> @(currentEndDate?.ToString("MMM dd, yyyy") ?? "N/A")
                                             </div>
