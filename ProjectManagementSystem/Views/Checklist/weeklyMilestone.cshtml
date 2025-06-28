@@ -37,6 +37,7 @@
         max-width: 1200px;
         margin: 0 auto;
         margin-top: 20px;
+        margin-bottom: 20px
     }
 
     .action-tiles-container {
@@ -130,7 +131,7 @@
             color: #333;
         }
 
-    .gantt-header {
+    /*.gantt-header {
         display: flex;
         justify-content: space-between;
         margin-bottom: 15px;
@@ -168,7 +169,63 @@
         .gantt-nav-btn:hover,
         .gantt-today-btn:hover {
             background-color: #eaeaea;
+        }*/
+
+    .gantt-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 10px;
+        background-color: #f9f9fb;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .gantt-zoom-controls {
+        display: flex;
+        gap: 8px;
+    }
+
+    .gantt-view-btn {
+        padding: 6px 14px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .gantt-view-btn.active {
+            background-color: #66339A;
+            color: #fff;
+            border-color: #66339A;
         }
+
+    .gantt-nav-btn {
+        padding: 6px 10px;
+        border: none;
+        background: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #666;
+        transition: 0.2s;
+    }
+
+        .gantt-nav-btn:hover {
+            color: #333;
+        }
+
+    #gantt_here.gantt-clean {
+        width: 100%;
+        height: 70vh;
+        background-color: #fff;
+        border-left: 1px solid #eee;
+        border-top: none;
+        border-right: none;
+        border-bottom: none;
+    }
+
 
     .btn-primary {
         background-color: #470A67;
@@ -249,25 +306,26 @@
         font-size: 14px;
     }
 
-        .nav-tabs .nav-link {
-            padding: 5px 10px;
-            font-size: 14px;
-            color: #66399A;
-            background-color: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            transition: color 0.3s ease, border-bottom-color 0.3s ease;
-        }
+    .nav-tabs .nav-link {
+        padding: 5px 10px;
+        font-size: 14px;
+        /*color: #66399A;*/
+        color: gray;
+        background-color: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        transition: color 0.3s ease, border-bottom-color 0.3s ease;
+    }
 
-            .nav-tabs .nav-link:hover {
-                color: #552788;
-            }
+    .nav-tabs .nav-link:hover {
+        color: #552788;
+    }
 
-            .nav-tabs .nav-link.active {
-                color: #66399A;
-                border-bottom-color: #66399A;
-                /*font-weight: bold;*/
-            }
+    .nav-tabs .nav-link.active {
+        color: #66399A;
+        border-bottom-color: #66399A;
+        /*font-weight: bold;*/
+    }
 
         .nav-tabs .nav-item {
             margin-right: 3px;
@@ -576,7 +634,7 @@
         box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    input[type="file"] {
+    input[type="file"] { 
         width: 100%;
         padding: 14px 16px;
         border: 1px solid #ccc;
@@ -622,9 +680,45 @@
         color: #999;
         background-color: #f8f8f8;
     }
+    /*.gantt_cell.truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }*/
 
+    .gantt_task_row:hover {
+        cursor: pointer;
+    }
+
+    .add-member-btn {
+        background-color: #66339A; 
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        border-radius: 30px;
+        width: 10%;
+    }
+
+        .add-member-btn:hover {
+            background-color: #552788;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(108, 99, 255, 0.2);
+            color:white;
+        }
+
+        .add-member-btn i {
+            font-size: 14px;
+        }
 
 </style>
+
+
 
 <div class="project-header">
     <div class="project-info">
@@ -671,7 +765,10 @@
            role="tab"
            aria-controls="overview"
            aria-selected="@(selectedTab == "overview" ? "true" : "false")">
-            <i class="fas fa-info-circle"></i> Overview
+            <div class="tab-icon">
+                <i class="fas fa-info-circle"></i>
+                <span>Overview</span>
+            </div>
         </a>
     </li>
     <li class="nav-item">
@@ -682,7 +779,10 @@
            role="tab"
            aria-controls="timeline"
            aria-selected="@(selectedTab == "timeline" ? "true" : "false")">
-            <i class="fas fa-project-diagram"></i> Timeline
+            <div class="tab-icon">
+                <i class="fas fa-project-diagram"></i>
+                <span>Timeline</span>
+            </div>
         </a>
     </li>
     <li class="nav-item">
@@ -693,12 +793,13 @@
            role="tab"
            aria-controls="checklist"
            aria-selected="@(selectedTab == "checklist" ? "true" : "false")">
-            <i class="fa-solid fa-list-check"></i> Checklist
+            <div class="tab-icon">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Checklist</span>
+            </div>
         </a>
     </li>
 </ul>
-
-
 
 @*<div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">*@
 <div class="tab-pane fade @(selectedTab == "overview" ? "show active" : "")" id="overview" role="tabpanel" aria-labelledby="overview-tab">
@@ -942,7 +1043,15 @@
     </div>
 
     <div class="table-container" id="detailsContainer">
-        <h3>Project Members</h3>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">Project Members</h3>
+
+            <a href="@Url.Action("InviteTeammates", "Checklist")" class="btn add-member-btn shadow-sm">
+                @*<i class="fas fa-user-plus mr-2"></i>*@ <span style="font-size:12px; width:auto;">Add Member</span>
+            </a>
+
+        </div>
+
         @if (Model.ProjectMembers.Any())
         {
             <div class="members-grid">
@@ -974,7 +1083,6 @@
                                             <span>Unknown Role</span>
                                             break;
                                     }
-
                                 </p>
                                 <p class="member-email text-muted small">@member.Email</p>
                             </div>
@@ -988,6 +1096,7 @@
             <p class="no-members-text text-center text-muted">No members are assigned to this project yet.</p>
         }
     </div>
+
 
     <div class="modal fade" id="statusUpdatedModal" tabindex="-1" role="dialog" aria-labelledby="statusUpdatedLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -1090,24 +1199,20 @@
 
 @*<div class="tab-pane fade" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">*@
 <div class="tab-pane fade @(selectedTab == "timeline" ? "show active" : "")" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">
-    <div class="card-container" id="gantt_container">
-        <div class="table-container">
-            <div class="gantt-header">
-                <div class="gantt-view-controls">
-                    <button id="day-view" class="gantt-view-btn active">Day</button>
-                    <button id="week-view" class="gantt-view-btn">Week</button>
-                    <button id="month-view" class="gantt-view-btn">Month</button>
-                </div>
-                <div>
-                    <button id="maximize-btn" class="gantt-nav-btn"><i class="fa-solid fa-maximize"></i></button>
-                    @*<button id="export-pdf-btn" class="gantt-nav-btn"><i class="fa-solid fa-file-export"></i> Export</button>*@
-                </div>
-            </div>
-            <div id="gantt_here" style="width:100%; height:60vh;"></div>
-            @*<div id="gantt_here" style="width:100%; height:60vh;"></div>*@
+    <div class="gantt-toolbar">
+        <div class="gantt-zoom-controls">
+            <button id="day-view" class="gantt-view-btn active">Day</button>
+            <button id="week-view" class="gantt-view-btn">Week</button>
+            <button id="month-view" class="gantt-view-btn">Month</button>
         </div>
+        @*<div class="gantt-actions">
+            <button id="maximize-btn" class="gantt-nav-btn"><i class="fa-solid fa-maximize"></i></button>
+        </div>*@
     </div>
+
+    <div id="gantt_here" class="gantt-clean"></div>
 </div>
+
 
 
 @*<div class="tab-pane fade" id="checklist" role="tabpanel" aria-labelledby="checklist-tab">*@
@@ -2165,422 +2270,445 @@ function bulkApproval() {
 
     </script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        gantt.config.xml_date = "%Y-%m-%d %H:%i";
-        gantt.config.readonly = true;
-        gantt.config.columns = [
-            //{ name: "key_person", label: "Key Person", align: "center", width: 90 },
-            { name: "text", label: "Milestone", tree: true, width: 200 },
-            { name: "duration", label: "Duration", align: "center", width: 70 },
-            { name: "start_date", label: "Start", align: "center", width: 90 },
-            { name: "end_date", label: "Finish", align: "center", width: 90 }
-        ];
-        gantt.config.scales = [
-            { unit: "week", date: "Week %W" }
-        ];
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            setupGantt();
+            initGantt();
+            bindTabSwitching();
+            restoreActiveTab();
+        });
 
-        gantt.templates.task_text = function () {
-            return "";
-        };
+        function setupGantt() {
+            gantt.config = {
+                ...gantt.config,
+                xml_date: "%Y-%m-%d %H:%i",
+                readonly: true,
+                grid_resize: true,
+                min_grid_column_width: 100,
+                max_grid_column_width: 500,
+                columns: [
+                    { name: "text", label: "Milestone", tree: true, width: 150, resize: true },
+                    { name: "duration", label: "Duration", align: "center", width: 80 },
+                    { name: "start_date", label: "Start", align: "center", width: 100 },
+                    { name: "end_date", label: "Finish", align: "center", width: 100 }
+                ],
+                scales: [
+                    { unit: "week", step: 1, date: "WW %W" },
+                    { unit: "month", step: 1, date: "%F %Y" }
+                ]
+            };
 
-        gantt.init("gantt_here");
+            gantt.templates.task_text = () => "";
+            gantt.templates.tooltip_text = (start, end, task) =>
+                `<b>${task.text}</b><br/>Start: ${gantt.templates.date_grid(start)}<br/>End: ${gantt.templates.date_grid(end)}<br/>Duration: ${task.duration} day(s)`;
 
-        // ✅ Use Model.MainId instead of TempData
-        gantt.load(`/Checklist/getGanttData?id=@Model.MainId`, "json");
+            gantt.attachEvent("onGanttRender", () => {
+                setTimeout(() => {
+                    document.querySelectorAll(".gantt_grid_data .gantt_cell").forEach(cell => {
+                        cell.classList.add("truncate");
+                        cell.setAttribute("title", cell.innerText);
+                    });
 
-        const setDayView = () => {
+                    // Hover-to-expand for child tasks
+                    document.querySelectorAll(".gantt_row").forEach(row => {
+                        const taskId = row.getAttribute("data-task-id");
+                        const task = gantt.getTask(taskId);
+                        if (task && task.$level > 0) {
+                            const textCell = row.querySelector(".gantt_cell[data-column-index='0']");
+                            if (!textCell) return;
+                            row.addEventListener("mouseenter", () => {
+                                textCell.style.whiteSpace = "normal";
+                                textCell.style.overflow = "visible";
+                            });
+                            row.addEventListener("mouseleave", () => {
+                                textCell.style.whiteSpace = "nowrap";
+                                textCell.style.overflow = "hidden";
+                            });
+                        }
+                    });
+                }, 50);
+            });
+        }
+
+        function initGantt() {
+            gantt.init("gantt_here");
+            gantt.load(`/Checklist/getGanttData?id=@Model.MainId`, "json");
+            setWeekView();
+            setActiveViewButton("week-view");
+            bindViewButtons();
+        }
+
+        function setDayView() {
             gantt.config.scales = [
-                { unit: "day", step: 1, date: "%d" },
-                { unit: "week", date: "Week %W" }
+                { unit: "day", step: 1, date: "%D %d" },
+                { unit: "week", step: 1, date: "Week %W" }
             ];
             gantt.render();
-        };
+        }
 
-        const setWeekView = () => {
+        function setWeekView() {
             gantt.config.scales = [
                 { unit: "week", step: 1, date: "WW %W" },
                 { unit: "month", step: 1, date: "%F %Y" }
             ];
             gantt.render();
-        };
+        }
 
-        const setMonthView = () => {
+        function setMonthView() {
             gantt.config.scales = [
                 { unit: "month", step: 1, date: "%F %Y" },
                 { unit: "year", step: 1, date: "%Y" }
             ];
             gantt.render();
-        };
+        }
 
-        document.querySelector("#day-view").addEventListener("click", () => {
-            setDayView();
-            activateButton("day-view");
-        });
+        function setActiveViewButton(id) {
+            document.querySelectorAll(".gantt-view-btn").forEach(btn => btn.classList.remove("active"));
+            document.getElementById(id)?.classList.add("active");
+        }
 
-        document.querySelector("#week-view").addEventListener("click", () => {
-            setWeekView();
-            activateButton("week-view");
-        });
-
-        document.querySelector("#month-view").addEventListener("click", () => {
-            setMonthView();
-            activateButton("month-view");
-        });
-
-        const activateButton = (buttonId) => {
-            document.querySelectorAll(".gantt-view-btn").forEach((btn) => {
-                btn.classList.remove("active");
+        function bindViewButtons() {
+            document.getElementById("day-view")?.addEventListener("click", () => {
+                setDayView();
+                setActiveViewButton("day-view");
             });
-            document.getElementById(buttonId).classList.add("active");
-        };
-
-
-        document.querySelector("#maximize-btn").addEventListener("click", function () {
-            const projectId = "@Model.MainId";
-            window.open(`/Checklist/GanttChart?id=${projectId}`, "_blank");
-        });
-
-        $("#timeline-tab").on("click", function () {
-            $("#detailsContainer, #overview, #checklist").hide();
-            $("#timeline").show();
-        });
-
-        $("#overview-tab").on("click", function () {
-            $("#detailsContainer, #overview").show();
-            $("#checklist, #timeline").hide();
-        });
-
-        $("#checklist-tab").on("click", function () {
-            $("#detailsContainer, #overview, #timeline").hide();
-            $("#checklist").show();
-        });
-
-        setWeekView();
-        activateButton("week-view");
-
-        const tab = localStorage.getItem('currentTab');
-        const dropdown = localStorage.getItem('currentDrop');
-
-        if (tab === "checklist") {
-            document.getElementById("checklist-tab").click();
-            setTimeout(() => {
-                const dropdownElement = document.getElementById("milestoneDropdown");
-                dropdownElement.value = dropdown;
-                dropdownElement.dispatchEvent(new Event('change'));
-            }, 1000);
-            localStorage.clear();
+            document.getElementById("week-view")?.addEventListener("click", () => {
+                setWeekView();
+                setActiveViewButton("week-view");
+            });
+            document.getElementById("month-view")?.addEventListener("click", () => {
+                setMonthView();
+                setActiveViewButton("month-view");
+            });
+            document.getElementById("maximize-btn")?.addEventListener("click", () => {
+                window.open(`/Checklist/GanttChart?id=@Model.MainId`, "_blank");
+            });
         }
 
-        $("#remove_all").on("click", function () {
-            $("input[name='cb_remove']").prop("checked", this.checked);
-        });
-    });
+        function bindTabSwitching() {
+            $("#timeline-tab").on("click", () => {
+                $("#detailsContainer, #overview, #checklist").hide();
+                $("#timeline").show();
+            });
 
-    const selectedTab = new URLSearchParams(window.location.search).get("tab");
+            $("#overview-tab").on("click", () => {
+                $("#detailsContainer, #overview").show();
+                $("#checklist, #timeline").hide();
+            });
 
-    if (selectedTab === "timeline") {
-        $("#timeline").addClass("show active").css("display", "block");
-        $("#overview, #checklist, #detailsContainer").removeClass("show active").hide();
+            $("#checklist-tab").on("click", () => {
+                $("#detailsContainer, #overview, #timeline").hide();
+                $("#checklist").show();
+            });
 
-        setTimeout(() => {
-            gantt.render();
-            document.getElementById("gantt_here").scrollIntoView({ behavior: "smooth" });
-        }, 200);
-    }
-
-    const urlTab = new URLSearchParams(window.location.search).get("tab");
-
-    if (["timeline", "checklist", "overview"].includes(urlTab)) {
-        $(".tab-pane").removeClass("show active").hide();
-        $("#" + urlTab).addClass("show active").show();
-
-        $(".nav-link").removeClass("active");
-        $("#" + urlTab + "-tab").addClass("active");
-
-        if (urlTab === "timeline") {
-            $("#detailsContainer").hide();
-            setTimeout(() => gantt.render(), 200);
-        } else if (urlTab === "checklist") {
-            $("#detailsContainer").hide();
-        } else {
-            $("#detailsContainer").show();
+            $("#remove_all").on("click", function () {
+                $("input[name='cb_remove']").prop("checked", this.checked);
+            });
         }
-    }
-</script>
 
+        function restoreActiveTab() {
+            const tab = localStorage.getItem("currentTab");
+            const dropdown = localStorage.getItem("currentDrop");
 
-<script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const milestoneIdFromUrl = urlParams.get("milestone");
+            if (tab === "checklist") {
+                $("#checklist-tab").click();
+                setTimeout(() => {
+                    const dd = document.getElementById("milestoneDropdown");
+                    dd.value = dropdown;
+                    dd.dispatchEvent(new Event("change"));
+                }, 1000);
+                localStorage.clear();
+            }
 
-        if (milestoneIdFromUrl) {
-            const $dropdown = $("#milestoneDropdown");
+            const selectedTab = new URLSearchParams(location.search).get("tab");
+            if (["timeline", "checklist", "overview"].includes(selectedTab)) {
+                $(".tab-pane").removeClass("show active").hide();
+                $("#" + selectedTab).addClass("show active").show();
+                $(".nav-link").removeClass("active");
+                $("#" + selectedTab + "-tab").addClass("active");
 
-            $("#checklist_id_container").hide(); // hide before fadeIn
-
-            setTimeout(() => {
-                if ($dropdown.find(`option[value='${milestoneIdFromUrl}']`).length > 0) {
-                    $dropdown.val(milestoneIdFromUrl).trigger("change");
-
-                    // fade in after milestone is applied
-                    setTimeout(() => {
-                        $("#checklist_id_container").fadeIn(300);
-                    }, 150);
+                if (selectedTab === "timeline") {
+                    $("#detailsContainer").hide();
+                    setTimeout(() => gantt.render(), 200);
+                } else {
+                    $("#detailsContainer").toggle(selectedTab === "overview");
                 }
-            }, 200);
+            }
         }
+    </script>
 
-    $(document).ready(function () {
-        const mainId = '@(TempData["entry"] ?? "null")';
-        if (mainId === "null") {
-            console.error("mainId is not set. Please check your TempData.");
-            return;
-        }
+    <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const milestoneIdFromUrl = urlParams.get("milestone");
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const milestoneIdFromUrl = urlParams.get("milestone");
+            if (milestoneIdFromUrl) {
+                const $dropdown = $("#milestoneDropdown");
 
-        if (milestoneIdFromUrl) {
-            const $dropdown = $("#milestoneDropdown");
+                $("#checklist_id_container").hide(); // hide before fadeIn
 
-            $("#checklist_id_container").hide(); // hide before fadeIn
+                setTimeout(() => {
+                    if ($dropdown.find(`option[value='${milestoneIdFromUrl}']`).length > 0) {
+                        $dropdown.val(milestoneIdFromUrl).trigger("change");
 
-            setTimeout(() => {
-                if ($dropdown.find(`option[value='${milestoneIdFromUrl}']`).length > 0) {
-                    $dropdown.val(milestoneIdFromUrl).trigger("change");
-
-                    // fade in after milestone is applied
-                    setTimeout(() => {
-                        $("#checklist_id_container").fadeIn(300);
-                    }, 150);
-                }
-            }, 200);
-        }
-    });
-
-    $("#milestoneDropdown").on("change", function () {
-        const milestoneId = $(this).val();
-
-        if (milestoneId == "") {
-            $("#checklist_id_container").empty();
-        }
-
-        $("#checklist_id_input").val("");
-        $("#current_milestoneid").empty();
-        $("#current_milestoneid").val(milestoneId);
-
-        if (milestoneId !== "") {
-            $("#add_optional").removeClass("d-none");
-        } else {
-            $("#add_optional").addClass("d-none");
-        }
-
-        loadTasksForMilestone(milestoneId, @(TempData["entry"]));
-
-        // fade in after slight delay for smoother UI
-        setTimeout(() => {
-            $("#checklist_id_container").fadeIn(300);
-        }, 150);
-    });
-
-    $("#delayed_yes").on("click", function () {
-        $("#delay_input_group").removeClass("d-none").prop("class", "form-group mb-4");
-    });
-
-    $("#delayed_no").on("click", function () {
-        $("#delay_input_group").addClass("d-none");
-        $("#weeks_delayed").val(0);
-    });
-
-    $("#selectedMilestone").on("change", function () {
-        const selection = $(this).val();
-        if (selection !== "") {
-            $("#status_input_group").removeClass("d-none");
-
-            $.ajax({
-                type: "GET",
-                url: "@Url.Action("GetTaskUpdate", "Checklist")",
-                data: { selection },
-                success: function (res) {
-                    const note = document.getElementById("delay_note");
-                    const inputGrp = document.getElementById("delay_input_group");
-
-                    if (res.success === true) {
-                        if (res.data !== 0) {
-                            $("#delayed_yes").prop("checked", true);
-                            $("#weeks_delayed").val(res.data);
-                            $("#delay_div").removeClass("d-none");
-                            inputGrp.classList.remove("d-none");
-                            note.textContent = "Previously Delayed by: " + res.data + " week/s";
-                        } else {
-                            $("#delayed_no").prop("checked", true);
-                            $("#weeks_delayed").val(0);
-                            $("#delay_div").removeClass("d-none");
-                            inputGrp.classList.add("d-none");
-                        }
-                    } else {
-                        alert(res.message);
+                        // fade in after milestone is applied
+                        setTimeout(() => {
+                            $("#checklist_id_container").fadeIn(300);
+                        }, 150);
                     }
-                }
-            });
-        } else {
-            $("#status_input_group").addClass("d-none");
-        }
-    });
+                }, 200);
+            }
 
-    $(document).on("click", "#add_optional", function (e) {
-        e.preventDefault();
-        const urlParams = new URLSearchParams(window.location.search);
-        const projectID = urlParams.get("id");
-        const milestone = $("#milestoneDropdown").val();
+        $(document).ready(function () {
+            const mainId = '@(TempData["entry"] ?? "null")';
+            if (mainId === "null") {
+                console.error("mainId is not set. Please check your TempData.");
+                return;
+            }
 
-        if (milestone !== "") {
-            $("#modal_title").text("Checklist item for: " + milestone);
-            $("#milestone_id").val(milestone);
-            $("#project_id").val(projectID);
-            $(".modal-body").html();
-            $("#myModal").modal("show");
-        } else {
-            Swal.fire("Oops", "Please select a milestone first.", "error");
-        }
-    });
+            const urlParams = new URLSearchParams(window.location.search);
+            const milestoneIdFromUrl = urlParams.get("milestone");
 
-    $(document).on("click", "#submit_button", function () {
-        const formData = $("#optionalForm").serialize();
-        let incomplete = false;
-        const milestone = $("#milestoneDropdown").val();
+            if (milestoneIdFromUrl) {
+                const $dropdown = $("#milestoneDropdown");
 
-        $('#optionalForm :input').each(function () {
-            if ($(this).val().length === 0) {
-                incomplete = true;
-                return false;
+                $("#checklist_id_container").hide(); // hide before fadeIn
+
+                setTimeout(() => {
+                    if ($dropdown.find(`option[value='${milestoneIdFromUrl}']`).length > 0) {
+                        $dropdown.val(milestoneIdFromUrl).trigger("change");
+
+                        // fade in after milestone is applied
+                        setTimeout(() => {
+                            $("#checklist_id_container").fadeIn(300);
+                        }, 150);
+                    }
+                }, 200);
             }
         });
 
-        if (!incomplete) {
-            $.ajax({
-                type: "POST",
-                url: "@Url.Action("AddOptional", "Checklist")",
-                data: formData,
-                success: function () {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Checklist item added!',
-                    }).then(function () {
-                        localStorage.setItem('currentTab', 'checklist');
-                        localStorage.setItem('currentDrop', milestone);
-                        location.reload();
-                    });
-                },
-                error: function () {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Query failed, please retry',
-                    }).then(function () {
-                        localStorage.setItem('currentTab', 'checklist');
-                        localStorage.setItem('currentDrop', milestone);
-                        location.reload();
-                    });
-                }
-            });
-        } else {
-            Swal.fire("Incomplete Entry", "Please fill up the form.", "error");
-        }
-    });
+        $("#milestoneDropdown").on("change", function () {
+            const milestoneId = $(this).val();
 
-    document.addEventListener('change', function (event) {
-        if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
-            updateSelectedChips();
-        }
-    });
+            if (milestoneId == "") {
+                $("#checklist_id_container").empty();
+            }
 
-    $(document).on("click", "#submit_approver", function () {
-        const taskID = $("#task_id").val();
-        const projID = $("#approver_project_id").val();
-        const checklistID = $("#checklist_id_input").val();
-        const milestoneID = $("#milestoneDropdown").val();
-        const selectedMembers = [...document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked')].map(e => e.value);
-        const milestone = $("#milestoneDropdown").val();
+            $("#checklist_id_input").val("");
+            $("#current_milestoneid").empty();
+            $("#current_milestoneid").val(milestoneId);
 
-        if (selectedMembers.length > 0) {
-            $.ajax({
-                type: "POST",
-                url: "@Url.Action("AddApproverOpt", "Checklist")",
-                data: {
-                    id: taskID,
-                    proj_id: projID,
-                    approvers: selectedMembers,
-                    milestone_id: milestoneID
-                },
-                success: function () {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Approver/s Added!',
-                    }).then(function () {
-                        localStorage.setItem('currentTab', 'checklist');
-                        localStorage.setItem('currentDrop', milestone);
-                        location.reload();
-                    });
-                }
-            });
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'No selected approvers',
-                text: 'Please select an approver first',
-            }).then(function () {                                                                                     
-                localStorage.setItem('currentTab', 'checklist');
-                localStorage.setItem('currentDrop', milestone);
-                location.reload();
-            });
-        }
-        const approverBadges = task.approvers.map(approver => {
-            const tooltip = `${approver.status.charAt(0).toUpperCase() + approver.status.slice(1)} on ${approver.date}`;
-            const badgeColor = approver.status === 'approved' ? 'success'
-                : approver.status === 'rejected' ? 'danger'
-                    : 'secondary';
-            return `<span class="badge bg-${badgeColor} me-1" data-bs-toggle="tooltip" title="${tooltip}">
-                ${approver.name}
-            </span>`;
-        }).join('');
+            if (milestoneId !== "") {
+                $("#add_optional").removeClass("d-none");
+            } else {
+                $("#add_optional").addClass("d-none");
+            }
 
-    });
-    $(document).on('change', 'input[name="taskSelect"]', function () {
-        const anyChecked = $('input[name="taskSelect"]:checked').length > 0;
-        $('#bulkActionRow').toggle(anyChecked);
-    });
-    function triggerConfetti() {
-        const confettiCanvas = document.createElement('canvas');
-        confettiCanvas.style.position = 'fixed';
-        confettiCanvas.style.top = 0;
-        confettiCanvas.style.left = 0;
-        confettiCanvas.style.width = '100vw';
-        confettiCanvas.style.height = '100vh';
-        confettiCanvas.style.pointerEvents = 'none';
-        confettiCanvas.style.zIndex = 11000;
-        document.body.appendChild(confettiCanvas);
+            loadTasksForMilestone(milestoneId, @(TempData["entry"]));
 
-        const myConfetti = confetti.create(confettiCanvas, {
-            resize: true,
-            useWorker: true
+            // fade in after slight delay for smoother UI
+            setTimeout(() => {
+                $("#checklist_id_container").fadeIn(300);
+            }, 150);
         });
 
-        myConfetti({
-            particleCount: 80,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#66339A', '#A066C9', '#FFD700', '#88D8B0']
+        $("#delayed_yes").on("click", function () {
+            $("#delay_input_group").removeClass("d-none").prop("class", "form-group mb-4");
         });
 
-        setTimeout(() => {
-            document.body.removeChild(confettiCanvas);
-        }, 5000);
-    }
-</script>                           
+        $("#delayed_no").on("click", function () {
+            $("#delay_input_group").addClass("d-none");
+            $("#weeks_delayed").val(0);
+        });
+
+        $("#selectedMilestone").on("change", function () {
+            const selection = $(this).val();
+            if (selection !== "") {
+                $("#status_input_group").removeClass("d-none");
+
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("GetTaskUpdate", "Checklist")",
+                    data: { selection },
+                    success: function (res) {
+                        const note = document.getElementById("delay_note");
+                        const inputGrp = document.getElementById("delay_input_group");
+
+                        if (res.success === true) {
+                            if (res.data !== 0) {
+                                $("#delayed_yes").prop("checked", true);
+                                $("#weeks_delayed").val(res.data);
+                                $("#delay_div").removeClass("d-none");
+                                inputGrp.classList.remove("d-none");
+                                note.textContent = "Previously Delayed by: " + res.data + " week/s";
+                            } else {
+                                $("#delayed_no").prop("checked", true);
+                                $("#weeks_delayed").val(0);
+                                $("#delay_div").removeClass("d-none");
+                                inputGrp.classList.add("d-none");
+                            }
+                        } else {
+                            alert(res.message);
+                        }
+                    }
+                });
+            } else {
+                $("#status_input_group").addClass("d-none");
+            }
+        });
+
+        $(document).on("click", "#add_optional", function (e) {
+            e.preventDefault();
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectID = urlParams.get("id");
+            const milestone = $("#milestoneDropdown").val();
+
+            if (milestone !== "") {
+                $("#modal_title").text("Checklist item for: " + milestone);
+                $("#milestone_id").val(milestone);
+                $("#project_id").val(projectID);
+                $(".modal-body").html();
+                $("#myModal").modal("show");
+            } else {
+                Swal.fire("Oops", "Please select a milestone first.", "error");
+            }
+        });
+
+        $(document).on("click", "#submit_button", function () {
+            const formData = $("#optionalForm").serialize();
+            let incomplete = false;
+            const milestone = $("#milestoneDropdown").val();
+
+            $('#optionalForm :input').each(function () {
+                if ($(this).val().length === 0) {
+                    incomplete = true;
+                    return false;
+                }
+            });
+
+            if (!incomplete) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddOptional", "Checklist")",
+                    data: formData,
+                    success: function () {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Checklist item added!',
+                        }).then(function () {
+                            localStorage.setItem('currentTab', 'checklist');
+                            localStorage.setItem('currentDrop', milestone);
+                            location.reload();
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Query failed, please retry',
+                        }).then(function () {
+                            localStorage.setItem('currentTab', 'checklist');
+                            localStorage.setItem('currentDrop', milestone);
+                            location.reload();
+                        });
+                    }
+                });
+            } else {
+                Swal.fire("Incomplete Entry", "Please fill up the form.", "error");
+            }
+        });
+
+        document.addEventListener('change', function (event) {
+            if (event.target.matches('.multi-select-dropdown input[type="checkbox"]')) {
+                updateSelectedChips();
+            }
+        });
+
+        $(document).on("click", "#submit_approver", function () {
+            const taskID = $("#task_id").val();
+            const projID = $("#approver_project_id").val();
+            const checklistID = $("#checklist_id_input").val();
+            const milestoneID = $("#milestoneDropdown").val();
+            const selectedMembers = [...document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]:checked')].map(e => e.value);
+            const milestone = $("#milestoneDropdown").val();
+
+            if (selectedMembers.length > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddApproverOpt", "Checklist")",
+                    data: {
+                        id: taskID,
+                        proj_id: projID,
+                        approvers: selectedMembers,
+                        milestone_id: milestoneID
+                    },
+                    success: function () {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Approver/s Added!',
+                        }).then(function () {
+                            localStorage.setItem('currentTab', 'checklist');
+                            localStorage.setItem('currentDrop', milestone);
+                            location.reload();
+                        });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'No selected approvers',
+                    text: 'Please select an approver first',
+                }).then(function () {                                                                                     
+                    localStorage.setItem('currentTab', 'checklist');
+                    localStorage.setItem('currentDrop', milestone);
+                    location.reload();
+                });
+            }
+            const approverBadges = task.approvers.map(approver => {
+                const tooltip = `${approver.status.charAt(0).toUpperCase() + approver.status.slice(1)} on ${approver.date}`;
+                const badgeColor = approver.status === 'approved' ? 'success'
+                    : approver.status === 'rejected' ? 'danger'
+                        : 'secondary';
+                return `<span class="badge bg-${badgeColor} me-1" data-bs-toggle="tooltip" title="${tooltip}">
+                    ${approver.name}
+                </span>`;
+            }).join('');
+
+        });
+        $(document).on('change', 'input[name="taskSelect"]', function () {
+            const anyChecked = $('input[name="taskSelect"]:checked').length > 0;
+            $('#bulkActionRow').toggle(anyChecked);
+        });
+        function triggerConfetti() {
+            const confettiCanvas = document.createElement('canvas');
+            confettiCanvas.style.position = 'fixed';
+            confettiCanvas.style.top = 0;
+            confettiCanvas.style.left = 0;
+            confettiCanvas.style.width = '100vw';
+            confettiCanvas.style.height = '100vh';
+            confettiCanvas.style.pointerEvents = 'none';
+            confettiCanvas.style.zIndex = 11000;
+            document.body.appendChild(confettiCanvas);
+
+            const myConfetti = confetti.create(confettiCanvas, {
+                resize: true,
+                useWorker: true
+            });
+
+            myConfetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#66339A', '#A066C9', '#FFD700', '#88D8B0']
+            });
+
+            setTimeout(() => {
+                document.body.removeChild(confettiCanvas);
+            }, 5000);
+        }
+    </script>                           
     
 
 }
