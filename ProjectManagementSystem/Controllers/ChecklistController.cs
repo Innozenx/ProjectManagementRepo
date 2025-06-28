@@ -917,7 +917,10 @@ namespace ProjectManagementSystem.Controllers
                     ReadOnlyApprover = userDetails.FirstName + " " + userDetails.LastName
 
                 };
-                viewModel.IsReadOnlyChecklistView = !isProjectManager;
+                //viewModel.IsReadOnlyChecklistView = !isProjectManager;
+                bool isDivisionHeadAdmin = isODCPAdmin && userDetails.JobLevel == 4035;
+                viewModel.IsReadOnlyChecklistView = !isProjectManager || isDivisionHeadAdmin;
+
                 ViewBag.SelectedTab = tab;
 
 

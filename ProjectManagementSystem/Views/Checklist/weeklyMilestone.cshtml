@@ -2165,55 +2165,51 @@ function bulkApproval() {
 
     </script>
 
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function () {
-            gantt.config.xml_date = "%Y-%m-%d %H:%i";
-            gantt.config.readonly = true;
-            gantt.config.columns = [
-                { name: "key_person", label: "Key Person", align: "center", width: 90 },
-                { name: "text", label: "Milestone", tree: true, width: 200 },
-                { name: "duration", label: "Duration", align: "center", width: 70 },
-                { name: "start_date", label: "Start", align: "center", width: 90 },
-                { name: "end_date", label: "Finish", align: "center", width: 90 }
-            ];
-            gantt.config.scales = [
-                { unit: "week", date: "Week %W" }
-            ];
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        gantt.config.xml_date = "%Y-%m-%d %H:%i";
+        gantt.config.readonly = true;
+        gantt.config.columns = [
+            //{ name: "key_person", label: "Key Person", align: "center", width: 90 },
+            { name: "text", label: "Milestone", tree: true, width: 200 },
+            { name: "duration", label: "Duration", align: "center", width: 70 },
+            { name: "start_date", label: "Start", align: "center", width: 90 },
+            { name: "end_date", label: "Finish", align: "center", width: 90 }
+        ];
+        gantt.config.scales = [
+            { unit: "week", date: "Week %W" }
+        ];
 
-            gantt.templates.task_text = function () {
-                return "";
-            };
+        gantt.templates.task_text = function () {
+            return "";
+        };
 
-            gantt.init("gantt_here");
-            @*gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json");*@
-            gantt.load(`getGanttData?id=@TempData["entry"]`, "json");
+        gantt.init("gantt_here");
 
-            gantt.load(`/Checklist/getGanttData?id=@TempData["entry"]`, "json"); // added to be deleted too
-
+        // ✅ Use Model.MainId instead of TempData
+        gantt.load(`/Checklist/getGanttData?id=@Model.MainId`, "json");
 
         const setDayView = () => {
             gantt.config.scales = [
-                    { unit: "day", step: 1, date: "%d" },
-                    { unit: "week", date: "Week %W" }
-                ];
+                { unit: "day", step: 1, date: "%d" },
+                { unit: "week", date: "Week %W" }
+            ];
             gantt.render();
         };
 
-
         const setWeekView = () => {
             gantt.config.scales = [
-                    { unit: "week", step: 1, date: "WW %W" },
-                    { unit: "month", step: 1, date: "%F %Y" }
-                ];
+                { unit: "week", step: 1, date: "WW %W" },
+                { unit: "month", step: 1, date: "%F %Y" }
+            ];
             gantt.render();
         };
 
         const setMonthView = () => {
             gantt.config.scales = [
-                    { unit: "month", step: 1, date: "%F %Y" },
-                    { unit: "year", step: 1, date: "%Y" }
-                ];
+                { unit: "month", step: 1, date: "%F %Y" },
+                { unit: "year", step: 1, date: "%Y" }
+            ];
             gantt.render();
         };
 
@@ -2239,92 +2235,80 @@ function bulkApproval() {
             document.getElementById(buttonId).classList.add("active");
         };
 
+
         document.querySelector("#maximize-btn").addEventListener("click", function () {
-        const projectId = "@TempData["entry"]";
-        window.open(`/Checklist/GanttChart?id=${projectId}`, "_blank");
+            const projectId = "@Model.MainId";
+            window.open(`/Checklist/GanttChart?id=${projectId}`, "_blank");
         });
 
-
-            $("#timeline-tab").on("click", function () {
-                $("#detailsContainer").css("display", "none");
-                $("#overview").css("display", "none");
-                $("#checklist").css("display", "none");
-                $("#timeline").css("display", "block");
-            });
-
-            $("#overview-tab").on("click", function () {
-                $("#detailsContainer").css("display", "block");
-                $("#overview").css("display", "block");
-                $("#checklist").css("display", "none");
-                $("#timeline").css("display", "none");
-            });
-
-            $("#checklist-tab").on("click", function () {
-                $("#detailsContainer").css("display", "none");
-                $("#overview").css("display", "none");
-                $("#checklist").css("display", "block");
-                $("#timeline").css("display", "none");
-
-            });
-
-            setWeekView();
-            activateButton("week-view");
-
-            //loadActivityLogs();
-
-            var tab = localStorage.getItem('currentTab');
-            var dropdown = localStorage.getItem('currentDrop');
-
-            if (tab == "checklist") {
-                const element = document.getElementById("milestoneDropdown");
-                document.getElementById("checklist-tab").click();
-                setTimeout(function () {
-                    document.getElementById("milestoneDropdown").value = dropdown;
-                    document.getElementById("milestoneDropdown").dispatchEvent(new Event('change'));
-                },1000)
-
-                localStorage.clear();
-            }
-
-            $("#remove_all").on("click", function () {
-                $("input[name='cb_remove']").prop("checked", this.checked);
-            });
+        $("#timeline-tab").on("click", function () {
+            $("#detailsContainer, #overview, #checklist").hide();
+            $("#timeline").show();
         });
 
-        const selectedTab = new URLSearchParams(window.location.search).get("tab");
+        $("#overview-tab").on("click", function () {
+            $("#detailsContainer, #overview").show();
+            $("#checklist, #timeline").hide();
+        });
 
-        if (selectedTab === "timeline") {
-            $("#timeline").addClass("show active").css("display", "block");
-            $("#overview").removeClass("show active").css("display", "none");
-            $("#checklist").removeClass("show active").css("display", "none");
-            $("#detailsContainer").css("display", "none");
+        $("#checklist-tab").on("click", function () {
+            $("#detailsContainer, #overview, #timeline").hide();
+            $("#checklist").show();
+        });
 
+        setWeekView();
+        activateButton("week-view");
+
+        const tab = localStorage.getItem('currentTab');
+        const dropdown = localStorage.getItem('currentDrop');
+
+        if (tab === "checklist") {
+            document.getElementById("checklist-tab").click();
             setTimeout(() => {
-                gantt.render();
-                document.getElementById("gantt_here").scrollIntoView({ behavior: "smooth" });
-            }, 200);
+                const dropdownElement = document.getElementById("milestoneDropdown");
+                dropdownElement.value = dropdown;
+                dropdownElement.dispatchEvent(new Event('change'));
+            }, 1000);
+            localStorage.clear();
         }
 
-        const urlTab = new URLSearchParams(window.location.search).get("tab");
+        $("#remove_all").on("click", function () {
+            $("input[name='cb_remove']").prop("checked", this.checked);
+        });
+    });
 
-        if (urlTab === "timeline" || urlTab === "checklist" || urlTab === "overview") {
+    const selectedTab = new URLSearchParams(window.location.search).get("tab");
 
-            $(".tab-pane").removeClass("show active").hide();
-            $("#" + urlTab).addClass("show active").show();
+    if (selectedTab === "timeline") {
+        $("#timeline").addClass("show active").css("display", "block");
+        $("#overview, #checklist, #detailsContainer").removeClass("show active").hide();
 
-            $(".nav-link").removeClass("active");
-            $("#" + urlTab + "-tab").addClass("active");
+        setTimeout(() => {
+            gantt.render();
+            document.getElementById("gantt_here").scrollIntoView({ behavior: "smooth" });
+        }, 200);
+    }
 
-            if (urlTab === "checklist") {
-                $("#detailsContainer").hide();
-            } else if (urlTab === "timeline") {
-                $("#detailsContainer").hide();
-                setTimeout(() => gantt.render(), 200);
-            } else {
-                $("#detailsContainer").show();
-            }
+    const urlTab = new URLSearchParams(window.location.search).get("tab");
+
+    if (["timeline", "checklist", "overview"].includes(urlTab)) {
+        $(".tab-pane").removeClass("show active").hide();
+        $("#" + urlTab).addClass("show active").show();
+
+        $(".nav-link").removeClass("active");
+        $("#" + urlTab + "-tab").addClass("active");
+
+        if (urlTab === "timeline") {
+            $("#detailsContainer").hide();
+            setTimeout(() => gantt.render(), 200);
+        } else if (urlTab === "checklist") {
+            $("#detailsContainer").hide();
+        } else {
+            $("#detailsContainer").show();
         }
-    </script>
+    }
+</script>
+
 
 <script>
         const urlParams = new URLSearchParams(window.location.search);
