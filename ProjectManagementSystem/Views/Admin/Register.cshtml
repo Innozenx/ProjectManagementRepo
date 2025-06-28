@@ -8,8 +8,6 @@
 <head>
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-
 </head>
 
 <style>
@@ -18,18 +16,93 @@
         justify-content: center;
         align-items: flex-start;
         min-height: 90vh;
-        padding: 10px;
-        margin-top: 50px;
+        padding: 20px;
     }
 
     .form-container {
-        width: 700px;
-        background-color: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        padding: 20px 30px;
-        animation: fadeIn 0.8s ease-in-out;
+        width: 600px;
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+        padding: 35px 40px;
+        animation: fadeIn 0.5s ease-in-out;
+        border: 1px solid #e5e5e5;
+        margin-top: 30px;
     }
+
+    h2 {
+        font-weight: 500;
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 2rem;
+        color: #66339A;
+        margin-bottom: 10px;
+    }
+
+    .form-subtext {
+        text-align: center;
+        color: #888;
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    .memo-emoji {
+        font-size: 1.8rem;
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+
+    .form-label {
+        color: #555;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        outline: none;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease;
+    }
+
+        .form-control:hover {
+            border-color: #bbb;
+        }
+
+        .form-control:focus {
+            border-color: #66339A;
+            box-shadow: 0 0 5px rgba(102, 51, 154, 0.2);
+        }
+
+    .form-text {
+        font-size: 12px;
+        color: #d9534f;
+        margin-top: 5px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        background-color: #66339A;
+        border: none;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 30px;
+        color: #fff;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #532c7e;
+        }
 
     @@keyframes fadeIn {
         from {
@@ -42,158 +115,24 @@
             transform: translateY(0);
         }
     }
-
-    h2 {
-        text-align: center;
-        color: #470A67;
-        margin-bottom: 10px;
-    }
-
-    p {
-        text-align: center;
-        color: #666;
-        margin-bottom: 20px;
-    }
-
-    .form-group {
-        position: relative;
-        margin-bottom: 20px;
-    }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            color: #000;
-            outline: none;
-            transition: all 0.3s ease;
-            background: transparent;
-        }
-
-            .form-group input:focus {
-                border-color: #470A67;
-                box-shadow: 0 0 5px rgba(71, 10, 103, 0.4);
-            }
-
-        .form-group label {
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            font-size: 16px;
-            color: #999;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus + label,
-        .form-group input:not(:placeholder-shown) + label {
-            top: -10px;
-            left: 10px;
-            font-size: 12px;
-            color: #470A67;
-        }
-
-    .form-text {
-        font-size: 12px;
-        color: #d9534f;
-        margin-top: 5px;
-    }
-
-    .form-footer {
-        text-align: center;
-    }
-
-    .btn-primary {
-        display: block;
-        margin: 0 auto;
-        color: white;
-        padding: 10px 30px;
-        border: none;
-        border-radius: 30px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s ease;
-        font-weight: normal;
-        text-align: center;
-        width: 100%;
-        background-color: #66339A;
-    }
-
-
-
-        .btn-primary:hover {
-            background-color: #532c7e;
-        }
-
-    @@media (max-width: 768px) {
-        .form-container {
-            width: 90%;
-            padding: 20px;
-        }
-
-        .form-group input {
-            font-size: 14px;
-        }
-
-        .form-group label {
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            width: 100%;
-        }
-    }
-
-    .form-group label {
-        font-size: 14px;
-        font-weight: normal !important;
-        color: gray;
-        margin-bottom: 5px;
-    }
-    .scribble-emoji {
-    display: inline-block;
-    animation: scribble 2s ease-in-out infinite;
-    transform-origin: bottom center;
-}
-
-@@keyframes scribble {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(5deg); }
-    50% { transform: rotate(-5deg); }
-    75% { transform: rotate(3deg); }
-    100% { transform: rotate(0deg); }
-}
-
 </style>
-
-
 
 <div class="content">
     <div class="form-container">
-        <h2>
-            <span class="scribble-emoji">📝</span><br />
-            Project Registration
-        </h2>
 
-        <p>
-            First, input your project name.
-        </p>
+        <h2><span class="memo-emoji">📝</span> <br />Let’s set up your project</h2>
+        @*<p class="form-subtext">First, input your project</p>*@
 
         <form id="projectRegistrationForm" name="projectRegistrationForm" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
             <div class="form-group">
-                <input type="text" id="project_name" name="project_name" placeholder=" " required />
-                <label for="project_name">Project Name</label>
+                <label for="project_name" class="form-label" style="font-weight: 200;">What’s something your team is working on?</label>
+                <input type="text" id="project_name" name="project_name" class="form-control" placeholder="Project name" required />
                 <small id="error_message" class="form-text" style="display: none;">Project name is required.</small>
             </div>
 
-            <div class="form-footer">
-                <button id="submit_project" type="submit" class="btn btn-primary">Submit</button>
-            </div>
+            <button id="submit_project" type="submit" class="btn btn-primary">Continue</button>
         </form>
     </div>
 </div>
@@ -202,6 +141,7 @@
     $(document).ready(function () {
         $("#projectRegistrationForm").on("submit", function (e) {
             e.preventDefault();
+
             const projectName = $("#project_name").val().trim();
             const errorMessage = $("#error_message");
 
@@ -214,40 +154,40 @@
                 errorMessage.hide();
             }
 
-          $.ajax({
+            $.ajax({
                 method: "POST",
                 url: "@Url.Action("Register_Project", "Admin")",
-                data: { "name": projectName },
+                data: { name: projectName },
                 success: function (res) {
                     if (res.status) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Project Registered',
-                            text: 'Your project name has been successfully registered! Redirecting to Project Onboarding...',
-                            confirmButtonColor: '#470A67',
+                            text: 'Redirecting to project onboarding... 💼',
+                            confirmButtonColor: '#66339A'
                         }).then(() => {
                             window.location.href = "@Url.Action("AddProject", "Checklist")";
                         });
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Registration Failed',
+                            title: 'Oops!',
                             text: res.message,
-                            confirmButtonColor: '#d9534f',
+                            confirmButtonColor: '#d9534f'
                         });
                     }
                 },
                 error: function () {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while submitting the project.',
-                        confirmButtonColor: '#d9534f',
+                        title: 'Uh-oh!',
+                        text: 'Something went wrong. Please try again. ',
+                        confirmButtonColor: '#d9534f'
                     });
                 }
             });
         });
-        
+
         $("#project_name").on("input", function () {
             if ($(this).val().trim()) {
                 $(this).css("border-color", "");
