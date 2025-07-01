@@ -1137,14 +1137,14 @@ namespace ProjectManagementSystem.Controllers
         //}
 
         [HttpPost]
-        public JsonResult ApproveTask(int taskId)
+        public JsonResult ApproveTask(int taskId, int milestoneId)
         {
             try
             {
                 string userEmail = User.Identity.Name.ToLower().Trim();
 
                 var submission = db.ChecklistSubmissions
-                    .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
+                    .FirstOrDefault(x => x.task_id == taskId && x.milestone_id == milestoneId && x.is_removed != true);
 
                 if (submission == null)
                 {

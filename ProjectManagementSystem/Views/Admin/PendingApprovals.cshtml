@@ -126,8 +126,8 @@ function createTaskCard(task) {
                     <p class="mb-2 small">${attachment}</p>
                     <div class="d-flex gap-2">
                         ${task.ShowActions ? `
-                             <button class="btn btn-reject reject-btn" data-taskid="${task.DetailsID}" aria-label="Reject Task">Reject</button>
-                             <button class="btn btn-approve approve-btn" data-taskid="${task.DetailsID}" aria-label="Approve Task">Approve</button>
+                             <button class="btn btn-reject reject-btn" data-taskid="${task.DetailsID}" data-milestoneid="${task.MilestoneID}" aria-label="Reject Task">Reject</button>
+                             <button class="btn btn-approve approve-btn" data-taskid="${task.DetailsID}" data-milestoneid="${task.MilestoneID}" aria-label="Approve Task">Approve</button>
                              ` : ``}
                         ${task.ShowWithdraw ? `
                              <button class="btn btn-approve withdraw-btn" data-taskid="${task.DetailsID}" aria-label="">Withdraw</button>
@@ -176,8 +176,8 @@ function loadApprovals() {
                     <td>${formattedDate}</td>
                     <td>${task.AttachmentUrl ? `<a href="${task.AttachmentUrl}" class="attachment-link">View File</a>` : "<span class='text-muted small fst-italic'>No attachment</span>"}</td>
                     <td>
-                        <button class="btn btn-approve approve-btn" data-taskid="${task.DetailsID}">Approve</button>
-                        <button class="btn btn-reject reject-btn" data-taskid="${task.DetailsID}">Reject</button>
+                        <button class="btn btn-approve approve-btn" data-taskid="${task.DetailsID}" data-milestoneid="${task.MilestoneID}">Approve</button>
+                        <button class="btn btn-reject reject-btn" data-taskid="${task.DetailsID}" data-milestoneid="${task.MilestoneID}">Reject</button>
                     </td>
 
                 </tr>`);
@@ -263,7 +263,7 @@ $(document).ready(function () {
 
     $(document).on("click", ".approve-btn", function () {
         const taskId = $(this).data("taskid");
-
+        const milestoneId = $(this).data("milestoneid");
         Swal.fire({
             title: "You're about to approve this task.",
             html: `<p style="font-size: 16px; color: #555;">Please make sure all requirements are met before confirming.</p>`,
@@ -286,7 +286,7 @@ $(document).ready(function () {
                 });
 
                 // AJAX request
-                $.post('@Url.Action("ApproveTask", "Admin")', { taskId })
+                $.post('@Url.Action("ApproveTask", "Admin")', { taskId, milestoneId })
                     .done(res => {
                         Swal.close(); 
 
