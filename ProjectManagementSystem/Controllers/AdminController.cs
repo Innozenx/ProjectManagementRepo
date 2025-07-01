@@ -1048,54 +1048,7 @@ namespace ProjectManagementSystem.Controllers
                 
             }
 
-            // optional
-            //var optional = (from s in db.ChecklistSubmissions
-            //                join a in db.OptionalMilestoneApprovers
-            //                  on new { s.main_id, s.milestone_id, s.task_id }
-            //                  equals new { a.main_id, a.milestone_id, a.task_id }
-            //                join m in db.MainTables on s.main_id equals m.main_id
-            //                where a.approver_email.ToLower().Trim() == userEmail
-            //                   && (a.is_removed == false || a.is_removed == null)
-            //                   && (s.is_removed == false || s.is_removed == null)
-            //                select new ApprovalTaskDTO
-            //                {
-            //                    task_id = s.task_id.Value,
-            //                    task_name = s.task_name,
-            //                    submitted_by = s.submitted_by,
-            //                    submission_date = s.submission_date,
-            //                    main_id = s.main_id.Value,
-            //                    milestone_id = s.milestone_id.Value,
-            //                    project_title = m.project_title,
-            //                    isApproved = a.approved,
-            //                    isRejected = a.rejected
-            //                }).ToList();
-
-            // preset 
-            //var preset = (from s in db.ChecklistSubmissions
-            //              join a in db.PreSetMilestoneApprovers
-            //                on new { s.main_id, s.milestone_id, s.task_id }
-            //                equals new { a.main_id, a.milestone_id, a.task_id }
-            //              join m in db.MainTables on s.main_id equals m.main_id
-            //              where a.approver_email.ToLower().Trim() == userEmail
-            //                 && (a.is_removed == false || a.is_removed == null)
-            //                 && (s.is_removed == false || s.is_removed == null)
-            //              select new ApprovalTaskDTO
-            //              {
-            //                  task_id = s.task_id.Value,
-            //                  task_name = s.task_name,
-            //                  submitted_by = s.submitted_by,
-            //                  submission_date = s.submission_date,
-            //                  main_id = s.main_id.Value,
-            //                  milestone_id = s.milestone_id.Value,
-            //                  project_title = m.project_title,
-            //                  isApproved = a.approved,
-            //                  isRejected = a.rejected
-            //              }).ToList();
-
-            // combine then filter
-            //var all = optional.Concat(preset).Distinct().ToList();
-
-            var pending = optionalMileStone.Where(x => (x.isApproved == null) && x.isRejected == null);
+            var pending = optionalMileStone.Where(x => (x.isApproved == null) && (x.isRejected == null || x.isRejected == false));
             var approved = optionalMileStone.Where(x => x.isApproved == true);
             var rejected = optionalMileStone.Where(x => x.isRejected == true);
 
