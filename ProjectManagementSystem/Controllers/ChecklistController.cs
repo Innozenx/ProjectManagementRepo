@@ -2275,7 +2275,7 @@ namespace ProjectManagementSystem.Controllers
                 //            }).ToList()
                 //    }).ToList();
 
-                List<dynamic> milestoneList = new List<dynamic>();
+                //List<dynamic> milestoneList = new List<dynamic>();
 
                 var milestones = db.MilestoneTbls
                     .Where(m => m.main_id == mainId)
@@ -2283,40 +2283,41 @@ namespace ProjectManagementSystem.Controllers
                     {
                         MilestoneId = m.root_id,
                         MilestoneName = m.milestone_name,
+                        isCompleted = m.IsCompleted
                     }).ToList();
 
-                foreach(var row in milestones)
-                {
-                    var getpreset = db.PreSetMilestoneApprovers
-                         .Where(x => x.main_id == mainId && x.milestone_id == row.MilestoneId)
-                         .ToList();
+                //foreach(var row in milestones)
+                //{
+                //    var getpreset = db.PreSetMilestoneApprovers
+                //         .Where(x => x.main_id == mainId && x.milestone_id == row.MilestoneId)
+                //         .ToList();
 
-                    var getoptional = db.OptionalMilestoneApprovers
-                        .Where(x => x.main_id == mainId && x.milestone_id == row.MilestoneId)
-                        .ToList();
+                //    var getoptional = db.OptionalMilestoneApprovers
+                //        .Where(x => x.main_id == mainId && x.milestone_id == row.MilestoneId)
+                //        .ToList();
 
-                    bool milestoneCompleted = false;
+                //    bool milestoneCompleted = false;
 
-                    // Only check lists if they contain items
-                    bool allPresetApproved = getpreset.Count == 0 || getpreset.All(x => x.approved == true);
-                    bool allOptionalApproved = getoptional.Count == 0 || getoptional.All(x => x.approved == true);
+                //    // Only check lists if they contain items
+                //    bool allPresetApproved = getpreset.Count == 0 || getpreset.All(x => x.approved == true);
+                //    bool allOptionalApproved = getoptional.Count == 0 || getoptional.All(x => x.approved == true);
 
-                    // If both are either empty or fully approved, milestone is completed
-                    if (allPresetApproved && allOptionalApproved)
-                    {
-                        milestoneCompleted = true;
-                    }
+                //    // If both are either empty or fully approved, milestone is completed
+                //    if (allPresetApproved && allOptionalApproved)
+                //    {
+                //        milestoneCompleted = true;
+                //    }
 
-                    // Add to milestoneList
-                    milestoneList.Add(new
-                    {
-                        row.MilestoneId,
-                        row.MilestoneName,
-                        milestoneCompleted
-                    });
-                }
+                //    // Add to milestoneList
+                //    milestoneList.Add(new
+                //    {
+                //        row.MilestoneId,
+                //        row.MilestoneName,
+                //        milestoneCompleted
+                //    });
+                //}
 
-                return Json(new { success = true, data = milestoneList }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, data = milestones }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
