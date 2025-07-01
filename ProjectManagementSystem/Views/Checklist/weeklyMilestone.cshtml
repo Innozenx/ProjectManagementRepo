@@ -1565,7 +1565,7 @@
                             dropdown.append(`<option value="${milestone.MilestoneId}" ${disabled}>${label}</option>`);
 
                             // Only allow the next milestone to be unlocked if this one is completed
-                            previousCompleted = milestone.MilestoneCompleted;
+                            previousCompleted = milestone.isCompleted;
                         });
 
 

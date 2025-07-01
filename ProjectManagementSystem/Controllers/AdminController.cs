@@ -1269,81 +1269,81 @@ namespace ProjectManagementSystem.Controllers
                             }
                         }
 
-                        var systemEmail = "e-notify@enchantedkingdom.ph";
-                        var systemName = "PM SYSTEM";
-                        var email = new MimeMessage();
+                        //var systemEmail = "e-notify@enchantedkingdom.ph";
+                        //var systemName = "PM SYSTEM";
+                        //var email = new MimeMessage();
 
-                        email.From.Add(new MailboxAddress(systemName, systemEmail));
-                        email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
-                        email.To.Add(new MailboxAddress("Crystal Joyce Benauro", "cbenauro@enchantedkingdom.ph")); // test email
+                        //email.From.Add(new MailboxAddress(systemName, systemEmail));
+                        //email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
+                        //email.To.Add(new MailboxAddress("Crystal Joyce Benauro", "cbenauro@enchantedkingdom.ph")); // test email
 
-                        email.Subject = "PM System Approval";
-                        email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                        {
-                            Text = $@"
-                        <div style='font-family: Poppins, Arial, sans-serif; background-color: #f4f4f9; padding: 0; margin: 0;'>
-                            <table align='center' cellpadding='0' cellspacing='0' width='640' style='margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;'>
-                                <tr>
-                                    <td style='background-color: #66339A; padding: 24px; border-top-left-radius: 8px; border-top-right-radius: 8px; text-align: center;'>
-                                        <h1 style='margin: 0; font-size: 22px; color: #ffffff; font-weight: 600;'>Your Checklist Item Has Been Approved</h1>
-                                    </td>
-                                </tr>
+                        //email.Subject = "PM System Approval";
+                        //email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        //{
+                        //    Text = $@"
+                        //<div style='font-family: Poppins, Arial, sans-serif; background-color: #f4f4f9; padding: 0; margin: 0;'>
+                        //    <table align='center' cellpadding='0' cellspacing='0' width='640' style='margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;'>
+                        //        <tr>
+                        //            <td style='background-color: #66339A; padding: 24px; border-top-left-radius: 8px; border-top-right-radius: 8px; text-align: center;'>
+                        //                <h1 style='margin: 0; font-size: 22px; color: #ffffff; font-weight: 600;'>Your Checklist Item Has Been Approved</h1>
+                        //            </td>
+                        //        </tr>
 
-                                <tr>
-                                    <td style='padding: 30px 40px;'>
-                                        <p style='font-size: 15px; color: #444; margin-bottom: 24px;'>
-                                            This is to notify you that a task has been <strong style='color:#28a745;'>approved</strong> under your project titled <strong>{projectTitle}</strong>.
-                                        </p>
+                        //        <tr>
+                        //            <td style='padding: 30px 40px;'>
+                        //                <p style='font-size: 15px; color: #444; margin-bottom: 24px;'>
+                        //                    This is to notify you that a task has been <strong style='color:#28a745;'>approved</strong> under your project titled <strong>{projectTitle}</strong>.
+                        //                </p>
 
-                                        <table cellpadding='0' cellspacing='0' width='100%' style='font-size: 14px; color: #333; line-height: 1.6; border-collapse: collapse; margin-top: 10px;'>
-                                            <tr style='border-bottom: 1px solid #eee;'>
-                                                <td style='padding: 10px; text-align: right; width: 40%;'><strong>Checklist Item:</strong></td>
-                                                <td style='padding: 10px; text-align: left;'>{taskName}</td>
-                                            </tr>
-                                            <tr style='border-bottom: 1px solid #eee;'>
-                                                <td style='padding: 10px; text-align: right;'><strong>Milestone Name:</strong></td>
-                                                <td style='padding: 10px; text-align: left;'>{milestoneTitle}</td>
-                                            </tr>
-                                            <tr style='border-bottom: 1px solid #eee;'>
-                                                <td style='padding: 10px; text-align: right;'><strong>Approved By:</strong></td>
-                                                <td style='padding: 10px; text-align: left;'>{approverName}</td>
-                                            </tr>
-                                            <tr>
-                                                <td style='padding: 10px; text-align: right;'><strong>Date Approved:</strong></td>
-                                                <td style='padding: 10px; text-align: left;'>{DateTime.Now.ToString("MMMM dd, yyyy h:mm tt")}</td>
-                                            </tr>
-                                        </table>
+                        //                <table cellpadding='0' cellspacing='0' width='100%' style='font-size: 14px; color: #333; line-height: 1.6; border-collapse: collapse; margin-top: 10px;'>
+                        //                    <tr style='border-bottom: 1px solid #eee;'>
+                        //                        <td style='padding: 10px; text-align: right; width: 40%;'><strong>Checklist Item:</strong></td>
+                        //                        <td style='padding: 10px; text-align: left;'>{taskName}</td>
+                        //                    </tr>
+                        //                    <tr style='border-bottom: 1px solid #eee;'>
+                        //                        <td style='padding: 10px; text-align: right;'><strong>Milestone Name:</strong></td>
+                        //                        <td style='padding: 10px; text-align: left;'>{milestoneTitle}</td>
+                        //                    </tr>
+                        //                    <tr style='border-bottom: 1px solid #eee;'>
+                        //                        <td style='padding: 10px; text-align: right;'><strong>Approved By:</strong></td>
+                        //                        <td style='padding: 10px; text-align: left;'>{approverName}</td>
+                        //                    </tr>
+                        //                    <tr>
+                        //                        <td style='padding: 10px; text-align: right;'><strong>Date Approved:</strong></td>
+                        //                        <td style='padding: 10px; text-align: left;'>{DateTime.Now.ToString("MMMM dd, yyyy h:mm tt")}</td>
+                        //                    </tr>
+                        //                </table>
 
-                                        <div style='text-align: center; margin: 30px 0;'>
-                                            <a href='http://localhost:60297/Admin/PendingApprovals'
-                                               style='display: inline-block; padding: 14px 40px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 16px;'>
-                                               View Task
-                                            </a>
-                                        </div>
+                        //                <div style='text-align: center; margin: 30px 0;'>
+                        //                    <a href='http://localhost:60297/Admin/PendingApprovals'
+                        //                       style='display: inline-block; padding: 14px 40px; background-color: #66339A; color: #fff; text-decoration: none; font-weight: bold; border-radius: 5px; font-size: 16px;'>
+                        //                       View Task
+                        //                    </a>
+                        //                </div>
 
-                                        <p style='font-size: 13px; color: #888; margin-top: 40px; text-align: center;'>
-                                            If you have questions or require assistance, please contact your supervisor or ITS.
-                                        </p>
-                                    </td>
-                                </tr>
+                        //                <p style='font-size: 13px; color: #888; margin-top: 40px; text-align: center;'>
+                        //                    If you have questions or require assistance, please contact your supervisor or ITS.
+                        //                </p>
+                        //            </td>
+                        //        </tr>
 
-                                <tr>
-                                    <td style='background-color: #f0f0f5; text-align: center; padding: 14px; font-size: 12px; color: #999; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;'>
-                                        <em>This is an automated email from the Project Management System</em>. Do not reply.<br/>Need help? Call <strong>ITS Local 123/132</strong>.
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>"
-                                            };
+                        //        <tr>
+                        //            <td style='background-color: #f0f0f5; text-align: center; padding: 14px; font-size: 12px; color: #999; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;'>
+                        //                <em>This is an automated email from the Project Management System</em>. Do not reply.<br/>Need help? Call <strong>ITS Local 123/132</strong>.
+                        //            </td>
+                        //        </tr>
+                        //    </table>
+                        //</div>"
+                        //                    };
 
 
-                        using (var smtp = new SmtpClient())
-                        {
-                            smtp.Connect("mail.enchantedkingdom.ph", 587, false);
-                            smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
-                            smtp.Send(email);
-                            smtp.Disconnect(true);
-                        }
+                        //using (var smtp = new SmtpClient())
+                        //{
+                        //    smtp.Connect("mail.enchantedkingdom.ph", 587, false);
+                        //    smtp.Authenticate("e-notify@enchantedkingdom.ph", "ENCHANTED2024");
+                        //    smtp.Send(email);
+                        //    smtp.Disconnect(true);
+                        //}
 
                         db.SaveChanges();
                     }
@@ -1823,6 +1823,43 @@ namespace ProjectManagementSystem.Controllers
             });
         }
 
+        public void CheckApprovedMilestone(int _task_id)
+        {
+            var checklistSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == _task_id);
+            if (checklistSubmission == null)
+            {
+                return;
+            }
+
+            List<dynamic> milestoneApprovers = null;
+
+            switch (checklistSubmission.type)
+            {
+                case "preset":
+                    milestoneApprovers = db.PreSetMilestoneApprovers
+                        .Where(x => x.task_id == _task_id)
+                        .Select(x => new { x.approved })
+                        .ToList<dynamic>();
+                    break;
+
+                case "optional":
+                    milestoneApprovers = db.OptionalMilestoneApprovers
+                        .Where(x => x.task_id == _task_id)
+                        .Select(x => new { x.approved })
+                        .ToList<dynamic>();
+                    break;
+
+                default:
+                    return;
+            }
+
+            bool allApproversApprove = milestoneApprovers.All(x => x.approved == true);
+
+            if (allApproversApprove)
+            {
+                // Update checklistSubmission here
+            }
+        }
 
     }
 }
