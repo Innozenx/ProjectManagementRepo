@@ -5,21 +5,42 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="content">
-    <div class="form-container">
-        <div class="form-header" style="text-align: center;">
+<div class="loader-body">
+    <div class="loader-container">
+        <span class="loader-span"></span>
+        <div class="loader-center">
+            <div class="loader-wrap">
+                <div class="box-1 box">
 
-            <h3>
-                <span class="launch-rocket">🚀</span><br />
-                Let’s continue setting up your project
-            </h3>
-            <p>
-                Next step: Upload your project schedule. 📂
-            </p>
+                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
+                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
+                </div>
+                <div class="box-2 box">
+                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
+                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
+                </div>
+            </div>
         </div>
+    </div>
+</div>
 
-        <form id="onboardingForm" name="onboardingForm" enctype="multipart/form-data">
-            @Html.AntiForgeryToken()
+<a href="https://dribbble.com/YancyMin" class="dr-url" target="_blank"><img class="dr" src="https://cdn.dribbble.com/assets/logo-footer-hd-a05db77841b4b27c0bf23ec1378e97c988190dfe7d26e32e1faea7269f9e001b.png" alt=""></a>
+
+<div class="main-body d-none">
+    <div class="content">
+        <div class="form-container">
+            <div class="form-header" style="text-align: center;">
+                <h3>
+                    <span class="launch-rocket">🚀</span><br />
+                    Start Your New Project
+                </h3>
+                <p>
+                    Upload your project schedule here. 📂
+                </p>
+            </div>
+
+            <form id="onboardingForm" name="onboardingForm" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
 
             <div id="errorContainer" class="alert-error" style="display: none;"></div>
 
@@ -39,11 +60,11 @@
                 <input type="text" id="projectOwner" name="projectOwner" class="form-control" placeholder="Project owner" required readonly />
             </div>
 
-            <div class="form-group">
-                <label for="csvFileInput">Upload Project Schedule</label>
-                <input type="file" id="csvFileInput" name="csvFileInput" accept=".csv" class="form-control-file" required />
-                <small class="form-text">Accepted format: .csv</small>
-            </div>
+                <div class="form-group">
+                    <label for="csvFileInput">Upload Project Schedule</label>
+                    <input type="file" id="csvFileInput" name="csvFileInput" accept=".csv" class="form-control-file" required />
+                    <small class="form-text">Accepted format: .csv</small>
+                </div>
 
             <div class="button-container">
                 <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Submit</button>
@@ -51,6 +72,7 @@
         </form>
     </div>
 </div>
+
 
 <style>
     body {
@@ -237,12 +259,8 @@
         formData.append("projectTitle", projectDropdown.value);
         formData.append("csvFile", csvFile);
 
-        Swal.fire({
-            title: 'Uploading...',
-            text: 'Please wait while we process your file.',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
-        });
+        $(".main-body").addClass("d-none");
+        $(".loader-body").removeClass("d-none");
 
         $.ajax({
             url: '/Checklist/AddProjectUpload',
@@ -251,7 +269,9 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                Swal.close();
+                $(".main-body").removeClass("d-none");
+                $(".loader-body").addClass("d-none");
+
                 if (response.status) {
                     Swal.fire({
                         icon: 'success',
@@ -327,5 +347,10 @@
             };
             reader.readAsText(file);
         }
+    });
+
+    $(document).ready(function(){
+        $(".main-body").removeClass("d-none");
+        $(".loader-body").addClass("d-none");
     });
 </script>

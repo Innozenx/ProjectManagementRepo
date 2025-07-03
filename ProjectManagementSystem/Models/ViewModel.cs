@@ -460,6 +460,7 @@ namespace ProjectManagementSystem.Models
     public class RoleViewModel
     {
         public List<string> ExistingRoles { get; set; }
+        public List<int> RoleID { get; set; }
     }
 
     public class RoleModel
@@ -494,6 +495,7 @@ namespace ProjectManagementSystem.Models
         public string Division { get; set; }
         public string Department { get; set; }
         public int Project_ID { get; set; }
+        public string Role_Description { get; set; }
     }
 
     public class JqueryDatatableParam

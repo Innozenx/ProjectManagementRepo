@@ -37,6 +37,9 @@ namespace ProjectManagementSystem.Controllers
         //[Authorize(Roles = "PMS_PROJECT_OWNER, PMS_ADMIN")]
         public JsonResult Register_Project(string name)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             var message = "";
             var status = false;
             var division = "";
@@ -89,20 +92,10 @@ namespace ProjectManagementSystem.Controllers
 
                 db.RegistrationTbls.Add(insDeets);
 
-                Activity_Log logs = new Activity_Log
-                {
-                    username = User.Identity.Name,
-                    datetime_performed = DateTime.Now,
-                    action_level = 5,
-                    action = "Project Registration",
-                    description = details.ProjectName + " Project Registered by: " + details.RegisteredBy + " For Year: " + details.Year,
-                    department = department,
-                    division = division
-                };
-
-                db.Activity_Log.Add(logs);
-
                 db.SaveChanges();
+
+                details_container.Add(name);
+                log.ActivityLog(User.Identity.Name, 3, "Project Registration", name, details_container);
 
                 message = "Project name has been successfully registered!";
                 status = true;
@@ -184,10 +177,11 @@ namespace ProjectManagementSystem.Controllers
 
         public ActionResult RoleConfiguration()
         {
-
+            var dbRoles = db.Roles.ToList();
             var viewModel = new RoleViewModel
             {
-                ExistingRoles = db.Roles.Select(r => r.RoleName).ToList()
+                ExistingRoles = dbRoles.Select(x => x.RoleName).ToList(),
+                RoleID = db.Roles.Select(x => x.id).ToList()
             };
 
             return View(viewModel);
@@ -197,6 +191,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult AddRole(string roleName)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             var message = "";
             var status = false;
 
@@ -226,6 +223,9 @@ namespace ProjectManagementSystem.Controllers
 
                 message = "Role added successfully!";
                 status = true;
+
+                details_container.Add(roleName);
+                log.ActivityLog(User.Identity.Name, 5, "Add Role", "N/A", details_container);
             }
             catch (Exception ex)
             {
@@ -242,6 +242,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult EditRole(int id, string newRoleName)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             var message = "";
             var status = false;
 
@@ -271,6 +274,9 @@ namespace ProjectManagementSystem.Controllers
 
                 message = "Role updated successfully!";
                 status = true;
+
+                details_container.Add(newRoleName);
+                log.ActivityLog(User.Identity.Name, 5, "Role Edit", "N/A", details_container);
             }
             catch (Exception ex)
             {
@@ -284,6 +290,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult DeleteRole(int id)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             var message = "";
             var status = false;
 
@@ -301,6 +310,9 @@ namespace ProjectManagementSystem.Controllers
 
                 message = "Role deleted successfully!";
                 status = true;
+
+                details_container.Add(role.RoleName);
+                log.ActivityLog(User.Identity.Name, 5, "Delete Role", "N/A", details_container);
             }
             catch (Exception ex)
             {
@@ -486,6 +498,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult SaveMilestone(int DivisionID, string MilestoneName, List<TaskModel> Tasks)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             try
             {
                 Debug.WriteLine($"Received Data - DivisionID: {DivisionID}, MilestoneName: {MilestoneName}, Tasks Count: {Tasks.Count}");
@@ -603,9 +618,11 @@ namespace ProjectManagementSystem.Controllers
                             db.SaveChanges();
                         }
                     }
+
+                    details_container.Add(task.Requirement);
                 }
 
-                
+                log.ActivityLog(User.Identity.Name, 2, "Add Checklist Item/s", "N/A", details_container);
                 
                 //var approver_ids = approverIds.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 //List<PreSetMilestoneApprover> approver_list = new List<PreSetMilestoneApprover>();
@@ -653,6 +670,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult FinalizeChecklist(int divisionId)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             try
             {
                 var division = db.Divisions.FirstOrDefault(d => d.DivisionID == divisionId);
@@ -706,6 +726,9 @@ namespace ProjectManagementSystem.Controllers
 
                 db.SaveChanges();
 
+                details_container.Add(checklistReference.ReferenceNumber);
+                log.ActivityLog(User.Identity.Name, 2, "Finalized Checklist", "N/A", details_container);
+
                 return Json(new
                 {
                     success = true,
@@ -741,6 +764,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult SaveDivision(int divisionId)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             try
             {
                 var existingDivision = db.SavedDivisions.FirstOrDefault(d => d.DivisionID == divisionId);
@@ -749,6 +775,7 @@ namespace ProjectManagementSystem.Controllers
                 {
                     
                     existingDivision.IsActive_ = true;
+                    details_container.Add(existingDivision.DivisionName);
                 }
                 else
                 {
@@ -768,9 +795,11 @@ namespace ProjectManagementSystem.Controllers
                     };
 
                     db.SavedDivisions.Add(savedDivision);
+                    details_container.Add(division.DivisionName);
                 }
 
                 db.SaveChanges();
+                log.ActivityLog(User.Identity.Name, 2, "Add/Activate Milestone", "N/A", details_container);
 
                 return Json(new { success = true, message = "Division added successfully!" });
             }

@@ -258,6 +258,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ActivityLoggerController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AutomatedTaskController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -2583,7 +2584,9 @@
     <Content Include="FrontEnd\dist\img\credit\paypal.png" />
     <Content Include="FrontEnd\dist\img\credit\paypal2.png" />
     <Content Include="FrontEnd\dist\img\credit\visa.png" />
+    <Content Include="FrontEnd\dist\img\crying_eldar.png" />
     <Content Include="FrontEnd\dist\img\default-150x150.png" />
+    <Content Include="FrontEnd\dist\img\happy_eldar.png" />
     <Content Include="FrontEnd\dist\img\icons.png" />
     <Content Include="FrontEnd\dist\img\photo1.png" />
     <Content Include="FrontEnd\dist\img\photo2.png" />
@@ -2594,6 +2597,8 @@
     <Content Include="FrontEnd\dist\img\prod-3.jpg" />
     <Content Include="FrontEnd\dist\img\prod-4.jpg" />
     <Content Include="FrontEnd\dist\img\prod-5.jpg" />
+    <Content Include="FrontEnd\dist\img\smiley_eldar.png" />
+    <Content Include="FrontEnd\dist\img\teary_eldar.png" />
     <Content Include="FrontEnd\dist\img\user1-128x128.jpg" />
     <Content Include="FrontEnd\dist\img\user2-160x160.jpg" />
     <Content Include="FrontEnd\dist\img\user3-128x128.jpg" />
@@ -5174,9 +5179,11 @@
     <Content Include="Views\Shared\_SplashScreen.cshtml" />
     <Content Include="Views\AutomatedTask\StatusNotifier.cshtml" />
     <Content Include="Views\AutomatedTask\ApprovalNotifier.cshtml" />
+    <Content Include="Views\Shared\_Loader.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\ActivityLogger\" />
     <Folder Include="Views\Base\" />
     <Folder Include="Views\DataTable\" />
     <Folder Include="Views\Products\" />

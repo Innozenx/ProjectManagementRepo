@@ -3,80 +3,104 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="container-fluid mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow border-0 rounded-3">
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <h3 class="title" style="color: #470A67">
-                            📋 <br /> Checklist and Milestone Management
-                        </h3>
-                        <p class="text-muted">Create and manage milestones per Division.</p>
-                    </div>
+<div class="loader-body">
+    <div class="loader-container">
+        <span class="loader-span"></span>
+        <div class="loader-center">
+            <div class="loader-wrap">
+                <div class="box-1 box">
 
-                    <div class="card shadow-sm bg-white rounded-3">
-                        <div class="card-body">
-                            <div class="mb-4">
-                                <h5 class="fw-bold text-dark">Division</h5>
-                                <div class="input-group">
-                                    <select id="divisionDropdown" class="form-select custom-dropdown" required>
-                                        <option value="">Choose Division</option>
-                                        @if (ViewBag.Divisions != null)
-                                        {
-                                            foreach (var division in ViewBag.Divisions as List<SelectListItem>)
-                                            {
-                                                <option value="@division.Value">@division.Text</option>
-                                            }
-                                        }
-                                    </select>
-                                    @*<button id="addMilestoneBtn" class="btn btn-outline-primary" style="font-weight:normal">
-                                        <i class="fas fa-plus"></i> Add to Checklist
-                                    </button>*@
-                                    <button id="addMilestoneBtn" class="btn btn-outline-primary" style="font-weight:normal">
-                                        <i class="fas fa-plus"></i> Add
-                                    </button>
-
-                                </div>
-                            </div>
-
-                            <h5 class="fw-bold text-dark">Checklist</h5>
-                            @*<input type="text" id="searchMilestone" class="form-control mb-3" placeholder="Search milestones...">*@
-                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                <table class="table table-hover table-bordered" id="milestoneTable">
-                                    <thead class="table-light sticky-header">
-                                        <tr>
-                                            <th>Division</th>
-                                            <th>Reference Number</th>
-                                            <th>Total Milestones</th>
-                                            <th>Total Checklist Items</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                </div> 
-            </div> 
-        </div> 
-    </div> 
-    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-dark" id="previewModalLabel">Checklist Preview</h5>
-                    <button type="button" class="btn-r" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
+                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
                 </div>
-                <div class="modal-body" id="previewModalBody">
-                    <p class="text-muted">Loading...</p>
+                <div class="box-2 box">
+                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
+                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+<a href="https://dribbble.com/YancyMin" class="dr-url" target="_blank"><img class="dr" src="https://cdn.dribbble.com/assets/logo-footer-hd-a05db77841b4b27c0bf23ec1378e97c988190dfe7d26e32e1faea7269f9e001b.png" alt=""></a>
+
+<div class="main-body d-none">
+    <div class="container-fluid mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow border-0 rounded-3">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <h3 class="title" style="color: #470A67">
+                                📋 <br /> Checklist and Milestone Management
+                            </h3>
+                            <p class="text-muted">Create and manage milestones per Division.</p>
+                        </div>
+
+                        <div class="card shadow-sm bg-white rounded-3">
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <h5 class="fw-bold text-dark">Division</h5>
+                                    <div class="input-group">
+                                        <select id="divisionDropdown" class="form-select custom-dropdown" required>
+                                            <option value="">Choose Division</option>
+                                            @if (ViewBag.Divisions != null)
+                                            {
+                                                foreach (var division in ViewBag.Divisions as List<SelectListItem>)
+                                                {
+                                                    <option value="@division.Value">@division.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        @*<button id="addMilestoneBtn" class="btn btn-outline-primary" style="font-weight:normal">
+                                                <i class="fas fa-plus"></i> Add to Checklist
+                                            </button>*@
+                                        <button id="addMilestoneBtn" class="btn btn-outline-primary" style="font-weight:normal">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+
+                                    </div>
+                                </div>
+
+                                <h5 class="fw-bold text-dark">Checklist</h5>
+                                @*<input type="text" id="searchMilestone" class="form-control mb-3" placeholder="Search milestones...">*@
+                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table table-hover table-bordered" id="milestoneTable">
+                                        <thead class="table-light sticky-header">
+                                            <tr>
+                                                <th>Division</th>
+                                                <th>Reference Number</th>
+                                                <th>Total Milestones</th>
+                                                <th>Total Checklist Items</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold text-dark" id="previewModalLabel">Checklist Preview</h5>
+                        <button type="button" class="btn-r" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="previewModalBody">
+                        <p class="text-muted">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -92,7 +116,6 @@
 
     .container-fluid {
         max-width: 1400px;
-       
     }
 
 
@@ -137,19 +160,19 @@
     }
 
     #divisionDropdown {
-        margin-right: 10px; 
+        margin-right: 10px;
     }
 
     .table {
         font-size: 14px;
     }
 
-    .table thead {
-        background: #f8f9fa;
-        /*font-weight: 600;*/
-        vertical-align: middle;
-        font-weight:normal;
-    }
+        .table thead {
+            background: #f8f9fa;
+            /*font-weight: 600;*/
+            vertical-align: middle;
+            font-weight: normal;
+        }
 
     .sticky-header {
         position: sticky;
@@ -174,19 +197,19 @@
         color: #470A67;
     }
 
-    .btn-outline-primary:hover {
-        background: #470A67;
-        color: white;
-    }
+        .btn-outline-primary:hover {
+            background: #470A67;
+            color: white;
+        }
 
     .btn-outline-success {
         border-color: #28a745;
         color: #28a745;
     }
 
-    .btn-outline-success:hover {
-        background: #28a745;
-        color: white;
+        .btn-outline-success:hover {
+            background: #28a745;
+            color: white;
         }
 
     .btn-outline-warning {
@@ -222,6 +245,7 @@
     .input-group > .form-select {
         margin-right: 10px;
     }
+
     .action-group {
         display: flex;
         justify-content: center;
@@ -235,51 +259,53 @@
         overflow: hidden;
     }
 
-    .action-group .action-btn {
-        padding: 6px 10px;
-        border: none;
-        background: white;
-        font-size: 14px;
-        border-left: 1px solid #ddd;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: 0.2s ease-in-out;
-    }
-
-        .action-group .action-btn:first-child {
-            border-left: none;
+        .action-group .action-btn {
+            padding: 6px 10px;
+            border: none;
+            background: white;
+            font-size: 14px;
+            border-left: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s ease-in-out;
         }
 
-        .action-group .action-btn:hover {
-            background-color: #f1f3f5;
+            .action-group .action-btn:first-child {
+                border-left: none;
+            }
+
+            .action-group .action-btn:hover {
+                background-color: #f1f3f5;
+            }
+
+        .action-group i {
+            pointer-events: none;
         }
 
-    .action-group i {
-        pointer-events: none;
-    }
     .action-btn i {
         color: #666;
         transition: color 0.3s ease;
     }
 
     .action-btn.createRow:hover i {
-        color: #28a745; 
+        color: #28a745;
     }
 
     .action-btn.viewRow:hover i {
-        color: #470A67; 
+        color: #470A67;
     }
 
     .action-btn.removeRow:hover i {
-        color: #dc3545; 
+        color: #dc3545;
     }
-
-
 </style>
 
 <script>
     $(document).ready(function () {
+        $(".main-body").removeClass("d-none");
+        $(".loader-body").addClass("d-none");
+
         let table = $('#milestoneTable').DataTable({
             "paging": false,
             "searching": false,
@@ -295,7 +321,7 @@
             const hasSelection = $(this).val() !== "";
             $("#addMilestoneBtn").prop("disabled", !hasSelection);
         });
-        $("#divisionDropdown").trigger("change"); 
+        $("#divisionDropdown").trigger("change");
 
 
 
@@ -402,13 +428,22 @@
 
             $("#addMilestoneBtn").prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
 
+            $(".main-body").addClass("d-none");
+            $(".loader-body").removeClass("d-none");
+
             $.post('/Admin/SaveDivision', { divisionId: divisionId }, function (response) {
                 $("#addMilestoneBtn").prop('disabled', false).html('<i class="fas fa-plus"></i> Add Division');
 
                 if (response.success) {
+                    $(".main-body").removeClass("d-none");
+                    $(".loader-body").addClass("d-none");
+
                     if (response.success) {
+                        $(".main-body").removeClass("d-none");
+                        $(".loader-body").addClass("d-none");
+
                         Swal.fire("Added!", `${divisionText} is now ready for checklist setup.`, "success").then(() => {
-                       
+
                             loadSavedDivisions(function () {
                                 let $newRow = $(`#milestoneTable .removeMilestone[data-id='${divisionId}']`).closest('tr');
                                 $newRow.addClass('table-success');
@@ -425,7 +460,7 @@
                                 setTimeout(() => {
                                     sessionStorage.setItem("newDivision", divisionText);
                                     window.location.href = `/Admin/CreateChecklist?divisionId=${divisionId}`;
-                                }, 2000); 
+                                }, 2000);
                             });
                         });
 
@@ -436,7 +471,7 @@
 
                     $("#divisionDropdown").val("").trigger("change");
                     $("#divisionDropdown").blur();
-                
+
                     //loadSavedDivisions(function () {
                     //    let $newRow = $(`#milestoneTable .removeMilestone[data-id='${divisionId}']`).closest('tr');
                     //    $newRow.addClass('table-success');
@@ -460,7 +495,7 @@
 
                 } else {
                     Swal.fire("Error!", response.message, "error");
-                   
+
 
                 }
             }).fail(function () {
@@ -544,7 +579,7 @@
             });
         });
 
-        
+
         let newDivision = sessionStorage.getItem("newDivision");
         if (newDivision) {
             Swal.fire("Success!", `Checklist initialized for ${newDivision}`, "success");

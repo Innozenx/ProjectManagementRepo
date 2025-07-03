@@ -5,64 +5,86 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="content">
-    <div class="form-container">
-        <div class="form-header">
-            <h3>Role Configuration</h3>
-            <p>Add and manage roles for the system.</p>
-        </div>
-        <div class="form-content">
-            <form id="addRoleForm" class="role-form">
-                <div class="form-group">
-                    <div class="input-container">
-                        <label for="roleName" class="form-label">What would you call this role?</label>
-                        <input type="text" id="roleName" name="roleName" class="form-input" placeholder=" " required /> <button type="submit" class="btn-primary">Add</button>
-                    </div>
+<div class="loader-body">
+    <div class="loader-container">
+        <span class="loader-span"></span>
+        <div class="loader-center">
+            <div class="loader-wrap">
+                <div class="box-1 box">
+
+                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
+                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
                 </div>
-            </form>
-            <div id="addRoleMessage" class="mt-3"></div>
-        </div>
-        <h4 class="mt-4">Roles</h4>
-        @if (Model.ExistingRoles != null && Model.ExistingRoles.Any())
-        {
-            <div class="table-container">
-                <table id="rolesTable" class="styled-table">
-                    <thead>
-                        <tr>
-                            <th>No.</th>
-                            <th>Role Name</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < Model.ExistingRoles.Count; i++)
-                        {
-                            <tr>
-                                <td>@(i + 1)</td>
-                                <td id="role-name-@i">@Model.ExistingRoles[i]</td>
-                                <td>
-                                    <button class="btn-warning btn-sm edit-role" data-id="@i" data-role="@Model.ExistingRoles[i]">Edit</button>
-                                    <button class="btn-danger btn-sm delete-role" data-id="@i" data-role="@Model.ExistingRoles[i]">Delete</button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <div class="box-2 box">
+                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
+                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
+                </div>
             </div>
-        }
-        else
-        {
-            <p class="text-muted">No roles have been added yet.</p>
-        }
+        </div>
     </div>
 </div>
+
+<div class="main-body d-none">
+    <div class="content">
+        <div class="form-container">
+            <div class="form-header">
+                <h3>Role Configuration</h3>
+                <p>Add and manage roles for the system.</p>
+            </div>
+            <div class="form-content">
+                <form id="addRoleForm" class="role-form">
+                    <div class="form-group">
+                        <div class="input-container">
+                            <label for="roleName" class="form-label">What would you call this role?</label>
+                            <input type="text" id="roleName" name="roleName" class="form-input" placeholder=" " required /> <button type="submit" class="btn-primary">Add</button>
+                        </div>
+                    </div>
+                </form>
+                <div id="addRoleMessage" class="mt-3"></div>
+            </div>
+            <h4 class="mt-4">Roles</h4>
+            @if (Model.ExistingRoles != null && Model.ExistingRoles.Any())
+            {
+                <div class="table-container">
+                    <table id="rolesTable" class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Role Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.ExistingRoles.Count; i++)
+                            {
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td id="role-name-@i">@Model.ExistingRoles[i]</td>
+                                    <td>
+                                        <button class="btn-warning btn-sm edit-role" data-id="@Model.RoleID[i]" data-role="@Model.ExistingRoles[i]">Edit</button>
+                                        <button class="btn-danger btn-sm delete-role" data-id="@Model.RoleID[i]" data-role="@Model.ExistingRoles[i]">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No roles have been added yet.</p>
+            }
+        </div>
+    </div>
+</div>
+
 <!-- Modal for Editing Role -->
 <div class="modal" id="editRoleModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Edit Role</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -219,6 +241,9 @@
 
 <script>
     $(document).ready(function () {
+        $(".main-body").removeClass("d-none");
+        $(".loader-body").addClass("d-none");
+
         const table = $('#rolesTable').DataTable();
 
         // Add Role
@@ -232,8 +257,14 @@
                 return;
             }
 
+            $(".main-body").removeClass("d-none");
+            $(".loader-body").addClass("d-none");
+
             $.post('/Admin/AddRole', { roleName }, function (response) {
                 if (response.status) {
+                    $(".main-body").addClass("d-none");
+                    $(".loader-body").removeClass("d-none");
+
                     Swal.fire('Success', response.message, 'success').then(() => {
                         location.reload();
                     });
@@ -261,8 +292,14 @@
                 return;
             }
 
+            $(".main-body").removeClass("d-none");
+            $(".loader-body").addClass("d-none");
+
             $.post('/Admin/EditRole', { id: roleId, newRoleName: newRoleName }, function (response) {
                 if (response.status) {
+                    $(".main-body").addClass("d-none");
+                    $(".loader-body").removeClass("d-none");
+
                     Swal.fire('Success', response.message, 'success').then(() => {
                         location.reload();
                     });
@@ -284,7 +321,13 @@
                 confirmButtonText: 'Yes, delete it!',
             }).then((result) => {
                 if (result.isConfirmed) {
+                    $(".main-body").addClass("d-none");
+                    $(".loader-body").removeClass("d-none");
+
                     $.post('/Admin/DeleteRole', { id: roleId }, function (response) {
+                        $(".main-body").removeClass("d-none");
+                        $(".loader-body").addClass("d-none");
+
                         if (response.status) {
                             Swal.fire('Deleted!', response.message, 'success').then(() => {
                                 location.reload();

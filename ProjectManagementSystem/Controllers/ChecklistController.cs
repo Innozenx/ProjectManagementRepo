@@ -19,6 +19,7 @@ using MailKit.Net.Smtp;
 using System.Net;
 using System.Data.Entity;
 
+
 namespace ProjectManagementSystem.Controllers
 {
     public class ChecklistController : BaseController
@@ -843,7 +844,8 @@ namespace ProjectManagementSystem.Controllers
                         Initials = !string.IsNullOrEmpty(pm.name) && pm.name.Split(' ').Length > 2
                             ? pm.name.Split(' ')[0].Substring(0, 1) + pm.name.Split(' ')[1].Substring(0, 1)
                             : "N/A",
-                        Email = pm.email
+                        Email = pm.email,
+                        Role_Description = db.Roles.Where(x => x.id == pm.role.Value).Select(x => x.RoleName).FirstOrDefault()
                     })
                     .ToList();
 
@@ -922,8 +924,6 @@ namespace ProjectManagementSystem.Controllers
                 viewModel.IsReadOnlyChecklistView = !isProjectManager || isDivisionHeadAdmin;
 
                 ViewBag.SelectedTab = tab;
-
-
 
                 return View(viewModel);
             }
@@ -1280,6 +1280,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult AddProjectUpload()
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             var message = "";
             var status = false;
             var attachment = System.Web.HttpContext.Current.Request.Files["csvFile"];
@@ -1542,25 +1545,12 @@ namespace ProjectManagementSystem.Controllers
                                     upd_rgstr.is_file_uploaded = true;
                                     db.SaveChanges();
 
-                                    
-
-                                    Activity_Log logs = new Activity_Log
-                                    {
-                                        username = User.Identity.Name,
-                                        datetime_performed = DateTime.Now,
-                                        action_level = 5,
-                                        action = "Project Upload",
-                                        description = getProject.ProjectTitle + " Project Uploaded by: " + ownerName + " For Year: " + getProject.ProjectYear,
-                                        department = department,
-                                        division = division
-                                    };
-
-                                    db.Activity_Log.Add(logs);
-                                    db.SaveChanges();
-
                                     transaction.Commit();
                                     message = "Project schedule added successfully!";
                                     status = true;
+
+                                    details_container.Add(getProject.ProjectTitle);
+                                    log.ActivityLog(User.Identity.Name, 4, "Project Upload", getProject.ProjectTitle, details_container);
                                 }
                                 else
                                 {
@@ -2090,6 +2080,10 @@ namespace ProjectManagementSystem.Controllers
 
         public JsonResult EmailInvitees(string[] users, int[] roles, string project)
         {
+            //variables for activity logs
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details = new List<string>();
+
             var systemEmail = "e-notify@enchantedkingdom.ph";
             var systemName = "PM SYSTEM";
             var message = "";
@@ -2212,16 +2206,21 @@ namespace ProjectManagementSystem.Controllers
 
                             message = "Success";
                             //transaction.Commit();
+
+                            details.Add(userName);
                         }
 
                         else
                         {
                             message = "User/s are already invited, please check your list of invitees";
                             transaction.Rollback();
-                            break;
+                            goto ExitFor;
                         }
 
+                        log.ActivityLog(User.Identity.Name, 1, "Member Invite", project, details);
                     }
+
+                    transaction.Commit();
                 }
 
                 catch (Exception e)
@@ -2229,9 +2228,9 @@ namespace ProjectManagementSystem.Controllers
                     message = "An error occured. Please refresh your browser and re-check your entries. If error persists, please contact ITS Local: 132";
                     transaction.Rollback();
                 }
-                transaction.Commit();
             }
 
+            ExitFor:
             return Json(new { message = message }, JsonRequestBehavior.AllowGet);
         }
 
@@ -2348,7 +2347,7 @@ namespace ProjectManagementSystem.Controllers
                         var submissionContainer = submissions.Where(x => x.main_id == item.main_id && x.task_id == item.id && x.milestone_id == milestoneId).OrderByDescending(x => x.submission_date).Select(x => new
                         {
                             taskname = x.task_name,
-                            approved = x.is_approved,
+                            approved = item.approved,
                             approver_status = db.OptionalMilestoneApprovers.Where(y => y.task_id == x.task_id).Select(y => y.approved).ToList(),
                             approvers = db.OptionalMilestoneApprovers.Where(y => y.task_id == x.task_id && y.main_id == item.main_id && x.milestone_id == milestoneId && y.is_removed != true).Select(y => y.approver_name).ToList(),
                             task_id = x.task_id,
@@ -2418,11 +2417,12 @@ namespace ProjectManagementSystem.Controllers
                 {
                     if (submissions.Any(x => x.task_id == preset.ID))
                     {
+                        var approved = submissions.Where(x => x.task_id == preset.ID).Any(x => x.is_approved != true) ? false : true;
 
                         var submissionContainer = submissions.Where(x => x.task_id == preset.ID).OrderByDescending(x => x.submission_date).Select(x => new
                         {
                             taskname = x.task_name,
-                            approved = x.is_approved,
+                            approved = approved,
                             approver_status = db.PreSetMilestoneApprovers.Where(y => y.main_id == x.main_id && y.milestone_id == x.milestone_id && y.task_id == preset.ID).Select(y => y.approved).ToList(),
                             approvers = db.PreSetMilestoneApprovers.Where(y => y.milestone_id == milestoneId && y.main_id == mainId && y.is_removed != true && y.task_id == preset.ID).Select(y => y.approver_name).ToList(),
                             task_id = x.task_id,
@@ -2457,10 +2457,11 @@ namespace ProjectManagementSystem.Controllers
                         TaskContainerModel preset_container = new TaskContainerModel()
                         {
                             taskname = preset.Requirements,
+                            approved = null,
                             approvers = db.PreSetMilestoneApprovers.Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.task_id == preset.ID && x.is_removed != true).Select(x => x.approver_name).ToList(),
                             task_id = preset.ID,
                             milestone_id = preset.MilestoneID,
-                            approver_status = db.ChecklistSubmissions.Where(x => x.task_id == milestoneId).Select(x => x.is_approved).ToList(),
+                            approver_status = db.PreSetMilestoneApprovers.Where(x => x.milestone_id == milestoneId && x.main_id == mainId && x.task_id == preset.ID && x.is_removed != true).Select(x => x.approved).ToList(),
                             optFlag = false,
                             submissionFlag = false
                         };
