@@ -267,6 +267,7 @@
     <Compile Include="Controllers\FileUploadController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\NotificationHelper.cs" />
     <Compile Include="Controllers\PMReportsController.cs" />
     <Compile Include="CustomAttributes\CustomAuth.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
@@ -378,6 +379,9 @@
     <Compile Include="Models\MilestoneTbl.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Notification.cs">
+      <DependentUpon>CheckList.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\OptionalMilestone.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
@@ -411,10 +415,10 @@
     <Compile Include="Models\TransactionTbl.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ViewModel.cs" />
-    <Compile Include="Models\View_1.cs">
+    <Compile Include="Models\UserRole.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Models\WeeklyChecklistTable.cs">
       <DependentUpon>CheckList.tt</DependentUpon>
     </Compile>
@@ -2607,6 +2611,7 @@
     <Content Include="FrontEnd\dist\img\user6-128x128.jpg" />
     <Content Include="FrontEnd\dist\img\user7-128x128.jpg" />
     <Content Include="FrontEnd\dist\img\user8-128x128.jpg" />
+    <Content Include="FrontEnd\dist\img\viber_image_2025-01-30_14-39-19-955_1.png" />
     <Content Include="FrontEnd\dist\js\adminlte.js" />
     <Content Include="FrontEnd\dist\js\adminlte.min.js" />
     <Content Include="FrontEnd\dist\js\demo.js" />

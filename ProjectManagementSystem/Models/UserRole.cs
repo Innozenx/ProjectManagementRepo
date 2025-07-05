@@ -12,12 +12,10 @@ namespace ProjectManagementSystem.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class View_1
+    public partial class UserRole
     {
-        public string milestone_name { get; set; }
-        public string project_title { get; set; }
-        public Nullable<System.DateTime> end_date { get; set; }
-        public int milestone_id { get; set; }
-        public Nullable<int> main_id { get; set; }
+        public int role_id { get; set; }
+        public Nullable<int> id { get; set; }
+        public string description { get; set; }
     }
 }
