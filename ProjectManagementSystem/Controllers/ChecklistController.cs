@@ -2933,286 +2933,131 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult BulkApproved(List<BulkApprove> tasks)
         {
-            if (tasks == null)
+            if (tasks == null || tasks.Count == 0)
             {
-                return Json(new { success = false, JsonRequestBehavior.AllowGet });
+                return Json(new { success = false, message = "No tasks provided." });
             }
 
             foreach (var task in tasks)
             {
-                var getChecklistSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == task.TaskId && x.milestone_id == task.MilestoneId);
-                if(getChecklistSubmission.type == "optional")
+                var submission = db.ChecklistSubmissions
+                    .FirstOrDefault(x => x.task_id == task.TaskId && x.milestone_id == task.MilestoneId);
+
+                if (submission == null)
+                    continue;
+
+                var taskInfo = db.DetailsTbls.FirstOrDefault(t => t.details_id == task.TaskId);
+                var milestone = db.MilestoneTbls.FirstOrDefault(m => m.milestone_id == task.MilestoneId);
+
+                if (taskInfo == null || milestone == null)
+                    continue;
+
+                if (submission.type == "optional")
                 {
-                    var approverToUpdate = db.OptionalMilestoneApprovers.FirstOrDefault(x =>
+                    var approver = db.OptionalMilestoneApprovers.FirstOrDefault(x =>
                         x.task_id == task.TaskId &&
-                        //x.milestone_id == task.MilestoneId &&
-                        x.approver_name == task.Approver
-                    );
+                        x.approver_name == task.Approver);
 
-                    if (approverToUpdate != null)
+                    if (approver != null)
                     {
-                        // Perform update, e.g.:
-                        approverToUpdate.approved = true;
-                        approverToUpdate.date_approved = DateTime.Now;
-                        db.Entry(approverToUpdate).State = EntityState.Modified;
-
-                        //update CheckListSubmission
-                        var updateChecklistSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == task.TaskId);
-                        updateChecklistSubmission.approved_by = task.Approver;
-                        updateChecklistSubmission.approval_date = DateTime.Now;
-                        db.Entry(updateChecklistSubmission).State = EntityState.Modified;
-
-
+                        approver.approved = true;
+                        approver.date_approved = DateTime.Now;
+                        db.Entry(approver).State = EntityState.Modified;
                     }
                 }
-                else if(getChecklistSubmission.type == "preset")
+                else if (submission.type == "preset")
                 {
-                    // Update the PreSetMilestoneApprovers table
-                    var presetToUpdate = db.PreSetMilestoneApprovers.FirstOrDefault(x =>
+                    var approver = db.PreSetMilestoneApprovers.FirstOrDefault(x =>
                         x.task_id == task.TaskId &&
-                       //x.milestone_id == task.MilestoneId &&
-                        x.approver_name == task.Approver
-                    );
+                        x.approver_name == task.Approver);
 
-                    if (presetToUpdate != null)
+                    if (approver != null)
                     {
-                        // Perform update
-                        presetToUpdate.approved = true;
-                        presetToUpdate.date_approved = DateTime.Now;
-                        db.Entry(presetToUpdate).State = EntityState.Modified;
-
-                        //update CheckListSubmission
-                        var updateChecklistSubmission = db.ChecklistSubmissions.FirstOrDefault(x => x.task_id == task.TaskId);
-                        updateChecklistSubmission.approved_by = task.Approver;
-                        updateChecklistSubmission.approval_date = DateTime.Now;
-                        db.Entry(updateChecklistSubmission).State = EntityState.Modified;
+                        approver.approved = true;
+                        approver.date_approved = DateTime.Now;
+                        db.Entry(approver).State = EntityState.Modified;
                     }
                 }
+
+                submission.approved_by = task.Approver;
+                submission.approval_date = DateTime.Now;
+                db.Entry(submission).State = EntityState.Modified;
             }
 
-            // Save changes once after the loop
             db.SaveChanges();
 
-            return Json(new { success = true, JsonRequestBehavior.AllowGet });
+            return Json(new { success = true });
         }
 
-        //[HttpPost]
-        //public JsonResult SubmitForApproval(int taskId)
-        //{
-        //    try
-        //    {
-        //        string userEmail = User.Identity.Name.ToLower().Trim();
 
-        //        var existing = db.ChecklistSubmissions
-        //            .FirstOrDefault(x => x.task_id == taskId && x.is_removed != true);
 
-        //        if (existing != null)
-        //        {
-        //            return Json(new { success = false, message = "Task already submitted." });
-        //        }
+        public JsonResult GetUserNotifications()
+        {
+            string userEmail = User.Identity.Name?.ToLower();
 
-        //        var taskDetails = db.DetailsTbls.FirstOrDefault(d => d.details_id == taskId);
-        //        if (taskDetails == null)
-        //        {
-        //            return Json(new { success = false, message = "Task not found." });
-        //        }
+            using (var cmdb = new CMIdentityDBEntities())
+            {
+                var user = cmdb.AspNetUsers.FirstOrDefault(u => u.Email.ToLower() == userEmail);
 
-        //        var submission = new ChecklistSubmission
-        //        {
-        //            task_id = taskId,
-        //            main_id = taskDetails.main_id,
-        //            is_approved = null,
-        //            is_removed = false,
-        //            submitted_by = userEmail,
-        //            submission_date = DateTime.Now
-        //        };
+                if (user == null)
+                    return Json(new { }, JsonRequestBehavior.AllowGet);
 
-        //        db.ChecklistSubmissions.Add(submission);
-        //        db.SaveChanges();
+                string fullName = $"{user.FirstName?.Trim()} {user.LastName?.Trim()}";
+                var now = DateTime.Now;
 
-        //        return Json(new { success = true, message = "Task submitted for approval.", id = submission.submission_id });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Json(new { success = false, message = "Error: " + ex.Message });
-        //    }
-        //}
+                var rawNotifs = db.Notifications
+                    .Where(n => n.cmid_user == fullName && !n.is_read)
+                    .OrderByDescending(n => n.created_date)
+                    .Take(10)
+                    .ToList(); 
+
+                var notifs = rawNotifs.Select(n => new {
+                    n.message,
+                    n.link,
+                    created_date = GetRelativeTime(n.created_date ?? now, now)
+                }).ToList();
+
+                return Json(notifs, JsonRequestBehavior.AllowGet);
+            }
+        }
 
 
 
+        /// </summary>
+        private string GetRelativeTime(DateTime created, DateTime now)
+        {
+            var span = now - created;
 
-        //public JsonResult GetStatusUpdates()
-        //{
-        //    var message = "";
-        //    var data = db.WeeklyStatus.ToList();
+            if (span.TotalSeconds < 60)
+                return "Just now";
+            if (span.TotalMinutes < 60)
+                return $"{Math.Floor(span.TotalMinutes)} min{(span.TotalMinutes < 2 ? "" : "s")} ago";
+            if (span.TotalHours < 24)
+                return $"{Math.Floor(span.TotalHours)} hour{(span.TotalHours < 2 ? "" : "s")} ago";
+            if (span.TotalDays < 7)
+                return $"{Math.Floor(span.TotalDays)} day{(span.TotalDays < 2 ? "" : "s")} ago";
 
-        //    return Json(new { data = data, message = message }, JsonRequestBehavior.AllowGet);
-        //}
+            return created.ToString("MMM dd, yyyy");
+        }
 
-        //public JsonResult GetStatusUpdates()
-        //{
-        //    var message = "";
-        //    var data = db.WeeklyStatus.ToList();
+        [HttpPost]
+        public ActionResult MarkAsRead()
+        {
+            var userId = User.Identity.GetUserId(); 
 
-        //    return Json(new { data = data, message = message }, JsonRequestBehavior.AllowGet);
-        //}
+            var unreadNotifs = db.Notifications.Where(n => n.cmid_user == userId && !n.is_read).ToList();
 
-        //public ActionResult ApproverView(int taskId)
-        //{
-        //    try
-        //    {
-        //        // Fetch task details
-        //        var task = db.DetailsTbls.FirstOrDefault(t => t.details_id == taskId);
-        //        if (task == null)
-        //        {
-        //            return HttpNotFound("Task not found.");
-        //        }
+            foreach (var notif in unreadNotifs)
+            {
+                notif.is_read = true;
+                db.Entry(notif).State = EntityState.Modified;
+            }
 
-        //        // Fetch approvers for the task
-        //        var approvers = db.ApproversTbls
-        //            .Where(a => a.Details_Id == taskId)
-        //            .Select(a => new ApproverViewModel
-        //            {
-        //                UserId = a.User_Id,
-        //                ApproverName = a.Approver_Name,
-        //                IsRemoved = a.IsRemoved_ ?? false
-        //            }).ToList();
+            db.SaveChanges();
 
-        //        // Pass data to the view model
-        //        var model = new TaskApproverViewModel
-        //        {
-        //            TaskId = taskId,
-        //            //TaskName = task.details_id,
-        //            Approvers = approvers
-        //        };
+            return Json(new { success = true });
+        }
 
-        //        return View(model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error: {ex}");
-        //        return View("Error", new HandleErrorInfo(ex, "Admin", "ApproverView"));
-        //    }
-        //}
 
-        //[HttpGet]
-        //public ActionResult ProjectChecklist()
-        //{
-        //    var groupedMilestones = db.MainTables
-        //        .Select(project => new ProjectChecklistGroupViewModel
-        //        {
-        //            MainId = project.main_id,
-        //            ProjectName = project.project_title,
-        //            Milestones = db.MilestoneTbls
-        //                .Where(m => m.main_id == project.main_id)
-        //                .OrderBy(m => m.milestone_position)
-        //                .Select(milestone => new MilestoneViewModel
-        //                {
-        //                    Id = milestone.milestone_id,
-        //                    MilestoneName = milestone.milestone_name,
-        //                    MilestonePosition = milestone.milestone_position ?? 0, 
-        //            IsCompleted = db.DetailsTbls
-        //                        .Where(t => t.milestone_id == milestone.milestone_id)
-        //                        .All(t => t.IsApproved.HasValue && t.IsApproved.Value),
-        //                    StatusUpdate = db.DetailsTbls
-        //                        .Where(t => t.milestone_id == milestone.milestone_id)
-        //                        .All(t => t.IsApproved.HasValue && t.IsApproved.Value)
-        //                            ? "Completed" // approved tasks
-        //                            : "In Progress", // not yet done
-        //                    Tasks = db.DetailsTbls
-        //                        .Where(task => task.milestone_id == milestone.milestone_id)
-        //                        .Select(task => new TaskViewModel
-        //                        {
-        //                            Id = task.details_id,
-        //                            TaskName = task.process_title,
-        //                            IsApproved = task.IsApproved.HasValue && task.IsApproved.Value,
-        //                            Attachments = db.AttachmentTables
-        //                                .Where(a => a.details_id == task.details_id)
-        //                                .Select(a => a.path_file)
-        //                                .ToList(),
-        //                            Approvers = db.ApproversTbls
-        //                                .Where(a => a.Details_Id == task.details_id)
-        //                                .Select(a => new ApproverViewModel
-        //                                {
-        //                                    ApproverName = a.Approver_Name,
-        //                                    Status = a.Status ?? false
-        //                                })
-        //                                .ToList()
-        //                        })
-        //                        .ToList()
-        //                })
-        //                .ToList()
-        //        })
-        //        .ToList();
-
-        //    return View(groupedMilestones);
-        //}
-
-        //[HttpGet]
-        //public ActionResult ProjectChecklist(int? projectId)
-        //{
-        //    // fetch all projects
-        //    var groupedMilestones = db.MainTables
-        //        .Select(project => new ProjectChecklistGroupViewModel
-        //        {
-        //            MainId = project.main_id,
-        //            ProjectName = project.project_title,
-        //            Milestones = db.MilestoneTbls
-        //                .Where(m => m.main_id == project.main_id)
-        //                .OrderBy(m => m.milestone_position)
-        //                .Select(milestone => new MilestoneViewModel
-        //                {
-        //                    Id = milestone.milestone_id,
-        //                    MilestoneName = milestone.milestone_name,
-        //                    MilestonePosition = milestone.milestone_position ?? 0,
-
-        //                    IsCompleted = db.DetailsTbls
-        //                        .Where(t => t.milestone_id == milestone.milestone_id)
-        //                        .All(t => t.IsApproved.HasValue && t.IsApproved.Value),
-
-        //                    StatusUpdate = db.DetailsTbls
-        //                        .Where(t => t.milestone_id == milestone.milestone_id)
-        //                        .All(t => t.IsApproved.HasValue && t.IsApproved.Value)
-        //                            ? "Completed" : "In Progress",
-
-        //                    Tasks = db.DetailsTbls
-        //                        .Where(task => task.milestone_id == milestone.milestone_id)
-        //                        .Select(task => new TaskViewModel
-        //                        {
-        //                            Id = task.details_id,
-        //                            TaskName = task.process_title,
-        //                            IsApproved = task.IsApproved.HasValue && task.IsApproved.Value,
-
-        //                            Attachments = db.AttachmentTables
-        //                                .Where(a => a.details_id == task.details_id)
-        //                                .Select(a => a.path_file)
-        //                                .ToList(),
-
-        //                            Approvers = db.ApproversTbls
-        //                                .Where(a => a.Details_Id == task.details_id)
-        //                                .Select(a => new ApproverViewModel
-        //                                {
-        //                                    ApproverName = a.Approver_Name,
-        //                                    Status = a.Status ?? false
-        //                                })
-        //                                .ToList()
-        //                        })
-        //                        .ToList()
-        //                })
-        //                .ToList()
-        //        })
-        //        .ToList();
-
-        //    // filter by project id 
-        //    if (projectId.HasValue)
-        //    {
-        //        groupedMilestones = groupedMilestones
-        //            .Where(g => g.MainId == projectId.Value)
-        //            .ToList();
-        //    }
-
-        //    ViewBag.ProjectList = groupedMilestones.Select(p => new { p.MainId, p.ProjectName }).ToList();
-
-        //    return View(groupedMilestones);
     }
 }

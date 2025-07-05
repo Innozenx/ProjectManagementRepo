@@ -1520,7 +1520,6 @@ namespace ProjectManagementSystem.Controllers
             }
         }
 
-
         [HttpPost]
         public JsonResult WithdrawTask(int taskId, string reason)
         {
@@ -1617,10 +1616,10 @@ namespace ProjectManagementSystem.Controllers
                     .FirstOrDefault(x => x.project_id == main_id && x.role == 1004);
 
                 var subjectHeading = previousStatus == "Approved" ? "Approval Withdrawal"
-                             : previousStatus == "Rejected" ? "Rejection Withdrawal"
-                             : "Task Withdrawal";
+                                 : previousStatus == "Rejected" ? "Rejection Withdrawal"
+                                 : "Task Withdrawal";
 
-
+                // ✅ Send Email
                 var email = new MimeMessage();
                 email.From.Add(new MailboxAddress("PM SYSTEM", "e-notify@enchantedkingdom.ph"));
                 email.To.Add(new MailboxAddress(project_manager.name, project_manager.email));
@@ -1630,61 +1629,51 @@ namespace ProjectManagementSystem.Controllers
                 email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                 {
                     Text = $@"
-                    <div style='font-family: Poppins, Arial, sans-serif; background-color: #f4f4f9; padding: 0; margin: 0;'>
-                        <table align='center' cellpadding='0' cellspacing='0' width='640' style='margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;'>
-                            <tr>
-                                <td style='background-color: #66339A; padding: 24px; border-top-left-radius: 8px; border-top-right-radius: 8px; text-align: center;'>
-                                    <h1 style='margin: 0; font-size: 22px; color: #ffffff; font-weight: 600;'>{subjectHeading}</h1>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td style='padding: 30px 40px;'>
-                                    <p style='font-size: 15px; color: #444; margin-bottom: 24px;'>
-                                        This is to notify you that a task has been <strong>withdrawn</strong> from the checklist under your project title <strong>{projectTitle}</strong>.
-                                    </p>
-
-
-                                    <p style='font-size: 14px; color: #555; margin-bottom: 24px;'>
-                                        You may view this checklist item under your <strong>Pending Approvals</strong> tab.
-                                    </p>
-
-                                    <table cellpadding='0' cellspacing='0' width='100%' style='font-size: 14px; color: #333; line-height: 1.6; border-collapse: collapse; margin-top: 10px;'>
-                                        <tr style='border-bottom: 1px solid #eee;'>
-                                            <td style='padding: 10px; vertical-align: top;'><strong>Checklist Item:</strong></td>
-                                            <td style='padding: 10px;'>{taskName}</td>
-                                        </tr>
-                                        <tr style='border-bottom: 1px solid #eee;'>
-                                            <td style='padding: 10px; vertical-align: top;'><strong>Milestone Name:</strong></td>
-                                            <td style='padding: 10px;'>{milestoneTitle}</td>
-                                        </tr>
-                                        <tr style='border-bottom: 1px solid #eee;'>
-                                            <td style='padding: 10px; vertical-align: top;'><strong>Withdrawn By:</strong></td>
-                                            <td style='padding: 10px;'>{withdrawnByName}</td>
-                                        </tr>   
-                                    </table>
-
-                                    <div style='margin-top: 30px; padding: 16px 20px; background-color: #f7f1fa; border-left: 5px solid #66339A; border-radius: 6px;'>
-                                        <p style='margin: 0; color: #66339A; font-style: italic; font-weight: normal;'>Reason: {reason}</p>
-                                    </div>
-
-                                    <p style='font-size: 13px; color: #888; margin-top: 40px; text-align: center; font-weight: normal;'>
-                                        If you have questions or require assistance, please contact your supervisor or ITS.
-                                    </p>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td style='background-color: #f0f0f5; text-align: center; padding: 14px; font-size: 12px; color: #999; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;'>
-                                    <em>This is an automated email from the Project Management System. Do not reply.<br/>Need help? Call <strong>ITS Local 123/132</strong>.</em>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>"
+                <div style='font-family: Poppins, Arial, sans-serif; background-color: #f4f4f9; padding: 0; margin: 0;'>
+                    <table align='center' cellpadding='0' cellspacing='0' width='640' style='margin: auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;'>
+                        <tr>
+                            <td style='background-color: #66339A; padding: 24px; border-top-left-radius: 8px; border-top-right-radius: 8px; text-align: center;'>
+                                <h1 style='margin: 0; font-size: 22px; color: #ffffff; font-weight: 600;'>{subjectHeading}</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 30px 40px;'>
+                                <p style='font-size: 15px; color: #444; margin-bottom: 24px;'>
+                                    This is to notify you that a task has been <strong>withdrawn</strong> from the checklist under your project title <strong>{projectTitle}</strong>.
+                                </p>
+                                <p style='font-size: 14px; color: #555; margin-bottom: 24px;'>
+                                    You may view this checklist item under your <strong>Pending Approvals</strong> tab.
+                                </p>
+                                <table cellpadding='0' cellspacing='0' width='100%' style='font-size: 14px; color: #333; line-height: 1.6; border-collapse: collapse; margin-top: 10px;'>
+                                    <tr style='border-bottom: 1px solid #eee;'>
+                                        <td style='padding: 10px; vertical-align: top;'><strong>Checklist Item:</strong></td>
+                                        <td style='padding: 10px;'>{taskName}</td>
+                                    </tr>
+                                    <tr style='border-bottom: 1px solid #eee;'>
+                                        <td style='padding: 10px; vertical-align: top;'><strong>Milestone Name:</strong></td>
+                                        <td style='padding: 10px;'>{milestoneTitle}</td>
+                                    </tr>
+                                    <tr style='border-bottom: 1px solid #eee;'>
+                                        <td style='padding: 10px; vertical-align: top;'><strong>Withdrawn By:</strong></td>
+                                        <td style='padding: 10px;'>{withdrawnByName}</td>
+                                    </tr>   
+                                </table>
+                                <div style='margin-top: 30px; padding: 16px 20px; background-color: #f7f1fa; border-left: 5px solid #66339A; border-radius: 6px;'>
+                                    <p style='margin: 0; color: #66339A; font-style: italic; font-weight: normal;'>Reason: {reason}</p>
+                                </div>
+                                <p style='font-size: 13px; color: #888; margin-top: 40px; text-align: center; font-weight: normal;'>
+                                    If you have questions or require assistance, please contact your supervisor or ITS.
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='background-color: #f0f0f5; text-align: center; padding: 14px; font-size: 12px; color: #999; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;'>
+                                <em>This is an automated email from the Project Management System. Do not reply.<br/>Need help? Call <strong>ITS Local 123/132</strong>.</em>
+                            </td>
+                        </tr>
+                    </table>
+                </div>"
                 };
-
-
-
 
                 using (var smtp = new SmtpClient())
                 {
@@ -1694,6 +1683,23 @@ namespace ProjectManagementSystem.Controllers
                     smtp.Disconnect(true);
                 }
 
+                // Notification
+                if (project_manager != null)
+                {
+        
+                    var notifHelper = new NotificationHelper(db);
+                    notifHelper.CreateNotification(
+                        userFullName: project_manager.name,
+                       message: $"<div style='text-align: justify;'>Task <strong>{taskName}</strong> has been withdrawn from project <strong>{projectTitle}</strong>.</div>",
+                        link: $"/checklist/weeklyMilestone?id={main_id}&title={HttpUtility.UrlEncode(projectTitle)}&tab=checklist",
+                        type: "task_withdrawal",
+                        mainId: main_id,
+                        milestoneId: milestone_id,
+                        taskId: taskId
+                    );
+
+                }
+
                 return Json(new { success = true, message = "Task withdrawn!" });
             }
             catch (Exception ex)
@@ -1701,6 +1707,7 @@ namespace ProjectManagementSystem.Controllers
                 return Json(new { success = false, message = "Error: " + ex.Message });
             }
         }
+
 
 
 
