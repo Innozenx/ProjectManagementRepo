@@ -22,6 +22,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult UploadFile()
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             var message = "";
             try
             {
@@ -94,6 +97,21 @@ namespace ProjectManagementSystem.Controllers
 
                                 db.ChecklistSubmissions.Add(submission);
                                 db.SaveChanges();
+
+                                if(type == "optional")
+                                {
+                                    details_container.Add("Task: " + db.OptionalMilestones.Where(x => x.id == taskId).Select(x => x.description).SingleOrDefault());
+                                    log.ActivityLog(User.Identity.Name, 6, "Uploaded File for Optional Task", db.MainTables.Where(x => x.main_id == projectId).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
+                                }
+
+                                else
+                                {
+                                    details_container.Add("Task: " + db.PreSetMilestones.Where(x => x.ID == taskId).Select(x => x.Requirements).SingleOrDefault());
+                                    log.ActivityLog(User.Identity.Name, 6, "Uploaded File for Preset Task", db.MainTables.Where(x => x.main_id == projectId).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
+                                }
+
+                                
+                                
                             }
                             catch (Exception ex)
                             {

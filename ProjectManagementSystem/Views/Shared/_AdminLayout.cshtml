@@ -477,33 +477,54 @@
     </style>
 </head>
 <body class="hold-transition sidebar-mini sidebar-collapse">
+    <div class="loader-body">
+        <div class="loader-container">
+            <span class="loader-span"></span>
+            <div class="loader-center">
+                <div class="loader-wrap">
+                    <div class="box-1 box">
 
-    <div class="wrapper">
-        <!-- Add theme toggle button in the header -->
-        @*<button id="theme-toggle">🌞/🌙</button>*@
-
-        @Html.Partial("_AdminNav")
-        @Html.Partial("_AdminSidebar")
-
-        <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
-            @RenderBody()
-        </div>
-        <!-- /.content-wrapper -->
-        <!-- Control Sidebar -->
-        <aside class="control-sidebar control-sidebar-dark">
-            <!-- Control sidebar content goes here -->
-        </aside>
-        <!-- /.control-sidebar -->
-        <!-- Main Footer -->
-        <footer class="main-footer">
-            <strong>Copyright &copy; 2024 <a href="https://enchantedkingdom.ph">ITS Division</a>.</strong>
-            All rights reserved.
-            <div class="float-right d-none d-sm-inline-block">
-                <b>Version</b> 1.0.0
+                        <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
+                        <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
+                    </div>
+                    <div class="box-2 box">
+                        <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
+                        <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
+                    </div>
+                </div>
             </div>
-        </footer>
+        </div>
     </div>
+
+    <div class="main-body d-none">
+        <div class="wrapper">
+            <!-- Add theme toggle button in the header -->
+            @*<button id="theme-toggle">🌞/🌙</button>*@
+
+            @Html.Partial("_AdminNav")
+            @Html.Partial("_AdminSidebar")
+
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                @RenderBody()
+            </div>
+            <!-- /.content-wrapper -->
+            <!-- Control Sidebar -->
+            <aside class="control-sidebar control-sidebar-dark">
+                <!-- Control sidebar content goes here -->
+            </aside>
+            <!-- /.control-sidebar -->
+            <!-- Main Footer -->
+            <footer class="main-footer">
+                <strong>Copyright &copy; 2024 <a href="https://enchantedkingdom.ph">ITS Division</a>.</strong>
+                All rights reserved.
+                <div class="float-right d-none d-sm-inline-block">
+                    <b>Version</b> 1.0.0
+                </div>
+            </footer>
+        </div>
+    </div>
+    
     <!-- ./wrapper -->
     <!-- REQUIRED SCRIPTS -->
     @RenderSection("scripts", required: false)

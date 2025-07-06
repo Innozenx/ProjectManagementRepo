@@ -1168,6 +1168,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult ApproveTask(int taskId, int milestoneId)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             try
             {
                 string userEmail = User.Identity.Name.ToLower().Trim();
@@ -1334,6 +1337,9 @@ namespace ProjectManagementSystem.Controllers
    
 
                         db.SaveChanges();
+
+                        details_container.Add(submission.task_name);
+                        log.ActivityLog(User.Identity.Name, 9, "Task approval", db.MainTables.Where(x => x.main_id == submission.main_id).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
                     }
                 }
 
@@ -1380,6 +1386,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult RejectTask(int taskId, string reason)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             try
             {
                 string currentEmail = User.Identity.Name?.ToLower().Trim();
@@ -1512,6 +1521,9 @@ namespace ProjectManagementSystem.Controllers
                     smtp.Disconnect(true);
                 }
 
+                details_container.Add(submission.task_name);
+                log.ActivityLog(User.Identity.Name, 6, "Task Rejection", db.MainTables.Where(x => x.main_id == submission.main_id).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
+
                 return Json(new { success = true, message = "Task rejected!" });
             }
             catch (Exception ex)
@@ -1523,6 +1535,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult WithdrawTask(int taskId, string reason)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             try
             {
                 var submission = db.ChecklistSubmissions
@@ -1699,6 +1714,9 @@ namespace ProjectManagementSystem.Controllers
                     );
 
                 }
+
+                details_container.Add(submission.task_name);
+                log.ActivityLog(User.Identity.Name, 6, "Task Approval/Rejection Withdrawal", db.MainTables.Where(x => x.main_id == submission.main_id).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
 
                 return Json(new { success = true, message = "Task withdrawn!" });
             }

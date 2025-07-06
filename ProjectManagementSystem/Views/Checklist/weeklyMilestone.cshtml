@@ -306,26 +306,26 @@
         font-size: 14px;
     }
 
-    .nav-tabs .nav-link {
-        padding: 5px 10px;
-        font-size: 14px;
-        /*color: #66399A;*/
-        color: gray;
-        background-color: transparent;
-        border: none;
-        border-bottom: 3px solid transparent;
-        transition: color 0.3s ease, border-bottom-color 0.3s ease;
-    }
+        .nav-tabs .nav-link {
+            padding: 5px 10px;
+            font-size: 14px;
+            /*color: #66399A;*/
+            color: gray;
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+        }
 
-    .nav-tabs .nav-link:hover {
-        color: #552788;
-    }
+            .nav-tabs .nav-link:hover {
+                color: #552788;
+            }
 
-    .nav-tabs .nav-link.active {
-        color: #66399A;
-        border-bottom-color: #66399A;
-        /*font-weight: bold;*/
-    }
+            .nav-tabs .nav-link.active {
+                color: #66399A;
+                border-bottom-color: #66399A;
+                /*font-weight: bold;*/
+            }
 
         .nav-tabs .nav-item {
             margin-right: 3px;
@@ -634,7 +634,7 @@
         box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    input[type="file"] { 
+    input[type="file"] {
         width: 100%;
         padding: 14px 16px;
         border: 1px solid #ccc;
@@ -714,7 +714,6 @@
         z-index: 9999;
         text-align: center;
         margin: auto;
-
     }
 
     .loader-container {
@@ -979,44 +978,41 @@
     </div>
 </div>
 
-<a href="https://dribbble.com/YancyMin" class="dr-url" target="_blank"><img class="dr" src="https://cdn.dribbble.com/assets/logo-footer-hd-a05db77841b4b27c0bf23ec1378e97c988190dfe7d26e32e1faea7269f9e001b.png" alt=""></a>
-
-<div class="main-body d-none">
-    <div class="project-header">
-        <div class="project-info">
-            <span class="project-icon">
-                <i class="fas fa-tasks"></i>
-            </span>
-            <span class="project-name">@Model.ProjectTitle</span>
-        </div>
+<div class="project-header">
+    <div class="project-info">
+        <span class="project-icon">
+            <i class="fas fa-tasks"></i>
+        </span>
+        <span class="project-name">@Model.ProjectTitle</span>
     </div>
+</div>
 
-    @if (Model.IsArchived)
-    {
-        <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 20px auto; text-align: center; font-weight: 600; border-radius: 5px; max-width: 1000px;">
-            <i class="fas fa-lock mr-2 text-warning"></i>
-            This project is <strong>archived</strong> and is in <span style="color: #d63384;">view-only</span> mode.
-        </div>
-    }
+@if (Model.IsArchived)
+{
+    <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; margin: 20px auto; text-align: center; font-weight: 600; border-radius: 5px; max-width: 1000px;">
+        <i class="fas fa-lock mr-2 text-warning"></i>
+        This project is <strong>archived</strong> and is in <span style="color: #d63384;">view-only</span> mode.
+    </div>
+}
 
-    @*<ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link @(selectedTab == "overview" ? "active" : "")" id="overview-tab"
-                   data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
-                    <i class="fas fa-info-circle"></i> Overview
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="timeline-tab" data-toggle="tab" href="#timeline" role="tab" aria-controls="timeline" aria-selected="false">
-                    <i class="fas fa-project-diagram"></i> Timeline
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="checklist-tab" data-toggle="tab" href="#checklist" role="tab" aria-controls="checkist" aria-selected="false">
-                    <i class="fa-solid fa-list-check"></i> Checklist
-                </a>
-            </li>
-        </ul>*@
+@*<ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link @(selectedTab == "overview" ? "active" : "")" id="overview-tab"
+               data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
+                <i class="fas fa-info-circle"></i> Overview
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="timeline-tab" data-toggle="tab" href="#timeline" role="tab" aria-controls="timeline" aria-selected="false">
+                <i class="fas fa-project-diagram"></i> Timeline
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="checklist-tab" data-toggle="tab" href="#checklist" role="tab" aria-controls="checkist" aria-selected="false">
+                <i class="fa-solid fa-list-check"></i> Checklist
+            </a>
+        </li>
+    </ul>*@
 
 <ul class="nav nav-tabs" id="weeklyMilestoneTabs" role="tablist">
     <li class="nav-item">
@@ -1066,243 +1062,243 @@
 @*<div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">*@
 <div class="tab-pane fade @(selectedTab == "overview" ? "show active" : "")" id="overview" role="tabpanel" aria-labelledby="overview-tab">
 
-        <div class="pop-container">
-            <div class="table-container">
-                <h3>Project Details</h3>
-                @if (Model.ProjectDetails.Any())
-                {
-                    var data = Model.ProjectDetails.FirstOrDefault();
-
-                    <table id="projectDetails">
-                        <tr>
-                            <td style="vertical-align: top; width: 50%;">
-                                <table style="width: 100%;">
-                                    <tr>
-                                        <th>Title:</th>
-                                        <td>
-                                            <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = data.Id, title = data.ProjectTitle, projectId = data.DetailsID })" class="fw-bold text-purple">
-                                                @data.ProjectTitle
-                                            </a>
-                                            <div class="mt-1">
-                                                @if (Model.ProjectStatus == "Active")
-                                                {
-                                                    <span class="badge badge-active">Active</span>
-                                                }
-                                                else if (Model.ProjectStatus == "Completed")
-                                                {
-                                                    <span class="badge badge-completed">Completed</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge badge-delayed">Delayed</span>
-                                                }
-                                            </div>
-                                        </td>
-                                    </tr>
-
-
-                                    <tr>
-                                        <th>Start Date:</th>
-                                        <td>@DateTime.Parse(data.ProjectStart).ToString("MMMM dd, yyyy")</td>
-                                    </tr>
-                                    <tr>
-                                        <th>End Date:</th>
-                                        <td>@DateTime.Parse(data.ProjectEnd).ToString("MMMM dd, yyyy")</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Duration:</th>
-                                        @{
-                                            var startDate = DateTime.Parse(data.ProjectStart);
-                                            var endDate = DateTime.Parse(data.ProjectEnd);
-                                            var duration = (endDate - startDate).TotalDays + 1;
-                                        }
-                                        <td>
-                                            @duration @((duration == 1) ? "day" : "days")
-                                        </td>
-                                    </tr>
-
-
-                                </table>
-                            </td>
-                            <td style="vertical-align: top; width: 50%;">
-                                <table style="width: 100%;">
-                                    <tr>
-                                        <th>Year:</th>
-                                        <td>@data.ProjectYear</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Division:</th>
-                                        <td>@data.Division</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Category:</th>
-                                        <td>@data.Category</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Project Owner:</th>
-                                        <td>@data.ProjectOwner</td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                }
-            </div>
-        </div>
-
-        <div class="action-tiles-container">
-            @if (!Model.IsArchived && (Model.IsProjectManager && (Model.IsODCPAdmin || !Model.IsODCPAdmin)))
+    <div class="pop-container">
+        <div class="table-container">
+            <h3>Project Details</h3>
+            @if (Model.ProjectDetails.Any())
             {
-                <div class="action-tile">
-                    <button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title">
-                        <i class="fas fa-edit"></i> Status
-                    </button>
-                </div>
-            }
+                var data = Model.ProjectDetails.FirstOrDefault();
 
+                <table id="projectDetails">
+                    <tr>
+                        <td style="vertical-align: top; width: 50%;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <th>Title:</th>
+                                    <td>
+                                        <a href="@Url.Action("weeklyMilestone", "Checklist", new { id = data.Id, title = data.ProjectTitle, projectId = data.DetailsID })" class="fw-bold text-purple">
+                                            @data.ProjectTitle
+                                        </a>
+                                        <div class="mt-1">
+                                            @if (Model.ProjectStatus == "Active")
+                                            {
+                                                <span class="badge badge-active">Active</span>
+                                            }
+                                            else if (Model.ProjectStatus == "Completed")
+                                            {
+                                                <span class="badge badge-completed">Completed</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-delayed">Delayed</span>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                                <tr>
+                                    <th>Start Date:</th>
+                                    <td>@DateTime.Parse(data.ProjectStart).ToString("MMMM dd, yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <th>End Date:</th>
+                                    <td>@DateTime.Parse(data.ProjectEnd).ToString("MMMM dd, yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <th>Duration:</th>
+                                    @{
+                                        var startDate = DateTime.Parse(data.ProjectStart);
+                                        var endDate = DateTime.Parse(data.ProjectEnd);
+                                        var duration = (endDate - startDate).TotalDays + 1;
+                                    }
+                                    <td>
+                                        @duration @((duration == 1) ? "day" : "days")
+                                    </td>
+                                </tr>
+
+
+                            </table>
+                        </td>
+                        <td style="vertical-align: top; width: 50%;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <th>Year:</th>
+                                    <td>@data.ProjectYear</td>
+                                </tr>
+                                <tr>
+                                    <th>Division:</th>
+                                    <td>@data.Division</td>
+                                </tr>
+                                <tr>
+                                    <th>Category:</th>
+                                    <td>@data.Category</td>
+                                </tr>
+                                <tr>
+                                    <th>Project Owner:</th>
+                                    <td>@data.ProjectOwner</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            }
+        </div>
+    </div>
+
+    <div class="action-tiles-container">
+        @if (!Model.IsArchived && (Model.IsProjectManager && (Model.IsODCPAdmin || !Model.IsODCPAdmin)))
+        {
             <div class="action-tile">
-                <button type="button" data-toggle="modal" data-target="#activityLogModal" class="action-tile-title">
-                    <i class="fas fa-history"></i> Status Logs
+                <button type="button" data-toggle="modal" data-target="#updateMilestoneModal" class="action-tile-title">
+                    <i class="fas fa-edit"></i> Status
                 </button>
             </div>
+        }
+
+        <div class="action-tile">
+            <button type="button" data-toggle="modal" data-target="#activityLogModal" class="action-tile-title">
+                <i class="fas fa-history"></i> Status Logs
+            </button>
         </div>
+    </div>
 
 
-        <div class="modal fade" id="updateMilestoneModal" tabindex="-1" role="dialog" aria-labelledby="updateMilestoneLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content border-0 shadow-sm rounded-4 overflow-hidden" style="background-color: #fff;">
+    <div class="modal fade" id="updateMilestoneModal" tabindex="-1" role="dialog" aria-labelledby="updateMilestoneLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content border-0 shadow-sm rounded-4 overflow-hidden" style="background-color: #fff;">
 
-                    <!-- Header -->
-                    <div class="modal-header bg-white border-bottom-0 px-4 pt-4 pb-2">
-                        <h5 class="modal-title fs-6 fw-semibold text-dark" id="updateMilestoneLabel">
-                            <i class="bi bi-pencil-square me-2 text-purple"></i>Update Task Status
-                        </h5>
-                        <button type="button" class="btn fs-4 lh-1 p-0 text-muted" data-bs-dismiss="modal" aria-label="Close"
-                                style="background: none; border: none;">
-                            &times;
-                        </button>
-                    </div>
+                <!-- Header -->
+                <div class="modal-header bg-white border-bottom-0 px-4 pt-4 pb-2">
+                    <h5 class="modal-title fs-6 fw-semibold text-dark" id="updateMilestoneLabel">
+                        <i class="bi bi-pencil-square me-2 text-purple"></i>Update Task Status
+                    </h5>
+                    <button type="button" class="btn fs-4 lh-1 p-0 text-muted" data-bs-dismiss="modal" aria-label="Close"
+                            style="background: none; border: none;">
+                        &times;
+                    </button>
+                </div>
 
-                    <div class="modal-body px-4 pt-2 pb-4">
-                        <form id="updateStatusForm" action="@Url.Action("UpdateStatus", "Checklist")" method="post" enctype="multipart/form-data">
+                <div class="modal-body px-4 pt-2 pb-4">
+                    <form id="updateStatusForm" action="@Url.Action("UpdateStatus", "Checklist")" method="post" enctype="multipart/form-data">
 
-                            <!--task selector-->
-                            <div class="mb-3">
-                                <label for="selectedMilestone" class="form-label small text-secondary">
-                                    <i class="bi bi-list-check me-1"></i>Task <span class="text-danger">*</span>
-                                </label>
-                                @Html.DropDownListFor(m => m.SelectedMilestone, Model.TaskTitle, "Choose a Task",
-                              new
-                              {
-                                  @class = "form-select form-select-sm shadow-sm rounded-2 px-3 py-2",
-                                  @style = "appearance: none; background-color: #fff; border: 1px solid #ccc; font-size: 0.9rem; transition: border-color 0.2s ease-in-out;",
-                                  id = "selectedMilestone"
-                              })
+                        <!--task selector-->
+                        <div class="mb-3">
+                            <label for="selectedMilestone" class="form-label small text-secondary">
+                                <i class="bi bi-list-check me-1"></i>Task <span class="text-danger">*</span>
+                            </label>
+                            @Html.DropDownListFor(m => m.SelectedMilestone, Model.TaskTitle, "Choose a Task",
+                          new
+                          {
+                              @class = "form-select form-select-sm shadow-sm rounded-2 px-3 py-2",
+                              @style = "appearance: none; background-color: #fff; border: 1px solid #ccc; font-size: 0.9rem; transition: border-color 0.2s ease-in-out;",
+                              id = "selectedMilestone"
+                          })
 
-                            </div>
+                        </div>
 
-                            <!-- delay -->
-                            <div class="mb-3 d-none" id="delay_div">
-                                <label class="form-label small text-secondary">
-                                    <i class="bi bi-clock me-1"></i>Is your task delayed? <span class="text-danger">*</span>
-                                </label>
-                                <div class="d-flex gap-3">
-                                    <div class="form-check">
-                                        @Html.RadioButtonFor(x => x.isDelayed, false, new { id = "delayed_no", @class = "form-check-input" })
-                                        <label class="form-check-label" for="delayed_no">No</label>
-                                    </div>
-
-                                    <div class="form-check">
-                                        @Html.RadioButtonFor(x => x.isDelayed, true, new { id = "delayed_yes", @class = "form-check-input" })
-                                        <label class="form-check-label" for="delayed_yes">Yes</label>
-                                    </div>
+                        <!-- delay -->
+                        <div class="mb-3 d-none" id="delay_div">
+                            <label class="form-label small text-secondary">
+                                <i class="bi bi-clock me-1"></i>Is your task delayed? <span class="text-danger">*</span>
+                            </label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    @Html.RadioButtonFor(x => x.isDelayed, false, new { id = "delayed_no", @class = "form-check-input" })
+                                    <label class="form-check-label" for="delayed_no">No</label>
                                 </div>
 
-                                <div class="mt-3 d-none" id="delay_input_group">
-                                    <label for="weeks_delayed" class="form-label small text-secondary">
-                                        Weeks Delayed <span class="text-danger">*</span>
-                                    </label>
-                                    <div class="input-group input-group-sm">
-                                        @Html.EditorFor(x => x.delay, new
+                                <div class="form-check">
+                                    @Html.RadioButtonFor(x => x.isDelayed, true, new { id = "delayed_yes", @class = "form-check-input" })
+                                    <label class="form-check-label" for="delayed_yes">Yes</label>
+                                </div>
+                            </div>
+
+                            <div class="mt-3 d-none" id="delay_input_group">
+                                <label for="weeks_delayed" class="form-label small text-secondary">
+                                    Weeks Delayed <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    @Html.EditorFor(x => x.delay, new
+                       {
+                           htmlAttributes = new
                            {
-                               htmlAttributes = new
-                               {
-                                   @class = "form-control shadow-sm rounded-start",
-                                   @min = "1",
-                                   @id = "weeks_delayed",
-                                   @placeholder = "Enter number of weeks"
-                               }
-                           })
-                                        <span class="input-group-text">Week(s)</span>
-                                    </div>
-                                    <small class="text-muted d-block mt-1">Only required if "Yes" is selected</small>
-                                    <small class="text-danger fst-italic" id="delay_note"></small>
+                               @class = "form-control shadow-sm rounded-start",
+                               @min = "1",
+                               @id = "weeks_delayed",
+                               @placeholder = "Enter number of weeks"
+                           }
+                       })
+                                    <span class="input-group-text">Week(s)</span>
                                 </div>
+                                <small class="text-muted d-block mt-1">Only required if "Yes" is selected</small>
+                                <small class="text-danger fst-italic" id="delay_note"></small>
                             </div>
+                        </div>
 
-                            <!-- desc -->
-                            <div class="mb-3">
-                                <label for="statusUpdate" class="form-label small text-secondary">
-                                    <i class="bi bi-chat-left-text me-1"></i>Description <span class="text-danger">*</span>
-                                </label>
-                                @Html.TextAreaFor(m => m.StatusUpdate, new
-                   {
-                       @class = "form-control form-control-sm shadow-sm rounded-3",
-                       @placeholder = "What was done, issues, notes...",
-                       @rows = 3,
-                       @id = "statusUpdate"
-                   })
-                            </div>
+                        <!-- desc -->
+                        <div class="mb-3">
+                            <label for="statusUpdate" class="form-label small text-secondary">
+                                <i class="bi bi-chat-left-text me-1"></i>Description <span class="text-danger">*</span>
+                            </label>
+                            @Html.TextAreaFor(m => m.StatusUpdate, new
+               {
+                   @class = "form-control form-control-sm shadow-sm rounded-3",
+                   @placeholder = "What was done, issues, notes...",
+                   @rows = 3,
+                   @id = "statusUpdate"
+               })
+                        </div>
 
-                            <!-- File Upload -->
-                            <div class="mb-3">
-                                <label for="fileUpload" class="form-label small text-secondary">
-                                    <i class="bi bi-paperclip me-1"></i>Attachments <span class="text-danger">*</span>
-                                </label>
-                                <input type="file"
-                                       name="fileUpload"
-                                       id="fileUpload"
-                                       accept=".pdf,.docx,.jpg"
-                                       class="form-control form-control-sm shadow-sm rounded-2 py-1 px-2"
-                                       style="font-size: 0.875rem; height: calc(1.5em + 0.5rem + 2px);"
-                                       multiple />
-                                <small class="text-muted mt-1 d-block">Accepted formats: PDF, DOCX, JPG</small>
-                                <div id="uploadedFilesList" class="small text-muted mt-2"></div>
-                            </div>
+                        <!-- File Upload -->
+                        <div class="mb-3">
+                            <label for="fileUpload" class="form-label small text-secondary">
+                                <i class="bi bi-paperclip me-1"></i>Attachments <span class="text-danger">*</span>
+                            </label>
+                            <input type="file"
+                                   name="fileUpload"
+                                   id="fileUpload"
+                                   accept=".pdf,.docx,.jpg"
+                                   class="form-control form-control-sm shadow-sm rounded-2 py-1 px-2"
+                                   style="font-size: 0.875rem; height: calc(1.5em + 0.5rem + 2px);"
+                                   multiple />
+                            <small class="text-muted mt-1 d-block">Accepted formats: PDF, DOCX, JPG</small>
+                            <div id="uploadedFilesList" class="small text-muted mt-2"></div>
+                        </div>
 
 
-                            <!-- Validation -->
-                            <div id="validationMessage" class="text-danger small fw-medium d-none">
-                                Please fill out all required fields.
-                            </div>
+                        <!-- Validation -->
+                        <div id="validationMessage" class="text-danger small fw-medium d-none">
+                            Please fill out all required fields.
+                        </div>
 
-                            <!-- Submit Button -->
-                            <div class="d-flex justify-content-end mt-4">
-                                @*<button type="submit" class="btn btn-sm px-4 py-2 text-white"
-                                            style="background-color: #66399A; border-radius: 0.6rem;"
-                                            onclick="validateAndSubmit()"
-                                            @(Model.IsArchived || Model.IsReadOnlyChecklistView ? "disabled style='opacity:0.5; cursor:not-allowed;'" : "")>
-                                        Submit
-                                    </button>*@
+                        <!-- Submit Button -->
+                        <div class="d-flex justify-content-end mt-4">
+                            @*<button type="submit" class="btn btn-sm px-4 py-2 text-white"
+                                        style="background-color: #66399A; border-radius: 0.6rem;"
+                                        onclick="validateAndSubmit()"
+                                        @(Model.IsArchived || Model.IsReadOnlyChecklistView ? "disabled style='opacity:0.5; cursor:not-allowed;'" : "")>
+                                    Submit
+                                </button>*@
 
-                                <button type="button" class="btn btn-purple"
-                                        style="background-color: #6A0DAD; color: white; border: none; padding: 8px 16px; font-size: 14px;
+                            <button type="button" class="btn btn-purple"
+                                    style="background-color: #6A0DAD; color: white; border: none; padding: 8px 16px; font-size: 14px;
            border-radius: 25px; width: 180px; display: block; margin: auto; text-align: center; font-weight: normal;
            transition: all 0.3s ease; box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);"
-                                        onmouseover="this.style.backgroundColor='#570D8A'; this.style.boxShadow='2px 2px 12px rgba(0, 0, 0, 0.15)';"
-                                        onmouseout="this.style.backgroundColor='#6A0DAD'; this.style.boxShadow='2px 2px 8px rgba(0, 0, 0, 0.1)';"
-                                        onclick="validateAndSubmit()">
-                                    Submit
-                                </button>
+                                    onmouseover="this.style.backgroundColor='#570D8A'; this.style.boxShadow='2px 2px 12px rgba(0, 0, 0, 0.15)';"
+                                    onmouseout="this.style.backgroundColor='#6A0DAD'; this.style.boxShadow='2px 2px 8px rgba(0, 0, 0, 0.1)';"
+                                    onclick="validateAndSubmit()">
+                                Submit
+                            </button>
 
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-
         </div>
+
+
+    </div>
 
     <div class="table-container" id="detailsContainer">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1327,30 +1323,13 @@
                             <div class="ml-3 member-details">
                                 <p class="member-name font-weight-bold mb-1">@member.Name</p>
                                 <p class="member-role text-muted mb-1">
-                                    @switch (member.Role.ToString().ToLowerInvariant())
-                                    {
-                                        case "1":
-                                            <span>Tester</span>
-                                            break;
-                                        case "2":
-                                            <span>Editor</span>
-                                            break;
-                                        case "1004":
-                                            <span>Project Manager</span>
-                                            break;
-                                        case "1005":
-                                            <span>Viewer</span>
-                                            break;
-                                        default:
-                                            <span>Unknown Role</span>
-                                            break;
-                                    }
-                                </p>
-                                <p class="member-email text-muted small">@member.Email</p>
-                            </div>
+                                    @member.Role_Description
+                            </p>
+                            <p class="member-email text-muted small">@member.Email</p>
                         </div>
                     </div>
-                }
+                </div>
+            }
             </div>
         }
         else
@@ -1379,84 +1358,84 @@
         </div>
     </div>
 
-        <div class="modal fade" id="activityLogModal" tabindex="-1" role="dialog" aria-labelledby="activityLogLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
-                <div class="modal-content shadow-lg rounded-3">
-                    <div class="modal-header bg-white">
-                        <h5 class="modal-title" id="activityLogLabel" style="color:black">Status Logs</h5>
-                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-                    </div>
+    <div class="modal fade" id="activityLogModal" tabindex="-1" role="dialog" aria-labelledby="activityLogLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+            <div class="modal-content shadow-lg rounded-3">
+                <div class="modal-header bg-white">
+                    <h5 class="modal-title" id="activityLogLabel" style="color:black">Status Logs</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-                    <div class="modal-body bg-white p-4">
-                        @if (Model.StatusLogs != null && Model.StatusLogs.Any())
+                <div class="modal-body bg-white p-4">
+                    @if (Model.StatusLogs != null && Model.StatusLogs.Any())
+                    {
+                        foreach (var log in Model.StatusLogs)
                         {
-                            foreach (var log in Model.StatusLogs)
-                            {
-                                <div class="log-entry mb-4 pb-3 border-bottom">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle text-white bg-secondary rounded-circle text-center" style="width: 36px; height: 36px; line-height: 36px; font-weight: bold;">
-                                                @log.Username[0]
-                                            </div>
-                                            <p class="mb-0 ml-3 fw-semibold">@log.Username</p>
+                            <div class="log-entry mb-4 pb-3 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle text-white bg-secondary rounded-circle text-center" style="width: 36px; height: 36px; line-height: 36px; font-weight: bold;">
+                                            @log.Username[0]
                                         </div>
-
-                                        <p class="text-muted mb-0" style="font-size: 0.875rem;">
-                                            @(
-                                                                    DateTime.TryParse(log.DateUpdated, out var parsedDate)
-                                                                    ? $"Updated on {parsedDate:MMMM dd, yyyy - hh:mm tt}"
-                                                                    : "No Date"
-                                            )
-                                        </p>
+                                        <p class="mb-0 ml-3 fw-semibold">@log.Username</p>
                                     </div>
 
-                                    <div class="ml-5">
-                                        <p class="mb-1"><span class="fw-semibold">Milestone:</span> @log.MilestoneName</p>
-                                        <p class="mb-1"><span class="fw-semibold">Description:</span> @log.Description</p>
-
-                                        @if (!string.IsNullOrEmpty(log.Attachment))
-                                        {
-                                            <div class="mt-3 p-2 border rounded bg-light">
-                                                <a href="@log.Attachment" target="_blank" class="d-inline-block mb-2 text-decoration-none">
-                                                    <i class="fas fa-paperclip me-1"></i>View Attachment
-                                                </a>
-                                                <br />
-                                                <img src="@log.Attachment" alt="Attachment Preview" class="img-fluid rounded shadow-sm" style="max-height: 150px;" />
-                                            </div>
-                                        }
-                                    </div>
+                                    <p class="text-muted mb-0" style="font-size: 0.875rem;">
+                                        @(
+                                                                        DateTime.TryParse(log.DateUpdated, out var parsedDate)
+                                                                        ? $"Updated on {parsedDate:MMMM dd, yyyy - hh:mm tt}"
+                                                                        : "No Date"
+                                        )
+                                    </p>
                                 </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="text-center text-muted">
-                                <img src="~/AdminLTE-3.2.0/dist/img/ek.png" alt="No Logs" class="img-fluid mb-3" style="max-width: 150px;" />
-                                <p>There aren't any status updates in this project yet.</p>
+
+                                <div class="ml-5">
+                                    <p class="mb-1"><span class="fw-semibold">Milestone:</span> @log.MilestoneName</p>
+                                    <p class="mb-1"><span class="fw-semibold">Description:</span> @log.Description</p>
+
+                                    @if (!string.IsNullOrEmpty(log.Attachment))
+                                    {
+                                        <div class="mt-3 p-2 border rounded bg-light">
+                                            <a href="@log.Attachment" target="_blank" class="d-inline-block mb-2 text-decoration-none">
+                                                <i class="fas fa-paperclip me-1"></i>View Attachment
+                                            </a>
+                                            <br />
+                                            <img src="@log.Attachment" alt="Attachment Preview" class="img-fluid rounded shadow-sm" style="max-height: 150px;" />
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         }
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="attachmentModalLabel">Attachment Preview</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <iframe id="attachmentFrame" src="" style="width:100%; height:500px;" frameborder="0"></iframe>
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted">
+                            <img src="~/AdminLTE-3.2.0/dist/img/ek.png" alt="No Logs" class="img-fluid mb-3" style="max-width: 150px;" />
+                            <p>There aren't any status updates in this project yet.</p>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
+
+
+    <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-labelledby="attachmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="attachmentModalLabel">Attachment Preview</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="attachmentFrame" src="" style="width:100%; height:500px;" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 @*<div class="tab-pane fade" id="timeline" role="tabpanel" aria-labelledby="timeline-tab">*@
@@ -1468,8 +1447,8 @@
             <button id="month-view" class="gantt-view-btn">Month</button>
         </div>
         @*<div class="gantt-actions">
-            <button id="maximize-btn" class="gantt-nav-btn"><i class="fa-solid fa-maximize"></i></button>
-        </div>*@
+                <button id="maximize-btn" class="gantt-nav-btn"><i class="fa-solid fa-maximize"></i></button>
+            </div>*@
     </div>
 
     <div id="gantt_here" class="gantt-clean"></div>
@@ -1483,207 +1462,206 @@
     <input type="text" id="current_milestoneid" value="" hidden readonly />
     <input type="text" id="current_division" value="@Model.Division" hidden readonly />
 
-        <div class="card shadow-sm p-4">
-            <h3 class="text-center text-purple fw-bold">Checklist <span id="checklist_id_container"></span></h3>
-            <input class="d-none" type="text" id="checklist_id_input" />
-            @*<p class="text-center text-muted">Manage checklist for each milestone.</p>*@
+    <div class="card shadow-sm p-4">
+        <h3 class="text-center text-purple fw-bold">Checklist <span id="checklist_id_container"></span></h3>
+        <input class="d-none" type="text" id="checklist_id_input" />
+        @*<p class="text-center text-muted">Manage checklist for each milestone.</p>*@
 
-            <div class="milestone-dropdown-container">
-                <div class="input-group">
-                    <span class="input-group-text bg-purple text-white">
-                        <i class="fas fa-tasks"></i>
-                    </span>
-                    <select id="milestoneDropdown" class="form-select shadow-sm">
-                        <option value="">Select a Milestone</option>
-                    </select>
-                </div>
+        <div class="milestone-dropdown-container">
+            <div class="input-group">
+                <span class="input-group-text bg-purple text-white">
+                    <i class="fas fa-tasks"></i>
+                </span>
+                <select id="milestoneDropdown" class="form-select shadow-sm">
+                    <option value="">Select a Milestone</option>
+                </select>
             </div>
+        </div>
 
 
-            <div class="table-responsive mt-4">
-                <table class="table table-hover align-middle checklist-table" id="checklist_table">
-                    <thead class="table-purple text-white">
-                        <tr>
-                            <th></th>
-                            <th>Required By</th>
-                            <th>Checklist Items</th>
-                            <th>Attachments</th>
-                            <th>Approvers</th>
-                            @*<th>Status</th>*@
-                            <th>Action</th>
-                            @*@if (!Model.IsReadOnlyChecklistView)
-                                {
-                                    <th>Action</th>
-                                }*@
-                        </tr>
-                    </thead>
-                    <tbody id="checklistTableBody">
-                        <tr>
-                            <td colspan="7" class="text-center">
-                                Choose a milestone to see its checklist items. <br />
-                                <small>
-                                    <i class="fa fa-exclamation-circle text-warning"></i> = Pending
-                                    <br />
-                                    <i class="fa-solid fa-circle-check text-success"></i> = Approved
-                                    <br />
-                                    <i class="fas fa-ban text-danger"></i> = Rejected
-                                </small>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                @{
-                    //if (Model.userDetails.JobLevel == 4035 || User.IsInRole("PMS_DIVISION_HEAD"))
-                    if (Model.ProjectDetails != null && Model.IsProjectManager)
-                    {
-
-                        if (!Model.IsReadOnlyChecklistView)
-                        {
-                            <div class="text-center mt-3">
-                                <button class="btn btn-purple btn-lg d-none" id="add_optional" style="border-radius:30px;">Add Checklist Item</button>
-                            </div>
-                        }
-
-                    }
-                    @*if (!Model.IsReadOnlyChecklistView)
+        <div class="table-responsive mt-4">
+            <table class="table table-hover align-middle checklist-table" id="checklist_table">
+                <thead class="table-purple text-white">
+                    <tr>
+                        <th></th>
+                        <th>Required By</th>
+                        <th>Checklist Items</th>
+                        <th>Attachments</th>
+                        <th>Approvers</th>
+                        @*<th>Status</th>*@
+                        <th>Action</th>
+                        @*@if (!Model.IsReadOnlyChecklistView)
                             {
-                                <div class="text-center mt-3">
-                                    <button class="btn btn-purple btn-lg d-none" id="add_optional">
-                                        <i class="fa fa-plus"></i> Checklist Item
-                                    </button>
-                                </div>
-                        }*@
+                                <th>Action</th>
+                            }*@
+                    </tr>
+                </thead>
+                <tbody id="checklistTableBody">
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            Choose a milestone to see its checklist items. <br />
+                            <small>
+                                <i class="fa fa-exclamation-circle text-warning"></i> = Pending
+                                <br />
+                                <i class="fa-solid fa-circle-check text-success"></i> = Approved
+                                <br />
+                                <i class="fas fa-ban text-danger"></i> = Rejected
+                            </small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            @{
+                //if (Model.userDetails.JobLevel == 4035 || User.IsInRole("PMS_DIVISION_HEAD"))
+                if (Model.ProjectDetails != null && Model.IsProjectManager)
+                {
+
+                    if (!Model.IsReadOnlyChecklistView)
+                    {
+                        <div class="text-center mt-3">
+                            <button class="btn btn-purple btn-lg d-none" id="add_optional" style="border-radius:30px;">Add Checklist Item</button>
+                        </div>
+                    }
 
                 }
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="myModal" role="dialog">
-        <div class="modal-dialog" style="margin: auto">
-
-            <div class="modal-content" style="width: 100%">
-                <div class="modal-header">
-                    <label id="modal_title"></label>
-                    <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <form id="optionalForm">
-                        <input type="text" id="milestone_id" name="milestone_id" hidden readonly />
-                        <input type="text" id="project_id" name="project_id" hidden readonly />
-                        <table id="item_table">
-                            <tbody>
-                                <tr>
-                                    <th>No.</th>
-                                    <th>Checklist Item</th>
-                                    <th>Description</th>
-                                </tr>
-
-                                <tr>
-                                    <td>1</td>
-                                    <td><input type="text" name="item[0].title" /></td>
-                                    <td><input type="text" name="item[0].description" /></td>
-                                </tr>
-
-                            </tbody>
-
-                        </table>
-                    </form>
-                </div>
-
-                <div style="margin: auto; text-align: center">
-                    <button class="btn-primary w-100" id="add_row" onclick="AddRow()">Add New Row</button>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="submit_button">Save</button>
-                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="approverModal" role="dialog">
-        <div class="modal-dialog" style="margin: auto">
-
-            <div class="modal-content" style="width: 100%">
-                <div class="modal-header">
-                    <label id="modal_title"></label>
-                    <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <input type="text" id="task_id" hidden readonly />
-                        <input type="text" id="approver_project_id" hidden readonly />
-                        <label for="multiSelectDropdown">Members</label>
-                        <div id="multiSelectDropdown" class="multi-select-dropdown">
-                            <div class="dropdown-header" onclick="toggleDropdown()">Select Approvers</div>
-                            <div class="dropdown-options" id="dropdown_options">
-                                <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" style="width: 100%" />
-                                @*@foreach (var user in Model.Users)
-                                    {
-                                        <div class="dropdown-item">
-                                            <input type="checkbox" id="member_@user.Id" value="@user.Id" />
-                                            <label for="member_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
-                                        </div>
-                                    }*@
+                @*if (!Model.IsReadOnlyChecklistView)
+                        {
+                            <div class="text-center mt-3">
+                                <button class="btn btn-purple btn-lg d-none" id="add_optional">
+                                    <i class="fa fa-plus"></i> Checklist Item
+                                </button>
                             </div>
+                    }*@
+
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog" style="margin: auto">
+
+        <div class="modal-content" style="width: 100%">
+            <div class="modal-header">
+                <label id="modal_title"></label>
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="optionalForm">
+                    <input type="text" id="milestone_id" name="milestone_id" hidden readonly />
+                    <input type="text" id="project_id" name="project_id" hidden readonly />
+                    <table id="item_table">
+                        <tbody>
+                            <tr>
+                                <th>No.</th>
+                                <th>Checklist Item</th>
+                                <th>Description</th>
+                            </tr>
+
+                            <tr>
+                                <td>1</td>
+                                <td><input type="text" name="item[0].title" /></td>
+                                <td><input type="text" name="item[0].description" /></td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+                </form>
+            </div>
+
+            <div style="margin: auto; text-align: center">
+                <button class="btn-primary w-100" id="add_row" onclick="AddRow()">Add New Row</button>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="submit_button">Save</button>
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="approverModal" role="dialog">
+    <div class="modal-dialog" style="margin: auto">
+
+        <div class="modal-content" style="width: 100%">
+            <div class="modal-header">
+                <label id="modal_title"></label>
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="task_id" hidden readonly />
+                    <input type="text" id="approver_project_id" hidden readonly />
+                    <label for="multiSelectDropdown">Members</label>
+                    <div id="multiSelectDropdown" class="multi-select-dropdown">
+                        <div class="dropdown-header" onclick="toggleDropdown()">Select Approvers</div>
+                        <div class="dropdown-options" id="dropdown_options">
+                            <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" style="width: 100%" />
+                            @*@foreach (var user in Model.Users)
+                                {
+                                    <div class="dropdown-item">
+                                        <input type="checkbox" id="member_@user.Id" value="@user.Id" />
+                                        <label for="member_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
+                                    </div>
+                                }*@
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Selected Approvers</label>
-                        <div id="selectedMembersChips" class="selected-members-chips"></div>
-                    </div>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="submit_approver">Submit</button>
-                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                <div class="form-group">
+                    <label>Selected Approvers</label>
+                    <div id="selectedMembersChips" class="selected-members-chips"></div>
                 </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="submit_approver">Submit</button>
+                <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
 
-    <div class="modal fade" id="removeModal" role="dialog">
-        <div class="modal-dialog" style="margin: auto; margin-left: 20%">
+<div class="modal fade" id="removeModal" role="dialog">
+    <div class="modal-dialog" style="margin: auto; margin-left: 20%">
 
-            <div class="modal-content" style="width: 140%">
-                <div class="modal-header">
-                    <label id="modal_title"></label>
-                    <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <input type="text" id="task_id_removal" hidden readonly />
-                        <input type="text" id="approver_project_id_removal" hidden readonly />
-                        <table id="approver_table" style="width: 100%">
-                            <thead class="table-primary">
-                                <tr style="margin:auto; text-align: center">
-                                    <th>Select All<br /><input type="checkbox" name="remove_all" id="remove_all" /></th>
-                                    <th>Name</th>
-                                    <th>Date Added</th>
-                                    <th>Added By</th>
-                                    @if (!Model.IsReadOnlyChecklistView)
-                                    {
-                                        <th>Action</th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody id="approver_tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger w-25" onclick="removeSelected()">Remove Selected</button>
-                    @*<button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>*@
-                </div>
-
-
+        <div class="modal-content" style="width: 140%">
+            <div class="modal-header">
+                <label id="modal_title"></label>
+                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" id="task_id_removal" hidden readonly />
+                    <input type="text" id="approver_project_id_removal" hidden readonly />
+                    <table id="approver_table" style="width: 100%">
+                        <thead class="table-primary">
+                            <tr style="margin:auto; text-align: center">
+                                <th>Select All<br /><input type="checkbox" name="remove_all" id="remove_all" /></th>
+                                <th>Name</th>
+                                <th>Date Added</th>
+                                <th>Added By</th>
+                                @if (!Model.IsReadOnlyChecklistView)
+                                {
+                                    <th>Action</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody id="approver_tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger w-25" onclick="removeSelected()">Remove Selected</button>
+                @*<button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>*@
+            </div>
+
+
         </div>
     </div>
 </div>
@@ -1864,7 +1842,7 @@
         function loadTasksForMilestone(milestoneId, mainId) {
             $(".main-body").addClass("d-none");
             $(".loader-body").removeClass("d-none");
-            
+
             if(milestoneId == ""){
                 $(".main-body").removeClass("d-none");
                 $(".loader-body").addClass("d-none");
@@ -2417,6 +2395,7 @@
 
                 }
             });
+
         }
 
         function dbRemoveApprover(userID) {
@@ -2594,7 +2573,7 @@
 
     </script>
 
-    
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             setupGantt();
@@ -3058,6 +3037,11 @@
             document.body.removeChild(confettiCanvas);
         }, 5000);
     }
+
+        $("#removeModal").on('hide.bs.modal', function(e){
+            $(".main-body").removeClass("d-none");
+            $(".loader-body").addClass("d-none");
+        })
     </script>
 
 

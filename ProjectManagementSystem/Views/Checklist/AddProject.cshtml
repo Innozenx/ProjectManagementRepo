@@ -5,42 +5,22 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="loader-body">
-    <div class="loader-container">
-        <span class="loader-span"></span>
-        <div class="loader-center">
-            <div class="loader-wrap">
-                <div class="box-1 box">
 
-                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
-                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
-                </div>
-                <div class="box-2 box">
-                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
-                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
-                </div>
-            </div>
+
+<div class="content">
+    <div class="form-container">
+        <div class="form-header" style="text-align: center;">
+            <h3>
+                <span class="launch-rocket">🚀</span><br />
+                Start Your New Project
+            </h3>
+            <p>
+                Upload your project schedule here. 📂
+            </p>
         </div>
-    </div>
-</div>
 
-<a href="https://dribbble.com/YancyMin" class="dr-url" target="_blank"><img class="dr" src="https://cdn.dribbble.com/assets/logo-footer-hd-a05db77841b4b27c0bf23ec1378e97c988190dfe7d26e32e1faea7269f9e001b.png" alt=""></a>
-
-<div class="main-body d-none">
-    <div class="content">
-        <div class="form-container">
-            <div class="form-header" style="text-align: center;">
-                <h3>
-                    <span class="launch-rocket">🚀</span><br />
-                    Start Your New Project
-                </h3>
-                <p>
-                    Upload your project schedule here. 📂
-                </p>
-            </div>
-
-            <form id="onboardingForm" name="onboardingForm" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
+        <form id="onboardingForm" name="onboardingForm" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
 
             <div id="errorContainer" class="alert-error" style="display: none;"></div>
 
@@ -60,11 +40,11 @@
                 <input type="text" id="projectOwner" name="projectOwner" class="form-control" placeholder="Project owner" required readonly />
             </div>
 
-                <div class="form-group">
-                    <label for="csvFileInput">Upload Project Schedule</label>
-                    <input type="file" id="csvFileInput" name="csvFileInput" accept=".csv" class="form-control-file" required />
-                    <small class="form-text">Accepted format: .csv</small>
-                </div>
+            <div class="form-group">
+                <label for="csvFileInput">Upload Project Schedule</label>
+                <input type="file" id="csvFileInput" name="csvFileInput" accept=".csv" class="form-control-file" required />
+                <small class="form-text">Accepted format: .csv</small>
+            </div>
 
             <div class="button-container">
                 <button id="addProjButton" type="button" class="btn btn-primary" onclick="AddProject()">Submit</button>
@@ -349,7 +329,7 @@
         }
     });
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         $(".main-body").removeClass("d-none");
         $(".loader-body").addClass("d-none");
     });

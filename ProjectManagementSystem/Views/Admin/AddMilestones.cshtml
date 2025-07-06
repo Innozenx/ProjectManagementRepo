@@ -3,88 +3,67 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="loader-body">
-    <div class="loader-container">
-        <span class="loader-span"></span>
-        <div class="loader-center">
-            <div class="loader-wrap">
-                <div class="box-1 box">
 
-                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
-                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
-                </div>
-                <div class="box-2 box">
-                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
-                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
+
+<div class="container mt-4 d-flex justify-content-center">
+    <div class="card shadow border-0 rounded-3 mx-auto" style="max-width: 900px; width: 100%;">
+        <div class="card-body">
+            <a href="@Url.Action("CreateChecklist", "Admin", new { divisionId = ViewBag.DivisionId })"
+               class="btn btn-light btn-back mb-3">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+
+            <div class="row justify-content-center mb-4">
+                <div class="col-md-8 text-center">
+                    <h3 class="fw-bold text-purple">✔️ <br /> Add Milestone</h3>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
-<a href="https://dribbble.com/YancyMin" class="dr-url" target="_blank"><img class="dr" src="https://cdn.dribbble.com/assets/logo-footer-hd-a05db77841b4b27c0bf23ec1378e97c988190dfe7d26e32e1faea7269f9e001b.png" alt=""></a>
+            <div class="new-milestone-section">
+                <div class="card shadow-sm bg-white rounded-3 mx-auto" style="max-width: 700px;">
+                    <div class="card-body">
+                        <form id="milestoneForm">
+                            <input type="hidden" name="DivisionID" value="@ViewBag.DivisionId" />
 
-<div class="main-body d-none">
-    <div class="container mt-4 d-flex justify-content-center">
-        <div class="card shadow border-0 rounded-3 mx-auto" style="max-width: 900px; width: 100%;">
-            <div class="card-body">
-                <a href="@Url.Action("CreateChecklist", "Admin", new { divisionId = ViewBag.DivisionId })"
-                   class="btn btn-light btn-back mb-3">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-
-                <div class="row justify-content-center mb-4">
-                    <div class="col-md-8 text-center">
-                        <h3 class="fw-bold text-purple">✔️ <br /> Add Milestone</h3>
-                    </div>
-                </div>
-
-                <div class="new-milestone-section">
-                    <div class="card shadow-sm bg-white rounded-3 mx-auto" style="max-width: 700px;">
-                        <div class="card-body">
-                            <form id="milestoneForm">
-                                <input type="hidden" name="DivisionID" value="@ViewBag.DivisionId" />
-
-                                <div class="mb-3">
-                                    <label class="form-label text-muted">Milestone Name</label>
-                                    <select name="MilestoneName" id="milestoneName" class="form-control rounded-2" required>
-                                        <option value="">Select Milestone</option>
-                                        @if (ViewBag.MilestoneList != null)
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Milestone Name</label>
+                                <select name="MilestoneName" id="milestoneName" class="form-control rounded-2" required>
+                                    <option value="">Select Milestone</option>
+                                    @if (ViewBag.MilestoneList != null)
+                                    {
+                                        foreach (var milestone in ViewBag.MilestoneList as List<SelectListItem>)
                                         {
-                                            foreach (var milestone in ViewBag.MilestoneList as List<SelectListItem>)
-                                            {
 
-                                                <option value="@milestone.Text">@milestone.Text</option>
-                                            }
+                                            <option value="@milestone.Text">@milestone.Text</option>
                                         }
-                                    </select>
-                                </div>
-                                <button type="button" id="showRequirementsBtn" class="btn btn-outline-primary w-100 fw-bold">
-                                    <i class="fas fa-plus"></i> Add Checklist Items
-                                </button>
-                            </form>
-                        </div>
+                                    }
+                                </select>
+                            </div>
+                            <button type="button" id="showRequirementsBtn" class="btn btn-outline-primary w-100 fw-bold">
+                                <i class="fas fa-plus"></i> Add Checklist Items
+                            </button>
+                        </form>
                     </div>
                 </div>
+            </div>
 
-                <div class="requirements-section mt-4" style="display: none;">
-                    <div class="card shadow-sm bg-white rounded-3 mx-auto" style="max-width: 700px;">
-                        <div class="card-body">
-                            <h4 id="requirementsTitle" class="mb-3 fw-bold text-dark text-center">Checklist Item</h4>
-                            <div id="taskList"></div>
+            <div class="requirements-section mt-4" style="display: none;">
+                <div class="card shadow-sm bg-white rounded-3 mx-auto" style="max-width: 700px;">
+                    <div class="card-body">
+                        <h4 id="requirementsTitle" class="mb-3 fw-bold text-dark text-center">Checklist Item</h4>
+                        <div id="taskList"></div>
 
-                            <button type="button" id="addTaskInsideBtn" class="btn btn-outline-success w-100 fw-bold">
-                                <i class="fas fa-plus"></i> Add Item
+                        <button type="button" id="addTaskInsideBtn" class="btn btn-outline-success w-100 fw-bold">
+                            <i class="fas fa-plus"></i> Add Item
+                        </button>
+
+                        <div class="mt-3 d-flex justify-content-between">
+                            <button type="button" id="backToMilestone" class="btn btn-light fw-bold">
+                                Back
                             </button>
-
-                            <div class="mt-3 d-flex justify-content-between">
-                                <button type="button" id="backToMilestone" class="btn btn-light fw-bold">
-                                    Back
-                                </button>
-                                <button type="submit" id="saveMilestone" class="btn btn-primary fw-bold" disabled>
-                                    Save
-                                </button>
-                            </div>
+                            <button type="submit" id="saveMilestone" class="btn btn-primary fw-bold" disabled>
+                                Save
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -92,6 +71,7 @@
         </div>
     </div>
 </div>
+
 
 
 <style>
@@ -189,8 +169,8 @@
         font-weight: bold;
         color: #ff0000;
         cursor: pointer;
-        padding: 0; 
-        width: 20px; 
+        padding: 0;
+        width: 20px;
         height: 20px;
         display: flex;
         align-items: center;
@@ -226,10 +206,12 @@
         align-items: center;
         margin-top: 15px;
     }
+
     #backToMilestone, #saveMilestone {
         width: 100px;
         height: 42px;
     }
+
     .select2-container--default .select2-selection--multiple {
         background: #fff;
         border: 1px solid #ced4da;
@@ -253,6 +235,7 @@
         .select2-container .select2-selection--multiple .select2-selection__choice__remove:hover {
             color: #ff0000;
         }
+
     @@keyframes fadeIn {
         from {
             opacity: 0;
@@ -283,7 +266,7 @@
             color: #333;
         }
 
-        /*loading screen styling*/
+    /*loading screen styling*/
     .eldar-img {
         height: 75px;
         width: 75px;
@@ -570,7 +553,7 @@
             });
         }
 
-        initializeSelect2(); 
+        initializeSelect2();
 
         function validateMilestoneSelection() {
             let milestoneName = $('#milestoneName').val(); // Get selected value (no need for .trim())
@@ -638,7 +621,7 @@
 
             $('#taskList').append(taskHtml);
 
-            initializeSelect2(); 
+            initializeSelect2();
             validateForm();
         });
 

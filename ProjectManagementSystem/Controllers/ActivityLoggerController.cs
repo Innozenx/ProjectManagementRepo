@@ -204,6 +204,19 @@ namespace ProjectManagementSystem.Controllers
                     break;
 
                 case 6: // dashboard
+                    Activity_Log d_logs = new Activity_Log
+                    {
+                        username = email,
+                        datetime_performed = DateTime.Now,
+                        action_level = category,
+                        action = action,
+                        description = details_container + " for project: " + project,
+                        department = userDetails.department,
+                        division = userDetails.division
+                    };
+
+                    db.Activity_Log.Add(d_logs);
+                    db.SaveChanges();
                     break;
 
                 case 7: // activity logs
@@ -213,6 +226,19 @@ namespace ProjectManagementSystem.Controllers
                     break;
 
                 case 9: // approval
+                    Activity_Log a_logs = new Activity_Log
+                    {
+                        username = email,
+                        datetime_performed = DateTime.Now,
+                        action_level = category,
+                        action = action,
+                        description = details_container + " for project: " + project,
+                        department = userDetails.department,
+                        division = userDetails.division
+                    };
+
+                    db.Activity_Log.Add(a_logs);
+                    db.SaveChanges();
                     break;
             }
             return Json(new { message = "success" }, JsonRequestBehavior.AllowGet);

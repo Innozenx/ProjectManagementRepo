@@ -5,129 +5,109 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="loader-body">
-    <div class="loader-container">
-        <span class="loader-span"></span>
-        <div class="loader-center">
-            <div class="loader-wrap">
-                <div class="box-1 box">
 
-                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
-                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
-                </div>
-                <div class="box-2 box">
-                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
-                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<a href="https://dribbble.com/YancyMin" class="dr-url" target="_blank"><img class="dr" src="https://cdn.dribbble.com/assets/logo-footer-hd-a05db77841b4b27c0bf23ec1378e97c988190dfe7d26e32e1faea7269f9e001b.png" alt=""></a>
 
-<div class="main-body d-none">
-    <div class="container-fluid mt-4">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card shadow border-0 rounded-3">
-                    <div class="card-body">
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-body">
 
-                        @*<div class="mb-4 text-center">
-                                <h3 class="title" style="color: #470A67;">
-                                    📝 Create Checklist
-                                </h3>
-                                <p class="division-highlight">for <span style="color: #007bff">@ViewBag.DivisionName</span></p>
-                            </div>*@
-
-                        @*<a href="@Url.Action("Milestones", "Admin")" class="btn btn-back shadow-sm">
-                                <i class="fas fa-arrow-left me-2"></i> Back
-                            </a>*@
-
-                        <a href="@Url.Action("Milestones", "Admin")" class="btn-circle" data-bs-toggle="tooltip" title="Back to Milestones">
-                            <i class="fas fa-arrow-left"></i>
-                        </a>
-
-                        <div class="text-center w-100" style="margin-left: -60px;">
-                            <h3 class="title mb-0" style="color: #470A67;">
+                    @*<div class="mb-4 text-center">
+                            <h3 class="title" style="color: #470A67;">
                                 📝 Create Checklist
                             </h3>
-                            <p class="division-highlight small-division">for <span>@ViewBag.DivisionName</span></p>
-                        </div>
+                            <p class="division-highlight">for <span style="color: #007bff">@ViewBag.DivisionName</span></p>
+                        </div>*@
+
+                    @*<a href="@Url.Action("Milestones", "Admin")" class="btn btn-back shadow-sm">
+                            <i class="fas fa-arrow-left me-2"></i> Back
+                        </a>*@
+
+                    <a href="@Url.Action("Milestones", "Admin")" class="btn-circle" data-bs-toggle="tooltip" title="Back to Milestones">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+
+                    <div class="text-center w-100" style="margin-left: -60px;">
+                        <h3 class="title mb-0" style="color: #470A67;">
+                            📝 Create Checklist
+                        </h3>
+                        <p class="division-highlight small-division">for <span>@ViewBag.DivisionName</span></p>
+                    </div>
 
 
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="card shadow-sm bg-white rounded-3">
-                                    <div class="card-body text-center">
-                                        <a href="@Url.Action("AddMilestones", "Admin", new { divisionId = ViewBag.DivisionId })"
-                                           class="btn btn-outline-success w-100 mt-2">
-                                            <i class="fas fa-plus"></i> Add Milestone
-                                        </a>
-                                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card shadow-sm bg-white rounded-3">
+                                <div class="card-body text-center">
+                                    <a href="@Url.Action("AddMilestones", "Admin", new { divisionId = ViewBag.DivisionId })"
+                                       class="btn btn-outline-success w-100 mt-2">
+                                        <i class="fas fa-plus"></i> Add Milestone
+                                    </a>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-md-8">
-                                <div class="card shadow-sm bg-white rounded-3">
-                                    <div class="card-body">
-                                        <h5 class="fw-bold text-dark mb-3">Milestones</h5>
+                        <div class="col-md-8">
+                            <div class="card shadow-sm bg-white rounded-3">
+                                <div class="card-body">
+                                    <h5 class="fw-bold text-dark mb-3">Milestones</h5>
 
-                                        <input type="text" id="searchMilestone" class="form-control mb-3" placeholder="Search milestones...">
+                                    <input type="text" id="searchMilestone" class="form-control mb-3" placeholder="Search milestones...">
 
-                                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                            <table class="table table-hover table-bordered" id="milestoneTable">
-                                                <thead class="table-light sticky-header">
-                                                    <tr>
-                                                        <th>Milestone</th>
-                                                        <th>Checklist Item</th>
-                                                        <th>Approvers</th>
-                                                        <th>Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @if (Model != null && Model.Any())
-                                                    {
-                                                        foreach (var milestone in Model)
-                                                        {
-                                                            <tr>
-                                                                <td>@milestone.MilestoneName</td>
-                                                                <td>@milestone.Requirements.Count Items</td>
-                                                                <td>@milestone.Approvers.Count</td>
-                                                                <td>
-                                                                    <button class="btn btn-outline-primary btn-sm viewRow" data-id="@milestone.Id" data-bs-toggle="tooltip" title="View Milestone">
-                                                                        <i class="fas fa-eye"></i>
-                                                                    </button>
-                                                                    <button class="btn btn-outline-danger btn-sm removeRow" data-id="@milestone.Id" data-bs-toggle="tooltip" title="Delete Milestone">
-                                                                        <i class="fas fa-trash"></i>
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                    }
-                                                    else
+                                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                        <table class="table table-hover table-bordered" id="milestoneTable">
+                                            <thead class="table-light sticky-header">
+                                                <tr>
+                                                    <th>Milestone</th>
+                                                    <th>Checklist Item</th>
+                                                    <th>Approvers</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model != null && Model.Any())
+                                                {
+                                                    foreach (var milestone in Model)
                                                     {
                                                         <tr>
-                                                            <td colspan="4" class="text-center text-muted">
-                                                                No milestones yet! Click <strong>"Add Milestone"</strong> to begin.
+                                                            <td>@milestone.MilestoneName</td>
+                                                            <td>@milestone.Requirements.Count Items</td>
+                                                            <td>@milestone.Approvers.Count</td>
+                                                            <td>
+                                                                <button class="btn btn-outline-primary btn-sm viewRow" data-id="@milestone.Id" data-bs-toggle="tooltip" title="View Milestone">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-danger btn-sm removeRow" data-id="@milestone.Id" data-bs-toggle="tooltip" title="Delete Milestone">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
                                                             </td>
                                                         </tr>
                                                     }
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="4" class="text-center text-muted">
+                                                            No milestones yet! Click <strong>"Add Milestone"</strong> to begin.
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
 
-                                        <div class="mt-4 d-flex justify-content-center">
-                                            <button id="finalizeChecklist" class="btn btn-success btn-save" type="button">
-                                                <i></i>Save Checklist
-                                            </button>
-                                        </div>
+                                    <div class="mt-4 d-flex justify-content-center">
+                                        <button id="finalizeChecklist" class="btn btn-success btn-save" type="button">
+                                            <i></i>Save Checklist
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
+
                 </div>
             </div>
         </div>

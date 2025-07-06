@@ -354,14 +354,36 @@
 </head>
 
 <body>
-    @Html.Partial("_Navbar")
-    <div class="container-fluid body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year Project Management System</p>
-        </footer>
+    <div class="loader-body">
+        <div class="loader-container">
+            <span class="loader-span"></span>
+            <div class="loader-center">
+                <div class="loader-wrap">
+                    <div class="box-1 box">
+
+                        <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
+                        <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
+                    </div>
+                    <div class="box-2 box">
+                        <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
+                        <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div class="main-body d-none">
+        @Html.Partial("_Navbar")
+        <div class="container-fluid body-content">
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year Project Management System</p>
+            </footer>
+        </div>
+    </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
 

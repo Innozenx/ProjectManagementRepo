@@ -4,78 +4,55 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="loader-body">
-    <div class="loader-container">
-        <span class="loader-span"></span>
-        <div class="loader-center">
-            <div class="loader-wrap">
-                <div class="box-1 box">
-
-                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
-                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
-                </div>
-                <div class="box-2 box">
-                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
-                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
-                </div>
+<div class="content">
+    <div class="form-container">
+        <div class="form-header">
+            <div class="icon">
+                <img src="~/AdminLTE-3.2.0/dist/img/giphy.jpg" alt="princesses">
             </div>
+
+            <h3>Invite your Collaborators</h3>
+            <p>Select a project to assign team members and their roles to join  your project.</p>
+
         </div>
-    </div>
-</div>
-
-<a href="https://dribbble.com/YancyMin" class="dr-url" target="_blank"><img class="dr" src="https://cdn.dribbble.com/assets/logo-footer-hd-a05db77841b4b27c0bf23ec1378e97c988190dfe7d26e32e1faea7269f9e001b.png" alt=""></a>
-
-<div class="main-body d-none">
-    <div class="content">
-        <div class="form-container">
-            <div class="form-header">
-                <div class="icon">
-                    <img src="~/AdminLTE-3.2.0/dist/img/giphy.jpg" alt="princesses">
-                </div>
-
-                <h3>Invite your Collaborators</h3>
-                <p>Select a project to assign team members and their roles to join  your project.</p>
-
+        <div class="form-content">
+            <div class="form-group">
+                <label for="projectDropdown">Project title</label>
+                <select id="projectDropdown" class="form-select" required>
+                    <option value="" disabled selected>Choose a project...</option>
+                    @foreach (var project in Model.Projects)
+                    {
+                        <option value="@project.Id">@project.Title</option>
+                    }
+                </select>
             </div>
-            <div class="form-content">
-                <div class="form-group">
-                    <label for="projectDropdown">Project title</label>
-                    <select id="projectDropdown" class="form-select" required>
-                        <option value="" disabled selected>Choose a project...</option>
-                        @foreach (var project in Model.Projects)
-                        {
-                            <option value="@project.Id">@project.Title</option>
-                        }
-                    </select>
-                </div>
 
-                <div class="form-group">
-                    <label for="multiSelectDropdown">Members</label>
-                    <div id="multiSelectDropdown" class="multi-select-dropdown">
-                        <div class="dropdown-header" onclick="toggleDropdown()">Select Members</div>
-                        <div class="dropdown-options">
-                            <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" />
-                            @foreach (var user in Model.Users)
-                            {
-                                <div class="dropdown-item">
-                                    <input type="checkbox" id="member_@user.Id" value="@user.Id" />
-                                    <label for="member_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
-                                </div>
-                            }
-                        </div>
+            <div class="form-group">
+                <label for="multiSelectDropdown">Members</label>
+                <div id="multiSelectDropdown" class="multi-select-dropdown">
+                    <div class="dropdown-header" onclick="toggleDropdown()">Select Members</div>
+                    <div class="dropdown-options">
+                        <input type="text" id="searchMembers" class="dropdown-search" placeholder="Search members..." oninput="filterMembers()" />
+                        @foreach (var user in Model.Users)
+                        {
+                            <div class="dropdown-item">
+                                <input type="checkbox" id="member_@user.Id" value="@user.Id" />
+                                <label for="member_@user.Id">@user.FirstName @user.LastName (@user.Email)</label>
+                            </div>
+                        }
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label>People with Access</label>
-                    <div id="selectedMembersChips" class="selected-members-chips"></div>
-                </div>
             </div>
 
-
-            <div class="button-container">
-                <button id="inviteButton" type="button" class="btn-primary" style="border-radius:30px; width:100%" @*onclick="submitInvitations()"*@>Send Invites</button>
+            <div class="form-group">
+                <label>People with Access</label>
+                <div id="selectedMembersChips" class="selected-members-chips"></div>
             </div>
+        </div>
+
+
+        <div class="button-container">
+            <button id="inviteButton" type="button" class="btn-primary" style="border-radius:30px; width:100%" @*onclick="submitInvitations()"*@>Send Invites</button>
         </div>
     </div>
 </div>

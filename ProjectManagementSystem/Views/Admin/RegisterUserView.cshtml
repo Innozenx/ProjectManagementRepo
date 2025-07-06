@@ -68,55 +68,35 @@
     </style>
 </head>
 
-<div class="loader-body">
-    <div class="loader-container">
-        <span class="loader-span"></span>
-        <div class="loader-center">
-            <div class="loader-wrap">
-                <div class="box-1 box">
 
-                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
-                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
-                </div>
-                <div class="box-2 box">
-                    <i><img src="~/FrontEnd/dist/img/smiley_eldar.png" class="eldar-img" /></i>
-                    <i><img src="~/FrontEnd/dist/img/happy_eldar.png" class="eldar-img" /></i>
-                </div>
+<!-- Main content -->
+<div class="content">
+    <div class="form-container">
+        <h3 class="text-center" style="color: #66339A;">User Registration</h3>
+        <p class="text-center text-muted">Please enter the designated user's email below</p>
+        <!-- Project Name Input -->
+        <form id="userRegistrationForm" name="userRegistrationForm" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="user_email"><strong>User email</strong></label>
+                <input type="text" id="user_email" name="user_email" class="form-control" placeholder="Enter User Email" required />
+                <label for="user_type"><strong>User Type</strong></label>
+                <select id="user_type" name="user_type">
+                    <option value="" disabled selected>Select a Project</option>
+                    @foreach (var type in Model)
+                    {
+                        <option value="@type.type_name">@type.type_name</option>
+                    }
+                </select>
+                @*<small class="form-text">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: red"></i> Make sure the project name matches exactly with the Excel file.
+                    </small>*@
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="main-body d-none">
-    <!-- Main content -->
-    <div class="content">
-        <div class="form-container">
-            <h3 class="text-center" style="color: #66339A;">User Registration</h3>
-            <p class="text-center text-muted">Please enter the designated user's email below</p>
-            <!-- Project Name Input -->
-            <form id="userRegistrationForm" name="userRegistrationForm" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
-                <div class="form-group">
-                    <label for="user_email"><strong>User email</strong></label>
-                    <input type="text" id="user_email" name="user_email" class="form-control" placeholder="Enter User Email" required />
-                    <label for="user_type"><strong>User Type</strong></label>
-                    <select id="user_type" name="user_type">
-                        <option value="" disabled selected>Select a Project</option>
-                        @foreach (var type in Model)
-                        {
-                            <option value="@type.type_name">@type.type_name</option>
-                        }
-                    </select>
-                    @*<small class="form-text">
-                            <i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: red"></i> Make sure the project name matches exactly with the Excel file.
-                        </small>*@
-                </div>
-                <!-- Submit Button -->
-                <div class="form-footer">
-                    <button id="submit_user" type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
-        </div>
+            <!-- Submit Button -->
+            <div class="form-footer">
+                <button id="submit_user" type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
     </div>
 </div>
 

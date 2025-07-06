@@ -206,6 +206,10 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function () {
+
+        $(".main-body").removeClass("d-none");
+        $(".loader-body").addClass("d-none");
+
             var table = $('#archivedProjectsTable').DataTable({
                 responsive: true,
                 pagingType: 'full_numbers',

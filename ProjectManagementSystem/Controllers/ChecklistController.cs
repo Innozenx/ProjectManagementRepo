@@ -745,7 +745,7 @@ namespace ProjectManagementSystem.Controllers
 
                 bool isProjectManager = db.ProjectMembersTbls
                     .Any(pm => pm.project_id == id && pm.email == userEmail && pm.role == 1004);
-                bool isReadOnlyChecklistView = !isProjectManager && !isODCPAdmin; // newly added
+                bool isReadOnlyChecklistView = !isProjectManager; // newly added
 
                 UserModel userInfo = new UserModel()
                 {
@@ -915,13 +915,13 @@ namespace ProjectManagementSystem.Controllers
                     ProjectStatus = projectStatus,
                     IsArchived = projects.IsArchived,
                     IsReadOnlyChecklistView = isReadOnlyChecklistView,
-                    milestone = id,
+                    milestone = id,      
                     ReadOnlyApprover = userDetails.FirstName + " " + userDetails.LastName
 
                 };
-                //viewModel.IsReadOnlyChecklistView = !isProjectManager;
-                bool isDivisionHeadAdmin = isODCPAdmin && userDetails.JobLevel == 4035;
-                viewModel.IsReadOnlyChecklistView = !isProjectManager || isDivisionHeadAdmin;
+
+                //bool readOnlyFlag = (isODCPAdmin && userDetails.JobLevel == 4035) || isProjectManager;
+                //viewModel.IsReadOnlyChecklistView = !readOnlyFlag;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
                 ViewBag.SelectedTab = tab;
 
@@ -1384,11 +1384,43 @@ namespace ProjectManagementSystem.Controllers
                                     throw new Exception("Start date, end date, duration, and year cannot be empty.");
                                 }
 
+                                /*code for days that are less than two digits*/
+                                //string[] dayStartContainer = getProject.projectStart.Split('/');
+                                //string[] dayEndContainer = getProject.projectEnd.Split('/');
+                                //string newStartDay = getProject.projectStart;
+                                //string newEndDay = getProject.projectEnd;
+                                //if (Int32.Parse(dayStartContainer[1]) < 10)
+                                //{
+                                //    if(Int32.Parse(dayStartContainer[0]) < 10)
+                                //    {
+                                //        newStartDay = "0" + dayStartContainer[0] + "/0" + dayStartContainer[1] + "/" + dayStartContainer[2];
+                                //    }
+
+                                //    else
+                                //    {
+                                //        newStartDay = dayStartContainer[0] + "/0" + dayStartContainer[1] + "/" + dayStartContainer[2];
+                                //    }
+
+                                //}
+
+                                //if (Int32.Parse(dayEndContainer[1]) < 10)
+                                //{
+                                //    if(Int32.Parse(dayEndContainer[0]) < 10)
+                                //    {
+                                //        newEndDay = "0" + dayEndContainer[0] + "/0" + dayEndContainer[1] + "/" + dayEndContainer[2];
+                                //    }
+
+                                //    else
+                                //    {
+                                //        newEndDay = dayEndContainer[0] + "/0" + dayEndContainer[1] + "/" + dayEndContainer[2];
+                                //    }
+                                //}
+
                                 var addWeeklyChecklist = new MainTable
                                 {
                                     project_title = getProject.ProjectTitle,
-                                    project_start = DateTime.ParseExact(getProject.projectStart.ToString(), dateFormat, CultureInfo.InvariantCulture),
-                                    project_end = DateTime.ParseExact(getProject.projectEnd.ToString(), dateFormat, CultureInfo.InvariantCulture),
+                                    project_start = DateTime.ParseExact(getProject.projectStart, dateFormat, CultureInfo.InvariantCulture),
+                                    project_end = DateTime.ParseExact(getProject.projectEnd, dateFormat, CultureInfo.InvariantCulture),
                                     duration = getProject.ProjectDuration,
                                     year = getProject.ProjectYear,
                                     division = getProject.division,
@@ -1405,24 +1437,28 @@ namespace ProjectManagementSystem.Controllers
                                 var j = 0;
                                 foreach (var approver in approver_list)
                                 {
-                                    var individual_approver = approver.Approvers.Split(',')[0];
-                                    var cmdb_approver = cmdb.AspNetUsers.Where(x => x.Id == individual_approver).FirstOrDefault();
-
-                                    PreSetMilestoneApprover presets = new PreSetMilestoneApprover()
+                                    if(approver.Approvers != null)
                                     {
-                                        approver_name = cmdb_approver.FirstName + " " + cmdb_approver.MiddleName + " " + cmdb_approver.LastName,
-                                        approver_email = cmdb_approver.Email,
-                                        main_id = temp_mainID,
-                                        milestone_id = approver.MilestoneID,
-                                        date_added = DateTime.Now,
-                                        added_by = User.Identity.Name,
-                                        division = userDetails.division,
-                                        employee_id = Int32.Parse(userDetails.emp_id)
+                                        var individual_approver = approver.Approvers.Split(',')[0];
+                                        var cmdb_approver = cmdb.AspNetUsers.Where(x => x.Id == individual_approver).FirstOrDefault();
 
-                                    };
+                                        PreSetMilestoneApprover presets = new PreSetMilestoneApprover()
+                                        {
+                                            approver_name = cmdb_approver.FirstName + " " + cmdb_approver.MiddleName + " " + cmdb_approver.LastName,
+                                            approver_email = cmdb_approver.Email,
+                                            main_id = temp_mainID,
+                                            milestone_id = approver.MilestoneID,
+                                            date_added = DateTime.Now,
+                                            added_by = User.Identity.Name,
+                                            division = userDetails.division,
+                                            employee_id = Int32.Parse(userDetails.emp_id)
 
-                                    db.PreSetMilestoneApprovers.Add(presets);
-                                    j++;
+                                        };
+
+                                        db.PreSetMilestoneApprovers.Add(presets);
+                                        j++;
+                                    }
+                                    
                                 }
 
                                 db.SaveChanges();
@@ -1706,6 +1742,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public ActionResult UpdateStatus(ProjectMilestoneViewModel model, HttpPostedFileBase attachment)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             if (ModelState.IsValid)
             {
                 var taskId = Int32.Parse(model.SelectedMilestone);
@@ -1988,6 +2027,9 @@ namespace ProjectManagementSystem.Controllers
                     db.SaveChanges();
 
                     TempData["StatusUpdated"] = true;
+
+                    details_container.Add("Updated status for " + task.process_title);
+                    log.ActivityLog(User.Identity.Name, 6, "Weekly Status Update", db.MainTables.Where(x => x.main_id == task.main_id).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
 
                     return RedirectToAction("weeklyMilestone", new { id = projectId, title = TempData["title"], projectId = TempData["project"] });
                 }
@@ -2554,6 +2596,9 @@ namespace ProjectManagementSystem.Controllers
         [HttpPost]
         public JsonResult AddOptional(ChecklistForm formData)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             var message = "";
 
             try
@@ -2587,10 +2632,13 @@ namespace ProjectManagementSystem.Controllers
                     };
 
                     optional_list.Add(optional);
+                    details_container.Add(optional.task);
                 }
                 db.OptionalMilestones.AddRange(optional_list);
                 db.SaveChanges();
                 message = "success";
+
+                log.ActivityLog(User.Identity.Name, 6, "Added Optional Task", db.MainTables.Where(x => x.main_id == formData.project_id).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
             }
 
             catch (Exception e)
@@ -2625,6 +2673,9 @@ namespace ProjectManagementSystem.Controllers
 
         public JsonResult AddApproverOpt(int id, int proj_id, List<int> approvers, int milestone_id)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             var message = ""; 
             try
             {
@@ -2658,10 +2709,12 @@ namespace ProjectManagementSystem.Controllers
                     };
 
                     approver_list.Add(approver);
+                    details_container.Add(current_approver.name);
                 }
                 db.OptionalMilestoneApprovers.AddRange(approver_list);
                 db.SaveChanges();
 
+                log.ActivityLog(User.Identity.Name, 6, "Added Approvers for Task: " + db.OptionalMilestones.Where(x => x.id == id).Select(x => x.description).SingleOrDefault(), db.MainTables.Where(x => x.main_id == proj_id).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
                 return Json(new { message = "success" }, JsonRequestBehavior.AllowGet);
             }
 
@@ -2710,6 +2763,9 @@ namespace ProjectManagementSystem.Controllers
 
         public JsonResult RemoveOptionalApprover(int id, int project_id, int milestone_id)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             var message = "";
 
             try
@@ -2723,6 +2779,10 @@ namespace ProjectManagementSystem.Controllers
                 dbItem.date_removed = DateTime.Now;
 
                 db.SaveChanges();
+
+                details_container.Add(dbItem.approver_name);
+                log.ActivityLog(User.Identity.Name, 6, "Removed Optional Approver for task: " + db.OptionalMilestones.Where(x => x.id == milestone_id).Select(x => x.description).SingleOrDefault(), db.MainTables.Where(x => x.main_id == project_id).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
+
                 return Json(new { message = "success" }, JsonRequestBehavior.AllowGet);
             }
 
@@ -2736,6 +2796,9 @@ namespace ProjectManagementSystem.Controllers
 
         public JsonResult RemoveOptionalTask(int id)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             var message = "";
 
             try
@@ -2760,6 +2823,8 @@ namespace ProjectManagementSystem.Controllers
                 }
 
                 db.SaveChanges();
+                details_container.Add(dbOptional.description);
+                log.ActivityLog(User.Identity.Name, 6, "Removed Optional Task", db.MainTables.Where(x => x.main_id == dbOptional.main_id).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
 
                 return Json(new { message = "success" }, JsonRequestBehavior.AllowGet);
             }
@@ -2780,6 +2845,9 @@ namespace ProjectManagementSystem.Controllers
 
         public JsonResult NotifyApprovers(int cID, int pID, int mID)
         {
+            ActivityLoggerController log = new ActivityLoggerController();
+            List<string> details_container = new List<string>();
+
             try
             {
                 var dbChecklist = (from c in db.ChecklistTables.Where(x => x.checklist_id == cID)
@@ -2921,6 +2989,8 @@ namespace ProjectManagementSystem.Controllers
                     }
                 }
 
+                details_container.Add("Checklist for Approval");
+                log.ActivityLog(User.Identity.Name, 6, "Checklist #" + cID + " Submission for Approval", db.MainTables.Where(x => x.main_id == pID).OrderByDescending(x => x.main_id).Select(x => x.project_title).FirstOrDefault(), details_container);
                 return Json(new { message = "success", JsonRequestBehavior.AllowGet });
             }
 
