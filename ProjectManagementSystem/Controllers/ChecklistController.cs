@@ -1419,8 +1419,8 @@ namespace ProjectManagementSystem.Controllers
                                 var addWeeklyChecklist = new MainTable
                                 {
                                     project_title = getProject.ProjectTitle,
-                                    project_start = DateTime.ParseExact(getProject.projectStart, dateFormat, CultureInfo.InvariantCulture),
-                                    project_end = DateTime.ParseExact(getProject.projectEnd, dateFormat, CultureInfo.InvariantCulture),
+                                    project_start = Convert.ToDateTime(getProject.projectStart),
+                                    project_end = Convert.ToDateTime(getProject.projectEnd),
                                     duration = getProject.ProjectDuration,
                                     year = getProject.ProjectYear,
                                     division = getProject.division,
@@ -1511,7 +1511,7 @@ namespace ProjectManagementSystem.Controllers
                                     foreach (var taskGroup in groupedTasks)
                                     {
 
-                                        DateTime taskStartDate = DateTime.ParseExact(taskGroup.TaskStart.ToString(), dateFormat, CultureInfo.InvariantCulture);
+                                        DateTime taskStartDate = Convert.ToDateTime(taskGroup.TaskStart);
                                         int taskDuration = taskGroup.task_duration;
                                         DateTime taskEndDate = taskStartDate.AddDays(taskDuration);
 
