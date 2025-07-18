@@ -2074,15 +2074,35 @@
                             $(this).text($(this).text() === 'See More' ? 'See Less' : 'See More');
                         });
 
-                        if (!isReadOnlyView && item_ctr === saved_ctr && item_ctr != approval_enabled) {
-                            checklistTableBody.append(`
-                        <tr>
-                            <td colspan="7" class="text-center">
-                                <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})" id="approval_btn">Submit for Approval</button>
-                            </td>
-                        </tr>
-                    `);
+                        let actionButtons = '';
+
+                        if (response.flag && !response.isApproved) {
+                    
+                            actionButtons = `
+                            <button class="btn btn-outline-danger w-25 me-2" onclick="withdrawChecklist(${response.id})">
+                                Withdraw Checklist
+                            </button>
+                        `;
+                                            }
+                        else if (!response.flag && item_ctr === saved_ctr && item_ctr != approval_enabled) {
+             
+                            actionButtons = `
+                                <button class="btn btn-success w-25" onclick="notifyApprovers(${response.id})">
+                                    Submit for Approval
+                                </button>
+                            `;
                         }
+        
+
+                        checklistTableBody.append(`
+    <tr>
+        <td colspan="7" class="text-center">${actionButtons}</td>
+    </tr>
+`);
+
+
+
+
 
                     //        checklistTableBody.append(`
                     //    <tr>
@@ -2529,6 +2549,34 @@
                 }
             });
         }
+
+
+    function withdrawChecklist(checklistId) {
+    if (!confirm("Are you sure you want to withdraw this checklist? This will cancel the current approval process.")) {
+        return;
+    }
+
+    $.ajax({
+        url: '@Url.Action("WithdrawChecklist", "Checklist")',
+        type: 'POST',
+        data: { id: checklistId },
+        success: function (response) {
+            if (response.success) {
+                alert("Checklist has been withdrawn successfully.");
+
+                // Reload the checklist to refresh the UI
+                loadTasksForMilestone(response.milestoneId, response.mainId);
+            } else {
+                alert("Error: " + response.message);
+            }
+        },
+        error: function (xhr) {
+            alert("An error occurred while withdrawing the checklist.");
+            console.error(xhr.responseText);
+        }
+    });
+}
+
 
         function notifyApprovers(checklist_id) {
 
@@ -3046,6 +3094,8 @@
             $(".loader-body").addClass("d-none");
         })
     </script>
+
+
 
 
 }
