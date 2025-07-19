@@ -715,6 +715,9 @@
             <div class="d-flex justify-content-between align-items-start flex-wrap mb-3">
                 <div>
                     <h3 class="mb-3">Project Summary List</h3>
+                    <p class="text-muted small">
+                        Includes your own division's projects and other projects you're involved in.
+                    </p>
 
                     <div class="d-flex align-items-center" style="font-size: 14px;">
                         Show
@@ -920,7 +923,8 @@
                                             @if (milestoneStatus == "Completed")
                                             {<span style="margin-left:4px;">✅</span> }
                                             else if (milestoneStatus == "Active")
-                                            { <span style="margin-left:4px;">🟢</span> }
+                                            { <span style="margin-left:4px;">
+                                                 </span> }
                                             else if (milestoneStatus == "Due Today")
                                             { <span style="margin-left:4px;">⏳</span> }
                                             else if (milestoneStatus == "Delayed")
@@ -932,14 +936,10 @@
                                         </div>
                                     </div>
                                 </td>
-
-
-
                             }
                         </tr>
                     }
                 </tbody>
-
             </table>
         }
         else
@@ -951,7 +951,6 @@
             </div>
         }
     </div>
-
 
     @*<div class="sidebar-cards">
             <!-- Upcoming Tasks Card -->

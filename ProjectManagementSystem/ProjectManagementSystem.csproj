@@ -1938,7 +1938,6 @@
     <Content Include="AdminLTE-3.2.0\plugins\jqvmap\maps\jquery.vmap.usa.districts.js" />
     <Content Include="AdminLTE-3.2.0\plugins\jqvmap\maps\jquery.vmap.usa.js" />
     <Content Include="AdminLTE-3.2.0\plugins\jqvmap\maps\jquery.vmap.world.js" />
-    <Content Include="AdminLTE-3.2.0\plugins\jsgrid\demos\db.js" />
     <Content Include="AdminLTE-3.2.0\plugins\jsgrid\i18n\jsgrid-de.js" />
     <Content Include="AdminLTE-3.2.0\plugins\jsgrid\i18n\jsgrid-es.js" />
     <Content Include="AdminLTE-3.2.0\plugins\jsgrid\i18n\jsgrid-fr.js" />
@@ -2611,7 +2610,6 @@
     <Content Include="FrontEnd\dist\img\user6-128x128.jpg" />
     <Content Include="FrontEnd\dist\img\user7-128x128.jpg" />
     <Content Include="FrontEnd\dist\img\user8-128x128.jpg" />
-    <Content Include="FrontEnd\dist\img\viber_image_2025-01-30_14-39-19-955_1.png" />
     <Content Include="FrontEnd\dist\js\adminlte.js" />
     <Content Include="FrontEnd\dist\js\adminlte.min.js" />
     <Content Include="FrontEnd\dist\js\demo.js" />
@@ -5086,6 +5084,7 @@
     <Content Include="Models\CheckList.edmx.diagram">
       <DependentUpon>CheckList.edmx</DependentUpon>
     </Content>
+    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -5181,12 +5180,12 @@
     <Content Include="Views\Checklist\ArchivedProjects.cshtml" />
     <Content Include="Views\Checklist\_DivisionDashboard.cshtml" />
     <Content Include="Views\Checklist\_ManagementDashboard.cshtml" />
-    <Content Include="Views\Shared\_SplashScreen.cshtml" />
     <Content Include="Views\AutomatedTask\StatusNotifier.cshtml" />
     <Content Include="Views\AutomatedTask\ApprovalNotifier.cshtml" />
     <Content Include="Views\Shared\_Loader.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="AdminLTE-3.2.0\plugins\jsgrid\demos\" />
     <Folder Include="App_Data\" />
     <Folder Include="Views\ActivityLogger\" />
     <Folder Include="Views\Base\" />
